@@ -68,7 +68,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   <service name="Service1">
     <port name="Service1Soap" binding="s0:Service1Soap">
       <soap:address
-      location="http://erlm5aqa.ww001.siemens.net/lasttest/helloworld/helloworld.asmx" />
+      location="http://helloworld/helloworld.asmx" />
     </port>
   </service>
 </definitions>

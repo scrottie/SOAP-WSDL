@@ -4,6 +4,7 @@ use Test::More tests=> 7;
 use Time::HiRes qw( gettimeofday tv_interval );
 use lib '../..';
 use Data::Dumper;
+use Cwd;
 use_ok "SOAP::WSDL";
 ### test vars END
 
@@ -15,13 +16,19 @@ my $data = {
 		givenName => 'Vorname'
 		
 };
+
+my $dir = cwd;
+
+# chomp /t/ to allow running the script from t/ directory
+$dir=~s|/t/?||;
+
 my $t0 = [gettimeofday];
 ok( my $soap=SOAP::WSDL->new(
-	wsdl => 'file:///home/lsc/eclipse3/workspace/SOAP/t/acceptance/helloworld.asmx.xml',
+	wsdl => "file://$dir/t/acceptance/helloworld.asmx.xml",
 	no_dispatch => 1
 ), "Create SOAP::WSDL object (".tv_interval ( $t0, [gettimeofday]) ."ms)" ); #->proxy('http://erlm5aqa.ww001.siemens.net/lasttest/helloworld/helloworld.asmx' );
 
-$soap->proxy('http://erlm5aqa.ww001.siemens.net/lasttest/helloworld/helloworld.asmx');
+$soap->proxy('http://helloworld/helloworld.asmx');
 
 $t0 = [gettimeofday];
 ok($soap->wsdlinit(caching => 1), "wsdl file init (".tv_interval ( $t0, [gettimeofday]) ."s)" );;

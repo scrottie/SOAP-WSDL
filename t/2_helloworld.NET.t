@@ -15,6 +15,7 @@ use diagnostics;
 use Test::More tests => 5;
 use Time::HiRes qw( gettimeofday tv_interval );
 use lib '../..';
+use Cwd;
 use_ok "SOAP::WSDL";
 ### test vars END
 print "Testing SOAP::WSDL ". $SOAP::WSDL::VERSION."\n";
@@ -39,14 +40,13 @@ my $data = {
 };
 
 my $t0 = [gettimeofday];
-my $dir=`pwd`;
-chomp $dir;
+my $dir= cwd;
 $dir=~s/\/t//;
 ok( my $soap=SOAP::WSDL->new(
 	wsdl => 'file:///'.$dir.'/t/acceptance/test.wsdl.xml',
 	no_dispatch => 1
 ), "Create SOAP::WSDL object (".tv_interval ( $t0, [gettimeofday]) ."s)" ); #->proxy('http://erlm5aqa.ww001.siemens.net/lasttest/helloworld/helloworld.asmx' );
-$soap->proxy('http://erlm5aqa.ww001.siemens.net/lasttest/helloworld/helloworld.asmx');
+$soap->proxy('http://helloworld/helloworld.asmx');
 $t0 = [gettimeofday];
 ok($soap->wsdlinit(), "WSDL init (".tv_interval ( $t0, [gettimeofday]) ."s)") ;
 

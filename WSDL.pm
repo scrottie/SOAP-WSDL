@@ -13,7 +13,7 @@ use diagnostics;
 @ISA= qw(SOAP::Lite);
 
 # let CVS handle this for you...
-$VERSION = sprintf("%d.%02d", q$Revision: 1.17 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/);
 
 sub wsdlinit {
 	my $self=shift;
@@ -934,6 +934,16 @@ be stable from 1.14 on, and that is the part you'll use most frequently.
 
 =over
 
+=item * Check for the correct number of elements confused with complex types
+
+If a complex type is marked optional in a WSDL file, but sub-parts are marked as 
+required, SOAP::WSDL will die if the complex type is not found in the data 
+(because it checks only for the occurence of simple type elements).
+
+A quick-and-dirty workaround is to turn off the check with 
+
+ $soap->wsdl_checkoccurs(0);
+
 =item * Arrays of complex types are not checked for the correct number of elements
 
 Arrays of complex types are just encoded and not checked for correctness etc. 
@@ -980,6 +990,9 @@ to the user.
 =head1 CHANGES
 
 $Log: WSDL.pm,v $
+Revision 1.18  2004/07/16 07:43:05  lsc
+fixed test scripts for windows
+
 Revision 1.17  2004/07/05 08:19:49  lsc
 - added wsdl_checkoccurs
 
