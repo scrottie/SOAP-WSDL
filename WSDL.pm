@@ -7,13 +7,13 @@ use XML::XPath;
 use Cache::FileCache;
 
 use Data::Dumper;
-# use Carp;
-use diagnostics;
+
+# use diagnostics;
 
 @ISA= qw(SOAP::Lite);
 
 # let CVS handle this for you...
-$VERSION = sprintf("%d.%02d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/);
 
 sub wsdlinit {
 	my $self=shift;
@@ -990,6 +990,9 @@ to the user.
 =head1 CHANGES
 
 $Log: WSDL.pm,v $
+Revision 1.19  2004/07/27 13:00:03  lsc
+- added missing test file
+
 Revision 1.18  2004/07/16 07:43:05  lsc
 fixed test scripts for windows
 

@@ -1,4 +1,7 @@
 $Log: CHANGES,v $
+Revision 1.7  2004/07/27 13:00:03  lsc
+- added missing test file
+
 Revision 1.18  2004/07/16 07:43:05  lsc
 fixed test scripts for windows
 

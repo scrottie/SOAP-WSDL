@@ -2,6 +2,7 @@ t/1_performance.t
 t/2_helloworld.NET.t
 t/acceptance/helloworld.asmx.xml
 t/acceptance/helloworld.xml
+t/acceptance/test.wsdl.xml
 WSDL.pm
 MANIFEST
 README
