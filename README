@@ -13,6 +13,11 @@ SOAP::WSDL requires the following perl modules:
 - XML::XPath
 
 
+If you want to use file system caching (improves performance), you also 
+need the following packages:
+
+- Cache::Cache
+
 INSTALLING
 
 Use the usual mantra:

@@ -4,7 +4,7 @@ package SOAP::WSDL;
 use SOAP::Lite;
 use vars qw($VERSION @ISA);
 use XML::XPath;	
-use Cache::FileCache;
+# use Cache::FileCache;
 
 use Data::Dumper;
 
@@ -13,7 +13,7 @@ use Data::Dumper;
 @ISA= qw(SOAP::Lite);
 
 # let CVS handle this for you...
-$VERSION = sprintf("%d.%02d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.20 $ =~ /(\d+)\.(\d+)/);
 
 sub wsdlinit {
 	my $self=shift;
@@ -24,7 +24,7 @@ sub wsdlinit {
 	$self->{_WSDL}->{ checkoccurs } = 1 unless defined(	$self->{_WSDL}->{ checkoccurs } );
 
 	if (($self->{_WSDL}->{ caching }) && (! $self->{_WSDL }->{ fileCache })) {
-		$self->wsdl_cache_init() 
+		$self->wsdl_cache_init();
 	};
 	
 	my $location=$self->transport->proxy->endpoint
@@ -225,11 +225,19 @@ sub wsdl_cache_init {
 	my $self=shift;
 	my $p=shift || undef;
 	my $cache = undef;
-	if ( defined( $p ) ) {
-		$p->{ cache_root } = $self->{_WSDL}->{ cache_directory } unless ($p->{ cache_root });
-		$cache=Cache::FileCache->new( $p ) if ($p->{ cache_root });
+	eval { require Cache::FileCache; };
+	if ($@) {
+		warn "File caching is enabled, but you do not have the Cache::FileCache module. Disabling Filesystem caching."
+			if ($self->{_WSDL}->{ cache_directory });
 	} else {
-		$cache=Cache::FileCache->new( { cache_root => $self->{_WSDL}->{ cache_directory } } ) if ($self->{_WSDL}->{ cache_directory });
+		if ( defined( $p ) ) {
+			$p->{ cache_root } = $self->{_WSDL}->{ cache_directory } unless ($p->{ cache_root });
+			$cache=Cache::FileCache->new( $p ) if ($p->{ cache_root });
+		} else {
+			if ($self->{_WSDL}->{ cache_directory }) {
+				$cache=Cache::FileCache->new( { cache_root => $self->{_WSDL}->{ cache_directory } } );
+			}
+		}	
 	}
 	$self->{_WSDL}->{ fileCache } = $cache;
 }
@@ -990,6 +998,9 @@ to the user.
 =head1 CHANGES
 
 $Log: WSDL.pm,v $
+Revision 1.20  2004/07/29 06:56:45  lsc
+removed "use" dependency on Cache::FileCache. require'ing it instead.
+
 Revision 1.19  2004/07/27 13:00:03  lsc
 - added missing test file
 
