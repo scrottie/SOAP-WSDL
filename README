@@ -1,0 +1,29 @@
+SOAP::WSDL - a WSDL-driven message preprocessor for SOAP::Lite.
+
+DESCRIPTION
+
+See "perldoc SOAP::WSDL" (or "perldoc WSDL.pm") for details.
+
+
+PREREQUISITES
+
+SOAP::WSDL requires the following perl modules:
+
+- SOAP::Lite
+- XML::XPath
+
+
+INSTALLING
+
+Use the usual mantra:
+
+perl Makefile.PL
+make
+make test
+make install
+
+
+LICENSE
+
+This library is free software, you can distribute it under the same 
+terms as perl itself.

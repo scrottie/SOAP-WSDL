@@ -1,0 +1,14 @@
+$Log: CHANGES,v $
+Revision 1.6  2004/06/11 19:51:49  lsc
+- changed expansion mode
+
+Revision 1.5  2004/06/11 19:49:54  lsc
+- moved .t files to more self-describing names
+- changed WSDL.pm to accept AXIS wsdl files
+- implemented XPath query result caching on all absolute queries
+
+Revision 1.4  2004/06/11 12:12:20  lsc
+CPAN preparation
+
+Revision 1.3  2004/06/11 11:59:51  lsc
+Test commit
