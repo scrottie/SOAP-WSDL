@@ -1,4 +1,94 @@
-$Log: CHANGES,v $
+2007/05/28 private methods made private and pod update
+  - added pod tests
+  - made encodeComplexType and method generators private
+  - updated pod
+  - fixed test scripts to work again from within/without t/
+  - moved development repository to 
+  https://svn.sourceforge.net/svnroot/soap-wsdl/ (finally !)
+
+2007/05/21 updated base version to customized version from Giovanni S Fois
+  - merged in doc changes, so that they don't refer to "customized version" 
+  - changed build process to Build.PL 
+  - changed repository layout to support new build process
+
+2006/11/06 only in the customized version
+  Added the support for default values in the wsdl file
+
+2006/11/04 only in the customized version
+  Changed the calling interface. Now it's driven by the by the service 
+  and port names.
+
+2006/11/03 only in the customized version
+  Corrected the Check for the correct number of elements in complex types
+
+  If a complex type is marked optional in a WSDL file, but sub-parts are marked as 
+  required, SOAP::WSDL used to die if the complex type was found in the data.
+  Now, if a complex type has not data associated and is not strictly required, it
+  will not be encoded.
+
+A quick-and-dirty workaround is to turn off the check with 
+
+ $soap->wsdl_checkoccurs(0);
+
+2006/11/02 only in the customized version 
+  - small changes for .Net compatibility when encoding complex types
+  - added some test cases to the test suite try perl t/3_varous.t for more details
+
+
+2006/10/28 only in the customized version 
+  - added a small support for the complexType restrictions of Arrays
+
+2006/10/02 only in the customized version 
+           (Thanks to Dan Horne for having spotted so many bugs in a row)
+- the xml prefix was used as the default wsdl namespace when looking for the complextype restrictions
+- the module crashed when the operation had no part declaration
+- the port name stated in the service definition was used as the portType
+- the test suited failed when the module was unzipped in a t.* named directory
+
+
+
+2006/09/15 only in the customized version 
+           (Thanks to Terje Kristensen for his support and twisted wsdl files :)
+- cleaned up the code for readability
+- cleaned up the code for "use warnings" and "use strict"
+- added support for wsdl files with multiple schema declarations
+- added supporto for some restriction on complexTypes
+
+
+ 
+
+2006/07/10 only in the customized version
+   - added the support for SOAP::header calls
+
+2006/06/10 only in the customized version
+
+  - removed the overload based on the type of the call's parameters
+
+  - added an overloading support based on the unique name of the input message of the call. The input message must be provided by the calling script (sorry, the module has no mean to find this).
+
+  - added a light support to the sympletypes.
+
+  - added a light support to the imported namespaces in the types section.
+
+  - added the support for the multiple SOAP bindings. The correct binding must be provided by the calling script (sorry, the module has no mean to find this).
+
+  - the method will use his own soapAction if defined
+
+  - the method will use his own namespace if defined
+
+  - some other code cleaning
+
+2006/04/23 only in the customized version
+
+  - corrected a bug related to the presence of the same method name on multiple 
+    webservices
+
+  - added an overloading support based on the type of the call's parameters
+
+  - multiple extensions support added: a complextype can be an extension of a complextype which is an extension and so on
+
+
+
 Revision 1.7  2004/07/27 13:00:03  lsc
 - added missing test file
 

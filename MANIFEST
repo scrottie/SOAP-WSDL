@@ -1,10 +1,15 @@
+Build.PL
+CHANGES
+HACKING
+lib/SOAP/WSDL.pm
+MANIFEST			This list of files
+META.yml
+README
 t/1_performance.t
 t/2_helloworld.NET.t
+t/3_various.t
+t/97_pod.t
+t/98_pod_coverage.t
 t/acceptance/helloworld.asmx.xml
 t/acceptance/helloworld.xml
 t/acceptance/test.wsdl.xml
-WSDL.pm
-MANIFEST
-README
-CHANGES
-Makefile.PL

@@ -1,0 +1,24 @@
+Development of SOAP::WSDL takes place on sourceforge.net.
+
+There's a svn repository available at 
+https://svn.sourceforge.net/svnroot/soap-wsdl
+
+Engagement in the further development of this module is highly encouraged - 
+many people have already contributed, and many more probably will.
+
+I'm sometimes a bit slow in answering e-mails or merging in changes - 
+so if you feel your changes are urgent, please set up a sourceforge account 
+and ask me for commit permissions on the repository - I will happily accept 
+you as co-author.
+
+The (my) current roadmap for SOAP::WSDL is:
+
+1.2*: Bugfixes and support for more XSD variants
+
+1.3: Bindings support
+
+2.*: WSDL -> Perl Class factory with offline WSDL processing
+
+May 2007,
+
+Martin Kutter

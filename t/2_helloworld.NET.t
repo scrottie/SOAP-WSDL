@@ -15,44 +15,45 @@ use diagnostics;
 use Test;
 plan tests => 5;
 use Time::HiRes qw( gettimeofday tv_interval );
-use lib '../..';
+use lib '../lib';
 use Cwd;
 use SOAP::WSDL;
 ok 1; # if we made it this far, we're ok
 ### test vars END
-print "Testing SOAP::WSDL ". $SOAP::WSDL::VERSION."\n";
-print "Acceptance test against sample output with simple WSDL\n";
+print "# Testing SOAP::WSDL ". $SOAP::WSDL::VERSION."\n";
+print "# Acceptance test against sample output with simple WSDL\n";
 
 my $data = {
 	name => 'test',
-#	givenName => 'GIVENNAME',
-#	test => {
-#		name => 'TESTNAME',
-#		givenName => 'GIVENNAME',
-#	},
-#	test1 => {
-#		name => 'TESTNAME',
-#		givenName => 'GIVENNAME',
-#		extend => 'EXTEND',
-#	},
-#	test2 => { 
-#		name => 'TESTNAME',
-#		givenName => 'GIVENNAME',
-#	}
+	givenName => 'GIVENNAME',
+	test => {
+		name => 'TESTNAME',
+		givenName => 'GIVENNAME',
+	},
 };
 
-my $t0 = [gettimeofday];
+
 my $dir= cwd;
-$dir=~s/\/t//;
-ok( my $soap=SOAP::WSDL->new(
-	wsdl => 'file:///'.$dir.'/t/acceptance/test.wsdl.xml',
-	no_dispatch => 1
-) ); 
-print "Create SOAP::WSDL object (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ; 
-$soap->proxy('http://helloworld/helloworld.asmx');
+$dir=~s/\/t\/?//;
+
+my $t0 = [gettimeofday];
+ok( my $soap=SOAP::WSDL->new(wsdl => 'file:///'.$dir.'/t/acceptance/test.wsdl.xml',
+			     no_dispatch => 1 ) );
+
+print "# Create SOAP::WSDL object (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ; 
+
 $t0 = [gettimeofday];
-ok($soap->wsdlinit());
-print "WSDL init (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
+eval{ $soap->wsdlinit() };
+unless ($@) {
+  ok(1);
+} else {
+  ok 0;
+  print STDERR $@;
+}
+
+print "# WSDL init (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
+$soap->servicename("Service1");
+$soap->portname("Service1Soap");
 
 $t0 = [gettimeofday];
 do {
@@ -70,10 +71,10 @@ do {
 
 		if ( ($xml) && ($xml eq $xml_test) ) { 
 			ok 1;
-			print "Message encoding (" .tv_interval ( $t0, [gettimeofday]) ."s)\n"
+			print "# Message encoding (" .tv_interval ( $t0, [gettimeofday]) ."s)\n"
 		} else { 
 			ok 0;
-			print "Message encoding (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
+			print "# Message encoding (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
 			print "$xml\n$xml_test\n"; };
 	};
 
@@ -93,10 +94,11 @@ do {
 
 		if ( ($xml) && ($xml eq $xml_test) ) { 
 				ok 1;
-				print "Message encoding (" .tv_interval ( $t0, [gettimeofday]) ."s)\n";
+				print "# Message encoding (" .tv_interval ( $t0, [gettimeofday]) ."s)\n";
 		} else { 
 			ok 0;
-			print "Message encoding (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
-			print "$xml\n$xml_test\n"; };
-	};
+			print "# Message encoding (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
+			print "$xml\n$xml_test\n"; 
+		      };
+	      };
 	

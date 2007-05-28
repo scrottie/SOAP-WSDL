@@ -30,5 +30,5 @@ make install
 
 LICENSE
 
-This library is free software, you can distribute it under the same 
+This library is free software, you can distribute/modify it under the same 
 terms as perl itself.
