@@ -20,13 +20,10 @@ need the following packages:
 
 INSTALLING
 
-Use the usual mantra:
-
-perl Makefile.PL
-make
-make test
-make install
-
+perl Build.PL
+perl Build
+perl Build test
+perl Build install
 
 LICENSE
 

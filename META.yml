@@ -1,21 +1,18 @@
 ---
 name: SOAP-WSDL
-version: 1.21
-author:
-  - |-
-    Martin Kutter <martin.kutter@fen-net.de>
-    Giovanni S. Fois giovannisfois@tiscali.it
+version: 1.22
+author: []
 abstract: WSDL support for SOAP::Lite
 license: artistic
 resources:
   license: http://opensource.org/licenses/artistic-license.php
 requires:
-  SOAP::Lite: 0.55
+  SOAP::Lite: 0
   XML::XPath: 0
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 1.21
+    version: 1.22
 generated_by: Module::Build version 0.28
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

@@ -1,3 +1,10 @@
+* v1.22 2007/05/30 - auto-discover service and port again
+- re-introduces auto-detecting of servicename and portname
+- fixes #27325: Test fails with Test::Pod::Coverage v 1.06. 
+- Now build requires Test::More
+- documentation update
+- cosmetics
+
 2007/05/28 private methods made private and pod update
   - added pod tests
   - made encodeComplexType and method generators private
