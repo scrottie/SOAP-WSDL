@@ -1,15 +1,13 @@
 #!/usr/bin/perl -w
 use strict;
-use Test;
-plan tests=> 8;
+use warnings;
+use diagnostics;
+use Test::More tests=> 9;
 use Time::HiRes qw( gettimeofday tv_interval );
 use lib '../lib';
 use Data::Dumper;
 use Cwd;
-use SOAP::WSDL;
-
-ok 1; # if we made it this far, we're ok
-### test vars END
+use_ok qw/SOAP::WSDL/;
 
 print "# Testing SOAP::WSDL ". $SOAP::WSDL::VERSION."\n";
 print "# Various Features Test with WSDL file \n";
@@ -31,11 +29,11 @@ print "# Create SOAP::WSDL object (".tv_interval ( $t0, [gettimeofday]) ."ms)\n"
 
 $t0 = [gettimeofday];
 eval{ $soap->wsdlinit(caching => 0) };
-unless ($@) {
-  ok(1);
-} else {
-  ok 0;
+if ($@) {
+  fail("wsdlinit");
   print STDERR $@;
+} else {
+  pass("wsdlinit");
 }
 print "# wsdl file init (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;;
 
@@ -44,18 +42,17 @@ $soap->servicename("Service1");
 $soap->portname("Service1Soap");
 
 $t0 = [gettimeofday];
-
-ok( $soap->call("sayHello" , %{ $data }));
+ok( $soap->call("sayHello" , %{ $data }), "call sayHello");
 print "# Normal Call: (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
 
 $soap->servicename("Service2");
-$soap->portname("Service2Soap");
+is( $soap->portname("Service2Soap"), 'Service2Soap' );
 
 $data = {name => 'Mein Name',
 	 givenName => 'Vorname'};
 
 $t0 = [gettimeofday];
-ok($soap->call(sayGoodBye => %{ $data }) );
+ok($soap->call(sayGoodBye => %{ $data }), "Multiple Services/Port Call" );
 print "# Multiple Services/Port Call: (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
 
 $soap->servicename("Service2");
@@ -68,7 +65,7 @@ $data = {name => 'Mein Name',
 $t0 = [gettimeofday];
 
 my $xml = $soap->serializer->method( $soap->call(sayGoodByeOverload => %{ $data }) );
-$xml =~ /<name/ and ok(1);
+like($xml , qr/<name/, 'serialized overloaded method');
 
 $data = {
 	 name => 'Mein Name',
@@ -78,7 +75,7 @@ $data = {
 
 $t0 = [gettimeofday];
 $xml = $soap->serializer->method( $soap->call(sayGoodByeOverload => %{ $data }) );
-$xml !~ /<name/ and ok(1);
+unlike($xml , qr/<name/ , 'Overloaded calls');
 
 print "# Overloaded Calls: (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
 

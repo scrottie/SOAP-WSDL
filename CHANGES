@@ -1,6 +1,12 @@
+* v1.23 2007/06/05 - bugfixes and optimizations
+- fixes #27426: missing prereq XML::XPath
+- fixed build_requires
+- some doc fixes
+- now performs some initializations on calling portname()
+
 * v1.22 2007/05/30 - auto-discover service and port again
 - re-introduces auto-detecting of servicename and portname
-- fixes #27325: Test fails with Test::Pod::Coverage v 1.06. 
+- fixes #27325: Test fails with Test::Pod::Coverage v 1.06.
 - Now build requires Test::More
 - documentation update
 - cosmetics
@@ -10,42 +16,42 @@
   - made encodeComplexType and method generators private
   - updated pod
   - fixed test scripts to work again from within/without t/
-  - moved development repository to 
+  - moved development repository to
   https://svn.sourceforge.net/svnroot/soap-wsdl/ (finally !)
 
 2007/05/21 updated base version to customized version from Giovanni S Fois
-  - merged in doc changes, so that they don't refer to "customized version" 
-  - changed build process to Build.PL 
+  - merged in doc changes, so that they don't refer to "customized version"
+  - changed build process to Build.PL
   - changed repository layout to support new build process
 
 2006/11/06 only in the customized version
   Added the support for default values in the wsdl file
 
 2006/11/04 only in the customized version
-  Changed the calling interface. Now it's driven by the by the service 
+  Changed the calling interface. Now it's driven by the by the service
   and port names.
 
 2006/11/03 only in the customized version
   Corrected the Check for the correct number of elements in complex types
 
-  If a complex type is marked optional in a WSDL file, but sub-parts are marked as 
+  If a complex type is marked optional in a WSDL file, but sub-parts are marked as
   required, SOAP::WSDL used to die if the complex type was found in the data.
   Now, if a complex type has not data associated and is not strictly required, it
   will not be encoded.
 
-A quick-and-dirty workaround is to turn off the check with 
+A quick-and-dirty workaround is to turn off the check with
 
  $soap->wsdl_checkoccurs(0);
 
-2006/11/02 only in the customized version 
+2006/11/02 only in the customized version
   - small changes for .Net compatibility when encoding complex types
   - added some test cases to the test suite try perl t/3_varous.t for more details
 
 
-2006/10/28 only in the customized version 
+2006/10/28 only in the customized version
   - added a small support for the complexType restrictions of Arrays
 
-2006/10/02 only in the customized version 
+2006/10/02 only in the customized version
            (Thanks to Dan Horne for having spotted so many bugs in a row)
 - the xml prefix was used as the default wsdl namespace when looking for the complextype restrictions
 - the module crashed when the operation had no part declaration
@@ -54,7 +60,7 @@ A quick-and-dirty workaround is to turn off the check with
 
 
 
-2006/09/15 only in the customized version 
+2006/09/15 only in the customized version
            (Thanks to Terje Kristensen for his support and twisted wsdl files :)
 - cleaned up the code for readability
 - cleaned up the code for "use warnings" and "use strict"
@@ -62,7 +68,7 @@ A quick-and-dirty workaround is to turn off the check with
 - added supporto for some restriction on complexTypes
 
 
- 
+
 
 2006/07/10 only in the customized version
    - added the support for SOAP::header calls
@@ -87,7 +93,7 @@ A quick-and-dirty workaround is to turn off the check with
 
 2006/04/23 only in the customized version
 
-  - corrected a bug related to the presence of the same method name on multiple 
+  - corrected a bug related to the presence of the same method name on multiple
     webservices
 
   - added an overloading support based on the type of the call's parameters

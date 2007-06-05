@@ -8,6 +8,7 @@ README
 t/1_performance.t
 t/2_helloworld.NET.t
 t/3_various.t
+t/4_auto_set_port.t
 t/97_pod.t
 t/98_pod_coverage.t
 t/acceptance/helloworld.asmx.xml

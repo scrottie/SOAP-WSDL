@@ -30,11 +30,11 @@ my $t0 = [gettimeofday];
 			       wsdl => "file://$dir/t/acceptance/helloworld.asmx.xml",
 			       no_dispatch => 1
 			      ) );
-  
+
   print "# Test with NO caching\n";
   print "# Create SOAP::WSDL object (".tv_interval ( $t0, [gettimeofday]) ."ms)\n" ;
 
-  
+
   $t0 = [gettimeofday];
   eval{ $soap->wsdlinit(caching => 0) };
   unless ($@) {
@@ -53,22 +53,22 @@ my $t0 = [gettimeofday];
   $t0 = [gettimeofday];
   ok( $soap->call("sayHello" , %{ $data }));
   print "# NO cache first call: (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
-  
+
   $t0 = [gettimeofday];
   ok($soap->call(sayHello => %{ $data }) );
   print "# NO cache second call (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
-  
+
   $t0 = [gettimeofday];
-  for (my $i=1; $i<100; $i++) {
+  for (1..10) {
     $soap->call(sayHello => %{ $data });
   }
   ok(1);
-  print "# NO cache: 100 x call (".tv_interval ( $t0, [gettimeofday]) ."s)\n";
+  print "# NO cache: 10 x call (".tv_interval ( $t0, [gettimeofday]) ."s)\n";
 }
 {
   print "# Test with caching ENABLED\n";
 
-  $t0 = [gettimeofday];  
+  $t0 = [gettimeofday];
   ok(my $soap=SOAP::WSDL->new(
 			      wsdl => "file://$dir/t/acceptance/helloworld.asmx.xml",
 			      no_dispatch => 1
@@ -88,20 +88,20 @@ my $t0 = [gettimeofday];
   $soap->readable(1);
   $soap->servicename("Service1");
   $soap->portname("Service1Soap");
-  
+
   $t0 = [gettimeofday];
   ok( $soap->call("sayHello" , %{ $data }));
   print "# CACHE first call (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
-  
+
   $t0 = [gettimeofday];
   ok($soap->call(sayHello => %{ $data }) );
   print "# CACHE second call: (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
-  
+
   $t0 = [gettimeofday];
-  for (my $i=1; $i<100; $i++) {
+  for (1..10) {
     $soap->call(sayHello => %{ $data });
   }
   ok(1);
-  print "# CACHE: 100 x call (".tv_interval ( $t0, [gettimeofday]) ."s)\n";
-  
+  print "# CACHE: 10 x call (".tv_interval ( $t0, [gettimeofday]) ."s)\n";
+
 }
