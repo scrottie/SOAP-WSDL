@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<definitions name="simpleType" 
+	targetNamespace="simpleType"
+	xmlns:tns="simpleType"
+	xmlns:wsd="http://www.w3c.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+>
+	<types>
+		<xsd:schema targetNamespace="simpleType">
+		<xsd:simpleType name="testSimpleType1">
+			<xsd:annotation>
+				<xsd:documentation>
+				SimpleType Test
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:restriction base="int">
+				
+			</xsd:restriction>
+		</xsd:simpleType>
+		</xsd:schema>
+	</types>
+	<message name="testRequest">
+		<part name="test" type="tns:testSimpleType1"/>	
+	</message>
+	<message name="testResponse">
+		<part name="test" type="tns:testSimpleType1"/>		
+	</message>
+	<portType name="testPort">
+		<operation name="test">
+			<documentation>
+				Test-Methode
+			</documentation>
+			
+			<input message="testRequest"/>
+			<output message="testResponse"/>
+		</operation>
+	</portType>
+	<portType name="testPort2">
+		<operation name="test">
+			<documentation>
+				Test-Methode
+			</documentation>
+			
+			<input message="testRequest"/>
+			<output message="testResponse"/>
+		</operation>
+	</portType>
+	<portType name="testPort2">
+		<operation name="test">
+			<documentation>
+				Test-Methode
+			</documentation>
+			
+			<input message="testRequest"/>
+			<output message="testResponse"/>
+		</operation>
+	</portType>
+
+	<binding type="testPort" name="testBinding">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<soap:operation soapAction="test">
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</soap:operation>
+	</binding>
+	<binding type="testPort2" name="testBinding2">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<soap:operation soapAction="test">
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</soap:operation>
+	</binding>
+	<binding type="testPort3" name="testBinding3">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<soap:operation soapAction="test">
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</soap:operation>
+	</binding>
+	<service name="testService">
+		<port name="testPort" binding="testBinding">
+			<soap:address location="http://127.0.0.1/testPort" />
+		</port>
+		<port name="testPort2" binding="testBinding2">
+			<soap:address location="http://127.0.0.1/testPort2" />
+		</port>
+		<port name="testPort3" binding="testBinding3">
+			<soap:address location="http://127.0.0.1/testPort3" />
+		</port>
+
+	</service>
+</definitions>

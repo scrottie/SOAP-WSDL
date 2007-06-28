@@ -4,23 +4,15 @@ package SOAP::WSDL;
 use SOAP::Lite;
 use vars qw($VERSION @ISA);
 use XML::XPath;
-use Data::Dumper;
 
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 @ISA = qw(SOAP::Lite);
 
-$VERSION = "1.23";
-
-# SOAP::Lite has changed the name for speciying a schema in 0.6?
-# method before: schema
-# method name after: schema_url
-#
-# Actually, we don't care which SOAP::Lite version there is, so we
-# try to support whatever we find...
-#
-my $SCHEMA_URL = $SOAP::Lite::VERSION >= 0.6 ? 'schema_url' : 'schema';
+$VERSION = "1.21";
 
 sub wsdlinit
 {
@@ -30,8 +22,8 @@ sub wsdlinit
 	$self->{ _WSDL }->{ caching }         = $opt{ caching };
 	$self->{ _WSDL }->{ cache_directory } = $opt{ cache_directory }
 	  if exists( $opt{ cache_directory } );
-	$self->{ _WSDL }->{ checkoccurs } = 1
-	  unless defined( $self->{ _WSDL }->{ checkoccurs } );
+	$self->wsdl_checkoccurs( $opt{ checkoccurs } )
+		if ( exists( $opt{ checkoccurs } ) );
 
 	if (   ( $self->{ _WSDL }->{ caching } )
 		&& ( !$self->{ _WSDL }->{ fileCache } ) )
@@ -61,7 +53,7 @@ sub wsdlinit
 	{
 		$xpath =
 		  XML::XPath->new(
-			xml => SOAP::Schema->new( $SCHEMA_URL => $self->wsdl() )->access );
+			xml => SOAP::Schema->new( schema_url => $self->wsdl )->access );
 	} ## end unless ( $xpath )
 
 	( $xpath )
@@ -145,88 +137,84 @@ sub wsdlinit
 	  $nsHash->{ 'http://xml.apache.org/xml-soap' } . "|";
 	chop $self->{ _WSDL }->{ _type_ns };
 
+	# resolve portname and servicename from url if given...
+	if ( $opt{ 'url' } )
+	{
+		$self->_resolveURL( $opt{ 'url' } );
+	}
+
+	# TODO make _get_first_port conditional...
+	$self->_get_first_port();
+
 	$self->servicename( $opt{ servicename } ) if ( $opt{ servicename } );
 	$self->portname( $opt{ portname } )       if ( $opt{ portname } );
 
 	# return something useful to ease testing...
 	return $self;
-
 } ## end sub wsdlinit
 
-sub _wsdl_init_port
+sub _get_first_port
 {
-    my $self = shift;
-    my $name = shift;
-    my $opt = shift;
-    my $xpath = $self->_wsdl_xpath;
-    my $tns = $self->_wsdl_tns;
+	my $self  = shift;
+	my $url   = shift;
+	my $xpath = $self->_wsdl_xpath();
 
-    # Step one: get <service><port...> element
-    #
-    # This provides us with the address (enpoint/proxy), which we set here
-    # and the binding name.
+	my $path =
+	  '/definitions/service' . '/port/' . $self->_wsdl_soapns . 'address';
 
-    # Fetch <soap:address from inside <wsdl:port -
-    # so we get both with one xpath query...
-    my $path =  '/' . $self->_wsdl_wsdlns()
-          . 'definitions/'
-          . $self->_wsdl_wsdlns() .'service[@name="' . $self->servicename()
-          . '"]/'
-          . $self->_wsdl_wsdlns() . 'port[@name="' . $name . '"]/'
-          . $self->_wsdl_soapns() . 'address';
+	my @ports = $xpath->findnodes( $path );
 
-    my $address = $xpath->find( $path )->shift
-       || die "Error processing WSDL file - no such port ($path)";
-    my $endpoint = $address->getAttribute( 'location' )
-        or die "No endpoint address found ($path)";
+	if ( @ports )
+	{
+		my $address = shift @ports;
+		my $port    = $address->getParentNode();
+		my $service = $port->getParentNode();
+		$self->servicename( $service->getAttribute( 'name' ) );
+		$self->portname( $port->getAttribute( 'name' ) );
+	} ## end if ( @ports )
+	else
+	{
+		die "No port definition found";
+	}
 
-    $self->proxy( $endpoint );
+} ## end sub _get_first_port
 
-    my $port = $address->getParentNode();
-    my $binding_name = $port->getAttribute( 'binding' );
+sub _resolve_url
+{
+	my $self  = shift;
+	my $url   = shift;
+	my $xpath = $self->_wsdl_xpath();
 
-    # Step two: get the correct <binding...> element.
-    # This provides us with the portType name.
-    # Remember binding for later usage (in call() ) and
-    #
+	my $path;
+	if ( $url )
+	{
+		$path =
+		    '/definitions/service' . '/port/'
+		  . $self->_wsdl_soapns
+		  . 'address[@location="'
+		  . $url . '"]';
+	} ## end if ( $url )
+	else
+	{
+		$path = $path =
+		  '/definitions/service' . '/port/' . $self->_wsdl_soapns . 'address';
+	}
 
-    # remove the default targetNamespace from messageName
-    $binding_name =~ s/^($tns)\:*//;
+	my @ports = $xpath->findnodes( $path );
 
-    $path = join(
-        $self->_wsdl_wsdlns,
-        (
-            '/',
-            'definitions/',
-            'binding[@name="' . $binding_name . '"]',
-        )
-    );
-
-    my $binding = $xpath->find( $path )->shift()
-        or die "no binding found ($path)";
-
-    $self->{ _WSDL }->{ binding } = $binding;
-
-    my $portType_name = $binding->getAttribute( 'type' );
-
-    # remove the default targetNamespace from messageName
-    $portType_name =~ s/^($tns)\:*//;
-
-    $path = join(
-          $self->_wsdl_wsdlns,
-          (
-            '/',
-            'definitions/',
-            'portType[@name="' . $portType_name . '"]',
-          )
-    );
-
-    # warn("looking for $path");
-    my $portType = $xpath->find( $path )->shift()
-        or die "No portType found ($path)";
-    $self->{ _WSDL }->{ portType } = $portType;
-
-}
+	if ( @ports )
+	{
+		my $address = shift @ports;
+		my $port    = $address->getParentNode();
+		my $service = $port->getParentNode();
+		$self->servicename( $service->getAttribute( 'name' ) );
+		$self->portname( $port->getAttribute( 'name' ) );
+	} ## end if ( @ports )
+	else
+	{
+		die "No port definition found for URL $url";
+	}
+} ## end sub _resolve_url
 
 sub call
 {
@@ -250,22 +238,66 @@ sub call
 		  || die "Error processing WSDL: no wsdl object";
 	};
 
-    # get the first port if none has been set...
-    $self->_get_first_port() if (not $self->portname() );
+	my $portType = "";
+	my $binding  = "";
 
-    # initialize port if not done yet
-    $self->_wsdl_init_port( $self->portname() )
-        if ( not $self->_wsdl_portType() );
+	my $portName = "";
 
-	my $portType = $self->_wsdl_portType();
-	my $binding = $self->_wsdl_binding();
+	$portName = $self->portname();
+	$portName or die "Error processing the call: no port found";
+
+	# TODO factor out and call from wsdlinit
+	### from here
+	
+	#look for the binding
+	$path = join(
+		$self->_wsdl_wsdlns,
+		(
+			"/", "definitions/",
+			"service[\@name='" . ( $self->servicename ) . "']/",
+			"port[\@name='" . $portName . "']"
+		)
+	);
+
+	my $port = $xpath->find( $path )->shift
+	  || die "Error processing WSDL file - no such port ($path)";
+
+	$binding = $port->findvalue( '@binding' )
+	  || die
+	  "Error processing WSDL: Cannot find the binding for the service $path";
+
+	#look for the location
+	$path .= "/" . $self->_wsdl_soapns . "address";
+
+	my $address = $xpath->find( $path )->shift
+	  || die "Error processing WSDL file - no such address ($path)";
+
+	$location = $address->findvalue( '@location' )->value
+	  || die
+"Error processing WSDL: Cannot find the port for the location in service $path";
+	$self->proxy( $location );
+
+	# remove the default targetNamespace from messageName
+	$binding =~ s/^($tns)\:*//;
+	$binding =~ s/^($tns)\:*//;
+
+	$path = join(
+		$self->_wsdl_wsdlns,
+		( '/', 'definitions/', "binding[\@name='$binding']/\@type" )
+	);
+
+	$portType = $self->_wsdl_findvalue( $path, "dieIfError" );
+	$portType =~ s/^(.*?)\://;
+
+	#Now we need to find the operation, in the binding.
+	#After that we can extract the SoapAction and the
+	#input name, if defined
 
 	$path = join(
 		$self->_wsdl_wsdlns,
 		(
-			# '/',
-			'operation[@name="' . $method . '"]/',
-            $mode
+			'/', 'definitions/', "binding[\@name='$binding']/",
+			"operation[\@name='$method']/", $mode
 		)
 	);
 
@@ -273,75 +305,58 @@ sub call
 	$data{ "wsdl_${mode}_name" }
 	  and $path .= "[\@name='" . $data{ "wsdl_${mode}_name" } . "']";
 
-    # warn "Looking for operation $path";
-    my $inputMessageName;
-    my $binding_operation_message = $binding->find( $path )->shift();
-    if ($binding_operation_message)
-    {
-        my $binding_operation = $binding_operation_message->getParentNode();
-        my $soapAction = $binding_operation->getAttribute( 'soapAction' );
-        $self->on_action( sub { return "$soapAction" } ) if ($soapAction);
-        # warn "soapAction set to $soapAction\n";
+	#now we can get the soapaction
+	my $soapActionPath =
+	  "$path/../" . $self->_wsdl_soapns . "operation/\@soapAction";
+	my $soapAction = $self->_wsdl_findvalue( $soapActionPath, "" );
+	$soapAction and $self->on_action( sub { sprintf "$soapAction" } );
 
-        #if defined, the input message name has to be the leading item
-        #in the SOAP call. If not defined, it has to be the operation
-        #name. In the case of overloaded calls, it *IS* the parameter passed
-        #by the calling script. So
-
-        if ( $data{ "wsdl_${mode}_name" } )
-        {
-                $inputMessageName = $data{ "wsdl_${mode}_name" };
-        }
-        else
-        {
-                $inputMessageName = $binding_operation_message->getAttribute('name');
-        }
-
-    }
-    # just set it right if not set before:
-	$inputMessageName ||= $method;
+	#if defined, the input message name has to be the leading item
+	#in the SOAP call. If not defined, it has to be the operation
+	#name. In the case of overloaded calls, it *IS* the parameter passed
+	#by the calling script. So
+	my $inputMessageName;
+	if ( $data{ "wsdl_${mode}_name" } )
+	{
+		$inputMessageName = $data{ "wsdl_${mode}_name" };
+	}
+	else
+	{
+		$inputMessageName = $self->_wsdl_findvalue( "$path/\@name", "" );
+	}
+	$inputMessageName or $inputMessageName = $method;
 
 	$path = join(
 		$self->_wsdl_wsdlns,
 		(
-			'/',
-            'definitions/',
-			'binding[@name="' . $binding->getAttribute('name') . '"]/',
-            'operation[@name="' . $method . '"]/',
+			'/',                           'definitions/',
+			"binding[\@name='$binding']/", "operation[\@name='$method']/",
 			"$mode/"
 		)
 	  )
-	  . $self->_wsdl_soapns . "body";
+	  . $self->_wsdl_soapns . "body/";
 
-    # warn "looking for $path...";
-    my $callNamespace;
-    my $encodingStyle = q{};
-    if (my $operation = $self->_wsdl_find( $path )->shift)
-    {
-        # warn "found operation:" . Dumper $operation;
-        #a call can have an associated, namespace
-	    $callNamespace = $operation->getAttribute('namespace');
-        #the encoding style is required when handling restricted complextypes
-        $encodingStyle = $operation->getAttribute( 'encodingStyle' );
-    }
-	$callNamespace ||= $self->_wsdl_tns_uri;
+	#a call can have an associated, namespace
+	my $callNamespace = $self->_wsdl_findvalue( "$path\@namespace", "" );
+	$callNamespace or $callNamespace = $self->_wsdl_tns_uri;
 
-    $self->wsdl_encoding( $self->_wsdl_ns->{ $encodingStyle } )
-        if ($encodingStyle);
+	#the encoding style is required when handling restricted complextypes
+	my $encodingStyle = "";
+	$encodingStyle = $self->_wsdl_findvalue( "$path\@encodingStyle", "" );
+	$encodingStyle
+	  and $self->wsdl_encoding( $self->_wsdl_ns->{ $encodingStyle } );
 
 	$path = join(
 		$self->_wsdl_wsdlns,
 		(
 			'/', 'definitions/',
-			'portType[@name="' . $portType->getAttribute('name') . '"]/',
-			'operation[@name="' . $method . '"]/',
-            $mode
+			"portType[\@name='$portType']/",
+			"operation[\@name='$method']/", $mode
 		)
 	);
 
-	# overload: the calling script has to say wich overloading
-	# procedure call has to be encoded and forwarded to the server
-
+	#overload: the calling script has to say wich overloading
+	#procedure call has to be encoded and forwarded to the server
 	$data{ "wsdl_${mode}_name" }
 	  and $path .= "[\@name='" . $data{ "wsdl_${mode}_name" } . "']";
 
@@ -352,16 +367,13 @@ sub call
 
 	$path = join(
 		$self->_wsdl_wsdlns,
-		( '/', 'definitions/', 'message[@name="' . $messageName . '"]/'
-        , 'part' )
+		( '/', 'definitions/', "message[\@name='$messageName']/", 'part' )
 	);
 
-    # warn "looking for $path...";
-
-    # An operation without parts is equivalent to a procedure
-    # call without parameters
-    # Though not very common, messages may have more than one part...
+	#An operation without parts is equivalent to a procedure call without parameters
 	my $parts = $self->_wsdl_find( $path );
+
+	### TODO factor out: to here
 
 	my @param = ();
 	while ( my $part = $parts->shift )
@@ -386,40 +398,6 @@ sub call
 	}
 } ## end sub call
 
-# find the first servie and port for convenience
-
-sub _get_first_port
-{
-	my $self  = shift;
-	my $url   = shift;
-	my $xpath = $self->_wsdl_xpath();
-
-    # find /wsdl:definitions/wsdl:service/wsdl:port/soap:address
-    # use namespace prefixes from WSDL - they may differ...
-    #
-    # We head right for the address instead of just fetching the first
-    # port - we want to set the SOAP::Lite proxy, and accessing
-    # our parent is easier than running repeated XPath queries...
-    #
-	my $path =  '/' . $self->_wsdl_wsdlns() .
-	  'definitions/'
-          . $self->_wsdl_wsdlns() .'service/'
-          . $self->_wsdl_wsdlns() . 'port/'
-          . $self->_wsdl_soapns() . 'address';
-
-	my @ports = $xpath->findnodes( $path );
-
-	return if ( not @ports );
-
-	my $address = shift @ports;
-	my $port    = $address->getParentNode();
-	my $service = $port->getParentNode();
-	$self->servicename( $service->getAttribute( 'name' ) );
-	$self->portname( $port->getAttribute( 'name' ) );
-
-	return $self;
-} ## end sub _get_first_port
-
 sub DESTROY
 {
 	my $self = shift;
@@ -441,30 +419,11 @@ sub _load_method
 	};
 } ## end sub _load_method
 
-sub portname {
-    my $self = shift;
-    if ( @_ )
-    {
-        my $portname = shift;
-        if ( not defined($self->{ _WSDL }->{ portname })
-            or ($portname ne ($self->{ _WSDL }->{ portname }) ) )
-        {
-            $self->{ _WSDL }->{ portname } = $portname;
-            $self->_wsdl_init_port( $portname );
-        }
-    }
-    if ($self->{ _WSDL }->{ 'portname' })
-    {
-        return $self->{ _WSDL }->{ 'portname' }
-    };
-    return;
-}
-
 &_load_method( "no_dispatch",          "no_dispatch" );
 &_load_method( "wsdl",                 "wsdl" );
 &_load_method( "wsdl_checkoccurs",     "checkoccurs" );
 &_load_method( "servicename",          "servicename" );
-#&_load_method( "portname",             "portname" );
+&_load_method( "portname",             "portname" );
 &_load_method( "wsdl_cache_directory", "cache_directory" );
 &_load_method( "wsdl_encoding",        "wsdl_encoding" );
 &_load_method( "_wsdl_ns",             "namespaces" );
@@ -475,8 +434,6 @@ sub portname {
 &_load_method( "_wsdl_schemans",       "schemans" );
 &_load_method( "_wsdl_soapns",         "soapns" );
 &_load_method( "_wsdl_wsdlExplicitNS", "wsdl_wsdlExplicitNS" );
-&_load_method( "_wsdl_binding",         "binding" );
-&_load_method( "_wsdl_portType",         "portType" );
 
 #each call to make finder returns a wrapped version of the xpath calls.
 #find, findvalue, findnodes and so on
@@ -533,6 +490,7 @@ sub wsdl_cache_init
 	eval { require Cache::FileCache; };
 	if ( $@ )
 	{
+
 		# warn about missing Cache::FileCache and set cache hadnle to undef
 		warn "File caching is enabled, but you do not have the "
 		  . "Cache::FileCache module. Disabling Filesystem caching."
@@ -541,6 +499,7 @@ sub wsdl_cache_init
 	} ## end if ( $@ )
 	else
 	{
+
 		# initialize cache from custom parameters if given
 		$p->{ cache_root } ||= $self->{ _WSDL }->{ cache_directory };
 		$cache = Cache::FileCache->new( $p );
@@ -675,7 +634,8 @@ sub encode
 				  . $self->_wsdl_ns->{ $node->getAttribute( 'namespace' ) };
 			} ## end while ( my $node = $nodeSet...
 
-#if the schema has a default nameSpace, it has to be added to the added to dhe typeNs list
+			# if the schema has a default nameSpace, it has to be added to 
+			# the typeNs list
 
 			my $schemaTargetNS = $schema->findvalue( '@targetNamespace' );
 			if ( $schemaTargetNS )
@@ -702,6 +662,12 @@ sub encode
 			my $count = -1;
 			if ( $self->{ _WSDL }->{ checkoccurs } )
 			{
+				# count is ...
+				# ... read from outwards to inwards...
+				# ... 0 if the element does not exist
+				# ... 0 if the element is not defined
+				# ... scalar @{ $element } if it's a list ref
+				# ... 1 if it's a scalar.
 				$count =
 				    exists $data->{ $p->{ name } }
 				  ? defined $data->{ $p->{ name } }
@@ -711,19 +677,22 @@ sub encode
 				  : 0
 				  : 0;
 
-				$order = $part->getParentNode()->getName;
+				$order = $part->getParentNode()->getLocalName;
 				$p->{ minOccurs } = $part->findvalue( '@minOccurs' )->value;
 				if (   ( !defined( $p->{ minOccurs } ) )
 					|| ( $p->{ minOccurs } eq "" ) )
 				{
+					# 1 is the default minOccurs for <sequence>
 					if ( $order eq 'sequence' )
 					{
 						$p->{ minOccurs } = 1;
 					}
+					# 0 is the default minOccurs for <all>
 					elsif ( $order eq 'all' )
 					{
 						$p->{ minOccurs } = 0;
 					}
+					# ...set it to 0
 					else
 					{
 						$p->{ minOccurs } = 0;
@@ -734,32 +703,49 @@ sub encode
 				if (   ( !defined( $p->{ maxOccurs } ) )
 					|| ( $p->{ maxOccurs } eq "" ) )
 				{
+					# 1 is the default maxOccurs for <sequence>
 					if    ( $order eq 'sequence' ) { $p->{ maxOccurs } = 1 }
+					# 1 is the default maxOccurs for <all>
 					elsif ( $order eq 'all' )      { $p->{ maxOccurs } = 1 }
 					else { $p->{ maxOccurs } = undef }
 				} ## end if ( ( !defined( $p->{...
+				
+				# undef means we don't check it...
 				$p->{ maxOccurs } = undef
 				  if ( defined( $p->{ maxOccurs } )
 					&& $p->{ maxOccurs } eq 'unbounded' );
 			} ## end if ( $self->{ _WSDL }->...
 
 			# check for ocurrence ?
-			# acceptable number of value ?
-			if (
-				( !$self->{ _WSDL }->{ checkoccurs } )
-				|| (   ( $p->{ minOccurs } <= $count )
-					|| ( $p->{ nillable } eq "true" ) )
-				&& (   ( !defined( $p->{ maxOccurs } ) )
-					|| ( $count <= $p->{ maxOccurs } ) )
-			  )
+			if ( $self->{ _WSDL }->{ checkoccurs } )
 			{
-
+				CHECK:
+				{ 
+					# may be empty and is...
+					last CHECK if ($count == 0 and $p->{ nillable } eq 'true');
+					
+					# above lower bound 
+					if ( $p->{ minOccurs } <= $count )
+					{
+						# no upper bound
+						last CHECK if (not defined ($p->{ maxOccurs }));
+					
+						last CHECK if ($count <= $p->{ maxOccurs });
+					} 
+					no warnings;
+					die "illegal number of elements ($count, min: "
+				  		. $p->{ minOccurs }
+				 		 . ", max: "
+				  		. $p->{ maxOccurs }
+				  		. ") for element '$p->{ name }' (may be sub-element) ";
+			  	};
+			}
+			
 				# not nillable
 				# empty value
-				( !$p->{ nillable } )
-				  && ( ( !( exists $data->{ $p->{ name } } ) )
-					|| ( !( defined $data->{ $p->{ name } } ) ) )
-				  && do
+				if ( not $p->{ nillable } and (
+				   ( !( exists $data->{ $p->{ name } } ) )
+					|| ( not defined $data->{ $p->{ name } } ) ) )
 				{
 					return ();
 				};
@@ -773,16 +759,6 @@ sub encode
 				$result->type( $type ) if ( $self->autotype );
 				$result->attr( { xmlns => $p->{ xmlns } } ) if $p->{ xmlns };
 				return ( $result->value( $data->{ $p->{ name } } ) );
-			} ## end if ( ( !$self->{ _WSDL...
-			else
-			{
-				no warnings;
-				die "illegal number of elements ($count, min: "
-				  . $p->{ minOccurs }
-				  . ", max: ."
-				  . $p->{ maxOccurs }
-				  . ") for element '$p->{ name }' (may be sub-element) ";
-			} ## end else [ if ( ( !$self->{ _WSDL...
 
 		} ## end if ( $p->{ type } =~ m/^$typeNS/...
 		else
@@ -1004,17 +980,35 @@ __END__
 
 =head1 NAME
 
-SOAP::WSDL - SOAP with WSDL support
+SOAP::WSDL
 
 =head1 SYNOPSIS
 
  use SOAP::WSDL;
-
+ 
  my $soap = SOAP::WSDL->new( wsdl => 'http://server.com/ws.wsdl' );
  $soap->wsdlinit();
  $soap->servicename( 'myservice' );
  $soap->portname( 'myport' );
-
+ 
+ my $som = $soap->call( 'method' =>  (
+                   name => 'value' ,
+                   name => 'value' ) );
+ 
+ # or pass servicename and portname to wsdlinit
+ $soap->wsdlinit(
+    servicename => 'myservice',
+    portname => 'myport',
+ );
+ my $som = $soap->call( 'method' =>  (
+                   name => 'value' ,
+                   name => 'value' ) );
+ 
+ # or let even find SOAP::WSDL the correct port and servicename for your
+ # URL (may fail - there may be more than one service defined for a URL...)
+ $soap->wsdlinit(
+   url => 'http://server.com/'
+ );
  my $som = $soap->call( 'method' =>  (
                    name => 'value' ,
                    name => 'value' ) );
@@ -1022,55 +1016,55 @@ SOAP::WSDL - SOAP with WSDL support
 
 =head1 DESCRIPTION
 
-This is mainly a bugfix update to 1.22, which was a small update to 1.21
-- autodetection of servicename and portname have been
-are re-introduced, so users of 1.20 have no need to change their scripts.
+There are new ways for initializing - see wsdlinit in L<Methods|Methods>.
 
-1.21 was a new version of SOAP::WSDL, mainly based on the work of
-Giovanni S Fois.
+The calling interface has changed between 1.20 and 1.21, so existing code 
+using this module needs to be changed, too.
 
-SOAP::WSDL provides WSDL support for SOAP::Lite.
-It is built as a add-on to SOAP::Lite, and will sit on top of it,
-forwarding all the actual request-response to SOAP::Lite - somewhat
+See L<CAVEATS|CAVEATS> below.
+
+SOAP::WSDL provides decent WSDL support for SOAP::Lite. 
+It is built as a add-on to SOAP::Lite, and will sit on top of it, 
+forwarding all the actual request-response to SOAP::Lite - somewhat 
 like a pre-processor.
 
 WSDL support means that you don't have to deal with those bitchy namespaces
 some web services set on each and every method call parameter.
 
-It also means an end to that nasty
+It also means an end to that nasty 
 
  SOAP::Data->name( 'Name' )->value(
     SOAP::Data->name( 'Sub-Name')->value( 'Subvalue' )
  );
 
-encoding of complex data. (Another solution for this problem is just iterating
-recursively over your data. But that doesn't work if you need more information
+encoding of complex data. (Another solution for this problem is just iterating 
+recursively over your data. But that doesn't work if you need more information 
 [e.g. namespaces etc] than just your data to encode your parameters).
 
-And it means that you can use ordinary hashes for your parameters - the
-encording order will be derived from the WSDL and not from your (unordered)
-data, thus the problem of unordered  perl-hashes and WSDL E<gt>sequenceE<lt>
-definitions is solved, too. (Another solution for the ordering problem is
-tying your hash to a class that provides ordered hashes - Tie::IxHash is
+And it means that you can use ordinary hashes for your parameters - the 
+encording order will be derived from the WSDL and not from your (unordered) 
+data, thus the problem of unordered  perl-hashes and WSDL E<gt>sequenceE<lt> 
+definitions is solved, too. (Another solution for the ordering problem is 
+tying your hash to a class that provides ordered hashes - Tie::IxHash is 
 one of them).
 
 =head2 Why should I use this ?
 
-SOAP::WSDL eases life for webservice developers who have to communicate with
-lots of different web services using a reasonable big number of method calls.
+SOAP::WSDL eases life for webservice developers who have to communicate with 
+lots of different web services using a reasonable big number of method calls. 
 
-If you just want to call a hand full of methods of one web service, take
-SOAP::Lite's stubmaker and modify the stuff by hand if it doesn't work right
-from the start. The overhead SOAP::WSDL imposes on your calls is not worth
+If you just want to call a hand full of methods of one web service, take 
+SOAP::Lite's stubmaker and modify the stuff by hand if it doesn't work right 
+from the start. The overhead SOAP::WSDL imposes on your calls is not worth 
 the time saving.
 
-If you need to access many web services offering zillions of methods to you,
-this module should be your choice. It automatically encodes your perl data
-structures correctly, based on the service's WSDL description, handling
+If you need to access many web services offering zillions of methods to you, 
+this module should be your choice. It automatically encodes your perl data 
+structures correctly, based on the service's WSDL description, handling 
 even those complex types SOAP::Lite can't cope with.
 
-SOAP::WSDL also eliminates most perl E<lt>-E<gt> .NET interoperability
-problems by qualifying method and parameters as they are specified in the
+SOAP::WSDL also eliminates most perl E<lt>-E<gt> .NET interoperability 
+problems by qualifying method and parameters as they are specified in the 
 WSDL definition.
 
 =head1 USAGE
@@ -1087,194 +1081,196 @@ WSDL definition.
  # useful for testing
  my $soap=SOAP::WSDL->new( wsdl => 'http://server.com/ws.wsdl',
  		no_dispatch => 1 );
-
+ 
  # never forget to call this !in order to start the parsing procedure
  $soap->wsdlinit();
 
  # with caching enabled:don't forget the cache directory
  $soap->wsdlinit( caching => 1, cache_directory =>"/tmp/cachedir");
 
- # optional, set to a false value if you don't want your
+ # optional, set to a false value if you don't want your 
  # soap message elements to be typed
  $soap->autotype(0);
 
- # you may specify a service and port - if not, SOAP::WSDL will search for
- # the first one appearing in the WSDL
+
+ # before calling you *must* specify which service use and which port call
+ # you must call it after wsdlinit
+ # you can call it multiple times, one for each call
  $soap->servicename('myservice');
  $soap->portname('myport');
-
- my $som=$soap->call( 'method' ,
+   
+ my $som=$soap->call( 'method' ,  
                    name => 'value' ,
                    name => 'value'  );
-
+ 
 
  # with the method overloaded (got it from the standard)
  my $som=$soap->call( 'method' ,
                    wsdl_input_name => unique_input_message_name
                    name => 'value' ,
                    name => 'value'  );
-
+ 
   # with headers (see the SOAP documentation)
 
- #first define your headers
- @header = (SOAP::Header->name("FirstHeader")->value("FirstValue"),
-    SOAP::Header->name("SecontHeader")->value("SecondValue"));
-
+    #first define your headers
+    @header = (SOAP::Header->name("FirstHeader")->value("FirstValue"),
+	       SOAP::Header->name("SecontHeader")->value("SecondValue"));
+    
  #and then do the call. please note the backslash
  my $som=$soap->call( 'method' ,
                    name => 'value' ,
                    name => 'value' ,
-                   "soap_headers" => \@header);
+                   "soap_headers",\@header);
 
 
-=head1 How it works
+=head1 How it works 
 
-SOAP::WSDL takes the wsdl file specified and looks up the service and the
-specified port.
-
-On calling a SOAP method, it looks up the message encoding and wraps all the
+SOAP::WSDL takes the wsdl file specified and looks up the service and the specified port.
+On calling a SOAP method, it looks up the message encoding and wraps all the 
 stuff around your data accordingly.
 
-Most pre-processing is done in I<wsdlinit>, the rest is done in I<call>, which
+Most pre-processing is done in I<wsdlinit>, the rest is done in I<call>, which 
 overrides the same method from SOAP::Lite.
 
 =head2 wsdlinit
 
-SOAP::WSDL loads the wsdl file specified by the wsdl parameter / call using
-SOAP::Lite's schema method. It sets up a XPath object of that wsdl file, and
+SOAP::WSDL loads the wsdl file specified by the wsdl parameter / call using 
+SOAP::Lite's schema method. It sets up a XPath object of that wsdl file, and 
 subsequently queries it for namespaces, service, and port elements.
 
-SOAP::WSDL automatically uses the first service and port found in the WSDL.
+SOAP::WSDL uses the service and the port specified by the calling script via 
+the servicename/portname or the url parameter.
+ 
+If you want to chose different ones, you can specify the service by calling
 
-If you want to chose a different one, you can specify the service by calling
-
- $soap->servicename('ServiceToUse');
- $soap->portname('PortToUse');
+$soap->servicename('ServiceToUse');
+$soap->portname('PortToUse');
 
 =head2 call
 
-The call method examines the wsdl file to find out how to encode the SOAP
-message for your method. Lookups are done in real-time using XPath, so this
-incorporates a small delay to your calls (see
-L</Memory consumption and performance> below.
+The call method examines the wsdl file to find out how to encode the SOAP 
+message for your method. Lookups are done in real-time using XPath, so this 
+incorporates a small delay to your calls (see L</Memory consumption and performance> 
+below.
 
-The SOAP message will include the types for each element, unless you have
-set autotype to a false value by calling
+The SOAP message will include the types for each element, unless you have 
+set autotype to a false value by calling 
 
  $soap->autotype(0);
 
-After wrapping your call into what is appropriate, SOAP::WSDL uses the
-I<call()> method from SOAP::Lite to dispatch your call.
+After wrapping your call into what is appropriate, SOAP::WSDL uses the I<call()> 
+method from SOAP::Lite to dispatch your call.
 
-call takes the method name as first argument, and the parameters passed to
-that method as following arguments.
+call takes the method name as first argument, and the parameters passed to that 
+method as following arguments.
 
 B<Example:>
 
- $som=$soap->call( "SomeMethod" , "test" => "testvalue" );
-
+ $som=$soap->call( "SomeMethod" => "test" => "testvalue" );
+   
  $som=$soap->call( "SomeMethod" => %args );
 
 =head1 Caching
 
-SOAP::WSDL uses a two-stage caching mechanism to achieve best performance.
+SOAP::WSDL uses a two-stage caching mechanism to achieve best performance. 
 
-First, there's a pretty simple caching mechanisms for storing XPath query
-results.
+First, there's a pretty simple caching mechanisms for storing XPath query results.
+They are just stored in a hash with the XPath path as key (until recently, only 
+results of "find" or "findnodes" are cached). I did not use the obvious 
+L<Cache|Cache> or L<Cache::Cache|Cache::Cache>  module here, because these 
+use L<Storable|Storable> to store complex objects and thus incorporate a performance 
+loss heavier than using no cache at all.
+Second, the XPath object and the XPath results cache are be stored on disk using 
+the L<Cache::FileCache|Cache::FileCache> implementation. 
 
-They are just stored in a hash with the XPath path as key (until recently,
-only results of "find" or "findnodes" are cached). I did not use the obvious
-L<Cache|Cache> or L<Cache::Cache|Cache::Cache>  module here, because these
-use L<Storable|Storable> to store complex objects and thus incorporate a
-performance loss heavier than using no cache at all.
-
-Second, the XPath object and the XPath results cache are be stored on disk
-using the L<Cache::FileCache|Cache::FileCache> implementation.
-
-A filesystem cache is only used if you
+A filesystem cache is only used if you 
 
  1) enable caching
- 2) set wsdl_cache_directory
+ 2) set wsdl_cache_directory 
 
 The cache directory must be, of course, read- and writeable.
 
-XPath result caching doubles performance, but increases memory consumption
-- if you lack of memory, you should not enable caching (disabled by default).
+XPath result caching doubles performance, but increases memory consumption - if you lack of 
+memory, you should not enable caching (disabled by default).
 
-Filesystem caching triples performance for wsdlinit and doubles performance
-for the first method call.
+Filesystem caching triples performance for wsdlinit and doubles performance for the first 
+method call.
 
-The file system cache is written to disk when the SOAP::WSDL object is
-destroyed.
+The file system cache is written to disk when the SOAP::WSDL object is destroyed. 
+It may be written to disk any time by calling the L</wsdl_cache_store> method
 
-It may be written to disk any time by calling the L</wsdl_cache_store> method.
-
-Using both filesystem and in-memory caching is recommended for best
-performance and smallest startup costs.
+Using both filesystem and in-memory caching is recommended for best performance and 
+smallest startup costs.
 
 =head2 Sharing cache between applications
 
-Sharing a file system cache among applications accessing the same web
-service is generally possible, but may under some circumstances reduce
-performance, and under some special circumstances even lead to errors.
+Sharing a file system cache among applications accessing the same web service 
+is generally possible, but may under some circumstances reduce performance, 
+and under some special circumstances even lead to errors.
+
 This is due to the cache key algorithm used.
 
-SOAP::WSDL uses the WSDL's URL to store the XML::XPath object of the
-wsdl file. If you're using more than one WSDL definition on the same URL,
-this may lead to errors when two or more applications using SOAP::WSDL
-share a file system cache.
+SOAP::WSDL uses the SOAP endpoint URL to store the XML::XPath object of the 
+wsdl file.
+In the rare case of a web service listening on one particular endpoint (URL) 
+but using more than one WSDL definition, this may lead to errors when 
+two or more applications using SOAP::WSDL share a file system cache.
 
-SOAP::WSDL stores the XPath results in-memory-cache in the filesystem cache,
-using the URL wsdl file with C<_cache> appended. Two applications sharing the
-file system cache and accessing different methods of one web service could
-overwrite each others in-memory-caches when dumping the XPath results to
-disk, resulting in a slight performance drawback (even though this only
-happens in the rare case of one app being started before the other one has
-had a chance to write its cache to disk).
+SOAP::WSDL stores the XPath results in-memory-cache in the filesystem cache, 
+using the key of the wsdl file with C<_cache> appended. Two applications 
+sharing the file system cache and accessing different methods of one web 
+service could overwrite each others in-memory-caches when dumping the XPath 
+results to disk, resulting in a slight performance drawback (even though this 
+only happens in the rare case of one app being started before 
+the other one has had a chance to write its cache to disk).
 
 =head2 Controlling the file system cache
 
-If you want full controll over the file system cache, you can use wsdl_init_cash to
-initialize it. wsdl_init_cash will take the same parameters as Cache::FileCache->new().
+If you want full controll over the file system cache, you can use 
+wsdl_init_cash to initialize it. wsdl_init_cash will take the same parameters 
+as Cache::FileCache->new().
+
 See L<Cache::Cache> and L<Cache::FileCache> for details.
 
 =head2 Notes
 
-If you plan to write your own caching implementation, you should consider the following:
+If you plan to write your own caching implementation, you should consider 
+the following:
 
-The XPath results cache must not survive the XPath object SOAP::WSDL uses to
-store the WSDL file in (this could cause memory holes - see
-L<XML::XPath|XML::XPath> for details).
-This never happens during normal usage - but note that you have been warned
+The XPath results cache must not survive the XPath object SOAP::WSDL uses to 
+store the WSDL file in (this could cause memory holes - see L<XPath|XPath> 
+for details).
+
+This never happens during normal usage - but note that you have been warned 
 before trying to store and re-read SOAP::WSDL's internal cache.
 
 =head1 Methods
 
 =head2 Frequently used methods
 
-=head3 wsdl
+=item wsdl
 
  $soap->wsdl('http://my.web.service.com/wsdl');
 
-Use this to specify the WSDL file to use. Must be a valid (and accessible !)
+Use this to specify the WSDL file to use. Must be a valid (and accessible !) 
 url.
 
 You must call this before calling L</wsdlinit>.
 
-For time saving's sake, this should be a local file - you never know how much
+For time saving's sake, this should be a local file - you never know how much 
 time your WebService needs for delivering a wsdl file.
 
 =head2 wsdlinit
 
- $soap->wsdlinit( caching => 1,
+ $soap->wsdlinit( caching => 1, 
  	cache_directory => '/tmp/cache' );
 
 Initializes the WSDL document for usage.
 
-wsdlinit will die if it can't set up the WSDL file properly, so you might
+wsdlinit will die if it can't set up the WSDL file properly, so you might 
 want to eval{} it.
 
-On death, $@ will (hopefully) contain some error message like
+On death, $@ will (hopefully) contain some error message like 
 
  Error processing WSDL: no <definitions> element found
 
@@ -1294,16 +1290,12 @@ The cache directory to use for FS caching
 
 =item * url
 
-URL to derive port and service name from. If url is given, wsdlinit will try
+URL to derive port and service name from. If url is given, wsdlinit will try 
 to find a matching service and port in the WSDL definition.
 
 =item * servicename
 
 like setting the servicename directly. See <servicename|servicename> below.
-
-=item * portname
-
-like setting the servicename directly. See <portname|portname> below.
 
 =back
 
@@ -1313,9 +1305,9 @@ like setting the servicename directly. See <portname|portname> below.
 
 See above.
 
-call will die if it can't find required elements in the WSDL file or if your data
-doesn't meet the WSDL definition's requirements, so you might want to eval{} it.
-On death, $@ will (hopefully) contain some error message like
+call will die if it can't find required elements in the WSDL file or if your data 
+doesn't meet the WSDL definition's requirements, so you might want to eval{} it. 
+On death, $@ will (hopefully) contain some error message like 
 
  Error processing WSDL: no <definitions> element found
 
@@ -1328,8 +1320,8 @@ to give you a hint about what went wrong.
  $soap->servicename('Service1');
 
 Use this to specify a service by name.
-Your wsdl contains definitions for one or more services - hou have to tell
-SOAP::WSDL which one to use.
+Your wsdl contains definitions for one or more services - hou have to tell 
+SOAP::WSDL which one to use. 
 
 You can call it before each method call.
 
@@ -1339,32 +1331,32 @@ You can call it before each method call.
 
 Your service can have one or many ports attached to it.
 Each port has some operation defined in it trough a binding.
-You have to tell which port of your service should be used for the
+You have to tell which port of your service should be used for the 
 method you are calling.
 
 You can call it before each method call.
 
 =head3 wsdl_checkoccurs
 
-Enables/disables checks for correct number of
+Enables/disables checks for correct number of 
 occurences of elements in WSDL types. The default is 1 (on).
 
-Turning off occurance number checking results in a sligt performance gain.
+Turning off occurance number checking results in a sligt performance gain. 
 
-To turn off checking for correct number of elements, call
+To turn off checking for correct number of elements, call 
 
  $soap->wsdl_checkoccurs(0);
 
 =head3 wsdl_encoding
 
-The encoding style for the SOAP call.
+The encoding style for the SOAP call. 
 
 =head3 cache_directory
 
 enables filesystem caching (in the directory specified). The directory given must be
 existant, read- and writeable.
 
-=head3 wsdl_cache_directory
+=head3 wsdl_cache_directory 
 
  $soap->wsdl_cache_directory( '/tmp/cache' );
 
@@ -1373,103 +1365,104 @@ Passing the I<cache_directory> parameter to wsdlinit has the same effect.
 
 =head2 Seldomly used methods
 
-The following methods are mainly used internally in SOAP::WSDL, but may
-be useful for debugging and some special purposes (like forcing a cache flush
+The following methods are mainly used internally in SOAP::WSDL, but may 
+be useful for debugging and some special purposes (like forcing a cache flush 
 on disk or custom cache initializations).
 
 =head3 no_dispatch
 
-Gets/Sets the I<no_dispatch> flag. If no_dispatch is set to true value, SOAP::WSDL
-will not dispatch your calls to a remote server but return the SOAP::SOM object
+Gets/Sets the I<no_dispatch> flag. If no_dispatch is set to true value, SOAP::WSDL 
+will not dispatch your calls to a remote server but return the SOAP::SOM object 
 containing the call instead.
 
 =head3 encode
 
 	# this is how call uses encode
 	# $xpath contains a XPath object of the wsdl document
-
+	 
 	my $def=$xpath->find("/definitions")->shift;
 	my $parts=$def->find("//message[\@name='$messageName']/part");
-
+  
 	my @param=();
-
+  
 	while (my $part=$parts->shift) {
-		my $enc=$self->encode($part, \%data);
+		my $enc=$self->encode($part, \%data); 
 		push @param, $enc if defined $enc;
 	}
 
-Does the actual encoding. Expects a XPath::NodeSet as first, a hashref containing
-your data as second parameter. The XPath nodeset must be a node specifying a WSDL
+Does the actual encoding. Expects a XPath::NodeSet as first, a hashref containing 
+your data as second parameter. The XPath nodeset must be a node specifying a WSDL 
 message part.
 
-You won't need to call I<encode> unless you plan to
+You won't need to call I<encode> unless you plan to 
 override I<call> or want to write a new SOAP server implementation.
 
 =head3 * wsdl_cache_init
 
-Initialize the WSDL file cache. Normally called from wsdlinit. For custom
-cache initailization, you may pass the same parameters as to
+Initialize the WSDL file cache. Normally called from wsdlinit. For custom 
+cache initailization, you may pass the same parameters as to 
 Cache::FileCache->new().
 
 =head3 wsdl_cache_store
 
  $soap->wsdl_cache_store();
 
-Stores the content of the in-memory-cache (and the XML::XPath representation of
+Stores the content of the in-memory-cache (and the XML::XPath representation of 
 the WSDL file) to disk. This will not have any effect if cache_directory is not set.
+
 
 =head1 Notes
 
 =head2 Why another SOAP module ?
 
-SOAP::Lite provides only some rudimentary WSDL support. This lack is not just
-something unimplemented, but an offspring of the SOAP::Schema
-class design. SOAP::Schema uses some complicated format to store XML Schema information
-(mostly a big hashref, containing arrays of SOAP::Data and a SOAP::Parser-derived
-object). This data structure makes it pretty hard to improve SOAP::Lite's
-WSDL support.
+SOAP::Lite provides only some rudimentary WSDL support. This lack is not just 
+something unimplemented, but an offspring of the SOAP::Schema 
+class design. SOAP::Schema uses some complicated format to store XML Schema information 
+(mostly a big hashref, containing arrays of SOAP::Data and a SOAP::Parser-derived 
+object). This data structure makes it pretty hard to improve SOAP::Lite's 
+WSDL support. 
 
-SOAP::WSDL uses XPath for processing WSDL. XPath is a query language standard for
-XML, and usually a good choice for XML transformations or XML template processing
-(and what else is WSDL-based en-/decoding ?). Besides, there's an excellent XPath
-module (L<XML::XPath>) available from CPAN, and as SOAP::Lite uses XPath to
+SOAP::WSDL uses XPath for processing WSDL. XPath is a query language standard for 
+XML, and usually a good choice for XML transformations or XML template processing 
+(and what else is WSDL-based en-/decoding ?). Besides, there's an excellent XPath 
+module (L<XML::XPath>) available from CPAN, and as SOAP::Lite uses XPath to 
 access elements in SOAP::SOM objects, this seems like a natural choice.
 
-Fiddling the kind of WSDL support implemented here into SOAP::Lite would mean
+Fiddling the kind of WSDL support implemented here into SOAP::Lite would mean 
 a larger set of changes, so I decided to build something to use as add-on.
 
 =head2 Memory consumption and performance
 
-SOAP::WSDL uses around twice the memory (or even more) SOAP::Lite uses for the
+SOAP::WSDL uses around twice the memory (or even more) SOAP::Lite uses for the 
 same task (but remember: SOAP::WSDL does things for you SOAP::Lite can't).
 It imposes a slight delay for initialization, and for every SOAP method call, too.
 
 On my 1.4 GHz Pentium mobile notebook, the init delay with a simple
-WSDL file (containing just one operation and some complex types and elements)
-was around 50 ms, the delay for the first call around 25 ms and for subsequent
-calls to the same method around 7 ms without and around 6 ms with XPath result
-caching (on caching, see above). XML::XPath must do some caching, too -
-don't know where else the speedup should come from.
+WSDL file (containing just one operation and some complex types and elements) 
+was around 50 ms, the delay for the first call around 25 ms and for subsequent 
+calls to the same method around 7 ms without and around 6 ms with XPath result caching 
+(on caching, see above). XML::XPath must do some caching, too - don't know where 
+else the speedup should come from.
 
-Calling a method of a more complex WSDL file (defining around 10 methods and
-numerous complex types on around 500 lines of XML), the delay for the first
-call was around 100 ms for the first and 70 ms for subsequent method calls.
-wsdlinit took around 150 ms to process the stuff. With XPath result caching enabled,
+Calling a method of a more complex WSDL file (defining around 10 methods and 
+numerous complex types on around 500 lines of XML), the delay for the first 
+call was around 100 ms for the first and 70 ms for subsequent method calls. 
+wsdlinit took around 150 ms to process the stuff. With XPath result caching enabled, 
 all but the first call take around 35 ms.
 
-Using SOAP::WSDL on an idiotically complex WSDL file with just one method, but around
-100 parameters for that method, mostly made up by extensions of complex types
-(the heaviest XPath operation) takes around 1.2 s for the first call (0.9 with caching)
+Using SOAP::WSDL on an idiotically complex WSDL file with just one method, but around 
+100 parameters for that method, mostly made up by extensions of complex types 
+(the heaviest XPath operation) takes around 1.2 s for the first call (0.9 with caching) 
 and around 830 ms for subsequent calls (arount 570 ms with caching).
 
-The actual performance loss compared to SOAP::Lite should be around 10 % less
-than the values above - SOAP::Lite encodes the data for you, too (or you do
-it yourself) - and encoding in SOAP::WSDL is already covered by the pre-call
+The actual performance loss compared to SOAP::Lite should be around 10 % less 
+than the values above - SOAP::Lite encodes the data for you, too (or you do 
+it yourself) - and encoding in SOAP::WSDL is already covered by the pre-call 
 delay time mentioned above.
 
-If you have lots of WebService methods and call each of them from time to time,
-this delay should not affect your perfomance too much. If you have just one method
-and keep calling it ever & ever again, you should cosider hardcoding your data
+If you have lots of WebService methods and call each of them from time to time, 
+this delay should not affect your perfomance too much. If you have just one method 
+and keep calling it ever & ever again, you should cosider hardcoding your data 
 encoding (maybe even with hardcoded XML templates - yes, this may be a BIG speedup).
 
 
@@ -1477,34 +1470,34 @@ encoding (maybe even with hardcoded XML templates - yes, this may be a BIG speed
 
 =head2 API change between 1.20 and 1.21
 
-Giovanni S. Fois has implemented a new calling convention, which allows to specify the
+Giovanni S. Fois has implemented a new calling convention, which allows to specify the 
 port type used by SOAP::WSDL.
 
-While this allows greater flexibillity (and helps around the still missing bindings support),
+While this allows greater flexibillity (and helps around the still missing bindings support), 
 the following lines have to be added to existing code:
 
  $soap->servicename( $servicename);
  $soap->portname( $porttype );
 
-Both lines must appear after calling
+Both lines must appear after calling 
 
  $soap->wsdlinit();
 
 =head2 API change between 1.13 and 1.14
 
 The SOAP::WSDL API changed significantly between versions 1.13 and 1.14.
-From 1.14 on, B<call> expects the following arguments: method name as scalar first,
+From 1.14 on, B<call> expects the following arguments: method name as scalar first, 
 method parameters as hash following.
 
-The B<call> no longer recognizes the I<dispatch> option - to get the same behaviour,
-pass C<no_dispatch => 1> to I<new> or call
+The B<call> no longer recognizes the I<dispatch> option - to get the same behaviour, 
+pass C<no_dispatch => 1> to I<new> or call 
 
  $soap->no_dispatch(1);
 
 =head2 Unstable interface
 
 This is alpha software - everything may (and most things will) change.
-But you don't have to be afraid too much - at least the I<call> synopsis should
+But you don't have to be afraid too much - at least the I<call> synopsis should 
 be stable from 1.14 on, and that is the part you'll use most frequently.
 
 =head1 BUGS
@@ -1513,16 +1506,16 @@ be stable from 1.14 on, and that is the part you'll use most frequently.
 
 =item * Arrays of complex types are not checked for the correct number of elements
 
-Arrays of complex types are just encoded and not checked for correctness etc.
-I don't know if I do this right yet, but output looks good. However, they are not
-checked for the correct number of element (does the SOAP spec say how to
-specify this ?).
+Arrays of complex types are just encoded and not checked for correctness etc. 
+I don't know if I do this right yet, but output looks good. However, they are not 
+checked for the correct number of element (does the SOAP spec say how to 
+specify this ?). 
 
 =item * +trace (and other SOAP::Lite flags) don't work
 
-This may be an issue with older versions of the base module (before 2.?), or with
+This may be an issue with older versions of the base module (before 2.?), or with 
 activestate's activeperl, which do
-not call the base modules I<import> method with the flags supplied to the parent.
+not call the base modules I<import> method with the flags supplied to the parent. 
 
 There's a simple workaround:
 
@@ -1537,13 +1530,13 @@ But I'm sure there are some serious bugs lurking around somewhere.
 
 =head1 TODO
 
-=over
+=over 
 
 =item Allow use of alternative XPath implementations
 
-XML::XPath is a great module, but it's not a race-winning one.
-XML::LibXML offers a promising-looking XPath interface. SOAP::WSDL should
-support both, defaulting to the faster one, and leaving the final choice
+XML::XPath is a great module, but it's not a race-winning one. 
+XML::LibXML offers a promising-looking XPath interface. SOAP::WSDL should 
+support both, defaulting to the faster one, and leaving the final choice 
 to the user.
 
 =back
@@ -1554,20 +1547,14 @@ See CHANGES file.
 
 =head1 COPYRIGHT
 
-This library is free software, you can distribute / modify it under the same
+This library is free software, you can distribute / modify it under the same 
 terms as perl itself.
 
-=head1 AUTHOR>
+=head1 AUTHORS
 
-Replace whitespace by '@' in E-Mail addresses.
+Replace the whitespace in the e-mail adresses by '@'.
 
  Martin Kutter <martin.kutter fen-net.de>
  Giovanni S. Fois <giovannisfois tiscali.it>
-
-=head1 SVN information
-
- $LastChangedBy: kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/branches/1.21/lib/SOAP/WSDL.pm $
- $Rev: 20 $
 
 =cut

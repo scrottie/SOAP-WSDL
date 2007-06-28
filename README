@@ -1,31 +1,4 @@
-SOAP::WSDL - a WSDL-driven message preprocessor for SOAP::Lite.
+This is a developer release - everything may (and most things will) change.
 
-DESCRIPTION
-
-See "perldoc SOAP::WSDL" (or "perldoc WSDL.pm") for details.
-
-
-PREREQUISITES
-
-SOAP::WSDL requires the following perl modules:
-
-- SOAP::Lite
-- XML::XPath
-
-
-If you want to use file system caching (improves performance), you also 
-need the following packages:
-
-- Cache::Cache
-
-INSTALLING
-
-perl Build.PL
-perl Build
-perl Build test
-perl Build install
-
-LICENSE
-
-This library is free software, you can distribute/modify it under the same 
-terms as perl itself.
+You should not expect the SOAP::WSDL to survive - it will probably be replaced
+by SOAP::WSDL::Client.

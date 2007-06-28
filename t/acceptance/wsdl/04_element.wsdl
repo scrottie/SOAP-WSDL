@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<definitions name="Test" 
+	targetNamespace="Test"
+	xmlns:tns="Test"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+>
+	<types>
+		<xsd:schema targetNamespace="Test">
+			<xsd:element name="testElement1" type="xsd:string" />
+			<xsd:element name="testElement2" type="xsd:int" />
+		</xsd:schema>
+	</types>
+	<message name="testRequest">
+		<part name="testAll" element="tns:testElement1"/>	
+	</message>
+	<message name="testResponse">
+		<part name="testAll" type="tns:testElement1"/>		
+	</message>
+	<portType name="testPort">
+		<operation name="test">
+			<documentation>
+				Test-Methode
+			</documentation>
+			
+			<input message="testRequest"/>
+			<output message="testResponse"/>
+		</operation>
+	</portType>
+
+	<binding type="testPort" name="testBinding">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<soap:operation soapAction="test">
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</soap:operation>
+	</binding>
+	<service name="testService">
+		<port name="testPort" binding="testBinding">
+			<soap:address location="http://127.0.0.1/testPort" />
+		</port>
+	</service>
+</definitions>

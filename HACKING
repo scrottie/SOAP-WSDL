@@ -17,6 +17,8 @@ The (my) current roadmap for SOAP::WSDL is:
 
 1.3: Bindings support
 
+Development of the 1.* tree has stopped - I won't get past 1.2x anymore...
+
 2.*: WSDL -> Perl Class factory with offline WSDL processing
 
 May 2007,
