@@ -225,7 +225,7 @@ use base qw(
 );
 
 [%      FOREACH element = type.get_element %]
-my %[% element.get_name %]_of :ATTR(get:<[% element.get_name %]>);
+my %[% element.get_name %]_of :ATTR(:get<[% element.get_name %]>);
 [%      END %]
 
 __PACKAGE__->_factory(

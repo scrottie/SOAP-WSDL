@@ -1,11 +1,13 @@
 ---
 name: SOAP-WSDL
-version: 2.00_01
+version: 2.00_02
 author:
   - "Replace the whitespace in the e-mail adresses by '@'."
 abstract: SOAP with WSDL support
 license: artistic
 requires:
+  Class::Std: v0.0.8
+  Class::Std::Storable: 0
   SOAP::Lite: 0
   XML::LibXML: 0
   XML::SAX::Base: 0

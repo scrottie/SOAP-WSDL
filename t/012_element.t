@@ -18,12 +18,26 @@ ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
     , 'inherited class';
 
 ok $obj->get_test->isa('SOAP::WSDL::XSD::Typelib::Builtin::string')
-    , 'element isa'; 
+    , 'element isa';
 
 is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><MyTestElement >Test</MyTestElement>'
     . '<MyTestElement2 >Test2</MyTestElement2></MyAtomicComplexTypeElement>'
     , 'stringification';
 
+$obj = MyElement->new({ value => undef});
+ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
+    , 'inherited class';
+
+# is $obj, '<MyElementName xmlns="urn:Test" xsi:nil="true" />', 'nillable stringification';
+
+$obj = MyAtomicComplexTypeElement->new({ test=> 'Test', test2 => [ 'Test2', 'Test3' ]});
+ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
+    , 'inherited class';
+is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><MyTestElement >Test</MyTestElement>'
+    . '<MyTestElement2 >Test2</MyTestElement2>'
+    . '<MyTestElement2 >Test3</MyTestElement2>'
+    . '</MyAtomicComplexTypeElement>'
+    , 'multi value stringification';
 
 
 __END__
