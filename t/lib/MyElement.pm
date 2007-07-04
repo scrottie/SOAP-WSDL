@@ -20,7 +20,7 @@ package MyTestElement;
 use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
-use SOAP::WSDL::XSD::Typelib::Builtin;
+use SOAP::WSDL::XSD::Typelib::Builtin::string;
 use base (
    'SOAP::WSDL::XSD::Typelib::Element',
    'SOAP::WSDL::XSD::Typelib::Builtin::string',
@@ -28,8 +28,9 @@ use base (
 
 sub START {
    my ($self, $ident, $args_of) =@_;
-   $self->__set_name('MyTestElement');
 }
+
+__PACKAGE__->__set_name('MyTestElement');
 
 sub get_xmlns { 'urn:Test' };
 

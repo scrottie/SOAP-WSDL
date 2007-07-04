@@ -29,7 +29,7 @@ __PACKAGE__->_factory(
         detail => \%detail_of,          
     },
     {
-        faultcode => 'SOAP::WSDL::XSD::Typelib::Builtin::qName',
+        faultcode => 'SOAP::WSDL::XSD::Typelib::Builtin::QName',
         faultstring => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
         faultactor => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
         detail => 'SOAP::WSDL::XSD::Typelib::Builtin::anyType',            

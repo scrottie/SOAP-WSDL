@@ -1,13 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More qw/no_plan/; # TODO: change to tests => N;
-use Test::Differences;
-# use Devel::Profiler;
-use Data::Dumper;
+use Test::More tests => 5;
 use lib '../lib';
 use XML::SAX::ParserFactory;
-use Benchmark;
 
 use diagnostics;
 

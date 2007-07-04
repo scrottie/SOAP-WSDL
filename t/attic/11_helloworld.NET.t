@@ -28,19 +28,6 @@ print "Acceptance test against sample output with simple WSDL\n";
 my $data = {
 	name => 'test',
 	givenName => 'test',
-#	test => {
-#		name => 'TESTNAME',
-#		givenName => 'GIVENNAME',
-#	},
-#	test1 => {
-#		name => 'TESTNAME',
-#		givenName => 'GIVENNAME',
-#		extend => 'EXTEND',
-#	},
-#	test2 => { 
-#		name => 'TESTNAME',
-#		givenName => 'GIVENNAME',
-#	}
 };
 
 my $t0 = [gettimeofday];
@@ -53,6 +40,8 @@ $name =~s/\.(t|pl)$//;
 chdir $path;
 
 $path = cwd;
+
+$path =~s{/attic}{}xms;
 
 
 ok( $soap=SOAP::WSDL->new(
@@ -71,9 +60,9 @@ print "WSDL init (".tv_interval ( $t0, [gettimeofday]) ."s)\n" ;
 
 $t0 = [gettimeofday];
 do {
-		my $xml = $soap->serializer->method( $soap->call(sayHello => %{ $data }) );
+		my $xml = $soap->call('sayHello', 'sayHello' => %{ $data });
 	
-		open (FILE, "acceptance/results/11_helloworld.xml")
+		open (FILE, "../acceptance/results/11_helloworld.xml")
 		 || open (FILE, "t/acceptance/results/11_helloworld.xml") || die "can't open acceptance file";
 		my $xml_test=<FILE>;
 		close FILE;
@@ -94,9 +83,9 @@ do {
 
 $t0 = [gettimeofday];
 do {
-		my $xml = $soap->serializer->method( $soap->call(sayHello => %{ $data }) );
+		my $xml = $soap->call(sayHello => %{ $data });
 	
-		open (FILE, "acceptance/results/11_helloworld.xml")
+		open (FILE, "../acceptance/results/11_helloworld.xml")
 		 || open FILE, ("t/acceptance/results/11_helloworld.xml") || die "can't open acceptance file";
 		my $xml_test=<FILE>;
 		close FILE;

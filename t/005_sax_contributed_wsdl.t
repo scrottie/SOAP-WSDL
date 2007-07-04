@@ -2,11 +2,9 @@
 use strict;
 use warnings;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
-use Test::Differences;
 use Data::Dumper;
 use lib '../lib';
 use XML::LibXML;
-use Benchmark;
 
 use diagnostics;
 

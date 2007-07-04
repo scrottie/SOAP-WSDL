@@ -1,6 +1,7 @@
 #!/usr/bin/perl
-use Test::More qw(no_plan);
+use Test::More tests => 9;
 use strict;
+use diagnostics;
 use lib 'lib/';
 use lib '../lib/';
 use lib 't/lib';
@@ -14,16 +15,20 @@ my $obj = MyAtomicComplexTypeElement->new({ test=> 'Test', test2 => 'Test2'});
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
     , 'inherited class';
 
+# print $obj->get_test;
+
 ok $obj->get_test->isa('SOAP::WSDL::XSD::Typelib::Builtin::string')
-    , 'element isa'; 
+    , 'element isa';
 
 is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><MyTestElement >Test</MyTestElement>'
     . '<MyTestElement2 >Test2</MyTestElement2></MyAtomicComplexTypeElement>'
     , 'stringification';
 
-my $soap = SOAP::WSDL::Client->new();
-$soap->proxy('http://bla');
-$soap->no_dispatch(1);
+my $soap = SOAP::WSDL::Client->new( {
+    class_resolver => 'FakeResolver',
+} )
+    ->proxy('http://bla')
+        ->no_dispatch(1);
 
 is $soap->call('Test', $obj), q{<SOAP-ENV:Envelope }
     . q{xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" }
@@ -33,3 +38,23 @@ is $soap->call('Test', $obj), q{<SOAP-ENV:Envelope }
     . q{<MyTestElement2 >Test2</MyTestElement2>}
     . q{</MyAtomicComplexTypeElement></SOAP-ENV:Body></SOAP-ENV:Envelope>}
     , 'SOAP Envelope generation with objects';
+
+my $result = $soap->proxy('http://bla')
+    ->no_dispatch(0)
+        ->call('Test', $obj);
+ok $result->isa('SOAP::WSDL::SOAP::Typelib::Fault11'),
+    'return fault on impossible call';
+ok ! $result, 'fault is false in boolean context';
+
+package FakeResolver;
+
+sub get_class {
+    my %class_list = (
+        'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
+        'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+        'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
+        'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+        'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyType',
+    );
+}
+

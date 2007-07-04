@@ -96,9 +96,11 @@ The slight inconsistency between the these variants is caused by the
 restriction element, which has different meanings for simpleType and
 complexType definitions.
 
-=head1 Bugs and limitations
+=back
 
-=over *
+=head1 BUGS AND LIMITATIONS
+
+=over
 
 =item * Thread safety
 

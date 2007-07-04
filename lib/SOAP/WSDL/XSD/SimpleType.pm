@@ -57,58 +57,59 @@ sub push_enumeration
 	}
 }
 
-sub serialize
-{
-	my $self = shift;
-	my $name = shift;
-	my $value = shift;
-	my $opt = shift;
+sub serialize {
+    my $self = shift;
+    my $name = shift;
+    my $value = shift;
+    my $opt = shift;
     my $ident = ident $self;
-	$self->_check_value( $value );
+    
+    $opt->{ attributes } ||= [];
+    $opt->{ indent } ||= q{};
+    
+    $self->_check_value( $value );
+    
+    return $self->_serialize_single($name, $value , $opt)
+      if ( $flavor_of{ $ident } eq 'restriction'
+        or $flavor_of{ $ident } eq 'union'
+        or $flavor_of{ $ident } eq 'enumeration');
 
-	return $self->_serialize_single($name, $value , $opt)
-		if ( $flavor_of{ $ident } eq 'restriction'
-            or $flavor_of{ $ident } eq 'union'
-            or $flavor_of{ $ident } eq 'enumeration');
-
-	if ($flavor_of{ $ident } eq 'list' )
-	{
-		$value ||= [];
-		$value = [ $value ] if ( ref( $value) ne 'ARRAY' );
-		return $self->_serialize_single($name, join( q{ }, @{ $value } ), $opt);
-	}
+    if ($flavor_of{ $ident } eq 'list' )
+    {
+        $value ||= [];
+        $value = [ $value ] if ( ref( $value) ne 'ARRAY' );
+        return $self->_serialize_single($name, join( q{ }, @{ $value } ), $opt);
+    }
 }
 
-sub _serialize_single
-{
-	my ($self, $name, $value, $opt) = @_;
-	my $xml = '';
-	$xml .= $opt->{ indent } if ($opt->{ readable });	# add indentation
-	$xml .= '<' . $name;
-	if ( $opt->{ autotype })
-	{
-		my $ns = $self->get_targetNamespace();
+sub _serialize_single {
+    my ($self, $name, $value, $opt) = @_;
+    my $xml = '';
+    $xml .= $opt->{ indent } if ($opt->{ readable });	# add indentation
+    $xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
+    if ( $opt->{ autotype }) {
+        my $ns = $self->get_targetNamespace();
         my $prefix = $opt->{ namespace }->{ $ns }
-            || die 'No prefix found for namespace '. $ns;
-        $xml .= ' type="' . $prefix . ':'
-            . $self->get_name() .'"';
-	}
-	$xml .= '>';
-	$xml .= $value;
-	$xml .= '</' . $name . '>' ;
-	$xml .= "\n" if ($opt->{ readable });
-	return $xml;
+           || die 'No prefix found for namespace '. $ns;
+        $xml .= ' type="' . $prefix . ':' . $self->get_name() .'"';
+    }
+    
+    # nillabel ?
+    return $xml .'/>' if not defined $value;
+    
+    $xml .= join q{}, '>' , $value , '</' , $name , '>';
+    $xml .= "\n" if ($opt->{ readable });
+    return $xml;
 }
 
-sub explain
-{
-	my ($self, $opt, $name) = @_;
-	my $perl;
-	$opt->{ indent } ||= "";
-	$perl .= $opt->{ indent } if ($opt->{ readable });
-	$perl .= q{'} . $name . q{' => $someValue };
-	$perl .= "\n" if ($opt->{ readable });
-	return $perl;
+sub explain {
+    my ($self, $opt, $name) = @_;
+    my $perl;
+    $opt->{ indent } ||= "";
+    $perl .= $opt->{ indent } if ($opt->{ readable });
+    $perl .= q{'} . $name . q{' => $someValue };
+    $perl .= "\n" if ($opt->{ readable });
+    return $perl;
 }
 
 sub _check_value {
@@ -173,6 +174,6 @@ union simpleType definitions probalbly serialize wrong
 
 =item * explain may produce erroneous results
 
-=over
+=back
 
 =cut

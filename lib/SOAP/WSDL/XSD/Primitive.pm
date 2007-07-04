@@ -10,8 +10,10 @@ sub serialize
 	my ($self, $name, $value, $opt) = @_;
 	my $xml;
 	$opt->{ indent } ||= "";
+        $opt->{ attributes } ||= [];
+        
 	$xml .= $opt->{ indent } if ($opt->{ readable });
-	$xml .= 	'<' . $name;
+	$xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
 	if ( $opt->{ autotype })
 	{
 		my $ns = $self->get_targetNamespace();

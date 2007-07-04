@@ -1,8 +1,6 @@
-use Test::More qw/no_plan/; # TODO: change to tests => N;
-use Test::Differences;
+use Test::More tests => 11;
 use Data::Dumper;
 use lib '../lib';
-use Benchmark;
 use XML::LibXML;
 
 use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
@@ -59,7 +57,7 @@ $opt->{ readable } = 0;
 is( $schema->find_type( 'myNamespace', 'length3')->serialize(
 	'TestComplex', { size => -13, unit => 'BLA' } ,
 	$opt ),
-	q{<TestComplex type="tns:length3">}
+	q{<TestComplex type="tns:length3" >}
 	. q{<size type="xsd:non-positive-integer">-13</size>}
 	. q{<unit type="xsd:NMTOKEN">BLA</unit></TestComplex>}
 	, "serialize complex type" );
@@ -67,7 +65,7 @@ is( $schema->find_type( 'myNamespace', 'length3')->serialize(
 is( $schema->find_element( 'myNamespace', 'TestElementComplexType')->serialize(
 	undef, { size => -13, unit => 'BLA' } ,
 	$opt ),
-	q{<TestElementComplexType type="tns:length3">}
+	q{<TestElementComplexType type="tns:length3" >}
 	. q{<size type="xsd:non-positive-integer">-13</size>}
 	. q{<unit type="xsd:NMTOKEN">BLA</unit></TestElementComplexType>},
 	"element with complex type"
@@ -77,8 +75,8 @@ is( $schema->find_type( 'myNamespace', 'complex')->serialize(
 	'complexComplex',
 	{ 'length' => {  size => -13, unit => 'BLA' }, 'int' => 1 },
 	$opt ),
-	q{<complexComplex type="tns:complex">}
-	. q{<length type="tns:length3">}
+	q{<complexComplex type="tns:complex" >}
+	. q{<length type="tns:length3" >}
 	. q{<size type="xsd:non-positive-integer">-13</size>}
 	. q{<unit type="xsd:NMTOKEN">BLA</unit></length>}
 	. q{<int type="xsd:int">1</int></complexComplex>},
@@ -86,10 +84,10 @@ is( $schema->find_type( 'myNamespace', 'complex')->serialize(
 );
 
 is( $wsdl->find_message('myNamespace', 'testRequest')->first_part()->serialize(
-	undef, { length => {  size => -13, unit => 'BLA' } , int => 3 },
+	undef, { test => { length => {  size => -13, unit => 'BLA' } , int => 3 } },
 	$opt ),
-	q{<test type="tns:complex">}
-	. q{<length type="tns:length3">}
+	q{<test type="tns:complex" >}
+	. q{<length type="tns:length3" >}
 	. q{<size type="xsd:non-positive-integer">-13</size>}
 	. q{<unit type="xsd:NMTOKEN">BLA</unit>}
 	. q{</length><int type="xsd:int">3</int></test>}

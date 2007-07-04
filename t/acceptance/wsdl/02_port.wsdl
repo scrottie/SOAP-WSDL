@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<definitions name="simpleType" 
-	targetNamespace="simpleType"
-	xmlns:tns="simpleType"
+<definitions name="urn:simpleType" 
+	targetNamespace="urn:simpleType"
+	xmlns:tns="urn:simpleType"
 	xmlns:wsd="http://www.w3c.org/2001/XMLSchema"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
@@ -32,8 +32,8 @@
 				Test-Methode
 			</documentation>
 			
-			<input message="testRequest"/>
-			<output message="testResponse"/>
+			<input message="tns:testRequest"/>
+			<output message="tns:testResponse"/>
 		</operation>
 	</portType>
 	<portType name="testPort2">
@@ -42,22 +42,23 @@
 				Test-Methode
 			</documentation>
 			
-			<input message="testRequest"/>
-			<output message="testResponse"/>
+			<input message="tns:testRequest"/>
+			<output message="tns:testResponse"/>
 		</operation>
 	</portType>
-	<portType name="testPort2">
+	<portType name="testPort3">
 		<operation name="test">
 			<documentation>
 				Test-Methode
 			</documentation>
 			
-			<input message="testRequest"/>
-			<output message="testResponse"/>
+			<input message="tns:testRequest"/>
+			<output message="tns:testResponse"/>
 		</operation>
 	</portType>
 
-	<binding type="testPort" name="testBinding">
+	<binding type="tns:testPort" name="testBinding">
+            <operation name="test">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 		<soap:operation soapAction="test">
 			<input>
@@ -67,8 +68,10 @@
 				<soap:body use="literal"/>
 			</output>
 		</soap:operation>
+            </operation>
 	</binding>
-	<binding type="testPort2" name="testBinding2">
+	<binding type="tns:testPort2" name="testBinding2">
+            <operation name="test">        
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 		<soap:operation soapAction="test">
 			<input>
@@ -78,26 +81,28 @@
 				<soap:body use="literal"/>
 			</output>
 		</soap:operation>
+            </operation>
 	</binding>
-	<binding type="testPort3" name="testBinding3">
+	<binding type="tns:testPort3" name="testBinding3">
+            <operation name="test">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<soap:operation soapAction="test">
-			<input>
-				<soap:body use="literal"/>
-			</input>
-			<output>
-				<soap:body use="literal"/>
-			</output>
-		</soap:operation>
+		<soap:operation soapAction="test"/>
+                <input>
+                  <soap:body use="literal"/>
+		</input>
+		<output>
+                  <soap:body use="literal"/>
+		</output>
+            </operation>
 	</binding>
 	<service name="testService">
-		<port name="testPort" binding="testBinding">
+		<port name="testPort" binding="tns:testBinding">
 			<soap:address location="http://127.0.0.1/testPort" />
 		</port>
-		<port name="testPort2" binding="testBinding2">
+		<port name="testPort2" binding="tns:testBinding2">
 			<soap:address location="http://127.0.0.1/testPort2" />
 		</port>
-		<port name="testPort3" binding="testBinding3">
+		<port name="testPort3" binding="tns:testBinding3">
 			<soap:address location="http://127.0.0.1/testPort3" />
 		</port>
 

@@ -1,105 +1,57 @@
-use Test::More tests => 9;
+use Test::More tests => 8;
+use strict;
+use warnings;
 use diagnostics;
-
 use Cwd;
 use File::Basename;
-
 use lib '../lib';
 use lib 'lib';
 use lib 't/lib';
-
-use Test::SOAPMessage;
 
 use_ok(qw/SOAP::WSDL/);
 
 my $xml;
 
-# chdir to my location
-my $cwd = cwd;
-my $path = dirname( $0 );
-my $soap = undef;
 my $name = basename( $0 );
 $name =~s/\.(t|pl)$//;
-chdir $path;
 
-$path = cwd;
+my $path = cwd;
+$path =~s{/attic}{}xms;
 
+my $soap;
 #2
 ok( $soap = SOAP::WSDL->new(
 	wsdl => 'file:///' . $path . '/acceptance/wsdl/' . $name . '.wsdl'
 ), 'Instantiated object' );
 
 #3
+$soap->readable(1);
 ok( $soap->wsdlinit(), 'parsed WSDL' );
 $soap->no_dispatch(1);
 $soap->autotype(0);
+
 #4
-ok ( $xml = $soap->serializer->method( $soap->call('test', 
-						testAll => 1 ) 
-			),
-	'Serialized (simple) call (list)' );
+ok $xml = $soap->call('test', testAll => [ 1, 2 ] ) , 'Serialize list call';
 
-print $xml, "\n";
+# print $xml, "\n";
 
-
-SKIP: {
-	skip 'broken', 1;
-	open (my $fh, $path . '/acceptance/results/' . $name . '.xml')
-		|| skip("Cannot open acceptance results file ". $name . '.xml', 1);
-	my $testXML = <$fh>;
-	close $fh;
-	chomp $testXML;
-	chomp $xml;
+TODO: {
+  local $TODO = "implement minLength/maxLength checks";
+  eval { $soap->call('test', testAll => [ 1, 2, 3 ] ) };
+  ok($@, 'Died on illegal number of elements (too many)');	
 	
-	soap_eq_or_diff( $xml, $testXML, 'Got expected result');
+  eval { $soap->call('test', testAll => [] ) };
+  ok($@, 'Died on illegal number of elements (not enough)');
 }
 
-# 6
-eval {
-		$xml = $soap->serializer->method( 
-			$soap->call('test', 
-				testAll => [ 1, 2 ]
-			) 
-		)
-};
-ok($@, 'Died on illegal number of elements (not enough)');	
-	
-eval {
-		$xml = $soap->serializer->method( 
-			$soap->call('test', 
-				testAll => undef
-			) 
-		)
-};
-ok($@, 'Died on illegal number of elements (not enough)');
-
-SKIP: 
-{
-	skip( "minValue check not implemented ", 1)
-		if ($SOAP::WSDL::MISSING->{ simpleType }->{ restriction }->{ minValue });
-	eval {
-		$xml = $soap->serializer->method( 
-			$soap->call('test', 
-				testAll => 0
-			) 
-		)
-	};
-	ok($@, 'Died on illegal value');
+TODO: {
+    local $TODO = "minValue check not implemented ";
+    eval { $xml = $soap->call('test', testAll => 0 ) };
+    ok($@, 'Died on illegal value');
 }
 
-SKIP: 
-{
-	skip( "maxValue check not implemented ", 1)
-		if ($SOAP::WSDL::MISSING->{ simpleType }->{ restriction }->{ maxValue });
-	eval {
-		$xml = $soap->serializer->method( 
-			$soap->call('test', 
-				testAll => 100
-			) 
-		)
-	};
-	ok($@, 'Died on illegal value');
+TODO: {
+    local $TODO =  "maxValue check not implemented ";
+    eval { $xml = $soap->call('test', testAll => 100 ) };
+    ok($@, 'Died on illegal value');
 }
-
-
-chdir $cwd;

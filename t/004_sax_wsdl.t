@@ -1,13 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More qw/no_plan/; # TODO: change to tests => N;
-use Test::Differences;
-# use Devel::Profiler;
-use Data::Dumper;
+use Test::More tests => 5;
 use lib '../lib';
 use XML::SAX::ParserFactory;
-use Benchmark;
 
 use diagnostics;
 
@@ -22,16 +18,9 @@ my $filter;
 
 ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(), "Object creation");
 
-#my $parser = XML::SAX::ParserFactory->parser(
-#	Handler => $filter
-#);
-
 use XML::LibXML;
 my $parser = XML::LibXML->new();
 $parser->set_handler( $filter );
-
-#timethis 10, sub { $parser->parse_string( xml() ) };
-#__END__
 
 eval { $parser->parse_string( xml() ) };
 if ($@)
@@ -60,7 +49,7 @@ my $opt = {
 	indent => "",
 };
 
-my $data = {
+my $data = { EnqueueMessage => {
 	MMessage => {
 		MRecipientURI => 'anyURI',
 		MSenderAddress => 'a string',
@@ -72,7 +61,10 @@ my $data = {
 			MKeepaliveErrorPolicy => ' ( suppress | report ) ',
 		}
 	}
+}
+
 };
+ 
 
 SKIP: { skip_without_test_xml();
     is_xml( $wsdl->find_message(
@@ -89,7 +81,7 @@ sub skip_without_test_xml {
 
 sub xml_message {
 	return
-q{<EnqueueMessage>
+q{<EnqueueMessage xmlns="http://www.example.org/MessageGateway2/">
 	<MMessage>
 		<MRecipientURI>anyURI</MRecipientURI>
 		<MSenderAddress>a string</MSenderAddress>
@@ -116,10 +108,10 @@ sub xml {
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-      xmlns:tns="http://www.example.org/MessageGateway2/"
       targetNamespace="http://www.example.org/MessageGateway2/">
 
-      <xsd:element name="EnqueueMessage" type="tns:TEnqueueMessage">
+      <xsd:element name="EnqueueMessage" type="tns:TEnqueueMessage"
+        xmlns:tns="http://www.example.org/MessageGateway2/">
         <xsd:annotation>
           <xsd:documentation>Enqueue message request element</xsd:documentation>
         </xsd:annotation>

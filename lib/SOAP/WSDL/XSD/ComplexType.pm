@@ -5,6 +5,7 @@ use Carp;
 use Class::Std::Storable;
 use Scalar::Util qw(blessed);
 use base qw/SOAP::WSDL::Base/;
+use Data::Dumper;
 
 my %annotation_of   :ATTR(:name<annotation> :default<()>);
 my %element_of      :ATTR(:name<element>    :default<()>);
@@ -60,57 +61,63 @@ sub serialize
 {
     my ($self, $name, $value, $opt) = @_;
 
-	$opt->{ indent } ||= q{};
-	my $flavor = $self->get_flavor();
-	my $xml = '';
+    $opt->{ indent } ||= q{};
+    $opt->{ attributes } ||= [];
+    my $flavor = $self->get_flavor();
+    my $xml = ($opt->{ readable }) ? $opt->{ indent } : q{};    # add indentation
 
-	$xml .= $opt->{ indent } if ($opt->{ readable });	# add indentation
-	$xml .= "<$name";
-	if ( $opt->{ autotype })
-	{
-		my $ns = $self->get_targetNamespace();
-		my $prefix = $opt->{ namespace }->{ $ns }
-			|| die 'No prefix found for namespace '. $ns;
-		$xml .= join q{}, " type=\"$prefix:", $self->get_name(), '"'
-		  if ($self->get_name() );
-	}
-	$xml .= '>';
-	$xml .= "\n" if ( $opt->{ readable } );				# add linebreak
-	if ( ($flavor eq "sequence") or ($flavor eq "all") )
-	{
-		$opt->{ indent } .= "\t";
-		for my $element (@{ $self->get_element() })
-		{
-		    # might be list - listify
-		    $value = [ $value ] if not ref $value eq 'ARRAY';
+
+    if ( $opt->{ qualify } ) {
+        $opt->{ attributes } = [ ' xmlns="' . $self->get_targetNamespace .'"' ];
+        delete $opt->{ qualify };
+    }      
+
+
+    $xml .= join q{ } , "<$name" , @{ $opt->{ attributes } };
+    delete $opt->{ attributes };                                        # don't propagate...
+    
+    if ( $opt->{ autotype }) {
+      my $ns = $self->get_targetNamespace();
+      my $prefix = $opt->{ namespace }->{ $ns }
+        || die 'No prefix found for namespace '. $ns;
+      $xml .= join q{}, " type=\"$prefix:", $self->get_name(), '" '
+        if ($self->get_name() );
+    }
+    $xml .= '>';
+    $xml .= "\n" if ( $opt->{ readable } );				# add linebreak
+    if ( ($flavor eq "sequence") or ($flavor eq "all") )
+    {
+        $opt->{ indent } .= "\t";
+        for my $element (@{ $self->get_element() }) {
+            # might be list - listify
+            $value = [ $value ] if not ref $value eq 'ARRAY';
 
             for my $single_value (@{ $value }) {
-    		    my $element_value;
-	       	    if (blessed $single_value) {
-		           my $method = 'get_' . $element->get_name();
-		            $element_value = $single_value->$method();
+    		my $element_value;
+	       	if (blessed $single_value) {
+                    my $method = 'get_' . $element->get_name();
+		    $element_value = $single_value->$method();
                 }
-    		    else {
-                    $element_value = $single_value->{ $element->get_name() }
+    		else {
+                    $element_value = $single_value->{ $element->get_name() };
                 }
-    		    $element_value = [ $element_value ]
-    		      if not ref $element_value eq 'ARRAY';
+    		$element_value = [ $element_value ]
+                    if not ref $element_value eq 'ARRAY';
 
-    		    $xml .= join q{}
-    		      , map { $element->serialize( undef, $_, $opt ) }
-		              @{ $element_value };
-		    }
-		}
-		$opt->{ indent } =~s/\t$//;
-	}
-	else
-	{
-	    die "sorry, we just handle all and sequence types yet...";
-	}
-	$xml .= $opt->{ indent } if ( $opt->{ readable } ); # add indentation
-	$xml .= '</' . $name . '>';
-	$xml .= "\n" if ($opt->{ readable } );				# add linebreak
-	return $xml;
+    		$xml .= join q{}
+                  , map { $element->serialize( undef, $_, $opt ) }
+	              @{ $element_value };
+            }
+        }
+      $opt->{ indent } =~s/\t$//;
+    }
+    else {
+      die "sorry, we just handle all and sequence types yet...";
+    }
+    $xml .= $opt->{ indent } if ( $opt->{ readable } ); # add indentation
+    $xml .= '</' . $name . '>';
+    $xml .= "\n" if ($opt->{ readable } );              # add linebreak
+    return $xml;
 }
 
 sub explain
@@ -249,6 +256,6 @@ Handling of these child elements is not implemented yet
 
 =item * explain may produce erroneous results
 
-=over
+=back
 
 =cut

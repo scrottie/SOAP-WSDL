@@ -7,7 +7,7 @@ use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 
 my %characters_of :ATTR(:default<()>);
-my %class_resolver_of :ATTR(:default<()> :init_attr<class_resolver>);
+my %class_resolver_of :ATTR(:default<()> :name<class_resolver>);
 my %current_of :ATTR(:default<()>);
 my %ignore_of :ATTR(:default<()>);
 my %list_of :ATTR(:default<()>);
@@ -70,7 +70,7 @@ my %data_of :ATTR(:default<()>);
         }
 
         $class_resolver_of{ ident $self } = $args->{ class_resolver }
-            or die "cannot parse message without type resolver";
+            if $args->{ class_resolver };
 
         return bless $self, $class;
     }
@@ -83,17 +83,16 @@ sub start_document {
     $namespace_of{ $ident } = {};
     $ignore_of{ $ident } = [ qw(Envelope Body) ];   # SOAP elements
     $path_of{ $ident } = [];
-    $data_of{ $ident } = undef;
+    $data_of{ $ident } = undef;   
 }
 
 sub start_element {
     # use $_[n] for performance
     my ($ident, $element) = (ident $_[0], $_[1]);
-    my $local_name = $element->{ LocalName };
 
     # ignore top level elements
     if (@{ $ignore_of{ $ident } }
-        && $local_name eq $ignore_of{ $ident }->[0]) {
+        && $element->{ LocalName } eq $ignore_of{ $ident }->[0]) {
         shift @{ $ignore_of{ $ident } };
         return;
     }
@@ -101,7 +100,7 @@ sub start_element {
     # empty characters
     $characters_of{ $ident } = q{};
 
-    push @{ $path_of{ $ident } }, $local_name;              # step down...
+    push @{ $path_of{ $ident } }, $element->{ LocalName };  # step down...
     push @{ $list_of{ $ident } }, $current_of{ $ident };    # remember current
 
     # resolve class of this element
@@ -111,26 +110,26 @@ sub start_element {
             . " via "
             . $class_resolver_of{ $ident };
 
-
     # Check whether we have a primitive - we implement them as classes
-    # TODO replace with UNIVERSAL->isa() or maybe index - could be faster
-    # than m//
-    # TODO
-    if (not $class=~m{^SOAP::WSDL::XSD::Typelib::Builtin}xms) {
-        eval "require $class";  ## no critic qw(ProhibitStringyEval)
-        die $@ if $@;
+    # TODO replace with UNIVERSAL->isa()
+    # match is a bit faster if the string does not match, but WAY slower 
+    # if $class matches...
+    # if (not $class=~m{^SOAP::WSDL::XSD::Typelib::Builtin}xms) {
+        
+    if (index $class, 'SOAP::WSDL::XSD::Typelib::Builtin', 0 < 0) {
+        eval "require $class"   ## no critic qw(ProhibitStringyEval)
+            or die $@;
     }
     # create object
-    my $obj = $class->new({
+    # set current object
+    $current_of{ $ident } = $class->new({
         map { $_->{ Name } => $_->{ Value } }
             values %{ $element->{ Attributes } }
     });
 
-    # set current object
-    $current_of{ $ident } = $obj;
-
     # remember top level element
-    $data_of{ $ident } = $obj if not defined $data_of{ $ident }; 
+    defined $data_of{ $ident } 
+        or ($data_of{ $ident } = $current_of{ $ident }); 
 }
 
 sub characters {
@@ -142,7 +141,8 @@ sub end_element {
     my ($ident, $element) = (ident $_[0], $_[1]);
   
     # This one easily handles ignores for us, too...
-    return if $list_of{ $ident }->[-1] eq '__STOP__';
+    return if not ref $list_of{ $ident }->[-1];
+
     if ( $current_of{ $ident }
         ->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType') ) {
         $current_of{ $ident }->set_value( $characters_of{ $ident } );
@@ -156,7 +156,7 @@ sub end_element {
 
     # step up in path
     pop @{ $path_of{ $ident } };
-
+    
     # step up in object hierarchy...
     $current_of{ $ident } = pop @{ $list_of{ $ident } };
 }

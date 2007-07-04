@@ -1,41 +1,36 @@
-use Test::More tests => 9;
+use Test::More skip_all => 'Not supported yet';
+use strict;
+use warnings;
 use Cwd;
 use File::Basename;
 
 use lib '../lib';
 
-use_ok(qw/SOAP::WSDL/);
+use_ok qw/SOAP::WSDL/;
 
 my $xml;
-
-# chdir to my location
-my $cwd = cwd;
-my $path = dirname( $0 );
 my $soap = undef;
 my $name = basename( $0 );
 $name =~s/\.(t|pl)$//;
-chdir $path;
 
-$path = cwd;
+my $path = cwd;
+
+$path =~s{/attic}{}xms;
 
 #2
-ok( $soap = SOAP::WSDL->new(
+ok $soap = SOAP::WSDL->new(
 	wsdl => 'file:///' . $path . '/acceptance/wsdl/' . $name . '.wsdl'
-), 'Instantiated object' );
+), 'Instantiated object';
 
 #3
-ok( $soap->wsdlinit(), 'parsed WSDL' );
+$soap->readable(1);
+ok $soap->wsdlinit(), 'parsed WSDL';
 $soap->no_dispatch(1);
-$soap->serializer()->namespace('SOAP-ENV');
-$soap->serializer()->encodingspace('SOAP-ENC');
 
 #4
-ok ( $xml = $soap->serializer->method( $soap->call('test', 
-						testAll => 1 ) 
-			),
-	'Serialized (simple) call (list)' );
+ok $xml = $soap->call('test', testAll => 1 ) , 'Serialized call';
 
-# print $xml, "\n";
+print $xml, "\n";
 
 SKIP: {
 	
@@ -81,5 +76,3 @@ eval {
 		)
 };
 ok($@, 'Died on illegal number of elements (not enough)');	
-
-chdir $cwd;

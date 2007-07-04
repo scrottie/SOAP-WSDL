@@ -62,6 +62,7 @@ EOT
         };
 
         $txt .= <<"EOT";
+        
 =over
 
 =item * $operation_name

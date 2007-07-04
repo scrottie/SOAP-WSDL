@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Storable;
 use base qw(SOAP::WSDL::Base);
+use Data::Dumper;
 
 my %simpleType_of   :ATTR(:name<simpleType>  :default<()>);
 my %complexType_of  :ATTR(:name<complexType> :default<()>);
@@ -44,7 +45,7 @@ sub first_complexType {
 # serialize type instead...
 sub serialize
 {
-	my ($self, $name, $value, $opt) = @_;
+    my ($self, $name, $value, $opt) = @_;
     my $type;
     my $typelib = $opt->{ typelib };
     my %ns_map = reverse %{ $opt->{ namespace } };
@@ -60,12 +61,17 @@ sub serialize
 
     $name ||= $self->get_name();
 
+    if ( $opt->{ qualify } ) {
+        $opt->{ attributes } = [ ' xmlns="' . $self->get_targetNamespace .'"' ];
+    }      
+
+
     # set default and fixed - fixed overrides everything,
     # default only empty (undefined) values
-	if (not defined $value)	{
-		$value = $default_of{ ident $self } if $default_of{ ident $self };
-	}
-	$value = $fixed_of{ ident $self } if $fixed_of{ ident $self };
+    if (not defined $value)     {
+      $value = $default_of{ ident $self } if $default_of{ ident $self };
+    }
+    $value = $fixed_of{ ident $self } if $fixed_of{ ident $self };
 
     # TODO check nillable and serialize empty data correctly
 
@@ -76,18 +82,18 @@ sub serialize
     }
 
     # handle direct simpleType and complexType here
-	if ($type = $self->first_simpleType() ) {             # simpleType
-		return $type->serialize( $name, $value, $opt );
-	}
-	elsif ($type = $self->first_complexType() ) {           # complexType
-		return $type->serialize( $name, $value, $opt );
-	}
+    if ($type = $self->first_simpleType() ) {             # simpleType
+        return $type->serialize( $name, $value, $opt );
+    }
+    elsif ($type = $self->first_complexType() ) {           # complexType
+        return $type->serialize( $name, $value, $opt );
+    }
     elsif (my $ref_name = $ref_of{ $ident }) {              # ref
         my ($prefix, $localname) = split /:/ , $ref_name;
         my $ns = $ns_map{ $prefix };
         $type = $typelib->find_type( $ns, $localname );
         die "no type for $prefix:$localname" if (not $type);
-        return $type->serialize( $self->get_name(), $value, $opt );
+        return $type->serialize( $name, $value, $opt );
     }
 
     # lookup type
@@ -98,9 +104,9 @@ sub serialize
 	);
 
     # safety check
-	die "no type for $prefix:$localname $ns_map{$prefix}" if (not $type);
+    die "no type for $prefix:$localname $ns_map{$prefix}" if (not $type);
 
-	return $type->serialize( $self->get_name(), $value, $opt );
+    return $type->serialize( $name, $value, $opt );
 }
 
 sub explain
@@ -333,7 +339,7 @@ Handling of the substitutionGroup attribute is not implemented yet
 
 =item * explain may produce erroneous results
 
-=over
+=back
 
 =head1 COPYING
 

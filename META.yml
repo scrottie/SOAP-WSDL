@@ -1,8 +1,7 @@
 ---
 name: SOAP-WSDL
-version: 2.00_02
+version: 2.00_03
 author:
-  - "Replace the whitespace in the e-mail adresses by '@'."
 abstract: SOAP with WSDL support
 license: artistic
 requires:
@@ -20,7 +19,7 @@ meta-spec:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 1.21
+    version: 2.00_03
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
   SOAP::WSDL::Binding:
@@ -75,97 +74,97 @@ provides:
   SOAP::WSDL::XSD::Typelib::Builtin:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
   SOAP::WSDL::XSD::Typelib::Builtin::ENTITY:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/ENTITY.pm
   SOAP::WSDL::XSD::Typelib::Builtin::ID:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/ID.pm
   SOAP::WSDL::XSD::Typelib::Builtin::IDREF:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/IDREF.pm
   SOAP::WSDL::XSD::Typelib::Builtin::IDREFS:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/IDREFS.pm
   SOAP::WSDL::XSD::Typelib::Builtin::NCName:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NCName.pm
   SOAP::WSDL::XSD::Typelib::Builtin::NMTOKEN:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NMTOKEN.pm
   SOAP::WSDL::XSD::Typelib::Builtin::NMTOKENS:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NMTOKENS.pm
   SOAP::WSDL::XSD::Typelib::Builtin::NOTATION:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NOTATION.pm
   SOAP::WSDL::XSD::Typelib::Builtin::Name:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/Name.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::QName:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/QName.pm
   SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anySimpleType.pm
   SOAP::WSDL::XSD::Typelib::Builtin::anyType:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anyType.pm
   SOAP::WSDL::XSD::Typelib::Builtin::anyURI:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anyURI.pm
   SOAP::WSDL::XSD::Typelib::Builtin::base64Binary:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/base64Binary.pm
   SOAP::WSDL::XSD::Typelib::Builtin::boolean:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/boolean.pm
   SOAP::WSDL::XSD::Typelib::Builtin::byte:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/byte.pm
   SOAP::WSDL::XSD::Typelib::Builtin::date:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/date.pm
   SOAP::WSDL::XSD::Typelib::Builtin::dateTime:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/dateTime.pm
   SOAP::WSDL::XSD::Typelib::Builtin::decimal:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/decimal.pm
   SOAP::WSDL::XSD::Typelib::Builtin::double:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/double.pm
   SOAP::WSDL::XSD::Typelib::Builtin::duration:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/duration.pm
   SOAP::WSDL::XSD::Typelib::Builtin::float:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/float.pm
   SOAP::WSDL::XSD::Typelib::Builtin::gDay:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gDay.pm
   SOAP::WSDL::XSD::Typelib::Builtin::gMonth:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gMonth.pm
   SOAP::WSDL::XSD::Typelib::Builtin::gMonthDay:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gMonthDay.pm
   SOAP::WSDL::XSD::Typelib::Builtin::gYear:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gYear.pm
   SOAP::WSDL::XSD::Typelib::Builtin::gYearMonth:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
-  SOAP::WSDL::XSD::Typelib::Builtin::hex64Binary:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gYearMonth.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::hexBinary:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/hexBinary.pm
   SOAP::WSDL::XSD::Typelib::Builtin::int:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/int.pm
   SOAP::WSDL::XSD::Typelib::Builtin::integer:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/integer.pm
   SOAP::WSDL::XSD::Typelib::Builtin::language:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/language.pm
   SOAP::WSDL::XSD::Typelib::Builtin::list:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/list.pm
   SOAP::WSDL::XSD::Typelib::Builtin::long:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/long.pm
   SOAP::WSDL::XSD::Typelib::Builtin::negativeInteger:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/negativeInteger.pm
   SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/nonNegativeInteger.pm
   SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/nonPositiveInteger.pm
   SOAP::WSDL::XSD::Typelib::Builtin::normalizedString:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/normalizedString.pm
   SOAP::WSDL::XSD::Typelib::Builtin::positiveInteger:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
-  SOAP::WSDL::XSD::Typelib::Builtin::qName:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/positiveInteger.pm
   SOAP::WSDL::XSD::Typelib::Builtin::short:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/short.pm
   SOAP::WSDL::XSD::Typelib::Builtin::string:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/string.pm
   SOAP::WSDL::XSD::Typelib::Builtin::time:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/time.pm
   SOAP::WSDL::XSD::Typelib::Builtin::token:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/token.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedByte.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedInt.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedLong.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort:
-    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
   SOAP::WSDL::XSD::Typelib::Element:

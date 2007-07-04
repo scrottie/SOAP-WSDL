@@ -3,8 +3,6 @@ use strict;
 use warnings;
 use Pod::Simple::Text;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
-use Test::Differences;
-use Data::Dumper;
 use lib '../lib';
 use XML::SAX::ParserFactory;
 
@@ -20,16 +18,16 @@ use Cwd;
 my $path = cwd;
 $path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
 
-use_ok(qw/SOAP::WSDL::Client/);
+use_ok(qw/SOAP::WSDL/);
 
-my $soap = SOAP::WSDL::Client->new(
+my $soap = SOAP::WSDL->new(
     wsdl => 'file:///' . $path .'/t/acceptance/wsdl/006_sax_client.wsdl',
+    readable => 1,
 )->wsdlinit();
 
 $soap->servicename('MessageGateway');
 
 ok( $soap->no_dispatch( 1 ) , "Set no_dispatch" );
-ok( $soap->readable( 1 ) , "Set readable");
 ok( $soap->explain() );
 
 
@@ -42,10 +40,11 @@ $pod->parse_string_document( $soap->explain() );
 
 SKIP: {
     skip_without_test_xml();
-    is_xml( $soap->call( 'EnqueueMessage' ,
-        'MMessage' => {
-                 'MRecipientURI' => 'mailto:test@example.com' ,
-                 'MMessageContent' => 'TestContent for Message' ,
+    is_xml( $soap->call( 'EnqueueMessage' , EnqueueMessage => {
+            'MMessage' => {
+                     'MRecipientURI' => 'mailto:test@example.com' ,
+                     'MMessageContent' => 'TestContent for Message' ,
+            }
         }
     )
     , q{<SOAP-ENV:Envelope
@@ -54,7 +53,7 @@ SKIP: {
         xmlns:tns="http://www.example.org/MessageGateway2/"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
-    <SOAP-ENV:Body ><EnqueueMessage><MMessage>
+    <SOAP-ENV:Body ><EnqueueMessage xmlns="http://www.example.org/MessageGateway2/"><MMessage>
                 <MRecipientURI>mailto:test@example.com</MRecipientURI>
                 <MMessageContent>TestContent for Message</MMessageContent>
     </MMessage></EnqueueMessage></SOAP-ENV:Body></SOAP-ENV:Envelope>}

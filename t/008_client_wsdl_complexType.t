@@ -3,16 +3,15 @@ use strict;
 use warnings;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
-use diagnostics;
 
 use Cwd;
 
 my $path = cwd;
 $path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
 
-use_ok(qw/SOAP::WSDL::Client/);
+use_ok(qw/SOAP::WSDL/);
 
-my $soap = SOAP::WSDL::Client->new(
+my $soap = SOAP::WSDL->new(
     wsdl => 'file:///' . $path .'/t/acceptance/wsdl/008_complexType.wsdl'
 )->wsdlinit();
 

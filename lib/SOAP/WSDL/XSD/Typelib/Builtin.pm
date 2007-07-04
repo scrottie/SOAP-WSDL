@@ -3,367 +3,50 @@ use strict;
 use warnings;
 use Class::Std::Storable;
 
-# derivation classes first...
-package SOAP::WSDL::XSD::Typelib::Builtin::list;
-use strict;
-use warnings;
-use Class::Std::Storable;
-
-sub serialize {
-    my ($self, $opt) = @_;
-    my $value = $self->get_value();
-    return $self->start_tag({ %$opt, nil => 1 }) if not defined $value;
-    $value = [ $value ] if not ref $value;
-    return join q{}, $self->start_tag($opt, $value)
-        , join( q{ }, @{ $value } )
-        , $self->end_tag($opt, $value);
-}
-
-# Builtin classes
-# Every XML schema type inherits from anyType...
-package SOAP::WSDL::XSD::Typelib::Builtin::anyType;
-use strict;
-use warnings;
-use Class::Std::Storable;
-
-sub start_tag { 
-    my ($self, $opt) = @_;
-    $opt ||= {};
-    return '<' . $opt->{name} . ' >' if $opt->{ name };
-    return q{}
-}
-sub end_tag { 
-    my ($self, $opt) = @_;
-    $opt ||= {};
-    return '</' . $opt->{name} . ' >' if $opt->{ name };
-    return q{}
-};
-
-sub serialize_qualified :STRINGIFY {
-    return $_[0]->serialize( { qualified => 1 } );
-}
-
-# All builtin and all simpleType types inherit from anySimpleType
-package SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
-
-my %value_of :ATTR(:name<value> :default<()>);
-
-sub serialize {
-    my ($self, $opt) = @_;
-    my $ident = ident $self;
-    $opt ||= {};
-    return $self->start_tag({ %$opt, nil => 1})
-        if not defined $value_of{ $ident };
-    return join q{}, $self->start_tag($opt, $value_of{ $ident })
-        , $value_of{ $ident }
-        , $self->end_tag($opt);
-}
-
-sub as_bool :BOOLIFY {
-    return $value_of { ident $_[0] };
-}
-
-package SOAP::WSDL::XSD::Typelib::Builtin::dateTime;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::duration;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::date;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::time;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::gYearMonth;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::gYear;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::gMonthDay;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::gMonth;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::gDay;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::boolean;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-sub serialize {
-    my ($self, $opt) = @_;
-    my $ident = ident $self;
-    $opt ||= {};
-    return $self->start_tag({ %$opt, nil => 1})
-            if not defined $value_of{ $ident };
-    return join q{}
-        , $self->start_tag($opt)
-        , $value_of{ $ident } ? 'true' : 'false'
-        , $self->end_tag($opt);
-}
-
-sub as_num :NUMERIFY {
-    return $_[0]->get_value();
-}
-
-sub set_value {
-    my ($self, $value) = @_;
-    $value_of{ ident $self } = defined $value
-        ? ($value ne 'false' or ($value))
-            ? 1 : 0
-        : 0;
-}
-
-package SOAP::WSDL::XSD::Typelib::Builtin::string;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::normalizedString;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::string);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::token;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::normalizedString);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::language;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::token);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::Name;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::token);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::NCName;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::Name);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::ID;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::NCName);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::IDREF;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::ID);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::IDREFS;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(
-    SOAP::WSDL::XSD::Typelib::Builtin::list
-    SOAP::WSDL::XSD::Typelib::Builtin::IDREF);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::ENTITY;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::NCName);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::NMTOKEN;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::token);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::NMTOKENS;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(
-    SOAP::WSDL::XSD::Typelib::Builtin::list
-    SOAP::WSDL::XSD::Typelib::Builtin::token);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::decimal;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-sub as_num :NUMERIFY :BOOLIFY {
-    return $_[0]->get_value();
-}
-
-package SOAP::WSDL::XSD::Typelib::Builtin::base64Binary;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::hex64Binary;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::float;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-sub as_num :NUMERIFY {
-    return $_[0]->get_value();
-}
-
-package SOAP::WSDL::XSD::Typelib::Builtin::double;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-sub as_num :NUMERIFY {
-    return $_[0]->get_value();
-}
-
-package SOAP::WSDL::XSD::Typelib::Builtin::anyURI;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::qName;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::NOTATION;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::integer;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::decimal);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::integer);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::negativeInteger;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::integer);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::positiveInteger;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::long;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::integer);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::int;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::long);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::short;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::int);
-
-package SOAP::WSDL::XSD::Typelib::Builtin::byte;
-use strict;
-use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::short);
+use SOAP::WSDL::XSD::Typelib::Builtin::anyType;
+use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
+use SOAP::WSDL::XSD::Typelib::Builtin::anyURI;
+use SOAP::WSDL::XSD::Typelib::Builtin::base64Binary;
+use SOAP::WSDL::XSD::Typelib::Builtin::boolean;
+use SOAP::WSDL::XSD::Typelib::Builtin::byte;
+use SOAP::WSDL::XSD::Typelib::Builtin::date;
+use SOAP::WSDL::XSD::Typelib::Builtin::dateTime;
+use SOAP::WSDL::XSD::Typelib::Builtin::decimal;
+use SOAP::WSDL::XSD::Typelib::Builtin::double;
+use SOAP::WSDL::XSD::Typelib::Builtin::duration;
+use SOAP::WSDL::XSD::Typelib::Builtin::ENTITY;
+use SOAP::WSDL::XSD::Typelib::Builtin::float;
+use SOAP::WSDL::XSD::Typelib::Builtin::gDay;
+use SOAP::WSDL::XSD::Typelib::Builtin::gMonth;
+use SOAP::WSDL::XSD::Typelib::Builtin::gMonthDay;
+use SOAP::WSDL::XSD::Typelib::Builtin::gYear;
+use SOAP::WSDL::XSD::Typelib::Builtin::gYearMonth;
+use SOAP::WSDL::XSD::Typelib::Builtin::hexBinary;
+use SOAP::WSDL::XSD::Typelib::Builtin::ID;
+use SOAP::WSDL::XSD::Typelib::Builtin::IDREF;
+use SOAP::WSDL::XSD::Typelib::Builtin::IDREFS;
+use SOAP::WSDL::XSD::Typelib::Builtin::int;
+use SOAP::WSDL::XSD::Typelib::Builtin::integer;
+use SOAP::WSDL::XSD::Typelib::Builtin::language;
+use SOAP::WSDL::XSD::Typelib::Builtin::list;
+use SOAP::WSDL::XSD::Typelib::Builtin::long;
+use SOAP::WSDL::XSD::Typelib::Builtin::Name;
+use SOAP::WSDL::XSD::Typelib::Builtin::NCName;
+use SOAP::WSDL::XSD::Typelib::Builtin::negativeInteger;
+use SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger;
+use SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger;
+use SOAP::WSDL::XSD::Typelib::Builtin::normalizedString;
+use SOAP::WSDL::XSD::Typelib::Builtin::NOTATION;
+use SOAP::WSDL::XSD::Typelib::Builtin::positiveInteger;
+use SOAP::WSDL::XSD::Typelib::Builtin::QName;
+use SOAP::WSDL::XSD::Typelib::Builtin::short;
+use SOAP::WSDL::XSD::Typelib::Builtin::string;
+use SOAP::WSDL::XSD::Typelib::Builtin::time;
+use SOAP::WSDL::XSD::Typelib::Builtin::token;
+use SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte;
+use SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt;
+use SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong;
+use SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort;
 
 1;
 
@@ -383,6 +66,12 @@ Objects of a class may be filled with values and serialize correctly.
 
 These basic type classes are most useful when used as element or simpleType
 base classes.
+
+The datatypes classes themselves are split up into 
+SOAP::WSDL::XSD::Typelib::Builtin::* modules. 
+
+Using SOAP::WSDL::XSD::Typelib::Builtin uses all of the builtin datatype 
+classes.
 
 =head1 EXAMPLES
 
@@ -506,7 +195,9 @@ Replace whitespace by @ in e-mail address.
 
  Martin Kutter E<gt>martin.kutter fen-net.deE<lt>
 
-=head1 COPYING
+=head1 Licenxe
+
+Copyright 2004-2007 Martin Kutter.
 
 This library is free software, you may distribute/modify it under the
 same terms as perl itself

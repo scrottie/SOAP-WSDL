@@ -1,5 +1,4 @@
-
-use Test::More tests => 1;
+use Test::More skip_all => 'TODO: implement tests';
 use lib '../lib';
 
-use_ok qw/SOAP::WSDL/;
+

@@ -3,8 +3,6 @@ use strict;
 use warnings;
 use diagnostics;
 use Test::More tests => 17; # qw/no_plan/; # TODO: change to tests => N;
-use Test::Differences;
-use Data::Dumper;
 use lib '../lib';
 use XML::SAX::ParserFactory;
 
@@ -133,7 +131,8 @@ SKIP: {
 }
 ok($xml = $wsdl->find_message('urn:myNamespace', 'testRequest')
         ->get_part()->[0]->serialize(
-        undef, { length => {  size => -13, unit => 'BLA' } , int => 3 },
+        undef, 
+        { test => { length => {  size => -13, unit => 'BLA' } , int => 3 } },
     $serializer_options ),
     "serialize part"
 );

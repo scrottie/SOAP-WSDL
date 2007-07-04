@@ -1,13 +1,6 @@
 #!/usr/bin/perl -w
-use Test::More qw/no_plan/; # TODO: change to tests => N;
-#use Devel::Profiler bad_pkgs => [
-#    qw(UNIVERSAL Time::HiRes B Carp Exporter Cwd Config CORE DynaLoader
-#    XSLoader AutoLoader
-#    Class::Std SOAP::Lite) ];
-
-use Scalar::Util;
 use strict;
-use Test::Differences;
+use Test::More tests => 5;
 use lib 't/lib';
 use lib '../lib';
 use lib 'lib';
@@ -18,7 +11,7 @@ use Cwd;
 use XML::LibXML::SAX;
 use_ok(qw/SOAP::WSDL::SAX::MessageHandler/);
 
-use SOAP::WSDL::Client;
+use SOAP::WSDL;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 my $path = cwd;
 $path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
@@ -46,7 +39,8 @@ else
     fail "bool context overloading"
 }
 
-my $soap = SOAP::WSDL::Client->new(
+my $soap = SOAP::WSDL->new(
+    readable => 1,
     wsdl => 'file:///' . $path .'/t/acceptance/wsdl/006_sax_client.wsdl',
 )->wsdlinit();
 
@@ -55,17 +49,9 @@ $soap->servicename('MessageGateway');
 ok( $soap->no_dispatch( 1 ) , "Set no_dispatch" );
 ok( $soap->readable( 0 ) , "Set readable");
 
-# print $soap->call( 'EnqueueMessage'
-#             , MMessage => $filter->get_data()->get_MMessage() );
-
-timethese 1000, {
+timethese 100, {
     'ClassParser' => sub { $parser->parse_string( xml() ); },
-#    'HashParser'  => sub { $hash_parser->parse_string( xml() ); },
     'XML::Simple' => sub { return XMLin( xml() ) },
-#     'SOAP::WSDL::Client->call' => sub {
-#        $soap->call( 'EnqueueMessage'
-#            , MMessage => $filter->get_data()->get_MMessage() );
-#    }
 };
 
 sub xml {

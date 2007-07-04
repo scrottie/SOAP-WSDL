@@ -59,7 +59,8 @@
 	</portType>
 
 	<binding type="tns:testPort" name="testBinding">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+            <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+            <operation name="test">
 		<soap:operation soapAction="test">
 			<input>
 				<soap:body use="literal"/>
@@ -68,10 +69,12 @@
 				<soap:body use="literal"/>
 			</output>
 		</soap:operation>
+            </operation>
 	</binding>
 	<binding type="tns:testPort2" name="testBinding2">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<soap:operation soapAction="test">
+            <operation name="test">
+                <soap:operation soapAction="test">
 			<input>
 				<soap:body use="literal"/>
 			</input>
@@ -79,9 +82,12 @@
 				<soap:body use="literal"/>
 			</output>
 		</soap:operation>
+            </operation>
 	</binding>
 	<binding type="tns:testPort3" name="testBinding3">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+            
+	<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="test">
 		<soap:operation soapAction="test">
 			<input>
 				<soap:body use="literal"/>
@@ -90,7 +96,8 @@
 				<soap:body use="literal"/>
 			</output>
 		</soap:operation>
-	</binding>
+            </operation>
+        </binding>
 	<service name="testService">
 		<port name="testPort" binding="tns:testBinding">
 			<soap:address location="http://127.0.0.1/testPort" />

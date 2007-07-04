@@ -4,7 +4,6 @@ use strict;
 use lib 'lib/';
 use lib '../lib/';
 use lib 't/lib';
-use Data::Dumper;
 
 use_ok qw(SOAP::WSDL::XSD::Typelib::ComplexType);
 use_ok qw( MyComplexType );

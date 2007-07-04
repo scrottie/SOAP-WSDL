@@ -27,22 +27,35 @@ sub _factory {
     {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or die "No class given for $name";
-        eval "require $type" if not eval { $type->isa('UNIVERSAL') };
-        croak $@ if $@;
+
+        $type->isa('UNIVERSAL')
+            or eval "require $type" 
+                or croak $@;
 
         *{ "$class\::set_$name" } = sub  {
             my ($self, $value) = @_;
-            # set to a) value if it's an object
-            # b) New object with value for simple vlues
+            
+            # set to 
+            # a) value if it's an object
+            # b) New object with value for simple values
             # c) New object with value for list values and list type
             # d) List ref of new objects with value for list values and non-list type
+            # e) New object with values passed to new for HASH references
+            # 
+            # Die on non-ARRAY/HASH references - if you can define semantics 
+            # for GLOB references, feel free to add them.
             $attribute_ref->{ ident $self } = (blessed $value)
                 ? $value
-                : (ref $value && ref $value eq 'ARRAY')
-                    ?  $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list')
-                        ? $type->new({ value => $value })
-                        : [ map { $type->new({ value => $_ }) } @{ $value } ]
-                    : $type->new({ value => $value });
+                : (ref $value ) ?
+                    (ref $value eq 'ARRAY') 
+                        ?  $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list')
+                            ? $type->new({ value => $value })
+                            : [ map { $type->new({ value => $_ }) } @{ $value } ]
+                        : (ref $value eq 'HASH') 
+                            ?  $type->new( $value )
+                            :  die "Cannot use non-ARRAY/HASH as data"
+                : $type->new({ value => $value });
+                     
         };
 
         *{ "$class\::add_$name" } = sub {
@@ -63,33 +76,22 @@ sub _factory {
             return push @{ $attribute_ref->{ $ident } }, $value;                                          
         };
     }
-
-    # we need our own destructor - on the fly generated classes
-    # don't necessarily go through Clas::Std::Storable's DEMOLISH
-    # calls.
-#    my $destructor_ref = *{ "$class\::DESTROY" };
-#    no warnings qw(redefine);
-#    *{ "$class\::DESTROY" } = sub {
-#        my $self = shift;
-#        my $class = shift;
-#        for (@{ $ELEMENTS_FROM{ $class } }) {
-#            delete $_->{ ident $self };
-#        }
-        # call original destructor.
-#        $destructor_ref->( $self, @_) if ref ($destructor_ref);
-#    };
-#
 }
 
 sub START {
     my ($self, $ident, $args_of) = @_;
     my $class = ref $self;
-    for my $name (keys %{ $ATTRIBUTES_OF{ $class } } ) {
-        my $method = "set_$name";
-        $self->$method( $args_of->{ $name } )
-            if $args_of->{ $name };
-    }
-}
+
+    # iterate over keys of arguments 
+    # and call set appropriate field in clase
+    map { ($ATTRIBUTES_OF{ $class }->{ $_ }) ?
+       do {
+            my $method = "set_$_";
+            $self->$method( $args_of->{ $_ } );    
+       }
+       : croak "unknown field $_"
+    } keys %$args_of;
+};
 
 sub _get_elements  {
     my $self = shift;
@@ -104,28 +106,22 @@ sub _get_elements  {
 # But what about choice, group, extension ?
 #
 sub _serialize  {
-    my $self = shift;
-    my $ident = ident $self;
-    my $class = ref $self;
+    my $ident = ident $_[0];
+    my $class = ref $_[0];
 
     # return concatenated return value of serialize call of all
     # elements retrieved from get_elements expanding list refs.
     # get_elements is inlined for performance.
     return join q{} , map {     
-        my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{$ident };
+        my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
         $element = [ $element ]
             if not ref $element eq 'ARRAY';
         my $name = $_;
-            
+
         map {
-            # skip empty elements - complexTypes may have empty elements 
-            # (minOccurs 0).
-            if (not $_) {
-                q{}
-            }
             # serialize element elements with their own serializer
             # but name them like they're named here.
-            elsif ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
+            if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
                     $_->serialize( { name => $_ } );
             }
             # serialize complextype elments (of other types) with their 
@@ -141,11 +137,11 @@ sub _serialize  {
 
 sub serialize {
     my ($self, $opt) = @_;
-    my $class = ref $self;
     $opt ||= {};
+
     # do we have a empty element ? 
     return $self->start_tag({ %$opt, empty => 1 })
-        if not @{ $ELEMENTS_FROM{ $class } };
+        if not @{ $ELEMENTS_FROM{ ref $self } };
     return join q{}, $self->start_tag($opt),
             $self->_serialize(), $self->end_tag();
 }
