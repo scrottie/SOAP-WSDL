@@ -8,7 +8,7 @@ use SOAP::WSDL::SAX::WSDLHandler;
 use base qw(SOAP::Lite);
 use Data::Dumper;
 
-our $VERSION='2.00_03';
+our $VERSION='2.00_04';
 
 BEGIN {
     eval {

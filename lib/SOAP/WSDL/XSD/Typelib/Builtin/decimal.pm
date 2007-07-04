@@ -18,6 +18,7 @@ sub as_num :NUMERIFY :BOOLIFY {
     return $_[0]->get_value();
 }
 
+Class::Std::initialize();   # make :NUMERIFY :BOOLIFY overloading serializable
 
 1;
 

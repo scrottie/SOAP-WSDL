@@ -6,6 +6,7 @@ use SOAP::WSDL::Envelope;
 use SOAP::Lite;
 use Class::Std::Storable;
 use SOAP::WSDL::SAX::MessageHandler;
+use SOAP::WSDL::SOAP::Typelib::Fault11;
 
 # Package globals for speed...
 my $PARSER;

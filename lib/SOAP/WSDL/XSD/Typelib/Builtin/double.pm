@@ -8,6 +8,7 @@ sub as_num :NUMERIFY {
     return $_[0]->get_value();
 }
 
+Class::Std::initialize();   # make :NUMERIFY overloading serializable
 
 1;
 

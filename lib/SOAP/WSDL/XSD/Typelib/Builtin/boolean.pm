@@ -33,6 +33,8 @@ sub set_value {
         : 0;
 }
 
+Class::Std::initialize();   # make :BOOLIFY overloading serializable
+
 1;
 
 __END__

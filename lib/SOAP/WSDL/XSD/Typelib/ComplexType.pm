@@ -84,12 +84,14 @@ sub START {
 
     # iterate over keys of arguments 
     # and call set appropriate field in clase
-    map { ($ATTRIBUTES_OF{ $class }->{ $_ }) ?
-       do {
+    map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
+       ? do {
             my $method = "set_$_";
             $self->$method( $args_of->{ $_ } );    
        }
-       : croak "unknown field $_"
+       : $_ eq 'xmlns' 
+            ? do {}
+            : croak "unknown field $_ in $class";
     } keys %$args_of;
 };
 
@@ -114,24 +116,30 @@ sub _serialize  {
     # get_elements is inlined for performance.
     return join q{} , map {     
         my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
-        $element = [ $element ]
-            if not ref $element eq 'ARRAY';
-        my $name = $_;
-
-        map {
-            # serialize element elements with their own serializer
-            # but name them like they're named here.
-            if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
-                    $_->serialize( { name => $_ } );
-            }
-            # serialize complextype elments (of other types) with their 
-            # serializer, but add element tags around.
-            else {
-                join q{}, $_->start_tag({ name => $name })
-                    , $_->serialize()
-                    , $_->end_tag({ name => $name });       
-            }
-        } @{ $element }        
+        
+        if (defined $element) {       
+            $element = [ $element ]
+                if not ref $element eq 'ARRAY';
+            my $name = $_;
+    
+            map {
+                # serialize element elements with their own serializer
+                # but name them like they're named here.
+                if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
+                        $_->serialize( { name => $_ } );
+                }
+                # serialize complextype elments (of other types) with their 
+                # serializer, but add element tags around.
+                else {
+                    join q{}, $_->start_tag({ name => $name })
+                        , $_->serialize()
+                        , $_->end_tag({ name => $name });       
+                }
+            } @{ $element }
+        }
+        else {
+            q{};
+        }        
     } (@{ $ELEMENTS_FROM{ $class } });
 }
 

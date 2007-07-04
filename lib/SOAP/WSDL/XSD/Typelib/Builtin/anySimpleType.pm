@@ -26,6 +26,8 @@ sub as_bool :BOOLIFY {
     return $value_of { ident $_[0] };
 }
 
+Class::Std::initialize();   # make :BOOLIFY overloading serializable
+
 1;
 
 __END__

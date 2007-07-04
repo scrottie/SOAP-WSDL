@@ -2,7 +2,7 @@ use Module::Build;
 Module::Build->new(
 	dist_abstract => 'SOAP with WSDL support',
 	dist_name => 'SOAP-WSDL',
-	dist_version => '2.00_03',
+	dist_version => '2.00_04',
 	module_name   => 'SOAP::WSDL',
 	license       => 'artistic',
 	requires      => {
