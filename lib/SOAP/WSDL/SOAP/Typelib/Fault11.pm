@@ -15,13 +15,13 @@ use base qw(
 my %faultcode_of :ATTR(:get<faultcode>);
 my %faultstring_of :ATTR(:get<faultstring>);
 my %faultactor_of :ATTR(:get<faultactor>);
-my %detail_of :ATTR(:get<faultdetail>);
+my %detail_of :ATTR(:get<detail>);
 
 # always return false in boolean context - a fault is never true...
 sub as_bool :BOOLIFY { return; }
 
 __PACKAGE__->_factory(
-    [ qw(faultcode faultstring faultactor faultdetail) ],
+    [ qw(faultcode faultstring faultactor detail) ],
     {
         faultcode => \%faultcode_of,
         faultstring => \%faultstring_of,
@@ -45,3 +45,56 @@ __PACKAGE__->__set_maxOccurs();
 __PACKAGE__->__set_ref('');
 
 1;
+
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::SOAP::Typelib::Fault11 - SOAP 1.1 Fault class
+
+=head1 DESCRIPTION
+
+Models a SOAP 1.1 Fault.
+
+SOAP::WSDL::SOAP::Typelib::Fault11 objects are false in boolean context 
+and serialize to XML on stringification.
+
+This means you can do something like:
+
+ my $soap = SOAP::WSDL::Client->new();
+ # ...
+ my $result = $soap->call($method, $data);
+ if (not $result) {
+     die "Error calling SOAP method: ", $result->get_faultstring();
+ }
+
+=head1 METHODS
+
+=head2 get_faultcode / set_faultcode
+
+Getter/setter for object's the faultcode property.
+
+=head2 get_faultstring / set_faultstring
+
+Getter/setter for object's the faultstring property.
+
+=head2 get_faultactor / set_faultactor
+
+Getter/setter for object's the faultactor property.
+
+=head2 get_detail / set_detail
+
+Getter/setter for detail object's detail property.
+
+=head1 LICENSE
+
+Copyright 2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under 
+the same terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=cut

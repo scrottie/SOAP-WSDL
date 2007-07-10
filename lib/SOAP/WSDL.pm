@@ -8,7 +8,7 @@ use SOAP::WSDL::SAX::WSDLHandler;
 use base qw(SOAP::Lite);
 use Data::Dumper;
 
-our $VERSION='2.00_04';
+our $VERSION='2.00_05';
 
 BEGIN {
     eval {
@@ -231,7 +231,7 @@ sub call {
     if (blessed $data
         && $data->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
     {
-        $envelope = SOAP::WSDL::Envelope->serialize( $method, $data , { readable => 1 });
+        $envelope = SOAP::WSDL::Envelope->serialize( $method, $data );
 
         # TODO replace by something derived from binding - this is just a
         # workaround...
@@ -263,13 +263,12 @@ sub call {
     };
 
 
-        if ( $self->no_dispatch() )
-        {
-                return $envelope;
-        } ## end if ( $self->no_dispatch...
+    if ( $self->no_dispatch() ) {
+        return $envelope;
+    } ## end if ( $self->no_dispatch...
 
-        # get response via transport layer
-        # TODO remove dependency from SOAP::Lite and use a
+    # get response via transport layer
+    # TODO remove dependency from SOAP::Lite and use a
     # SAX-based filter using XML::LibXML to get the
     # result.
     # Filter should have the following methods:
@@ -279,14 +278,14 @@ sub call {
     # - fault:  returns the result of the call if a SOAP fault is sent back
     #           by the server. Retuns undef (nothing) if the call has been
     #           processed without errors.
-        my $response = $self->transport->send_receive(
-                context  => $self,              # this is provided for context
-                endpoint => $self->endpoint(),
-                action   => $methodInfo->{ soap_action },   # SOAPAction from binding
-                envelope => $envelope,          # use custom content
-        );
+    my $response = $self->transport->send_receive(
+        context  => $self,              # this is provided for context
+        endpoint => $self->endpoint(),
+        action   => $methodInfo->{ soap_action },   # SOAPAction from binding
+        envelope => $envelope,          # use custom content
+    );
 
-        return $response if ($self->outputxml() );
+    return $response if ($self->outputxml() );
 
     if ($self->outputtree()) {
 
@@ -336,30 +335,28 @@ sub call {
         return $handler->get_data();
     }
 
-        # deserialize and store result
-        my $result = $self->{ '_call' } =
-          eval { $self->deserializer->deserialize( $response ) }
-          if $response;
+    # deserialize and store result
+    my $result = $self->{ '_call' } =
+    eval { $self->deserializer->deserialize( $response ) }
+        if $response;
 
-        if (
-                !$self->transport->is_success ||  # transport fault
-                $@                            ||  # not deserializible
-                                                  # fault message even if transport OK
-                  # or no transport error (for example, fo TCP, POP3, IO implementations)
-                UNIVERSAL::isa( $result => 'SOAP::SOM' ) && $result->fault
-          )
-        {
-                return $self->{ '_call' } = (
-                        $self->on_fault->(
-                                $self, $@ ? $@ . ( $response || '' ) : $result
-                          )
-                          || $result
-                );
-                # ? # trick editors
-        } ## end if ( !$self->transport...
+    if (
+        !$self->transport->is_success ||  # transport fault
+        $@                            ||  # not deserializible
+            # fault message even if transport OK
+            # or no transport error (for example, fo TCP, POP3, IO implementations)
+            UNIVERSAL::isa( $result => 'SOAP::SOM' ) && $result->fault
+    ) {
+        return $self->{ '_call' } = (
+            $self->on_fault->( $self, ($@) 
+                ? $@ . ( $response || '' ) 
+                : $result 
+            ) || $result
+        );
+    } ## end if ( !$self->transport...
 
-        return unless $response;    # nothing to do for one-ways
-        return $result;
+    return unless $response;    # nothing to do for one-ways
+    return $result;
 } ## end sub call
 
 sub explain {
@@ -440,30 +437,114 @@ SOAP::Lite's transport mechanism.
 
 =head1 METHODS
 
+=head2 wsdlinit
+
+Reads the WSDL file and initializes SOAP::WSDL for working with it.
+
+Must be called after the wsdl URL has been set, and before calling one of
+
+ servicename
+ portname
+ call
+
+You may set servicename and portname by passing them as attributes to 
+wsdlinit:
+
+ $soap->wsdlinit(
+    servicename => 'MyService',
+    portname => 'MyPort' 
+ );
+
+=head2 call
+
+Performs a SOAP call. The result is either an object tree (with outputtree),
+a hash reference (with outputhash), plain XML (with outputxml) or a SOAP::SOM 
+object (with neither of the above set).
+
+ my $result = $soap->call('method', %data);
+
+=head1 CONFIGURATION METHODS
+
+=head2 outputtree
+
+When outputtree is set, SOAP::WSDL will return an object tree instead of a 
+SOAP::SOM object.
+
+You have to specify a class_resolver for this to work. See 
+<class_resolver|class_resolver>
+
+=head2 class_resolver
+
+Set the class resolver class (or object).
+
+Class resolvers must implement the method get_class which has to return the 
+name of the class name for deserializing a XML node at the current XPath 
+location.
+
+Class resolvers are typically generated by using the to_typemap method on a 
+SOAP::WSDL::Definitions objects.
+
+Example:
+
+XML structure (SOAP body content):
+
+ <Person>
+    <Name>Smith</Name>
+    <FirstName>John</FirstName>
+ </Person>
+
+Class resolver
+
+ package MyResolver;
+ my %typemap = (
+    'Person' => 'MyPersonClass',
+    'Person/Name' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+    'Person/FirstName' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+ );
+
+ sub get_class { return $typemap{ $_[1] } };
+ 1;
+
+You'll need a MyPersonClass module in your search path for this to work - see 
+SOAP::WSDL::XSD::ComplexType on how to build / generate one. 
+
 =head2 servicename
 
- $soap->servicname('Name');
+ $soap->servicename('Name');
 
 Sets the service to operate on. If no service is set via servicename, the 
 first service found is used.
+
+Must be called after calling wsdlinit().
 
 Returns the soap object, so you can chain calls like
 
  $soap->servicename->('Name')->portname('Port');
 
+=head2 portname
+
+ $soap->portname('Name');
+
+Sets the port to operate on. If no port is set via portname, the 
+first port found is used.
+
+Must be called after calling wsdlinit().
+
+Returns the soap object, so you can chain calls like
+
+ $soap->portname('Port')->call('MyMethod', %data);
+
+=head2 no_dispatch
+
+When set, call() returns the plain request XML instead of dispatching the 
+SOAP call to the SOAP service. Handy for testing/debugging.
+
 =head2 _wsdl_init_methods
 
-=over
-
-=item DESCRIPTION
-
 Creates a lookup table containing the information required for all methods
-specified for the service/port selected.
+specified for the service/port selected. 
 
 The lookup table is used by L<call|call>.
-
-=back
-
 
 =head1 Differences to previous versions
 
@@ -481,10 +562,21 @@ as hash ref, and how to render the WSDL elements found into perl classes.
 
 Yup your're right, there's a builting code generation facility. 
 
-=item * outputxml
+=item * no_dispatch 
 
 call() with outputtxml set to true now returns the complete SOAP 
 envelope, not only the body's content.
+
+=item * outputxml
+
+call() with outputxml set to true now returns the complete SOAP 
+envelope, not only the body's content.
+
+=item * servicename/portname
+
+Both servicename and portname can only be called B<after> calling wsdlinit().
+
+You may pass the servicename and portname as attributes to wsdlinit, though.
 
 =back
 

@@ -15,11 +15,11 @@ $name =~s/\.(t|pl)$//;
 
 my $path = cwd;
 
-$path =~s{/attic}{}xms;
+$path =~s{(/t)?/SOAP/WSDL}{}xms;
 
 #2
 ok $soap = SOAP::WSDL->new(
-	wsdl => 'file:///' . $path . '/acceptance/wsdl/' . $name . '.wsdl'
+	wsdl => 'file:///' . $path . '/t/acceptance/wsdl/' . $name . '.wsdl'
 ), 'Instantiated object';
 
 #3
@@ -29,18 +29,6 @@ $soap->no_dispatch(1);
 
 #4
 ok $xml = $soap->call('test', testAll => 1 ) , 'Serialized call';
-
-print $xml, "\n";
-
-SKIP: {
-	
-	open (my $fh, $path . '/acceptance/results/' . $name . '.xml')
-		|| skip("Cannot open acceptance results file ". $name . '.xml', 1);
-	my $testXML = <$fh>;
-	close $fh;
-	
-	is( $xml, $testXML, 'Got expected result');
-}
 
 # 6
 eval {

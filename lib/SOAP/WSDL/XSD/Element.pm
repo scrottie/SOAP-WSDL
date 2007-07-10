@@ -153,6 +153,7 @@ sub to_typemap {
 
     my $type;
     push @{ $opt->{path} }, $self->get_name();
+    # referenced types need type_prefix
     if ( my $typename = $self->get_type() ) {
         my ($prefix, $localname) = split /:/, $self->get_type();
         my $ns = $nsmap{ $prefix };
@@ -165,12 +166,18 @@ sub to_typemap {
         else
         {
             $type = $opt->{ wsdl }->first_types()->find_type( $ns, $localname );
-            $typeclass = $opt->{ prefix } . $type->get_name();
+            # referenced types need type_prefix (may be globally unique)
+            $typeclass = $opt->{ type_prefix } . $type->get_name();
             $txt .= $type->to_typemap($opt);
         }
         $txt .= q{'} . join( q{/}, @{ $opt->{path} } ) . "' => '$typeclass',\n";
     }
+    # atomic types need element prefix
     elsif ($type = $self->first_simpleType() ) {
+        # atomic types need element prefix (may be locally unique)
+        # TODO fix simpletype Typemap
+        my $typeclass = $opt->{ element_prefix } . $self->get_name();        
+        $txt .= q{'} . join( q{/}, @{ $opt->{path} } ) . "' => '$typeclass',\n";
         my $flavor = $type->get_flavor(); 
         if ( $flavor eq 'sequence' ) {
             $txt .= "# atomic simple type (sequence)\n";
@@ -185,7 +192,7 @@ sub to_typemap {
         
     }
     elsif ($type = $self->first_complexType() ) {
-        my $typeclass = $opt->{ prefix } . $self->get_name();        
+        my $typeclass = $opt->{ element_prefix } . $self->get_name();        
         $txt .= q{'} . join( q{/}, @{ $opt->{path} } ) . "' => '$typeclass',\n";
         my $flavor = $type->get_flavor(); 
         if ( $flavor eq 'sequence' ) {
@@ -223,6 +230,7 @@ use base qw(
     [% type.base_class($class_prefix) %]
 );
 [% ELSIF (type = self.first_complexType) %]
+# atomic complexType
 # <element name="[% self.get_name %]"><complexType> definition
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use base qw(
@@ -250,7 +258,7 @@ __PACKAGE__->_factory(
         IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' %]
         [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',        
         [% ELSE %]
-        [% element.get_name %] => '[% class_prefix %]::[% localname %]',
+        [% element.get_name %] => '[% type_prefix %]::[% localname %]',
         [% END %] 
       [% END %]
     }
@@ -266,7 +274,7 @@ __PACKAGE__->_factory(
 [%  IF (nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema');
         base_class = 'SOAP::WSDL::XSD::Typelib::Builtin::' _ localname ;
     ELSE;
-        base_class = class_prefix _ '::' _ localname;
+        base_class = type_prefix _ '::' _ localname;
     -%]
 
 use [% base_class %];
@@ -298,6 +306,7 @@ EOT
     );
     my $code = $tt->process( \$template, {
             class_prefix => $opt->{ prefix },
+            type_prefix => $opt->{ type_prefix },
             self => $self, 
             nsmap => { reverse %{ $opt->{ wsdl }->get_xmlns() } },
         }, 

@@ -2,7 +2,7 @@ use Module::Build;
 Module::Build->new(
 	dist_abstract => 'SOAP with WSDL support',
 	dist_name => 'SOAP-WSDL',
-	dist_version => '2.00_04',
+	dist_version => '2.00_05',
 	module_name   => 'SOAP::WSDL',
 	license       => 'artistic',
 	requires      => {
@@ -30,4 +30,5 @@ Module::Build->new(
 		'XML::SAX::ParserFactory' => 0,
 		
 	},
+	recursive_test_files => 1,
 )->create_build_script;

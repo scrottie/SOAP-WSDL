@@ -12,21 +12,23 @@ use_ok(qw/SOAP::WSDL/);
 
 my $xml;
 
-my $name = basename( $0 );
+my $name = basename $0;
 $name =~s/\.(t|pl)$//;
 
 my $path = cwd;
-$path =~s{/attic}{}xms;
+$path =~s{(/t)/SOAP/WSDL}{}xms;
 
 my $soap;
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file:///' . $path . '/acceptance/wsdl/' . $name . '.wsdl'
+	wsdl => 'file:///' . $path . '/t/acceptance/wsdl/' . $name . '.wsdl'
 ), 'Instantiated object' );
 
 #3
 $soap->readable(1);
-ok( $soap->wsdlinit(), 'parsed WSDL' );
+ok( $soap->wsdlinit(
+    servicename => 'testService',
+), 'parsed WSDL' );
 $soap->no_dispatch(1);
 $soap->autotype(0);
 

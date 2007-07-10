@@ -1,4 +1,4 @@
-use Test::More tests => 7;;
+use Test::More tests => 6;
 use strict;
 use warnings;
 use lib '../lib';
@@ -18,38 +18,26 @@ use_ok(qw/SOAP::WSDL/);
 my $soap;
 my $xml;
 my $path = cwd();
-my $name = $0;
+my $name = basename $0;
 $name =~s/\.t$//;
 
-$path =~s{/attic}{}xsm;
+$path =~s{(/t)?/SOAP/WSDL}{}xsm;
 
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file://' . $path . '/acceptance/wsdl/' . $name . '.wsdl'
+	wsdl => 'file://' . $path . '/t/acceptance/wsdl/' . $name . '.wsdl'
 ), 'Instantiated object' );
 
 #3
 $soap->readable(1);
-ok( $soap->wsdlinit(), 'parsed WSDL' );
+ok( $soap->wsdlinit(
+    servicename => 'testService',
+), 'parsed WSDL' );
 $soap->no_dispatch(1);
 
 ok ($xml = $soap->call('test', 
 	testElement1 => 'Test'
 ), 'Serialized (simple) element' );
-
-open (my $fh, $path . '/acceptance/results/' . $name . '.xml')
-	|| die "Cannot open acceptance results file";
-my $testXML = <$fh>;
-close $fh;
-
-SKIP: {
-    if ($SKIP){
-        print $xml;    
-	skip( $SKIP, 1 );
-    }
-    
-    soap_eq_or_diff( $xml, $testXML, 'Got expected result');
-};
 
 TODO: {
     local $TODO="implement min/maxOccurs checks";

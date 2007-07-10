@@ -19,7 +19,7 @@ chdir $path;
 
 $path = cwd;
 
-$path =~s{/attic}{}xms;
+$path =~s{/SOAP/WSDL}{}xms;
 
 #2
 ok( $soap = SOAP::WSDL->new(

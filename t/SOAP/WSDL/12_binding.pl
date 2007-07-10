@@ -1,36 +1,34 @@
+use strict;
 use lib '../lib';
-use Test;
+use Test::More tests => 4;
 use SOAP::WSDL;
 use Cwd;
 use Data::Dumper;
-
-plan tests => 9;
+use File::Basename;
 
 print "# Using SOAP::WSDL Version $SOAP::WSDL::VERSION\n";
 
 my $name = '02_port';
+
 # chdir to my location
-my $cwd = cwd;
+my $soap = undef;
 
+my $path = cwd;
 
-if (-d 't')
-{
-	$cwd .= '/t';
-}
-
+$path =~s{(/t)?/SOAP/WSDL}{}xms;
 
 my $url = 'http://127.0.0.1/testPort';
 
 
-ok(1);
-
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file:///' . $cwd . '/acceptance/wsdl/' . $name . '.wsdl'
+	wsdl => 'file:///' . $path . '/t/acceptance/wsdl/' . $name . '.wsdl'
 ) );
-ok( ($soap->servicename('testService') eq 'testService' ) );
-ok( ($soap->portname('testPort') eq 'testPort' ) );
 
-ok( $soap->wsdlinit( url => $url ) );
+ok $soap->wsdlinit( url => $url );
+ok $soap->servicename('testService');
+ok $soap->portname('testPort');
+
+
 
 
 __END__

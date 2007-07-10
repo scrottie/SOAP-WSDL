@@ -89,9 +89,13 @@ sub START {
             my $method = "set_$_";
             $self->$method( $args_of->{ $_ } );    
        }
-       : $_ eq 'xmlns' 
+       : $_ =~ m{ \A              # beginning of string
+                  xmlns           # xmlns 
+            }xms  
             ? do {}
             : croak "unknown field $_ in $class";
+    # TODO maybe only warn for unknown fields ?
+
     } keys %$args_of;
 };
 

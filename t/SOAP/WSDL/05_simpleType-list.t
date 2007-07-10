@@ -15,23 +15,23 @@ my $name = basename( $0 );
 $name =~s/\.(t|pl)$//;
 
 my $path = cwd;
-$path =~s{/attic}{}xms;
+$path =~s{(/t)/SOAP/WSDL}{}xms;
 
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file:///' . $path . '/acceptance/wsdl/' . $name . '.wsdl'
+	wsdl => 'file:///' . $path . '/t/acceptance/wsdl/' . $name . '.wsdl'
 ), 'Instantiated object' );
 
 $soap->readable(1);
 
 #3
-ok( $soap->wsdlinit(), 'parsed WSDL' );
+ok( $soap->wsdlinit(
+    servicename => 'testService',
+), 'parsed WSDL' );
 $soap->no_dispatch(1);
 
 #4
 ok $xml = $soap->call('test', testAll => [ 1, 2 ] ), 'Serialize list call';
-
-print $xml, "\n";
 
 #5
 ok ( $xml2 = $soap->call('test', testAll => "1 2" ) , 'Serialized scalar call' );

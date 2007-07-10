@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 7;
 use strict;
 use warnings;
 use lib '../lib';
@@ -15,11 +15,11 @@ if ($@)
 }
 
 my $path = cwd();
-my $name = $0;
+my $name = basename $0;
 $name =~s/\.t$//;
 $name =~s/^t\///;
 
-$path =~s{/attic}{}xms;
+$path =~s{(/t)?/SOAP/WSDL}{}xms;
 
 use_ok(qw/SOAP::WSDL/);
 
@@ -30,30 +30,27 @@ my $soap;
 
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file://' . $path . '/acceptance/wsdl/' . $name . '.wsdl',
+	wsdl => 'file://' . $path . '/t/acceptance/wsdl/' . $name . '.wsdl',
 	readable =>1,
 ), 'Instantiated object' );
 
 
 #3
-ok $soap->wsdlinit( checkoccurs => 1, ), 'parse WSDL';
+ok $soap->wsdlinit( 
+    checkoccurs => 1,
+    servicename => 'testService', 
+), 'parse WSDL';
 ok $soap->no_dispatch(1), 'set no dispatch';
 
-ok ($xml = $soap->call('test', 
-          Test1 => 'Test 1',
-          Test2 => 'Test 2',
+ok ($xml = $soap->call('test',  
+			testAll => {
+				Test1 => 'Test 1',
+				Test2 => [ 'Test 2', 'Test 3' ]
+			}
 ), 'Serialized complexType' );
 
 
-open (my $fh, $path . '/acceptance/results/' . $name . '.xml')
-	|| die "Cannot open acceptance results file";
-my $testXML = <$fh>;
-close $fh;
-
-SKIP: {
-	skip( $SKIP, 1 ) if ($SKIP);
-	eval { soap_eq_or_diff( $xml, $testXML, 'Got expected result') };
-};
+# print $xml;
 
 # $soap->wsdl_checkoccurs(1);
 

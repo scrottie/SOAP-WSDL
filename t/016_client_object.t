@@ -56,5 +56,6 @@ sub get_class {
         'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
         'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyType',
     );
+    return $class_list{ $_[1] };
 }
 

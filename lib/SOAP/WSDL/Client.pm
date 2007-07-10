@@ -1,6 +1,7 @@
 package SOAP::WSDL::Client;
 use strict;
 use warnings;
+use Carp;
 use Scalar::Util qw(blessed);
 use SOAP::WSDL::Envelope;
 use SOAP::Lite;
@@ -102,11 +103,20 @@ sub call {
     # if we had no success (Transport layer error status code)
     # or if transport layer failed
     if (! $soap->transport->is_success() ) {
+
+        # TODO Fix deserializing message - there's something wrong with Fault11
         # Try deserializing response - there may be some
         if ($response) {
-            eval { $PARSER->parse_string( $response ) };
-            return $MESSAGE_HANDLER->get_data if not $@;
+            
+            eval { $PARSER->parse_string( $response ); };
+            if ($@) {
+                warn "could not deserialize response: $@";                    
+            }
+            else {   
+                return $MESSAGE_HANDLER->get_data();
+            }
         };
+        
 
         require SOAP::WSDL::SOAP::Typelib::Fault11;
         # generate & return fault if we cannot serialize response
