@@ -8,26 +8,23 @@ my %binding_of :ATTR(:name<binding> :default<()>);
 my %location_of :ATTR(:name<location> :default<()>);
 
 sub explain {
-	my $self = shift;
-	my $opt = shift;
-	my $txt =
-        "=head2 Port name: " . $self->get_name() . "\n\n"
-        . "=over\n\n"
-    	. "=item * Binding: " . $self->get_binding() ."\n\n"
-	    . "=item * Location: " . $self->get_location() ."\n\n"
-        . "=back\n\n";
-#		if ( $self->location() );
 
-	my %ns_map = reverse %{ $opt->{ namespace } };
+    my $self = shift;
+    my $opt = shift;
+    $opt->{ wsdl } || die 'required attribute wsdl missing'; 
 
-	my ($prefix, $localname) = split /:/ , $self->get_binding();
-	my $binding = $opt->{ wsdl }->find_binding(
-		$ns_map{ $prefix }, $localname
-	) or die "binding $prefix:$localname not found !";
+    my $binding = $opt->{ wsdl }->find_binding(
+        $opt->{ wsdl }->_expand( $self->get_binding() )
+    ) or die 'binding ' . $self->get_binding()  . ' not found !';
 
-	$txt .= $binding->explain($opt);
 
-	return $txt;
+    my $txt = "=head2 Service information:\n\n"
+        . " Port name: " . $self->get_name() . "\n"
+        . " Binding: " . $self->get_binding() ."\n"
+        . " Location: " . $self->get_location() ."\n"
+        . $binding->explain($opt);
+
+    return $txt;
 }
 
 sub to_typemap {

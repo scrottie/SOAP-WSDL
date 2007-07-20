@@ -3,11 +3,19 @@ use strict;
 use warnings;
 use Carp;
 use Class::Std::Storable;
+use List::Util qw(first);
 
 my %id_of :ATTR(:name<id> :default<()>);
 my %name_of :ATTR(:name<name> :default<()>);
 my %targetNamespace_of :ATTR(:name<targetNamespace> :default<()>);
 my %xmlns_of :ATTR(:name<xmlns> :default<{}>);
+my %parent_of :ATTR(:name<parent> :default<()>);
+
+sub DEMOLISH {
+  my $self = shift;
+  # delete upward references
+  delete $parent_of{ ident $self };
+}
 
 sub STORABLE_freeze_pre :CUMULATIVE {};
 sub STORABLE_freeze_post :CUMULATIVE {};
@@ -23,11 +31,15 @@ sub AUTOMETHOD {
 
     # we're called as $self->push_something(@values);
     if ($subname =~s{^push_}{}xms) {
-        # we're not paranoid - we could be checking get_subname, too
         my $getter = "get_$subname";
         my $setter = "set_$subname";
-        croak "no set accessor found for push_$subname"
-            if not ($self->can( $setter ));
+        ## Checking here is paranoid - will fail fatally if 
+        ## there is no setter...
+        ## And we would have to check getters, too.
+        ## Maybe do it the Conway way via the Symbol table...
+        ## ... can is way slow...
+        # croak "no set accessor found for push_$subname"
+        #    if not ($self->can( $setter ));
         return sub {
             no strict qw(refs);
             my $old_value = $self->$getter();
@@ -42,12 +54,11 @@ sub AUTOMETHOD {
     # we're called as $obj->find_something($ns, $key)
     elsif ($subname =~s {^find_}{get_}xms) {
         return sub {
-            my @found_at = grep {
+            return first {
                 $_->get_targetNamespace() eq $values[0] &&
                 $_->get_name() eq $values[1]
             }
             @{ $self->$subname() };
-            return $found_at[0];
         }
     }
     elsif ($subname =~s {^first_}{get_}xms) {
@@ -61,40 +72,36 @@ sub AUTOMETHOD {
     croak "$subname not found in class " . (ref $self || $self);
 }
 
-#sub to_string :STRINGIFY {
-#    $_[0]->_DUMP();
-#}
-
 sub init {
-	my $self = shift;
-	my @args = @_;
-	foreach my $value (@args)
-	{
-		die $value if (not defined ($value->{ Name }));
-		if ($value->{ Name } =~m{^xmlns\:}xms) {
+    my $self = shift;
+    my @args = @_;
+    foreach my $value (@args)
+    {
+        die $value if (not defined ($value->{ Name }));
+        if ($value->{ Name } =~m{^xmlns\:}xms) {
             die $xmlns_of{ ident $self }
                 if ref $xmlns_of{ ident $self } ne 'HASH';
             $xmlns_of{ ident $self }->{ $value->{ Value } } =
                 $value->{ LocalName };
-			next;
-		}
+            next;
+        }
         elsif ($value->{ Name } =~m{^xmlns$}xms) {
             # just ignore xmlns = for now
             # TODO handle xmlns correctly - maybe via setting a prefix ?
             next;
         }
-		my $name = $value->{ LocalName };
-		my $method = "set_$name";
-		$self->$method( $value->{ Value } )	if ( $method );
-	}
+    my $name = $value->{ LocalName };
+    my $method = "set_$name";
+        $self->$method( $value->{ Value } )	if ( $method );
+    }
     return $self;
 }
 
 sub add_namespace {
-	my ($self, $uri, $prefix ) = @_;
-	return unless $uri;
-	$self->{ namespace } ||= {};
-	$self->{ namespace }->{ $uri } = $prefix;
+    my ($self, $uri, $prefix ) = @_;
+    return unless $uri;
+    $self->{ namespace } ||= {};
+    $self->{ namespace }->{ $uri } = $prefix;
 }
 
 sub to_typemap {
@@ -102,4 +109,61 @@ sub to_typemap {
     return q{};
 }
 
+sub toClass {
+    my $self = shift;
+    warn 'toClass is deprecated and will be removed before reaching 2.01 - ' 
+        . 'use to_class instead (' . caller() . ')';
+    $self->to_class(@_);
+}
+
+sub to_class {
+    my $self = shift;
+    my $opt = shift;
+    my $template = shift;
+
+    $opt->{ base_path } ||= '.';
+
+    my $element_prefix = $opt->{ element_prefix } || $opt->{ prefix };
+    my $type_prefix = $opt->{ type_prefix } || $opt->{ prefix };
+    
+    if (($type_prefix) && ($type_prefix !~m{ :: $ }xms ) )  {
+      warn 'type_prefix should end with "::"';
+      $type_prefix .= '::';
+    }
+
+    if (($element_prefix) && ($element_prefix !~m{ :: $ }xms) ) {
+      warn 'element_prefix should end with "::"';
+      $element_prefix .= '::';
+    }
+
+    # Be careful: a Element may be ComplexType, too 
+    # (but not vice versa)
+    my $prefix = $self->isa('SOAP::WSDL::XSD::Element') 
+      ? $element_prefix
+      : $type_prefix;
+
+    die 'No prefix specified' if not $prefix;
+
+    my $filename = $prefix . $self->get_name() . '.pm';
+    $filename =~s{::}{/}xmsg;
+
+    my $output = $opt->{ output } || $filename; 
+
+    require Template;
+    my $tt = Template->new(
+            RELATIVE => 1,    
+            OUTPUT_PATH => $opt->{ base_path },
+    );
+    
+    my $code = $tt->process( \$template, {
+            element_prefix => $element_prefix,
+            type_prefix => $type_prefix,
+            self => $self, 
+            nsmap => { reverse %{ $opt->{ wsdl }->get_xmlns() } },
+            structure => $self->explain( { wsdl => $opt->{ wsdl } } ),
+        }, 
+        $output
+    )
+    or die $tt->error();
+}
 1;

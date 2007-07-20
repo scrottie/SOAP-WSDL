@@ -23,6 +23,7 @@ sub _factory {
     $CLASSES_OF{ $class } = shift;
 
     no strict qw(refs);
+    no warnings qw(redefine); 
     while (my ($name, $attribute_ref) = each %{ $ATTRIBUTES_OF{ $class } } )
     {
         my $type = $CLASSES_OF{ $class }->{ $name }
@@ -35,27 +36,40 @@ sub _factory {
         *{ "$class\::set_$name" } = sub  {
             my ($self, $value) = @_;
             
-            # set to 
+            # we accept:
+            # a) objects
+            # b) scalars            
+            # c) list refs
+            # d) hash refs
+            # e) mixed stuff of all of the above, so we have to 
+            # set our element to 
             # a) value if it's an object
             # b) New object with value for simple values
-            # c) New object with value for list values and list type
-            # d) List ref of new objects with value for list values and non-list type
-            # e) New object with values passed to new for HASH references
+            # c 1) New object with value for list values and list type
+            # c 2) List ref of new objects with value for list values and non-list type
+            # c + e) List ref of objects for list values (list of objects) and non-list type
+            # d) New object with values passed to new for HASH references
             # 
             # Die on non-ARRAY/HASH references - if you can define semantics 
             # for GLOB references, feel free to add them.
-            $attribute_ref->{ ident $self } = (blessed $value)
+            $attribute_ref->{ ident $self } = blessed $value
                 ? $value
-                : (ref $value ) ?
-                    (ref $value eq 'ARRAY') 
+                : ref $value 
+                    ? ref $value eq 'ARRAY' 
                         ?  $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list')
                             ? $type->new({ value => $value })
-                            : [ map { $type->new({ value => $_ }) } @{ $value } ]
-                        : (ref $value eq 'HASH') 
-                            ?  $type->new( $value )
-                            :  die "Cannot use non-ARRAY/HASH as data"
-                : $type->new({ value => $value });
-                     
+                            : [ map { 
+                                    blessed($_) 
+                                        ? ($_->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
+                                            ? $_
+                                            : croak 'cannot use non-XSD object as value'
+                                        : $type->new({ value => $_ })
+                                } @{ $value } 
+                             ]
+                    : ref $value eq 'HASH' 
+                        ?  $type->new( $value )
+                        :  die 'Cannot use non-ARRAY/HASH as data'
+                : $type->new({ value => $value });                     
         };
 
         *{ "$class\::add_$name" } = sub {
@@ -75,97 +89,109 @@ sub _factory {
             # add to list
             return push @{ $attribute_ref->{ $ident } }, $value;                                          
         };
-    }
-}
-
-sub START {
-    my ($self, $ident, $args_of) = @_;
-    my $class = ref $self;
-
-    # iterate over keys of arguments 
-    # and call set appropriate field in clase
-    map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
-       ? do {
-            my $method = "set_$_";
-            $self->$method( $args_of->{ $_ } );    
-       }
-       : $_ =~ m{ \A              # beginning of string
-                  xmlns           # xmlns 
-            }xms  
-            ? do {}
-            : croak "unknown field $_ in $class";
-    # TODO maybe only warn for unknown fields ?
-
-    } keys %$args_of;
-};
-
-sub _get_elements  {
-    my $self = shift;
-    my $class = ref $self;
-    my $ident = ident $self;
-    return map { $_->{ $ident } } @{ $ELEMENTS_FROM{ $class } };
-}
-
-# this serialize method works fine for <all> and <sequence>
-# complextypes, as well as for <restriction><all> or
-# <restriction><sequence>.
-# But what about choice, group, extension ?
-#
-sub _serialize  {
-    my $ident = ident $_[0];
-    my $class = ref $_[0];
-
-    # return concatenated return value of serialize call of all
-    # elements retrieved from get_elements expanding list refs.
-    # get_elements is inlined for performance.
-    return join q{} , map {     
-        my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
         
-        if (defined $element) {       
-            $element = [ $element ]
-                if not ref $element eq 'ARRAY';
-            my $name = $_;
-    
-            map {
-                # serialize element elements with their own serializer
-                # but name them like they're named here.
-                if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
-                        $_->serialize( { name => $_ } );
+        *{ "$class\::START" } = sub {
+            my ($self, $ident, $args_of) = @_;
+        
+            # iterate over keys of arguments 
+            # and call set appropriate field in clase
+            map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
+               ? do {
+                    my $method = "set_$_";
+                    $self->$method( $args_of->{ $_ } );    
+               }
+               : $_ =~ m{ \A              # beginning of string
+                          xmlns           # xmlns 
+                    }xms  
+                    ? do {}
+                    : do { use Data::Dumper; 
+                        croak "unknown field $_ in $class. Valid fields are " 
+                          . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
+                          . Dumper @_ };
+            # TODO maybe only warn for unknown fields ?
+        
+            } keys %$args_of;
+        };
+
+        # this serialize method works fine for <all> and <sequence>
+        # complextypes, as well as for <restriction><all> or
+        # <restriction><sequence>.
+        # But what about choice, group, extension ?
+        #
+        *{ "$class\::_serialize" } = sub {
+            my $ident = ident $_[0];
+            # my $class = ref $_[0];
+
+            # return concatenated return value of serialize call of all
+            # elements retrieved from get_elements expanding list refs.
+            # get_elements is inlined for performance.
+            return join q{} , map {     
+                my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
+                
+                if (defined $element) {       
+                    $element = [ $element ]
+                        if not ref $element eq 'ARRAY';
+                    my $name = $_;
+            
+                    map {
+                        # serialize element elements with their own serializer
+                        # but name them like they're named here.
+                        if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
+                                $_->serialize( { name => $name } );
+                        }
+                        # serialize complextype elments (of other types) with their 
+                        # serializer, but add element tags around.
+                        else {
+                            join q{}, $_->start_tag({ name => $name })
+                                , $_->serialize()
+                                , $_->end_tag({ name => $name });       
+                        }
+                    } @{ $element }
                 }
-                # serialize complextype elments (of other types) with their 
-                # serializer, but add element tags around.
                 else {
-                    join q{}, $_->start_tag({ name => $name })
-                        , $_->serialize()
-                        , $_->end_tag({ name => $name });       
-                }
-            } @{ $element }
+                    q{};
+                }        
+            } (@{ $ELEMENTS_FROM{ $class } });
+        };
+
+        *{ "$class\::serialize" } = sub {
+            my ($self, $opt) = @_;
+            $opt ||= {};
+        
+            # do we have a empty element ? 
+            return $self->start_tag({ %$opt, empty => 1 })
+                if not defined $ELEMENTS_FROM{ $class } or not @{ $ELEMENTS_FROM{ $class } };
+            return join q{}, $self->start_tag($opt),
+                    $self->_serialize(), $self->end_tag();
         }
-        else {
-            q{};
-        }        
-    } (@{ $ELEMENTS_FROM{ $class } });
-}
 
-sub serialize {
-    my ($self, $opt) = @_;
-    $opt ||= {};
-
-    # do we have a empty element ? 
-    return $self->start_tag({ %$opt, empty => 1 })
-        if not @{ $ELEMENTS_FROM{ ref $self } };
-    return join q{}, $self->start_tag($opt),
-            $self->_serialize(), $self->end_tag();
+    }
 }
 
 1;
 
+__END__
+
 =pod
+
+=head1 NAME
+
+SOAP::WSDL::XSD::Typelib::ComplexType - ComplexType XML Schema definitions
 
 =head1 Bugs and limitations
 
 =over
 
+=item * Incomplete API
+
+Not all variants of XML Schema ComplexType definitions are supported yet.
+
+Variants known to work are:
+
+ sequence
+ all
+ complexContent containing sequence/all definitions
+ 
 =item * Thread safety
 
 SOAP::WSDL::XSD::Typelib::Builtin uses Class::Std::Storable which uses

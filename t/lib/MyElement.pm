@@ -9,11 +9,20 @@ use base (
    'SOAP::WSDL::XSD::Typelib::Builtin::string',
 );
 
-sub START {
-   my ($self, $ident, $args_of) =@_;
-   $self->__set_name('MyElementName');
-}
+__PACKAGE__->__set_name('MyElementName');
+sub get_xmlns { 'urn:Test' };
 
+package MyComplexTypeElement;
+use strict;
+use Class::Std::Storable;
+use SOAP::WSDL::XSD::Typelib::Element;
+use MyComplexType;
+use base (
+   'SOAP::WSDL::XSD::Typelib::Element',
+   'MyComplexType',
+);
+
+__PACKAGE__->__set_name('MyComplexTypeElement');
 sub get_xmlns { 'urn:Test' };
 
 package MyTestElement;
@@ -25,10 +34,6 @@ use base (
    'SOAP::WSDL::XSD::Typelib::Element',
    'SOAP::WSDL::XSD::Typelib::Builtin::string',
 );
-
-sub START {
-   my ($self, $ident, $args_of) =@_;
-}
 
 __PACKAGE__->__set_name('MyTestElement');
 
@@ -44,12 +49,9 @@ use base (
    'SOAP::WSDL::XSD::Typelib::Builtin::string',
 );
 
-sub START {
-   my ($self, $ident, $args_of) =@_;
-   $self->__set_name('MyTestElement2');
-}
+__PACKAGE__->__set_name('MyTestElement2');
+
 sub get_xmlns { 'urn:Test' };
-;
 
 
 package MyAtomicComplexTypeElement;
@@ -76,12 +78,12 @@ __PACKAGE__->_factory(
         test2 => \%test2_of,
     },
     {
+        # this is the <element ref="" variant....
         test =>  'MyTestElement',
         test2 => 'MyTestElement2',
     },
 );
 
 __PACKAGE__->__set_name('MyAtomicComplexTypeElement');
-
 
 1;

@@ -43,8 +43,6 @@ ok $soap = SOAP::WSDL->new(
 	no_dispatch => 1
 ), 'Create SOAP::WSDL object'; 
 
-$soap->serializer()->namespace('SOAP-ENV');
-$soap->serializer()->encodingspace('SOAP-ENC');
 $soap->proxy('http://helloworld/helloworld.asmx');
 
 ok $soap->wsdlinit(

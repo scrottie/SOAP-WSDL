@@ -11,12 +11,12 @@ use_ok qw( MyComplexType );
 my $obj = MyComplexType->new({ MyTestName => 'test' });
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
     , 'inherited class';
-is $obj, '<MyElementName >test</MyElementName>', 'stringification';
+is $obj, '<MyTestName >test</MyTestName >', 'stringification';
 
 $obj = MyComplexType->new({ MyTestName => [ 'test', 'test2' ] });
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
     , 'inherited class';
-is $obj, '<MyElementName >test</MyElementName><MyElementName >test2</MyElementName>',
+is $obj, '<MyTestName >test</MyTestName ><MyTestName >test2</MyTestName >',
     'stringification';
 
 # try on the fly factory
@@ -35,7 +35,7 @@ is $obj, '<MyElementName >test</MyElementName><MyElementName >test2</MyElementNa
 $obj = MyComplexType2->new({ MyTestName => [ 'test', 'test2' ] });
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
     , 'inherited class (on the fly-factory object)';
-is $obj, '<MyElementName >test</MyElementName><MyElementName >test2</MyElementName>',
+is $obj, '<MyTestName >test</MyTestName><MyTestName >test2</MyTestName>',
     'stringification (on the fly-factory object)';
 # print Dumper $obj->get_MyTestName();
 

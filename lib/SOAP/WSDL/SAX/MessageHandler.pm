@@ -76,6 +76,11 @@ my %data_of :ATTR(:default<()>);
     }
 }
 
+sub class_resolver {
+    my $self = shift;
+    $class_resolver_of{ ident $self } = shift;
+}
+
 sub start_document {
     my $ident = ident $_[0];
     $list_of{ $ident } = [];
@@ -114,11 +119,17 @@ sub start_element {
     # TODO replace with UNIVERSAL->isa()
     # match is a bit faster if the string does not match, but WAY slower 
     # if $class matches...
-    # if (not $class=~m{^SOAP::WSDL::XSD::Typelib::Builtin}xms) {
-        
+    # if (not $class=~m{^SOAP::WSDL::XSD::Typelib::Builtin}xms) {      
     if (index $class, 'SOAP::WSDL::XSD::Typelib::Builtin', 0 < 0) {
-        eval "require $class"   ## no critic qw(ProhibitStringyEval)
-            or die $@;
+
+        # check wheter there is a CODE reference for $class::new.
+        # If not, require it - all classes required here MUST
+        # define new()
+        # This is the same as $class->can('new'), but it's way faster  
+        no strict qw(refs);
+        *{ "$class\::new" }{ CODE } 
+            or eval "require $class"   ## no critic qw(ProhibitStringyEval)
+                or die $@;
     }
     # create object
     # set current object
@@ -223,121 +234,18 @@ SOAP::WSDL::SAX::MessageHandler - Convert SOAP messages to custom object trees
     class_resolver => FakeResolver->new(),
     base => 'XML::SAX::Base',
  ), "Object creation");
- my $parser = XML::LibXML->new();
- $parser->set_handler( $filter );
-
+ my $parser = XML::SAX::ParserFactor->parser(
+    Handler => $handler
+ );
  $parser->parse_string( $soap_message );
 
  my $object_tree = $filter->get_data();
 
-
-
 =head1 DESCRIPTION
 
-Parses a SOAP message into an object tree.
+SAX handler for parsing SOAP messages.
 
-For every element in the SOAP message, an object is created. The class
-of the object is determined via a Resolver object which has to be passed
-to new via the class_resolver parameter.
-
-=head1 Writing a class resolver
-
-The class resolver must returned a method "get_class", which is passed a list
-ref of the current element's XPath (relative to Body), split by /.
-
-This method must return a class name appropriate for a XML element.
-
-A class resolver package might look like this:
-
- package FakeResolver;
-
- my %class_list = (
-    'EnqueueMessage' => 'Typelib::TEnqueueMessage',
-    'EnqueueMessage/MMessage' => 'Typelib::TMessage',
-    'EnqueueMessage/MMessage/MRecipientURI' => 'SOAP::WSDL::XSD::Builtin::anyURI',
-    'EnqueueMessage/MMessage/MMessageContent' => 'SOAP::WSDL::XSD::Builtin::string',
- );
-
- sub new { return bless {}, 'FakeResolver' };
-
- sub get_class {
-    my $name = join('/', @{ $_[1] });
-    return ($class_list{ $name }) ? $class_list{ $name }
-        : warn "no class found for $name";
- };
- 1;
-
-=head1 Writing type library classes
-
-Every element must have a correspondent one in the type library.
-
-Type library classes must provide the following methods:
-
-Builtin types should be resolved as SOAP::WSDL::XSD::Builtin::* classes
-
-=over
-
-=item * new
-
-Constructor
-
-=item * add_FOO
-
-The add_FOO method is called for every child element of the XML node.
-
-Characters are regarded as child element of the last XML node.
-
-=back
-
-A tyelib class implemented as Inside-Out object using Class::Std::Storable
-as base class would look like this:
-
-    package Typelib::TEnqueueMessage;
-    use strict;
-    use Class::Std::Storable;
-
-    my %MMessage_of :ATTR(:name<MMessage> :default<()>);
-
-    sub add_MMessage {
-           my ($self, $value) = @_;
-           my $ident = ident $self;
-
-           # we're the first value
-           return $MMessage_of{ $ident } = $value
-                if not defined $MMessage_of{ $ident };
-
-           # we're the second value
-           return $MMessage_of{ $ident } = [
-                $MMessage_of{ $ident }, $value ]
-                    if not ref $MMessage_of{ $ident } eq 'ARRAY';
-
-           # we're third or later
-           push @{ $MMessage_of{ $ident } }, $value;
-           return $MMessage_of{ $ident };
-       }
-    }
-    1;
-
-Of course one could use a method factory for these add_FOO methods - see
-t/lib/Typelib/Base.pm for an example.
-
-=head1 Performance
-
-SOAP::WSDL::SAX::MessageHandler with a raw XML::LibXML parser almost reaches
-the performance of XML::Simple with XML::Parser (and expat) as low-level
-parser.
-
-And SOAP::WSDL::SAX::MessageHandler builds up a object tree, while
-XML::Simple just emits hash data structures:
-
- SOAP::WSDL::SAX::MessageHandler:
-    1 wallclock secs ( 1.39 usr +  0.00 sys =  1.39 CPU) @ 719.42/s (n=1000)
-
- XML::Simple:
-    2 wallclock secs ( 1.25 usr +  0.01 sys =  1.26 CPU) @ 790.51/s (n=1000)
-
-If you know a faster way for parsing XML with a reasonable simple API than
-XML::LibXML, please let me know...
+See L<SOAP::WSDL::Parser> for details.
 
 =head1 Bugs and Limitations
 

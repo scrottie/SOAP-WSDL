@@ -1,4 +1,2 @@
 This is a developer release - everything may (and most things will) change.
 
-You should not expect the SOAP::WSDL to survive - it will probably be replaced
-by SOAP::WSDL::Client.

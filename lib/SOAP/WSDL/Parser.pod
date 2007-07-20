@@ -1,0 +1,213 @@
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Parser - How SOAP::WSDL parses XML messages
+
+=head1 Which XML message does SOAP::WSDL parse ?
+
+Naturally, there are two kinds of XMLdocuments (or messages) SOAP::WSDL 
+has to parse:
+
+=over
+
+=item * WSDL definitions
+
+=item * SOAP messages
+
+=back
+
+=head1 Parser implementations
+
+There are different parser implementations available for SOAP messages - 
+currently there's only one for WSDL definitions.
+
+=head2 WSDL definitions parser
+
+=over
+
+=item * SOAP::WSDL::SAX::WSDLHandler
+
+This is a SAX handler for parsing WSDL files into object trees SOAP::WSDL 
+works with.
+
+It's built as a native handler for XML::LibXML, but will also work with 
+XML::SAX::ParserFactory.
+
+To parse a WSDL file, use one of the following variants:
+
+ my $parser = XML::LibXML->new();
+ my $handler = SOAP::WSDL::SAX::WSDLHandler->new();
+ $parser->set_handler( $handler );
+ $parser->parse( $xml );
+ my $data = $handler->get_data();
+ 
+ 
+ my $handler = SOAP::WSDL::SAX::WSDLHandler->new({
+        base => 'XML::SAX::Base'
+ });
+ my $parser = XML::SAX::ParserFactor->parser(
+    Handler => $handler
+ );
+ $parser->parse( $xml );
+ my $data = $handler->get_data();
+
+=back
+
+=head2 SOAP messages parser
+
+All SOAP message handler use class resolvers for finding out which class 
+a particular XML element should be of and type libs containing these classes.
+
+=head3 Writing a class resolver
+
+The class resolver must returned a method "get_class", which is passed a list
+ref of the current element's XPath (relative to Body), split by /.
+
+This method must return a class name appropriate for a XML element.
+
+A class resolver package might look like this:
+
+ package FakeResolver;
+
+ my %class_list = (
+    'EnqueueMessage' => 'Typelib::TEnqueueMessage',
+    'EnqueueMessage/MMessage' => 'Typelib::TMessage',
+    'EnqueueMessage/MMessage/MRecipientURI' => 'SOAP::WSDL::XSD::Builtin::anyURI',
+    'EnqueueMessage/MMessage/MMessageContent' => 'SOAP::WSDL::XSD::Builtin::string',
+ );
+
+ sub new { return bless {}, 'FakeResolver' };
+
+ sub get_class {
+    my $name = join('/', @{ $_[1] });
+    return ($class_list{ $name }) ? $class_list{ $name }
+        : warn "no class found for $name";
+ };
+ 1;
+
+=head3 Writing type library classes
+
+Every element must have a correspondent one in the type library.
+
+Type library classes must provide the following methods:
+
+Builtin types should be resolved as SOAP::WSDL::XSD::Builtin::* classes
+
+=over
+
+=item * new
+
+Constructor
+
+=item * add_FOO
+
+The add_FOO method is called for every child element of the XML node.
+
+Characters are regarded as child element of the last XML node.
+
+=back
+
+A tyelib class implemented as Inside-Out object using Class::Std::Storable
+as base class would look like this:
+
+    package Typelib::TEnqueueMessage;
+    use strict;
+    use Class::Std::Storable;
+
+    my %MMessage_of :ATTR(:name<MMessage> :default<()>);
+
+    sub add_MMessage {
+           my ($self, $value) = @_;
+           my $ident = ident $self;
+
+           # we're the first value
+           return $MMessage_of{ $ident } = $value
+                if not defined $MMessage_of{ $ident };
+
+           # we're the second value
+           return $MMessage_of{ $ident } = [
+                $MMessage_of{ $ident }, $value ]
+                    if not ref $MMessage_of{ $ident } eq 'ARRAY';
+
+           # we're third or later
+           push @{ $MMessage_of{ $ident } }, $value;
+           return $MMessage_of{ $ident };
+       }
+    }
+    1;
+
+Of course one could use a method factory for these add_FOO methods - see
+t/lib/Typelib/Base.pm for an example.
+
+=head3 Parser implementations
+
+=over
+
+=item * SOAP::WSDL::SAX::MessageHandler
+
+This is a SAX handler for parsing WSDL files into object trees SOAP::WSDL 
+works with.
+
+It's built as a native handler for XML::LibXML, but will also work with 
+XML::SAX::ParserFactory.
+
+Can be used for parsing both streams (chunks) and documents. 
+
+See L<SOAP::WSDL::SAX::MessageHandler> for details.
+
+=item * SOAP::WSDL::Expat::MessageParser
+
+A L<XML::Parser::Expat|XML::Parser::Expat> based parser. This is the fastest 
+parser for most SOAP messages and the default for SOAP::WSDL::Client.
+
+=item * SOAP::WSDL::Expat::MessageStreamParser
+
+A XML::Parser::ExpatNB based parser. Useful for parsing huge HTTP responses, 
+as you don't need to keep everything in memory.
+
+See L<SOAP::WSDL::Expat::MessageStreamParser|SOAP::WSDL::Expat::MessageStreamParser> for details.
+
+=back
+
+=head3 Performance
+
+SOAP::WSDL::Expat::MessageParser is the fastest way of parsing SOAP messages 
+into object trees and only slightly slower than converting them into hash 
+data structures:
+
+ Parsing a SOAP message with a length of 5962 bytes:
+ SOAP::WSDL::Expat::MessageParser:
+    3 wallclock secs ( 3.28 usr +  0.05 sys =  3.33 CPU) @ 60.08/s (n=200)
+  
+ SOAP::WSDL::SAX::MessageHandler (with raw XML::LibXML):   
+   5 wallclock secs ( 4.95 usr +  0.00 sys =  4.95 CPU) @ 40.38/s (n=200)
+ 
+ XML::Simple (XML::Parser):
+   3 wallclock secs ( 2.36 usr +  0.03 sys =  2.39 CPU) @ 83.65/s (n=200)
+ 
+ XML::Simple (XML::SAX::Expat):
+   7 wallclock secs ( 6.50 usr +  0.03 sys =  6.53 CPU) @ 30.62/s (n=200)
+
+As the benchmark shows, all SOAP::WSDL parser variants are faster than 
+XML::Simple with XML::SAX::Expat, and SOAP::WSDL::Expat::MessageParser almost 
+reaches the performance of XML::Simple with XML::Parser as backend.
+
+Parsing SOAP responses in chunks does not increase speed - at least not up 
+to a response size of around 500k:
+
+ Benchmark: timing 5 iterations of SOAP::WSDL::SAX::MessageHandler, 
+   SOAP::WSDL::Expat::MessageParser, SOAP::WSDL::Expat::MessageStreamParser...
+ 
+ SOAP::WSDL::Expat::MessageStreamParser: 
+ 13 wallclock secs ( 7.39 usr +  0.09 sys =  7.48 CPU) @  0.67/s (n=5)
+
+ SOAP::WSDL::Expat::MessageParser: 
+ 10 wallclock secs ( 5.81 usr +  0.06 sys =  5.88 CPU) @  0.85/s (n=5)
+ 
+ SOAP::WSDL::SAX::MessageHandler: 
+ 14 wallclock secs ( 8.78 usr +  0.03 sys =  8.81 CPU) @  0.57/s (n=5)
+ 
+ Response size: 344330 bytes
+
+=cut

@@ -40,13 +40,8 @@ sub serialize
 sub explain
 {
 	my ($self, $opt, $name ) = @_;
-	my $perl;
 	$opt->{ indent } ||= "";
-	$perl .= $opt->{ indent } if ($opt->{ readable });
-
-	$perl .= q{'} . $name . q{' => $someValue };
-	$perl .= "\n" if ($opt->{ readable });
-	return $perl;
+	return "$opt->{ indent }'$name' => \$someValue,\n"
 }
 
 sub toClass {

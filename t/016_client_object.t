@@ -20,8 +20,8 @@ ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
 ok $obj->get_test->isa('SOAP::WSDL::XSD::Typelib::Builtin::string')
     , 'element isa';
 
-is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><MyTestElement >Test</MyTestElement>'
-    . '<MyTestElement2 >Test2</MyTestElement2></MyAtomicComplexTypeElement>'
+is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><test >Test</test>'
+    . '<test2 >Test2</test2></MyAtomicComplexTypeElement>'
     , 'stringification';
 
 my $soap = SOAP::WSDL::Client->new( {
@@ -34,8 +34,8 @@ is $soap->call('Test', $obj), q{<SOAP-ENV:Envelope }
     . q{xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" }
     . q{xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >}
     . q{<SOAP-ENV:Body><MyAtomicComplexTypeElement xmlns="urn:Test" >}
-    . q{<MyTestElement >Test</MyTestElement>}
-    . q{<MyTestElement2 >Test2</MyTestElement2>}
+    . q{<test >Test</test>}
+    . q{<test2 >Test2</test2>}
     . q{</MyAtomicComplexTypeElement></SOAP-ENV:Body></SOAP-ENV:Envelope>}
     , 'SOAP Envelope generation with objects';
 

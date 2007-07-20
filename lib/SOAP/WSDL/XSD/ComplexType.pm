@@ -57,8 +57,7 @@ sub init {
 	$self->SUPER::init( @args );
 }
 
-sub serialize
-{
+sub serialize {
     my ($self, $name, $value, $opt) = @_;
 
     $opt->{ indent } ||= q{};
@@ -74,7 +73,7 @@ sub serialize
 
 
     $xml .= join q{ } , "<$name" , @{ $opt->{ attributes } };
-    delete $opt->{ attributes };                                        # don't propagate...
+    delete $opt->{ attributes };                                # don't propagate...
     
     if ( $opt->{ autotype }) {
       my $ns = $self->get_targetNamespace();
@@ -120,39 +119,38 @@ sub serialize
     return $xml;
 }
 
-sub explain
-{
-	my ($self, $opt, $name ) = @_;
-	my $flavor = $self->get_flavor();
-	my $xml = '';
-	$xml .= $opt->{ indent } if ($opt->{ readable });	# add indentation
-	$xml .= q{'} . $name . q{' => };
+sub explain {
+    my ($self, $opt, $name ) = @_;
+    my $flavor = $self->get_flavor();
 
-	return q{} if not $flavor;	 						# empty complexType
+    $name ||= q{};
 
-	if ( ($flavor eq "sequence") or ($flavor eq "all") )
-	{
-		$xml .= "{\n";
-		$opt->{ indent } .= "\t";
+    return q{}  if not $flavor;          # empty complexType
+    $opt->{ indent } ||= q{   };
+    my $xml = q{};
+    $xml .= "$opt->{indent}\'$name'=> " if $name;
+
+    if ( ($flavor eq "sequence") or ($flavor eq "all") ) {
+        $xml .= "{\n";
+        $opt->{ indent } .= "  ";
         $xml .= join q{}, map { $_->explain( $opt ) }
             @{ $self->get_element() };
-		$opt->{ indent } =~s/\t$//;                     # step back
-		$xml .= $opt->{ indent } . "},\n";
-	}
-	elsif ($flavor eq "complexContent")
-	{
+        $opt->{ indent } =~s/\s{2}$//;                     # step back
+        $xml .= "$opt->{ indent }},\n";
+    }
+    elsif ($flavor eq "complexContent")
+    {
 
-	}
-	elsif ($flavor eq "simpleContent")
-	{
-
-	}
-	else
-	{
-		warn "unknown complexType definition $flavor";
-	}
-	$xml .= "\n" if ($opt->{ readable } );				# add linebreak
-	return $xml;
+    }
+    elsif ($flavor eq "simpleContent")
+    {
+        warn "found unsupported complexType definition $flavor";
+    }
+    else
+    {
+        warn "found unsupported complexType definition $flavor";
+    }
+    return $xml;
 }
 
 sub to_typemap {
@@ -172,12 +170,12 @@ sub to_typemap {
     return $txt;
 }
 
-sub toClass {
+sub to_class {
     my $self = shift;
     my $opt = shift;
 
 my $template = <<'EOT';
-package [% class_prefix %]::[% self.get_name %];
+package [% type_prefix %][% self.get_name %];
 use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::ComplexType;
@@ -194,19 +192,38 @@ __PACKAGE__->_factory(
     [% element.get_name %] 
     [% END %]) ],
     { 
-      [% FOREACH element=self.get_element %] [% element.get_name %] => \%[% element.get_name %]_of, 
+      [% FOREACH element=self.get_element %][% element.get_name %] => \%[% element.get_name %]_of, 
       [% END %]  
     },
     {
-      [%- FOREACH element=self.get_element;
-        split_name = element.get_type.split(':');
-        prefix = split_name.0;
-        localname = split_name.1;
-            IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' -%]
+[%- 
+      FOREACH element=self.get_element;
+        IF (element.get_type);
+          split_name = element.get_type.split(':');
+          prefix = split_name.0;
+          localname = split_name.1;
+          IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' -%]
       [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',
-      [%    ELSE %]
-      [% element.get_name %] => '[% class_prefix %]::[% localname %]',
-      [%-    END;
+[%        ELSE -%]
+      [% element.get_name %] => '[% type_prefix %][% localname %]',
+[%-       END;
+        ELSIF (simpleType = element.first_simpleType); 
+          base = simpleType.get_base();
+%]
+      # basic simple type handling: we treat atomic simple types 
+      # in complexType elements as their base types
+      # - and we only treat <restriction base="..."> yet.
+      # our base here is [% base %]
+[%
+          split_name = base.split(':');
+          prefix = split_name.0;
+          localname = split_name.1;
+          IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' -%]
+      [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',
+[%        ELSE -%]
+      [% element.get_name %] => '[% type_prefix %][% localname %]',
+[%-       END;
+        END;
       END %]
     }
 );
@@ -214,21 +231,68 @@ __PACKAGE__->_factory(
 sub get_xmlns { '[% self.get_targetNamespace %]' }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME [% type_prefix %][% self.get_name %]
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+Type class for the XML type [% self.get_name %]. 
+
+=head1 PROPERTIES
+
+The following properties may be accessed using get_PROPERTY / set_PROPERTY 
+methods:
+
+[%-      FOREACH element = self.get_element %]
+ [% element.get_name -%]
+[%      END %]
+
+=head1 Object structure
+
+[% FOREACH element=self.get_element;
+        IF (element.get_type);
+          split_name = element.get_type.split(':');
+          prefix = split_name.0;
+          localname = split_name.1;
+          IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' -%]
+      [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',
+[%        ELSE -%]
+      [% element.get_name %] => '[% type_prefix %][% localname %]',
+[%-       END;
+        ELSIF (simpleType = element.first_simpleType); 
+          base = simpleType.get_base();
+          split_name = base.split(':');
+          prefix = split_name.0;
+          localname = split_name.1;
+          IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' -%]
+      [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',
+[%        ELSE -%]
+      [% element.get_name %] => '[% type_prefix %][% localname %]',
+[%-       END;
+        END;
+      END %]
+
+Structure as perl hash: 
+
+ The object structure is displayed as hash below though this is not correct.
+ Complex hash elements actually are objects of their corresponding classes 
+ (look for classes of the same name in your typleib).
+ new() will accept a hash structure like this, but transform it to a object 
+ tree.
+
+ [% structure %]
+
+=cut
+
 EOT
 
-    $opt->{ base_path } ||= '.';
-
-    require Template;
-    my $tt = Template->new(
-        RELATIVE => 1,
-    );
-    my $code = $tt->process( \$template, {
-            class_prefix => $opt->{ prefix },
-            self => $self, 
-            nsmap => { reverse %{ $opt->{ wsdl }->get_xmlns() } }, 
-        }, 
-        $opt->{ output },       
-    ) or die $tt->error();
+    $self->SUPER::to_class($opt, $template);
 }
 
 sub _check_value {

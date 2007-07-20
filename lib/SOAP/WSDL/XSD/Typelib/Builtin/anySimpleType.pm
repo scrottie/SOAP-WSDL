@@ -1,8 +1,11 @@
 package SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use strict;
 use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
+
+BEGIN {
+    use Class::Std::Storable;
+    use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
+}
 
 my %value_of :ATTR(:get<value> :init_arg<value> :default<()>);
 
@@ -27,6 +30,7 @@ sub as_bool :BOOLIFY {
 }
 
 Class::Std::initialize();   # make :BOOLIFY overloading serializable
+
 
 1;
 

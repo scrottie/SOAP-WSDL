@@ -1,6 +1,7 @@
 package SOAP::WSDL::Part;
 use strict;
 use warnings;
+use Carp qw(croak);
 use Class::Std::Storable;
 
 use base qw(SOAP::WSDL::Base);
@@ -41,54 +42,44 @@ sub serialize
 }
 
 sub explain {
-	my ($self, $opt, $name ) = @_;
-	my $typelib = $opt->{ wsdl }->first_types()
-        || die "No typelib";
+    my ($self, $opt, $name ) = @_;
+    my $typelib = $opt->{ wsdl }->first_types() || die "No typelib";
+    my $element = $self->get_type() || $self->get_element();
 
-	my %ns_map = reverse %{ $opt->{ namespace } };
-	my $element = $self->get_type() || $self->get_element();
+    # resolve type
+    my $type = $typelib->find_type( $opt->{ wsdl }->_expand( $element ) )
+        || $typelib->find_element( $opt->{ wsdl }->_expand( $element ) );
 
-	# resolve type
-	my ($prefix, $localname) = split /:/ , $element;
-	my $type = $typelib->find_type(
-		$ns_map{ $prefix },
-		$localname
-	)
-    || $typelib->find_element(
-                $ns_map{ $prefix },
-                $localname
-    );
-
-	if (not $type)
-	{
-		warn "no type/element $element ({ $ns_map{ $prefix } }$localname) found for part " . $self->get_name();
-		return q{};
-	}
-	return $type->explain( $opt, $self->get_name() );
+    if (not $type)
+    {
+        warn "no type/element $element found for part " . $self->get_name();
+        return q{};
+    }
+    return " {\n" .  $type->explain( $opt, $self->get_name() ) . " }\n";
 }
 
 sub to_typemap {
     my ($self, $opt, $name ) = @_;
     my $txt = q{};
+    my $wsdl = $opt->{ wsdl };
     my $typelib = $opt->{ wsdl }->first_types()
         || die "No typelib";
 
-    my %ns_map = reverse %{ $opt->{ wsdl }->get_xmlns() };
-    my $element = $self->get_type() || $self->get_element();
-
     # resolve type
-    my ($prefix, $localname) = split /:/ , $element;
     my $type;
-    if ($type = $typelib->find_type( $ns_map{ $prefix }, $localname ) ) {
-        $txt .= "'/' => " . $type->get_name() . "\n";
+    if (my $type_name = $self->get_type()) {
+        $type = $typelib->find_type( $wsdl->_expand( $type_name ) )
+            || croak "no type/element $type_name found for part " . $self->get_name();
+        $txt .= "q{} => " . $type->get_name() . "\n";
+    }
+    elsif ( my $element_name = $self->get_element() ) {         
+        $type = $typelib->find_element( $wsdl->_expand( $element_name ) )
+          || croak "no type/element $element_name found for part " . $self->get_name();
     }
     else {
-        $type = $typelib->find_element( $ns_map{ $prefix }, $localname );
-    }
-
-    if (not $type) {
-       warn "no type/element $element ({ $ns_map{ $prefix } }$localname) found for part " . $self->get_name();
-       return q{};
+        warn 'neither type nor element - do not know what to do for part ' 
+          . $self->get_name();
+        return q{};
     }
     $opt->{ path } = [];
     $txt .= $type->to_typemap( $opt, $self->get_name() );

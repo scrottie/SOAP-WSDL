@@ -1,7 +1,7 @@
 Development of SOAP::WSDL takes place on sourceforge.net.
 
 There's a svn repository available at 
-https://svn.sourceforge.net/svnroot/soap-wsdl
+https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl
 
 Engagement in the further development of this module is highly encouraged - 
 many people have already contributed, and many more probably will.
@@ -14,13 +14,36 @@ you as co-author.
 The (my) current roadmap for SOAP::WSDL is:
 
 1.2*: Bugfixes and support for more XSD variants
-
 1.3: Bindings support
 
 Development of the 1.* tree has stopped - I won't get past 1.2x anymore...
 
 2.*: WSDL -> Perl Class factory with offline WSDL processing
 
-May 2007,
+2.01
+- WSDL support for the most common type definitions
+- Online-facility (SOAP::WSDL) using WSDL object tree directly
+- usable code generator
+- full namespace support when processing WSDL
+- high performance when parsing WSDL messages - get nearly as fast as 
+  XML::Simple...
+
+2.02
+- Support for Apache-SOAP datatypes
+- support for embedded atomic simpleType/complexType definitions
+- Caching of WSDL object tree + generated code (when using SOAP::WSDL).
+- Online-facility (SOAP::WSDL) using code generator via cache directory
+
+Somewhere on the TODO list (in no particular order):
+
+- validation
+- typemaps for use with the type="tns:MyComplexType" XML attribute
+- external entities support when parsing WSDL
+- support all these XML Schema variants 
+- support creating XML Schmema definitions via SOAP::WSDL::XSD::* ('minimal conformant')
+- support other Schema definition languages than XML::Schema (maybe RelaxNG?)
+- factor out SOAP::WSDL::XSD into it's own namespace (maybe just XSD ?)
+
+July 2007,
 
 Martin Kutter

@@ -43,8 +43,7 @@ sub first_complexType {
 }
 
 # serialize type instead...
-sub serialize
-{
+sub serialize {
     my ($self, $name, $value, $opt) = @_;
     my $type;
     my $typelib = $opt->{ typelib };
@@ -109,8 +108,7 @@ sub serialize
     return $type->serialize( $name, $value, $opt );
 }
 
-sub explain
-{
+sub explain {
 	my ($self, $opt, $name) = @_;
 	my $type;
     my $text = q{};
@@ -119,10 +117,12 @@ sub explain
 	if ($type = $self->first_simpleType() )
 	{
 		$text .= $type->explain( $opt, $self->get_name() );
+		return $text;
 	}
 	elsif ($type = $self->first_complexType() )
 	{
-		$text .= $type->explain( $opt, $self->get_name() )
+		$text .= $type->explain( $opt, $self->get_name() );
+		return $text;
 	}
 
 	# return if it's not a derived type - we don't handle
@@ -131,14 +131,17 @@ sub explain
 
 	# if we have a derived type, fetch type and explain
 	my ($prefix, $localname) = split /:/ , $self->get_type();
-	my %ns_map = reverse %{ $opt->{ namespace } };
-	my $ns = $ns_map{ $prefix };
+	my %ns_map = reverse %{ $opt->{ wsdl }->get_xmlns };
 
 	$type = $opt->{ wsdl }->first_types()->find_type(
-		$ns, $localname
+		$ns_map{ $prefix }, $localname
 	);
 
-	die "no type for $prefix:$localname ($ns)" if (not $type);
+    use Data::Dumper;
+	die "no type for $prefix:$localname ($ns_map{ $prefix })" 
+	   . Dumper $opt->{ wsdl }->first_types()->first_schema()->_DUMP
+	
+	if (not $type);
 
 	return $text .= $type->explain( $opt, $self->get_name() );
 	return 'ERROR: '. $@;
@@ -150,10 +153,10 @@ sub to_typemap {
     my $txt = q{};
 
     my %nsmap = reverse %{ $opt->{ wsdl }->get_xmlns() };
-
     my $type;
+
     push @{ $opt->{path} }, $self->get_name();
-    # referenced types need type_prefix
+
     if ( my $typename = $self->get_type() ) {
         my ($prefix, $localname) = split /:/, $self->get_type();
         my $ns = $nsmap{ $prefix };
@@ -166,18 +169,21 @@ sub to_typemap {
         else
         {
             $type = $opt->{ wsdl }->first_types()->find_type( $ns, $localname );
+
             # referenced types need type_prefix (may be globally unique)
             $typeclass = $opt->{ type_prefix } . $type->get_name();
             $txt .= $type->to_typemap($opt);
         }
         $txt .= q{'} . join( q{/}, @{ $opt->{path} } ) . "' => '$typeclass',\n";
     }
+
     # atomic types need element prefix
     elsif ($type = $self->first_simpleType() ) {
         # atomic types need element prefix (may be locally unique)
         # TODO fix simpletype Typemap
         my $typeclass = $opt->{ element_prefix } . $self->get_name();        
         $txt .= q{'} . join( q{/}, @{ $opt->{path} } ) . "' => '$typeclass',\n";
+
         my $flavor = $type->get_flavor(); 
         if ( $flavor eq 'sequence' ) {
             $txt .= "# atomic simple type (sequence)\n";
@@ -194,7 +200,8 @@ sub to_typemap {
     elsif ($type = $self->first_complexType() ) {
         my $typeclass = $opt->{ element_prefix } . $self->get_name();        
         $txt .= q{'} . join( q{/}, @{ $opt->{path} } ) . "' => '$typeclass',\n";
-        my $flavor = $type->get_flavor(); 
+        my $flavor = $type->get_flavor()
+            || 'UNKNOWN'; 
         if ( $flavor eq 'sequence' ) {
             $txt .= "# atomic complex type (sequence)\n";
             $txt .= $type->to_typemap($opt). "\n";;
@@ -205,18 +212,22 @@ sub to_typemap {
             $txt .= $type->to_typemap($opt). "\n";
             $txt .= "# end atomic complex type (all)\n";
         }
+        else {
+            warn "flavor $flavor in element " . $self->get_name() . "\n";
+        }
     }
     pop @{ $opt->{ path } };
 
     return $txt;
 }
 
-sub toClass {
+
+sub to_class {
     my $self = shift;
     my $opt = shift;
 
 my $template = <<'EOT';
-package [% class_prefix %]::[% self.get_name %];
+package [% element_prefix %][% self.get_name %];
 use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
@@ -227,7 +238,7 @@ use base qw(
     SOAP::WSDL::XSD::Typelib::Element
     SOAP::WSDL::XSD::Typelib::SimpleType
     [% type.flavor_class %]
-    [% type.base_class($class_prefix) %]
+    [% type.base_class($type_prefix) %]
 );
 [% ELSIF (type = self.first_complexType) %]
 # atomic complexType
@@ -258,23 +269,24 @@ __PACKAGE__->_factory(
         IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' %]
         [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',        
         [% ELSE %]
-        [% element.get_name %] => '[% type_prefix %]::[% localname %]',
+        [% element.get_name %] => '[% type_prefix %][% localname %]',
         [% END %] 
       [% END %]
     }
 );
 [%# END complexType %]
 [% ELSIF (type = self.get_type) %]
+#
 # <element name="[% self.get_name %]" type="[% self.get_type %]"/> definition
-[%  (typename = self.get_type);
-    split_name = element.type.split(':');
+#
+[%  split_name = self.get_type.split(':');
     prefix = split_name.0;
     localname = split_name.1;
--%]    
-[%  IF (nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema');
+    
+    IF (nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema');
         base_class = 'SOAP::WSDL::XSD::Typelib::Builtin::' _ localname ;
     ELSE;
-        base_class = type_prefix _ '::' _ localname;
+        base_class = type_prefix _ localname;
     -%]
 
 use [% base_class %];
@@ -298,21 +310,61 @@ __PACKAGE__->__set_maxOccurs([% self.get_maxOccurs %]);
 __PACKAGE__->__set_ref('[% self.get_ref %]');
 
 1;
-EOT
 
-    require Template;
-    my $tt = Template->new(
-            RELATIVE => 1,    
-    );
-    my $code = $tt->process( \$template, {
-            class_prefix => $opt->{ prefix },
-            type_prefix => $opt->{ type_prefix },
-            self => $self, 
-            nsmap => { reverse %{ $opt->{ wsdl }->get_xmlns() } },
-        }, 
-        $opt->{ output },   
-    )
-    or die $tt->error();
+
+__END__
+
+=pod
+
+=head1 NAME [% element_prefix %][% self.get_name %]
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+Type class for the XML element [% self.get_name %]. 
+
+=head1 PROPERTIES
+
+The following properties may be accessed using get_PROPERTY / set_PROPERTY 
+methods:
+
+[%- IF (type = self.first_complexType);
+      FOREACH element = type.get_element %]
+ [% element.get_name -%]
+[%      END;
+END %]
+
+=head1 Object structure
+
+[%- IF (type = self.first_complexType);
+      FOREACH element = type.get_element;
+        split_name = element.get_type.split(':');
+        prefix = split_name.0;
+        localname = split_name.1;
+        IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' %]
+        [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',        
+        [% ELSE %]
+        [% element.get_name %] => '[% type_prefix %]::[% localname %]',
+        [% END; 
+      END;
+END %]
+
+Structure as perl hash: 
+
+ The object structure is displayed as hash below though this is not correct.
+ Complex hash elements actually are objects of their corresponding classes 
+ (look for classes of the same name in your typleib).
+ new() will accept a hash structure like this, but transform it to a object 
+ tree.
+
+ [% structure %]
+
+=cut
+
+EOT
+    
+    $self->SUPER::to_class($opt, $template);
 }
 
 1;

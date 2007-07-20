@@ -1,4 +1,4 @@
-package SOAP::WSDL::SAX::WSDLHandler;
+﻿package SOAP::WSDL::SAX::WSDLHandler;
 use strict;
 use warnings;
 use Carp;
@@ -19,10 +19,10 @@ my %current_of :ATTR(:name<current> :default<()>);
         my $class = shift;
         my $self = {}; # $class->SUPER::new(@_);
         my $args = shift || {};
-
+    
         die "arguments to new must be single hash ref"
             if @_ or ! ref $args eq 'HASH';
-
+    
         # nasty, but for those who want to use XML::SAX::Base or similar
         # as parser factory
         if ($args->{base}) {
@@ -34,34 +34,34 @@ my %current_of :ATTR(:name<current> :default<()>);
             # ...we ignore em all...
             no strict qw(refs);
             foreach my $method ( qw(
-                 characters
-                 processing_instruction
-                 ignorable_whitespace
-                 set_document_locator
-                 start_prefix_mapping
-                 end_prefix_mapping
-                 skipped_entity
-                 start_cdata
-                 end_cdata
-                 comment
-                 entity_reference
-                 notation_decl
-                 unparsed_entity_decl
-                 element_decl
-                 attlist_decl
-                 doctype_decl
-                 xml_decl
-                 entity_decl
-                 attribute_decl
-                 internal_entity_decl
-                 external_entity_decl
-                 resolve_entity
-                 start_dtd
-                 end_dtd
-                 start_entity
-                 end_entity
-                 warning
-                 error
+                characters
+                processing_instruction
+                ignorable_whitespace
+                set_document_locator
+                start_prefix_mapping
+                end_prefix_mapping
+                skipped_entity
+                start_cdata
+                end_cdata
+                comment
+                entity_reference
+                notation_decl
+                unparsed_entity_decl
+                element_decl
+                attlist_decl
+                doctype_decl
+                xml_decl
+                entity_decl
+                attribute_decl
+                internal_entity_decl
+                external_entity_decl
+                resolve_entity
+                start_dtd
+                end_dtd
+                start_entity
+                end_entity
+                warning
+                error
             ) ) {
                 *{ "$method" } = sub {};
             }
@@ -72,7 +72,7 @@ my %current_of :ATTR(:name<current> :default<()>);
 };
 
 sub start_document {
-	my ($self, $ident) = ($_[0], ident $_[0]);
+    my $ident = ident $_[0];
     $tree_of{ $ident } = {};
     $order_of{ $ident } = [];
     $targetNamespace_of{ $ident } = undef;
@@ -80,69 +80,63 @@ sub start_document {
 }
 
 sub start_element {
-	my ($self, $element) = @_;
+    my ($self, $element) = @_;
     my $ident = ident $self;
 
-	my $action = SOAP::WSDL::TypeLookup->lookup(
-		$element->{ NamespaceURI },
-		$element->{ LocalName }
-	);
+    my $action = SOAP::WSDL::TypeLookup->lookup(
+        $element->{ NamespaceURI },
+        $element->{ LocalName }
+    );
 
-	if ($action)
-	{
-		if ($action->{ type } eq 'CLASS')
-		{
-			eval "require $action->{ class }";
-            croak $@, $tree_of{ $ident } if ($@);
+    return if not $action;
+    
+    if ($action->{ type } eq 'CLASS') {
+        eval "require $action->{ class }";
+        croak $@, $tree_of{ $ident } if ($@);
 
-			my $class = $action->{ class };
-			my $obj = $class->new()->init(
-                values %{ $element->{ Attributes } }
-            );
+        my $class = $action->{ class };
+        my $obj = $class->new({ parent => $current_of{ $ident } })->init(
+            values %{ $element->{ Attributes } }
+        );
 
-			# set element in parent
-			if ($current_of{ $ident })
-			{
-                # inherit namespace, but don't override
-                $obj->set_targetNamespace(
-                    $current_of{ $ident }->get_targetNamespace() )
-                        if not $obj->get_targetNamespace();
+        # set element in parent
+        if ($current_of{ $ident }) {
+            # inherit namespace, but don't override
+            $obj->set_targetNamespace(
+                $current_of{ $ident }->get_targetNamespace() )
+                    if not $obj->get_targetNamespace();
 
-                # push on name list
-                my $method = "push_$element->{ LocalName }";
-                no strict qw(refs);
-				$current_of{ $ident }->$method( $obj );
+            # push on name list
+            my $method = "push_$element->{ LocalName }";
+            no strict qw(refs);
+            $current_of{ $ident }->$method( $obj );
 
-				# remember element for stepping back
-				push @{ $order_of{ $ident } }, $current_of{ $ident };
-			}
-			else
-			{
-				$tree_of{ $ident } = $obj;
-			}
-			# set new element (step down)
-			$current_of{ $ident } = $obj;
-		}
-		elsif ($action->{ type } eq 'PARENT')
-		{
-			$current_of{ $ident }->init( values %{ $element->{ Attributes } }	);
-		}
-		elsif ($action->{ type } eq 'METHOD')
-		{
-			my $method = $action->{ method } || $element->{ LocalName };
+            # remember element for stepping back
+            push @{ $order_of{ $ident } }, $current_of{ $ident };
+        }
+        else {
+            $tree_of{ $ident } = $obj;
+        }
+        # set new element (step down)
+        $current_of{ $ident } = $obj;
+    }
+    elsif ($action->{ type } eq 'PARENT') {
+        $current_of{ $ident }->init( values %{ $element->{ Attributes } }	);
+    }
+    elsif ($action->{ type } eq 'METHOD') {
+        my $method = $action->{ method } || $element->{ LocalName };
 
-			no strict qw(refs);
-            # call method with
-            # - default value ($action->{ value } if defined,
-            #   dereferencing lists
-            # - the values of the elements Attributes hash
-			$current_of{ $ident }->$method( defined $action->{ value }
-                ? ref $action->{ value }
-                    ? @{ $action->{ value } }
-                    : ($action->{ value })
-                : values %{ $element->{ Attributes } } );
-		}
-	}
+        no strict qw(refs);
+        # call method with
+        # - default value ($action->{ value } if defined,
+        #   dereferencing lists
+        # - the values of the elements Attributes hash
+        $current_of{ $ident }->$method( defined $action->{ value }
+            ? ref $action->{ value }
+                ? @{ $action->{ value } }
+                : ($action->{ value })
+            : values %{ $element->{ Attributes } } );
+    }
 }
 
 sub end_element {

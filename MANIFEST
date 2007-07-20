@@ -8,9 +8,12 @@ lib/SOAP/WSDL/Client.pm
 lib/SOAP/WSDL/Client/Base.pm
 lib/SOAP/WSDL/Definitions.pm
 lib/SOAP/WSDL/Envelope.pm
+lib/SOAP/WSDL/Expat/MessageParser.pm
+lib/SOAP/WSDL/Expat/MessageStreamParser.pm
 lib/SOAP/WSDL/Message.pm
 lib/SOAP/WSDL/Operation.pm
 lib/SOAP/WSDL/OpMessage.pm
+lib/SOAP/WSDL/Parser.pod
 lib/SOAP/WSDL/Part.pm
 lib/SOAP/WSDL/Port.pm
 lib/SOAP/WSDL/PortType.pm
@@ -96,6 +99,7 @@ t/013_complexType.t
 t/014_sax_typelib.t
 t/015_to_typemap.t
 t/016_client_object.t
+t/017_generator.t
 t/020_storable.t
 t/098_pod.t
 t/acceptance/results/03_complexType-all.xml
@@ -123,6 +127,7 @@ t/acceptance/wsdl/contributed/ETest.wsdl
 t/acceptance/wsdl/contributed/OITest.wsdl
 t/acceptance/wsdl/contributed/tools.wsdl
 t/acceptance/wsdl/email_account.wsdl
+t/Expat/01_expat.t
 t/lib/MyComplexType.pm
 t/lib/MyElement.pm
 t/lib/MySimpleType.pm
@@ -147,5 +152,4 @@ t/SOAP/WSDL/05_simpleType-union.t
 t/SOAP/WSDL/10_performance.t
 t/SOAP/WSDL/11_helloworld.NET.t
 t/SOAP/WSDL/12_binding.pl
-t/SOAP/WSDL/97_pod.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/001_string.t

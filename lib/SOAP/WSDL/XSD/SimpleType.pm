@@ -5,43 +5,42 @@ use Class::Std::Storable;
 use base qw(SOAP::WSDL::Base);
 
 my %base_of         :ATTR(:name<base>           :default<()>);
-my %flavor_of       :ATTR(:name<flavor>         :default<()>);
 my %itemType_of     :ATTR(:name<itemType>       :default<()>);
 my %enumeration_of  :ATTR(:name<enumeration>    :default<()>);
 # is set to simpleContent/complexContent
 my %content_Model_of    :ATTR(:name<contentModel>   :default<()>);
 
+# set to restriction|list|union|enumeration
+my %flavor_of       :ATTR(:name<flavor>         :default<()>);
+
 sub set_restriction {
-	my $self = shift;
-	my @attributes = @_;
-	$self->set_flavor( 'restriction' );
-	foreach my $attr (@attributes)
-	{
-		next if (not $attr->{ LocalName } eq 'restriction');
-		$self->base( $attr->{ Value } );
-	}
+    my $self = shift;
+    my @attributes = @_;
+    $self->set_flavor( 'restriction' );
+    for (@attributes) {
+        next if (not $_->{ LocalName } eq 'base');
+        $self->set_base( $_->{ Value } );
+    }
 }
 
 sub set_list {
-	my $self = shift;
-	my @attributes = @_;
-	$self->set_flavor( 'list' );
-	foreach my $attr (@attributes)
-	{
-		next if (not $attr->{ LocalName } eq 'list');
-		$self->set_base( $attr->{ Value } );
-	}
+    my $self = shift;
+    my @attributes = @_;
+    $self->set_flavor( 'list' );
+    for (@attributes) {
+        next if (not $_->{ LocalName } eq 'type');
+        $self->set_base( $_->{ Value } );
+    }
 }
 
 sub set_union {
-	my $self = shift;
-	my @attributes = @_;
-	$self->set_flavor( 'union' );
-	foreach my $attr (@attributes)
-	{
-		next if (not $attr->{ LocalName } eq 'memberTypes');
-		$self->set_base( [ split /\s/, $attr->{ Value } ] );
-	}
+    my $self = shift;
+    my @attributes = @_;
+    $self->set_flavor( 'union' );
+    for (@attributes) {
+        next if (not $_->{ LocalName } eq 'memberTypes');
+        $self->set_base( [ split /\s/, $_->{ Value } ] );
+    }
 }
 
 sub push_enumeration
@@ -50,10 +49,9 @@ sub push_enumeration
 	my @attr = @_;
 	my @attributes = @_;
 	$self->set_flavor( 'enumeration' );
-	foreach my $attr (@attributes)
-	{
-		next if (not $attr->{ LocalName } eq 'value');
-		push @{ $enumeration_of{ ident $self } }, $attr->{ 'Value' };
+	for (@attributes) {
+		next if (not $_->{ LocalName } eq 'value');
+		push @{ $enumeration_of{ ident $self } }, $_->{ 'Value' };
 	}
 }
 
@@ -116,10 +114,12 @@ sub _check_value {
 	my $self = shift;
 }
 
-sub toClass {
+# TODO: implement to_class based on template...
+
+sub to_class {
     my $self = shift;
     my $opt = shift;
-    my $class_prefix = $opt->{ prefix };
+    my $class_prefix = $opt->{ type_prefix };
     my $name = $opt->{name} || $self->get_name();
     my $flavor = $self->get_flavor() eq 'list' 
         ? 'SOAP::WSDL::XSD::Typelib::Builtin::list'

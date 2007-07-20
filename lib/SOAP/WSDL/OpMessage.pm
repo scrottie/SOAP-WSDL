@@ -29,17 +29,14 @@ sub explain
 		);
 
 		for my $part(@{ $message->[0]->get_part() }) {
-			$opt->{ indent } .= "\t";
 			$txt .= $part->explain($opt);
-			$opt->{ indent } =~s/\t//;
-    		$txt  .= $opt->{ indent } . "\n";
         }
 	}
 	else
 	{
 		if ($self->use())
 		{
-			$txt .= $opt->{ indent } . "$name use: " . $self->use(). "\n";
+			$txt .= " $name use: " . $self->use(). "\n";
 		}
 	}
 	return $txt;

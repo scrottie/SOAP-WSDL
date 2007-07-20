@@ -6,7 +6,7 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Envelope;
 use SOAP::Lite;
 use Class::Std::Storable;
-use SOAP::WSDL::SAX::MessageHandler;
+use SOAP::WSDL::Expat::MessageParser;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 
 # Package globals for speed...
@@ -14,9 +14,9 @@ my $PARSER;
 my $MESSAGE_HANDLER;
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
-my %no_dispatch_of  :ATTR(:name<no_dispatch>    :default<()>);
-my %outputxml_of    :ATTR(:name<outputxml>      :default<()>);
-my %proxy_of        :ATTR(:name<proxy>          :default<()>);
+my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
+my %outputxml_of        :ATTR(:name<outputxml>      :default<()>);
+my %proxy_of            :ATTR(:name<proxy>          :default<()>);
 
 # TODO remove when preparing 2.01
 sub outputtree { warn 'outputtree is deprecated and'
@@ -38,19 +38,7 @@ SUBFACTORY: {
 }
 
 BEGIN {
-    eval {
-        require XML::LibXML;
-        $PARSER = XML::LibXML->new();
-        $MESSAGE_HANDLER = SOAP::WSDL::SAX::MessageHandler->new();
-        $PARSER->set_handler( $MESSAGE_HANDLER );
-    };
-    if ($@) {
-        require XML::SAX::ParserFactory;
-        $MESSAGE_HANDLER = SOAP::WSDL::SAX::MessageHandler->new({
-            base => 'XML::SAX::Base' });
-        $PARSER = XML::SAX::ParserFactory->parser(
-            handler => $MESSAGE_HANDLER );
-    }
+    $PARSER = SOAP::WSDL::Expat::MessageParser->new();
 }
 
 sub call {
@@ -95,20 +83,16 @@ sub call {
 	);
 
     # warn 'Received ' . length($response) . ' bytes of content';
-
 	return $response if ($self->outputxml() );
 
-    $MESSAGE_HANDLER->set_class_resolver( $self->get_class_resolver() );
+    $PARSER->class_resolver( $self->get_class_resolver() );
 
     # if we had no success (Transport layer error status code)
     # or if transport layer failed
     if (! $soap->transport->is_success() ) {
-
-        # TODO Fix deserializing message - there's something wrong with Fault11
         # Try deserializing response - there may be some
         if ($response) {
-            
-            eval { $PARSER->parse_string( $response ); };
+            eval { $PARSER->parse( $response ); };           
             if ($@) {
                 warn "could not deserialize response: $@";                    
             }
@@ -128,7 +112,7 @@ sub call {
                 . $soap->transport->message()
         });
     }
-    eval { $PARSER->parse_string( $response ) };
+    eval { $PARSER->parse( $response ) };
 
     # return fault if we cannot deserialize response
     if ($@) {
@@ -140,7 +124,7 @@ sub call {
         });
     }
 
-    return $MESSAGE_HANDLER->get_data();
+    return $PARSER->get_data();
 } ## end sub call
 
 1;

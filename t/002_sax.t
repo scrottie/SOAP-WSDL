@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use diagnostics;
-use Test::More tests => 17; # qw/no_plan/; # TODO: change to tests => N;
+use Test::More tests => 18; # qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
 use XML::SAX::ParserFactory;
 
@@ -28,9 +27,9 @@ $parser->parse_string( xml() );
 my $wsdl;
 ok( $wsdl = $filter->get_data() , "get object tree");
 
-# print Dumper $wsdl;
-
 my $types = $wsdl->first_types();
+
+is $types->get_parent(), $wsdl , 'types parent';
 
 my $serializer_options = {
     readable => 1,

@@ -40,7 +40,7 @@ sub start_tag {
     my $class = ref $self;
     my $ending = '>';
     my @attr_from = ();
-    
+    my $name = $opt->{ name } || $NAME{$class};
     $ending = '/>' if ($opt->{ empty });
     
     if ($opt->{qualified}) {
@@ -51,12 +51,13 @@ sub start_tag {
         push @attr_from, 'xsi:nil="true"';
         $ending = '/>';
     }
-    return join q{ }, "<$NAME{$class}" , @attr_from , $ending;
+    return join q{ }, "<$name" , @attr_from , $ending;
 }
 
 sub end_tag {
-    my ($self, $class) = ($_[0], ref $_[0]);
-    return "</$NAME{$class}>";
+    my ($class, $opt) = (ref $_[0], $_[1]);
+    my $name = $opt->{ name } || $NAME{$class};
+    return "</$name>";
 }
 
 1;
