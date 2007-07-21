@@ -1,0 +1,51 @@
+=head1 NAME
+
+SOAP::WSDL::Manual::Glossary - Those acronyms and stuff
+
+=head1 Glossary
+
+=head2 web service
+
+Web services are RPC (Remote Procedure Call) interfaces accessible via 
+the internet, typically via HTTP(S). 
+
+=head2 SOAP
+
+SOAP (the Simple Object Access Protocol) is a specification for 
+defining RPC interfaces, including (but not neccessarily limited to) 
+web services. 
+
+While one of the constituting aspects of a web service is its 
+reachability via some internet protocol, you might as well define 
+SOAP services accessible via postcards.
+
+Despite it's name, SOAP has nothing more to do with objects than 
+cars have with pets - SOAP messages may, but not neccessarily do 
+carry object, very much like your car may, but does not need to 
+carry your pet.
+
+=head2 WSDL
+
+WSDL (Web Service Definition Language) is a XML-based markup language 
+for defining web service interfaces. 
+
+=head2 WS-I
+
+WS-I (Web Service Interoperability) is a industry consortium dedicated 
+to finding interoperability rules for web services.
+
+SOAP::WSDL aims to be a WS-I compliant SOAP client.
+
+=head1 LICENSE
+
+Copyright 2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under 
+the same terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=cut
+

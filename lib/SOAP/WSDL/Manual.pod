@@ -1,0 +1,79 @@
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Manual - accessing WSDL based web services
+
+=head1 Intro: Accessing a WSDL-based web service
+
+=head2 Quick walk-through for the unpatient
+
+=over
+
+=item * Create WSDL bindings
+
+ perl wsdl2perl.pl -b base_dir URL 
+
+=item * Look what has been generated
+
+Check the results of the generator. There should be one 
+MyInterface/SERVICE_NAME.pm file per service.
+
+=item * Write script
+
+ use MyInterface::SERVICE_NAME;
+ my $service = MyInterface::SERVICE_NAME->new();
+ 
+ my $result = $service->SERVICE_METHOD();
+ die $result if not $result;
+ 
+ print $result;
+
+C<perldoc MyInterface::SERVICE_NAME> should give you some overview about 
+the service's interface structure.
+
+The results of all calls to your service object's methods (except new) 
+are objects based on SOAP::WSDL's XML schema implementation.
+
+These objects are false in boolean context, and serialize to XML when 
+printed.
+
+To access the object's properties use get_NAME / set_NAME getter/setter 
+methods whith NAME corresponding to the XML tag name.
+
+=item  * Run script
+
+=back
+
+=head2 Instrumenting web services with interface classes
+
+SOAP::WSDL (starting from 2.00) instruments WSDL based web services with 
+interface classes. This means that SOAP::WSDL features a code generator 
+which creates one class for every web service you want to access.
+
+Moreover, the data types from the WSDL definitions are also wrapped into 
+classes and returned to the user as objects. 
+
+To find out which class a particular XML node should be, SOAP::WSDL uses 
+typemaps. For every Web service, there's also a typemap created.
+
+=head1 SEE ALSO
+
+L<SOAP::WSDL::Manual::Glossary> The meaning of all these words
+
+L<SOAP::WSDL::Client> Basic client for SOAP::WSDL based interfaces
+
+L<SOAP::WSDL> an interpreting WSDL based SOAP client
+
+=head1 LICENSE
+
+Copyright 2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under 
+the same terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=cut

@@ -72,7 +72,7 @@ sub to_typemap {
         map { $_->to_typemap( $opt ) } @{ $service_of{ ident $self } };
 }
 
-sub create_interface {
+sub create {
     my $self = shift;
     my $opt = shift;
  
@@ -82,12 +82,13 @@ sub create_interface {
     $opt->{ type_prefix } ||= $opt->{ prefix };
     $opt->{ element_prefix } ||= $opt->{ prefix };
     $opt->{ typemap_prefix } or die 'Required argument typemap_prefix missing';
-   
+
     mkpath $base_path;
 
     for my $service (@{ $service_of{ ident $self } }) {
       warn "creating typemap $opt->{ typemap_prefix }". $service->get_name() . "\n";
       $self->_create_typemap({ %{ $opt }, service => $service });
+      $self->_create_interface({ %{ $opt }, service => $service });
     }
 
     my @schema = @{ $self->first_types()->get_schema() };
@@ -95,8 +96,109 @@ sub create_interface {
         warn 'creating class for '. $type->get_name() . "\n";
         $type->to_class( { %$opt, wsdl => $self } );
     }
-    1;
 }
+
+sub _create_interface {
+    my $self = shift;
+    my $opt = shift;
+    my $service_name = $opt->{ service }->get_name();
+    my $file_name = "$opt->{ base_path }/$opt->{ interface_prefix }/$service_name.pm";
+    $file_name =~s{::}{/}gms;
+    my $path = dirname $file_name;
+    my $name = basename $file_name;
+    my $binding = $self->find_binding( $self->_expand( $opt->{ service }->first_port()->get_binding() ) );
+    my $portType = $self->find_portType( $self->_expand( $binding->get_type() ) );
+    my $portType_operation_from_ref = $portType->get_operation();
+    my $operation_ref = $binding->get_operation();
+    $operation_ref = [ $operation_ref ] if ref $operation_ref ne 'ARRAY';
+    my %operations = map { 
+        do { 
+            my $operation_name = $_->get_name();
+            my $port_op = first { $_->get_name eq $operation_name } @{ $portType_operation_from_ref };
+            my $input = $port_op->first_input()->get_message();
+            my $message = $self->find_message( $self->_expand( $input ) );
+            my $parts = $message->get_part;
+            ( $operation_name => [
+                  map { 
+                      do {
+                      my $name;
+                          ($name = $_->get_element())
+                              ? do {
+                                my ($prefix, $localname) = split m{:}xms , $name;
+                                "$opt->{ element_prefix }$localname";
+                              }
+                          : ($name = $_->get_type())
+                              ? do {
+                                my ($prefix, $localname) = split m{:}xms , $name;
+                                "$opt->{ type_prefix }$localname";
+                              }
+                              : ()
+                      }
+                  } @{ $parts }
+            ]  );
+        };
+    } @{ $operation_ref };
+ 
+#     use Data::Dumper;
+#     die Dumper \%operations;
+ 
+    my $template = <<'EOT';
+package [% interface_prefix %][% service.get_name %];
+use strict;
+use warnings;
+use [% typemap_prefix %][% service.get_name %];
+use base 'SOAP::WSDL::Client::Base';
+
+sub new {
+    my $class = shift;
+    my $arg_ref = shift || {};
+    my $self = $class->SUPER::new({
+        class_resolver => '[% typemap_prefix %][% service.get_name %]',
+        proxy => '[% service.first_port.get_location %]',
+        %{ $arg_ref }
+    });
+    return bless $self, $class;
+}
+
+__PACKAGE__->__create_methods(
+      [% FOREACH name = operations.keys -%]
+        [% name %] => [ [% FOREACH class = operations.$name %]'[% class %]', [% END %]],
+      [% END %]
+);
+
+1;
+
+__END__
+
+=pod
+
+=head1 NAME 
+
+[% interface_prefix %][% service.get_name %] - SOAP interface to [% service.get_name %] at 
+[% service.first_port.get_location %]
+
+=head1 SYNOPSIS
+
+ my $interface = [% interface_prefix %][% service.get_name %]->new();
+ my $[% operations.keys.1 %] = $interface->[% operations.keys.1 %]();
+
+
+[% service.explain({ wsdl => wsdl }) %]
+
+=cut
+
+EOT
+
+    require Template;
+    my $tt = Template->new(
+      OUTPUT_PATH => $path,
+    );
+    $tt->process(\$template, { %{ $opt }, operations => \%operations, binding => $binding, wsdl => $self }, $name)
+      or die $tt->error();
+    return 1;
+}
+
+
 
 sub _create_typemap {
     my $self = shift;
@@ -140,6 +242,13 @@ EOT
 
 }
 
+sub listify {
+    my $data = shift;
+    return if not defined $data;
+    return [ $data ] if not ref $data;
+    return [ $data ] if not ref $data eq 'ARRAY';
+    return $data;
+}
 
 1;
 

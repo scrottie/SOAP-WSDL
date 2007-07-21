@@ -173,6 +173,130 @@ numeric context.
 
 =back
 
+=head1 Subclasses
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::anyType
+
+Base class for all types
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType
+
+Base class for all simple types
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::anyURI
+
+Type representing URIs
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::boolean
+
+Represents boolean data.
+
+Serializes to "true" or "false".
+
+Everything true in perl and not "false" is deserialized as true.
+
+Returns true/false in boolean context.
+
+Returns 1 / 0 in numeric context.
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::byte 
+
+byte integer objects. 
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::date
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::dateTime
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::decimal
+
+decimal is the base of all non-float numbers
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::double 
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::duration
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::ENTITY
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::float
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::gDay
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::gMonth
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::gMonthDay
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::gYear
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::gYearMonth
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::hexBinary
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::ID
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::IDREF
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::IDREFS
+
+Derived by SOAP::WSDL::XSD::Typelib::Builtin::list.
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::int
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::integer
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::language
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::list
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::long
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::Name
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::NCName
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::negativeInteger
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::normalizedString
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::NOTATION
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::positiveInteger
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::QName
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::short
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::string
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::time
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::token
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong
+
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort
+
+=head1 CAVEATS
+
+=over
+
+=item * set_value
+
+In contrast to Class::Std-generated mutators (setters), set_value does 
+not return the last value.
+
+This is for speed reasons: SOAP::WSDL never needs to know the last value 
+when calling set_calue, but calls it over and over again...
+
+=back
+
 =head1 BUGS AND LIMITATIONS
 
 =over

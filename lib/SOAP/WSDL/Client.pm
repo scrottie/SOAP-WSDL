@@ -42,29 +42,32 @@ BEGIN {
 }
 
 sub call {
-	my $self = shift;
-	my $method = shift;
-	my $data = ref $_[0] ? $_[0] : { @_ };
+    my $self = shift;
+    my $method = shift;
+    my $data = ref $_[0] ? $_[0] : { @_ };
     my $content = q{};
     my ($envelope, $soap_action);
 
-	if (blessed $data
+    if (blessed $data
         && $data->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
     {
         $envelope = SOAP::WSDL::Envelope->serialize( $method, $data );
-
         # TODO replace by something derived from binding - this is just a
         # workaround...
         $soap_action = join '/', $data->get_xmlns(), $method;
-
     }
+    else {
+        $envelope = SOAP::WSDL::Envelope->serialize( $method, $data );
+        # $soap_action = $self->on_action( $method );
+    }
+    
 
-	return $envelope if $self->no_dispatch();
-
+    return $envelope if $self->no_dispatch();
+    
     # warn $envelope;
 
-	# get response via transport layer
-	# TODO remove dependency from SOAP::Lite and use a
+    # get response via transport layer
+    # TODO remove dependency from SOAP::Lite and use a
     # SAX-based filter using XML::LibXML to get the
     # result.
     # Filter should have the following methods:
@@ -83,7 +86,7 @@ sub call {
 	);
 
     # warn 'Received ' . length($response) . ' bytes of content';
-	return $response if ($self->outputxml() );
+    return $response if ($self->outputxml() );
 
     $PARSER->class_resolver( $self->get_class_resolver() );
 
@@ -97,7 +100,7 @@ sub call {
                 warn "could not deserialize response: $@";                    
             }
             else {   
-                return $MESSAGE_HANDLER->get_data();
+                return $PARSER->get_data();
             }
         };
         

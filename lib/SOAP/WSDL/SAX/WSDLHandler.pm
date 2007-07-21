@@ -154,6 +154,10 @@ sub end_element {
 	}
 }
 
+sub fatal_error {
+  die @_;
+}
+
 sub get_data {
 	my $self = shift;
 	return $tree_of{ ident $self };

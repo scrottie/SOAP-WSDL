@@ -28,15 +28,15 @@ sub explain {
 }
 
 sub to_typemap {
-
     my $self = shift;
     my $opt = shift;
-    my %ns_map = reverse %{ $opt->{ wsdl }->get_xmlns() };
 
-    my ($prefix, $localname) = split /:/ , $self->get_binding();
+    # skip non-SOAP ports (could be http, email or whatever...)
+    return q{} if not $location_of{ ident $self };
+
     my $binding = $opt->{ wsdl }->find_binding(
-            $ns_map{ $prefix }, $localname
-    ) or die "binding $prefix:$localname not found !";
+        $opt->{wsdl}->_expand( $binding_of{ ident $self } )
+    ) or die 'binding ' . $binding_of{ ident $self } .' not found!';
 
     return $binding->to_typemap($opt);
 }

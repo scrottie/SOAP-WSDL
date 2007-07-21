@@ -33,38 +33,3 @@ Class::Std::initialize();   # make :BOOLIFY overloading serializable
 
 
 1;
-
-__END__
-
-=pod
-
-=head1 NAME
-
-SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType - All builtin and all simpleType types inherit from anySimpleType
-
-=head1 CAVEATS
-
-=over
-
-=item * set_value
-
-In contrast to Class::Std-generated mutators (setters), set_value does 
-not return the last value.
-
-This is for speed reasons: SOAP::WSDL never needs to know the last value 
-when calling set_calue, but calls it over and over again...
-
-=back
-
-=head1 LICENSE
-
-Copyright 2004-2007 Martin Kutter.
-
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
-
-=head1 AUTHOR
-
-Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
-
-=cut

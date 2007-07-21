@@ -1,0 +1,27 @@
+- remove benchmarks from tests. Create benchmark/ directory and store benchmarks in.
+- SOAP::WSDL::Definitions::create creates bad interface docs. Fix it.
+- add tests for SOAP::WSDL::Definitions::create 
+   - test for correct creation
+   - test against web service (fullerdata.com?)
+- Improve docs
+- Remove SOAP::Lite dependency - for now, just support HTTP(s) via LWP::UserAgent.
+- write inheritance Test for all XSD::Typelib::Builtin::* classes
+- Check & probably fix simpleType support. 
+The WS at http://www.webservicex.net/genericbarcode.asmx?wsdl should make up a good example for simpleType 
+definitions.
+- update all Builtin Types to new constructor BEGIN block (Class::Std unfortunately is way slow)
+   - DONE.
+- Remove useless (but on CPAN annoying) doc from Builtin::* classes
+   - DONE
+- add example WS scripts
+   - DONE.
+- SOAP::WSDL::XSD::Typelib::Builtin::string does not unescape XML builtin entities on get_value()
+   - WONTFIX. 
+   Entities are unescaped by XML parser. 
+   If you want the plain value, you have to use get_value, as XML conversion is overloaded on stringification.
+- Make callin WS easier: implent WS-I-based SOAP::WSDL::Client::WSI
+   - WONTFIX - SOAP::WSDL::Base should behave equal
+- add capability to create request objects based on input part definitions to SOAP::WSDL::Client::Base
+   - DONE.
+
+

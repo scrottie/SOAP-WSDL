@@ -2,6 +2,7 @@ package SOAP::WSDL::Binding;
 use strict;
 use warnings;
 use Class::Std::Storable;
+use List::Util qw(first);
 use base qw(SOAP::WSDL::Base);
 
 my %operation_of    :ATTR(:name<operation> :default<()>);
@@ -22,18 +23,17 @@ sub explain {
     ) or die 'portType not found: ' . $self->get_type();
 
     my $txt = <<"EOT";
- Transport: $transport_of{ ident $self }
 
-=head2 METHODS 
+=head2 SOAP Operations 
 
 B<Note:>
 
  Input, output and fault messages are stated as perl hash refs. 
  
- These are only for informational purposes - the  actual implementation 
- may be object trees, not hash refs, though the input messages may be passed 
- to the respective methods as hash refs and will be converted to object trees 
- automatically.
+ These are only for informational purposes - the actual implementation 
+ normally uses object trees, not hash refs, though the input messages 
+ may be passed to the respective methods as hash refs and will be 
+ converted to object trees automatically.
 
 EOT
 
@@ -42,7 +42,7 @@ EOT
         my $operation_name = $operation->get_name();
         my $operation_style = $operation->get_style() || q{};
 
-        my ($port_operation) = grep { $_->get_name eq $operation_name } 
+        my $port_operation = first { $_->get_name eq $operation_name } 
             @{ $portType->get_operation() }             
                 or die "operation not found:" . $operation->get_name();
 

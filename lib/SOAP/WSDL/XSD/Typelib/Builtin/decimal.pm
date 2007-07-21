@@ -1,8 +1,6 @@
 package SOAP::WSDL::XSD::Typelib::Builtin::decimal;
 use strict;
 use warnings;
-use Class::Std::Storable;
-use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
 my %totalDigits_of      :ATTR(:name<totalDigits> :default<()>);
 my %fractionDigits_of   :ATTR(:name<fractionDigits> :default<()>);
@@ -14,6 +12,27 @@ my %maxExclusive_of     :ATTR(:name<maxExclusive> :default<()>);
 my %minInclusive_of     :ATTR(:name<minInclusive> :default<()>);
 my %minExclusive_of     :ATTR(:name<minExclusive> :default<()>);
 
+# Speed up. Class::Std::new is slow - and we don't need it's functionality...
+BEGIN {
+    use Class::Std::Storable;
+    use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
+
+    no warnings qw(redefine);
+    no strict qw(refs);
+
+    # Yes, I know it's ugly - but this is the fastest constructor to write 
+    # for Class::Std-Style inside out objects..
+    *{ __PACKAGE__ . '::new' } = sub {   
+        my $self = bless \do { my $foo } , shift;
+        if (@_) {
+            $self->set_value( $_[0]->{ value } )
+                if exists $_[0]->{ value }
+        }
+        return $self;
+    };
+
+}
+
 sub as_num :NUMERIFY :BOOLIFY {
     return $_[0]->get_value();
 }
@@ -21,24 +40,3 @@ sub as_num :NUMERIFY :BOOLIFY {
 Class::Std::initialize();   # make :NUMERIFY :BOOLIFY overloading serializable
 
 1;
-
-__END__
-
-=pod
-
-=head1 NAME
-
-SOAP::WSDL::XSD::Typelib::Builtin::decimal - decimal object, base of all non-float numbers
-
-=head1 LICENSE
-
-Copyright 2004-2007 Martin Kutter.
-
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
-
-=head1 AUTHOR
-
-Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
-
-=cut

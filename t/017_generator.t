@@ -19,7 +19,7 @@ $parser->parse_string( xml() );
 my $wsdl;
 ok( $wsdl = $filter->get_data() , "get object tree");
 
-ok $wsdl->create_interface({
+$wsdl->create({
   base_path => "$path/testlib",
   typemap_prefix => "Test::Typemap::",
   type_prefix => "Test::Type::",

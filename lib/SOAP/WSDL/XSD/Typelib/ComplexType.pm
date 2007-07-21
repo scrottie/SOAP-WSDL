@@ -118,7 +118,8 @@ sub _factory {
         # <restriction><sequence>.
         # But what about choice, group, extension ?
         #
-        *{ "$class\::_serialize" } = sub {
+    }
+    *{ "$class\::_serialize" } = sub {
             my $ident = ident $_[0];
             # my $class = ref $_[0];
 
@@ -154,7 +155,7 @@ sub _factory {
             } (@{ $ELEMENTS_FROM{ $class } });
         };
 
-        *{ "$class\::serialize" } = sub {
+    *{ "$class\::serialize" } = sub {
             my ($self, $opt) = @_;
             $opt ||= {};
         
@@ -163,9 +164,8 @@ sub _factory {
                 if not defined $ELEMENTS_FROM{ $class } or not @{ $ELEMENTS_FROM{ $class } };
             return join q{}, $self->start_tag($opt),
                     $self->_serialize(), $self->end_tag();
-        }
-
     }
+    
 }
 
 1;

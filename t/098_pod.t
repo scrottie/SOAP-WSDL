@@ -8,7 +8,7 @@ my $dir = cwd;
 
 if ( $dir =~ /t$/ )
 {
-	@directories = ('../lib/');
+	@directories = ('../lib/', '../bin/');
 }
 else
 {

@@ -57,18 +57,22 @@ To parse a WSDL file, use one of the following variants:
 =head2 SOAP messages parser
 
 All SOAP message handler use class resolvers for finding out which class 
-a particular XML element should be of and type libs containing these classes.
+a particular XML element should be of, and type libs containing these classes.
 
-=head3 Writing a class resolver
+=head3 Creating a class resolver
 
-The class resolver must returned a method "get_class", which is passed a list
-ref of the current element's XPath (relative to Body), split by /.
+The easiest way for creating a class resolver is to run SOAP::WSDL's generator.
+
+See wsdl2perl.pl 
+
+The class resolver must implement a class method "get_class", which is passed 
+a list ref of the current element's XPath (relative to Body), split by /.
 
 This method must return a class name appropriate for a XML element.
 
 A class resolver package might look like this:
 
- package FakeResolver;
+ package ClassResolver;
 
  my %class_list = (
     'EnqueueMessage' => 'Typelib::TEnqueueMessage',
@@ -77,7 +81,7 @@ A class resolver package might look like this:
     'EnqueueMessage/MMessage/MMessageContent' => 'SOAP::WSDL::XSD::Builtin::string',
  );
 
- sub new { return bless {}, 'FakeResolver' };
+ sub new { return bless {}, 'ClassResolver' };
 
  sub get_class {
     my $name = join('/', @{ $_[1] });
@@ -86,59 +90,20 @@ A class resolver package might look like this:
  };
  1;
 
-=head3 Writing type library classes
+=head3 Creating type lib classes
 
 Every element must have a correspondent one in the type library.
 
-Type library classes must provide the following methods:
-
 Builtin types should be resolved as SOAP::WSDL::XSD::Builtin::* classes
 
-=over
+Creating a type lib is easy: Just run SOAP::WSDL's generator - it will 
+create both a typemap and the type lib classes for a WSDL file.
 
-=item * new
+Sometimes it is nessecary to create type lib classes by hand - not all 
+WSDL definitions are complete.
 
-Constructor
-
-=item * add_FOO
-
-The add_FOO method is called for every child element of the XML node.
-
-Characters are regarded as child element of the last XML node.
-
-=back
-
-A tyelib class implemented as Inside-Out object using Class::Std::Storable
-as base class would look like this:
-
-    package Typelib::TEnqueueMessage;
-    use strict;
-    use Class::Std::Storable;
-
-    my %MMessage_of :ATTR(:name<MMessage> :default<()>);
-
-    sub add_MMessage {
-           my ($self, $value) = @_;
-           my $ident = ident $self;
-
-           # we're the first value
-           return $MMessage_of{ $ident } = $value
-                if not defined $MMessage_of{ $ident };
-
-           # we're the second value
-           return $MMessage_of{ $ident } = [
-                $MMessage_of{ $ident }, $value ]
-                    if not ref $MMessage_of{ $ident } eq 'ARRAY';
-
-           # we're third or later
-           push @{ $MMessage_of{ $ident } }, $value;
-           return $MMessage_of{ $ident };
-       }
-    }
-    1;
-
-Of course one could use a method factory for these add_FOO methods - see
-t/lib/Typelib/Base.pm for an example.
+For writing your own lib classes, see L<SOAP::WSDL::XSD::Typelib::Element>,
+L<SOAP::WSDL::XSD::Typelib::ComplexType> and L<SOAP::WSDL::XSD::Typelib::SimpleType>.
 
 =head3 Parser implementations
 

@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_06
+version: 2.00_07
 author:
 abstract: SOAP with WSDL support
 license: artistic
@@ -32,7 +32,6 @@ provides:
     file: lib/SOAP/WSDL/Client.pm
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
-    version: 0.1
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
   SOAP::WSDL::Envelope:

@@ -2,17 +2,16 @@ package SOAP::WSDL::XSD::Typelib::Builtin::boolean;
 use strict;
 use warnings;
 
-# Speed up. Class::Std::new is slow - and we don't need it's functionality...
-BEGIN {
-    use Class::Std::Storable;
-    use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-}
-
 my %pattern_of          :ATTR(:name<pattern> :default<()>);
 my %whiteSpace_of       :ATTR(:name<whiteSpace> :default<()>);
 my %value_of            :ATTR(:get<value> :init_attr<value> :default<()>);
 
-{
+
+# Speed up. Class::Std::new is slow - and we don't need it's functionality...
+BEGIN {
+    use Class::Std::Storable;
+    use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
+
     no warnings qw(redefine);
     no strict qw(refs);
 
@@ -26,7 +25,6 @@ my %value_of            :ATTR(:get<value> :init_attr<value> :default<()>);
         }
         return $self;
     };
-
 }
 
 
@@ -59,34 +57,3 @@ sub set_value {
 Class::Std::initialize();   # make :BOOLIFY overloading serializable
 
 1;
-
-__END__
-
-=pod
-
-=head1 NAME
-
-SOAP::WSDL::XSD::Typelib::Builtin::boolean - boolean objects
-
-=head1 DESCRIPTION
-
-Serializes to "true" or "false".
-
-Everything true in perl and not "false" is deserialized as true.
-
-Returns true/false in boolean context.
-
-Returns 1 / 0 in numeric context.
-
-=head1 LICENSE
-
-Copyright 2004-2007 Martin Kutter.
-
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
-
-=head1 AUTHOR
-
-Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
-
-=cut

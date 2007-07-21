@@ -4,7 +4,6 @@ use Test::More tests => 5;
 use lib 't/lib';
 use lib '../lib';
 use lib 'lib';
-use Benchmark;
 use XML::Simple;
 use SOAP::WSDL::SAX::WSDLHandler;
 use Cwd;
@@ -48,11 +47,6 @@ $soap->servicename('MessageGateway');
 
 ok( $soap->no_dispatch( 1 ) , "Set no_dispatch" );
 ok( $soap->readable( 0 ) , "Set readable");
-
-timethese 100, {
-    'ClassParser' => sub { $parser->parse_string( xml() ); },
-    'XML::Simple' => sub { return XMLin( xml() ) },
-};
 
 sub xml {
 q{<SOAP-ENV:Envelope
