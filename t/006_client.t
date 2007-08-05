@@ -48,10 +48,6 @@ SKIP: {
         }
     )
     , q{<SOAP-ENV:Envelope
-        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-        xmlns:tns="http://www.example.org/MessageGateway2/"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body ><EnqueueMessage xmlns="http://www.example.org/MessageGateway2/"><MMessage>
                 <MRecipientURI>mailto:test@example.com</MRecipientURI>

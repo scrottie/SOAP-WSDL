@@ -7,6 +7,7 @@ use List::Util qw(first);
 
 my %id_of :ATTR(:name<id> :default<()>);
 my %name_of :ATTR(:name<name> :default<()>);
+my %documentation_of :ATTR(:name<documentation> :default<()>);
 my %targetNamespace_of :ATTR(:name<targetNamespace> :default<()>);
 my %xmlns_of :ATTR(:name<xmlns> :default<{}>);
 my %parent_of :ATTR(:name<parent> :default<()>);

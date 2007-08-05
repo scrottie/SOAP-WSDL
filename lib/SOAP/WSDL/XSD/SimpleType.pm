@@ -43,8 +43,7 @@ sub set_union {
     }
 }
 
-sub push_enumeration
-{
+sub push_enumeration {
 	my $self = shift;
 	my @attr = @_;
 	my @attributes = @_;
@@ -101,13 +100,9 @@ sub _serialize_single {
 }
 
 sub explain {
-    my ($self, $opt, $name) = @_;
-    my $perl;
-    $opt->{ indent } ||= "";
-    $perl .= $opt->{ indent } if ($opt->{ readable });
-    $perl .= q{'} . $name . q{' => $someValue };
-    $perl .= "\n" if ($opt->{ readable });
-    return $perl;
+	my ($self, $opt, $name ) = @_;
+	$opt->{ indent } = q{} if not defined $opt->{ indent };
+	return "$opt->{ indent }'$name' => \$someValue,\n"
 }
 
 sub _check_value {
@@ -155,25 +150,4 @@ EOT
     return $code;
 }
 
-
 1;
-
-=pod
-
-=head1 Bugs and limitations
-
-=over
-
-=item * simpleContent, complexContent
-
-These child elements are not implemented yet
-
-=item * union
-
-union simpleType definitions probalbly serialize wrong
-
-=item * explain may produce erroneous results
-
-=back
-
-=cut

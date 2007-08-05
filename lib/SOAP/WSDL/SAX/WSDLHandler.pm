@@ -3,13 +3,13 @@ use strict;
 use warnings;
 use Carp;
 use Class::Std::Storable;
-# use base qw(XML::SAX::Base);
 use SOAP::WSDL::TypeLookup;
 
 my %tree_of :ATTR(:name<tree> :default<{}>);
 my %order_of :ATTR(:name<order> :default<[]>);
 my %targetNamespace_of :ATTR(:name<targetNamespace> :default<()>);
 my %current_of :ATTR(:name<current> :default<()>);
+my %characters_of :ATTR();
 
 {
     # we have to implement our own new - we need a blessed Hash ref as $self
@@ -34,7 +34,6 @@ my %current_of :ATTR(:name<current> :default<()>);
             # ...we ignore em all...
             no strict qw(refs);
             foreach my $method ( qw(
-                characters
                 processing_instruction
                 ignorable_whitespace
                 set_document_locator
@@ -88,6 +87,7 @@ sub start_element {
         $element->{ LocalName }
     );
 
+    $characters_of{ $ident } = q{};
     return if not $action;
     
     if ($action->{ type } eq 'CLASS') {
@@ -139,27 +139,40 @@ sub start_element {
     }
 }
 
+sub characters {
+    $characters_of{ ident $_[0] } .= $_[1]->{ Data };
+}
+
 sub end_element {
-	my ($self, $element) = @_;
+    my ($self, $element) = @_;
     my $ident = ident $self;
 
-	my $action = SOAP::WSDL::TypeLookup->lookup(
-		$element->{ NamespaceURI },
-		$element->{ LocalName }
-	) || {};
+    my $action = SOAP::WSDL::TypeLookup->lookup(
+        $element->{ NamespaceURI },
+        $element->{ LocalName }
+    ) || {};
 
-	if ($action->{ type } &&  $action->{ type } eq 'CLASS' )
-	{
-		$current_of{ $ident } = pop @{ $order_of{ $ident } };
-	}
+    return if not ($action->{ type });
+    if ( $action->{ type } eq 'CLASS' )	{
+	$current_of{ $ident } = pop @{ $order_of{ $ident } };
+    }
+    elsif ($action->{ type } eq 'CONTENT' ) {
+        my $method = $action->{ method };
+        no strict qw(refs);
+        # strip of leading and trailing whitespace
+        $characters_of{ $ident } =~s{ ^ \s+ (.+) \s+ $ }{$1}xms;
+        # replace multi whitespace by one
+        $characters_of{ $ident } =~s{ \s+ }{ }xmsg;
+        $current_of{ $ident }->$method( $characters_of{ $ident } );
+    }
 }
 
 sub fatal_error {
-  die @_;
+    die @_;
 }
 
 sub get_data {
-	my $self = shift;
-	return $tree_of{ ident $self };
+    my $self = shift;
+    return $tree_of{ ident $self };
 }
 1;

@@ -205,7 +205,26 @@ byte integer objects.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::date
 
+date values are automatically converted into XML date strings during setting:
+
+ YYYY-MM-DD+zz:zz
+
+The time zone is set to the local time zone if not included.
+
+All input variants supported by Date::Parse are supported. You may even pass 
+in dateTime strings - the time part will be ignored. Note that 
+set_value is around 100 times slower when setting non-XML-time strings
+
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::dateTime
+
+dateTime values are automatically converted into XML dateTime strings during setting:
+
+ YYYY-MM-DDThh:mm:ss.nnnnnnn+zz:zz
+
+The optional nanoseconds parts is excluded in converted values, as it would always be 0.
+
+All input variants supported by Date::Parse are supported. Note that 
+set_value is around 100 times slower when setting non-XML-time strings
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::decimal
 
@@ -236,6 +255,8 @@ decimal is the base of all non-float numbers
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::IDREF
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::IDREFS
+
+List of SOAP::WSDL::XSD::Typelib::Builtin::IDREF objects.
 
 Derived by SOAP::WSDL::XSD::Typelib::Builtin::list.
 
@@ -272,6 +293,18 @@ Derived by SOAP::WSDL::XSD::Typelib::Builtin::list.
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::string
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::time
+
+time values are automatically converted into XML time strings during setting:
+
+ hh:mm:ss.nnnnnnn+zz:zz
+ hh:mm:ss+zz:zz
+
+The time zone is set to the local time zone if not included. The optional 
+nanoseconds part is not included in converted values, as it would always be 0.
+
+All input variants supported by Date::Parse are supported. You may even pass 
+in dateTime strings - the date part will be ignored. Note that 
+set_value is around 100 times slower when setting non-XML-time strings
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::token
 

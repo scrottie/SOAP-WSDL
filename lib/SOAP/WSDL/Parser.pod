@@ -90,6 +90,29 @@ A class resolver package might look like this:
  };
  1;
 
+=head3 Skipping unwanted items
+
+Sometimes there's unneccessary information transported in SOAP messages.
+
+To skip XML nodes (including all child nodes), just edit the type map for 
+the message and set the type map entry to '__SKIP__'. 
+
+In the example above, EnqueueMessage/StuffIDontNeed and all child elements 
+are skipped.
+
+ my %class_list = (
+    'EnqueueMessage' => 'Typelib::TEnqueueMessage',
+    'EnqueueMessage/MMessage' => 'Typelib::TMessage',
+    'EnqueueMessage/MMessage/MRecipientURI' => 'SOAP::WSDL::XSD::Builtin::anyURI',
+    'EnqueueMessage/MMessage/MMessageContent' => 'SOAP::WSDL::XSD::Builtin::string',
+    'EnqueueMessage/StuffIDontNeed' => '__SKIP__',
+    'EnqueueMessage/StuffIDontNeed/Foo' => 'SOAP::WSDL::XSD::Builtin::string',
+    'EnqueueMessage/StuffIDontNeed/Bar' => 'SOAP::WSDL::XSD::Builtin::string',
+ );
+
+Note that only SOAP::WSDL::Expat::MessageParser implements skipping elements 
+at the time of writing.
+
 =head3 Creating type lib classes
 
 Every element must have a correspondent one in the type library.

@@ -15,7 +15,7 @@ my $soap = SOAP::WSDL->new(
     wsdl => 'file:///' . $path .'/t/acceptance/wsdl/008_complexType.wsdl'
 )->wsdlinit();
 
-my $wsdl = $soap->{ _WSDL }->{ wsdl_definitions };
+my $wsdl = $soap->get_definitions;
 my $schema = $wsdl->first_types();
 my $type = $schema->find_type('Test' , 'testComplexTypeAll');
 my $element = $type->get_element()->[0];

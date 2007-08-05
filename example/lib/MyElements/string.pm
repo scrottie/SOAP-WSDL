@@ -13,7 +13,7 @@ use base qw(
 );
 
 
-sub get_xmlns { 'http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx' }
+sub get_xmlns { 'http://www.webserviceX.NET' }
 
 __PACKAGE__->__set_name('string');
 __PACKAGE__->__set_nillable(true);

@@ -38,220 +38,29 @@ http://www.webservicex.net/globalweather.asmx
  my $GetCitiesByCountry = $interface->GetCitiesByCountry();
 
 
-=head1 Service GlobalWeather
+=head1 METHODS
 
-=head2 Service information:
+=head2 GetWeather
 
- Port name: GlobalWeatherSoap
- Binding: tns:GlobalWeatherSoap
- Location: http://www.webservicex.net/globalweather.asmx
+Get weather report for all major cities around the world.
 
-=head2 SOAP Operations 
+SYNOPSIS:
 
-B<Note:>
-
- Input, output and fault messages are stated as perl hash refs. 
- 
- These are only for informational purposes - the actual implementation 
- normally uses object trees, not hash refs, though the input messages 
- may be passed to the respective methods as hash refs and will be 
- converted to object trees automatically.
-
-
-=head3 GetWeather
-
-B<Input Message:>
-
- {
-   'GetWeather'=> {
+ $service->GetWeather({
      'CityName' => $someValue,
      'CountryName' => $someValue,
-   },
- }
+ });
 
 
-B<Output Message:>
+=head2 GetCitiesByCountry
 
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
+Get all major cities by country name(full / part).
+
+SYNOPSIS:
+
+ $service->GetCitiesByCountry({
      'CountryName' => $someValue,
-   },
- }
-
-
-B<Fault:>
-
-
-
-
-=head3 GetCitiesByCountry
-
-B<Input Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Output Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Fault:>
-
-
-
-=head2 Service information:
-
- Port name: GlobalWeatherHttpGet
- Binding: tns:GlobalWeatherHttpGet
- Location: 
-
-=head2 SOAP Operations 
-
-B<Note:>
-
- Input, output and fault messages are stated as perl hash refs. 
- 
- These are only for informational purposes - the actual implementation 
- normally uses object trees, not hash refs, though the input messages 
- may be passed to the respective methods as hash refs and will be 
- converted to object trees automatically.
-
-
-=head3 GetWeather
-
-B<Input Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Output Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Fault:>
-
-
-
-
-=head3 GetCitiesByCountry
-
-B<Input Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Output Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Fault:>
-
-
-
-=head2 Service information:
-
- Port name: GlobalWeatherHttpPost
- Binding: tns:GlobalWeatherHttpPost
- Location: 
-
-=head2 SOAP Operations 
-
-B<Note:>
-
- Input, output and fault messages are stated as perl hash refs. 
- 
- These are only for informational purposes - the actual implementation 
- normally uses object trees, not hash refs, though the input messages 
- may be passed to the respective methods as hash refs and will be 
- converted to object trees automatically.
-
-
-=head3 GetWeather
-
-B<Input Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Output Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Fault:>
-
-
-
-
-=head3 GetCitiesByCountry
-
-B<Input Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Output Message:>
-
- {
-   'GetWeather'=> {
-     'CityName' => $someValue,
-     'CountryName' => $someValue,
-   },
- }
-
-
-B<Fault:>
-
-
+ });
 
 
 

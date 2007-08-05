@@ -174,7 +174,7 @@ sub xml
         targetNamespace="urn:myNamespace"
         xmlns="http://schemas.xmlsoap.org/wsdl/"
         xmlns:tns="urn:myNamespace"
-        xmlns:xsd="http://www.w3c.org/2001/XMLSchema"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 >

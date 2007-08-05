@@ -1,4 +1,5 @@
 package SOAP::WSDL::Definitions;
+use utf8;
 use strict;
 use warnings;
 use Carp;
@@ -49,8 +50,7 @@ sub explain {
     my $txt = '';
 
     for my $service (@{ $self->get_service() }) {
-        $txt .= $service->explain( $opt );
-        $txt .= "\n";
+        $txt .= $service->explain( $opt ) . "\n";
     }
     return $txt;
 }
@@ -102,48 +102,61 @@ sub _create_interface {
     my $self = shift;
     my $opt = shift;
     my $service_name = $opt->{ service }->get_name();
-    my $file_name = "$opt->{ base_path }/$opt->{ interface_prefix }/$service_name.pm";
-    $file_name =~s{::}{/}gms;
-    my $path = dirname $file_name;
-    my $name = basename $file_name;
+    $service_name =~s{\.}{\:\:}xmsg;
+    # TODO: iterate over ports.
+    # - ignore non-SOAP ports
+    # - generate interface for all SOAP ports...
     my $binding = $self->find_binding( $self->_expand( $opt->{ service }->first_port()->get_binding() ) );
-    my $portType = $self->find_portType( $self->_expand( $binding->get_type() ) );
-    my $portType_operation_from_ref = $portType->get_operation();
+    my $porttype = $self->find_portType( $self->_expand( $binding->get_type() ) );
+    
+    my $port_operation_ref = $porttype->get_operation();
     my $operation_ref = $binding->get_operation();
-    $operation_ref = [ $operation_ref ] if ref $operation_ref ne 'ARRAY';
-    my %operations = map { 
-        do { 
-            my $operation_name = $_->get_name();
-            my $port_op = first { $_->get_name eq $operation_name } @{ $portType_operation_from_ref };
-            my $input = $port_op->first_input()->get_message();
-            my $message = $self->find_message( $self->_expand( $input ) );
-            my $parts = $message->get_part;
-            ( $operation_name => [
-                  map { 
-                      do {
-                      my $name;
-                          ($name = $_->get_element())
-                              ? do {
-                                my ($prefix, $localname) = split m{:}xms , $name;
-                                "$opt->{ element_prefix }$localname";
-                              }
-                          : ($name = $_->get_type())
-                              ? do {
-                                my ($prefix, $localname) = split m{:}xms , $name;
-                                "$opt->{ type_prefix }$localname";
-                              }
-                              : ()
-                      }
-                  } @{ $parts }
-            ]  );
-        };
-    } @{ $operation_ref };
- 
-#     use Data::Dumper;
-#     die Dumper \%operations;
- 
+   
+    # make up operations map - name => [ part types / elements class names ]
+    #
+    my %operations = ();
+    for my $operation ( @{ $operation_ref } ) {
+        my $operation_name = $operation->get_name();
+        my $port_op = first { $_->get_name() eq $operation_name } @{ $port_operation_ref };
+        
+        $operations{ $operation_name }->{ documentation } = $port_op->get_documentation();
+        
+        my %msg_from = (
+          'input' => ($port_op->first_input() ) ? $port_op->first_input()->get_message() : undef,
+          'output' => ($port_op->first_output()) ? $port_op->first_output()->get_message(): undef,
+          'fault' => ($port_op->first_fault()) ? $port_op->first_fault()->get_message() : undef,
+        );
+
+        for my $msg (keys %msg_from) {
+            next if not $msg_from{ $msg };
+            for my $part (@{ $self->find_message( $self->_expand( $msg_from{$msg} ) )->get_part }) {
+                my $name;
+                if (my $element_name = $part->get_element() ) {
+                    $name = $element_name;
+                    push @{ $operations{ $operation_name }->{$msg}->{ types } },  
+                        $self->first_types()->find_element( $self->_expand( $element_name ) )
+                            ->explain({ wsdl => $self , anonymous => 1 });
+
+                }
+                elsif (my $type_name = $part->get_element() ) {
+                    push @{ $operations{ $operation_name }->{$msg}->{ types } },  
+                        $self->first_types()->find_type( $self->_expand( $element_name ) )
+                            ->explain({ wsdl => $self });
+                    $name = $type_name;
+                }
+                my ($prefix, $localname) = split m{:}xms , $name;
+                push @{ $operations{ $operation_name }->{$msg}->{ class } },  
+                    "$opt->{ element_prefix }$localname";
+            }
+        }
+    }
+
+#    use Data::Dumper;
+#    die Dumper \%operations;
+
     my $template = <<'EOT';
-package [% interface_prefix %][% service.get_name %];
+package [% interface_prefix %][% service.get_name.replace('\.', '::') %];
+
 use strict;
 use warnings;
 use [% typemap_prefix %][% service.get_name %];
@@ -153,7 +166,7 @@ sub new {
     my $class = shift;
     my $arg_ref = shift || {};
     my $self = $class->SUPER::new({
-        class_resolver => '[% typemap_prefix %][% service.get_name %]',
+        class_resolver => '[% typemap_prefix %][% service.get_name.replace('\.', '::') %]',
         proxy => '[% service.first_port.get_location %]',
         %{ $arg_ref }
     });
@@ -162,7 +175,7 @@ sub new {
 
 __PACKAGE__->__create_methods(
       [% FOREACH name = operations.keys -%]
-        [% name %] => [ [% FOREACH class = operations.$name %]'[% class %]', [% END %]],
+        [% name %] => [ [% FOREACH class = operations.$name.input.class %]'[% class %]', [% END %]],
       [% END %]
 );
 
@@ -183,17 +196,38 @@ __END__
  my $[% operations.keys.1 %] = $interface->[% operations.keys.1 %]();
 
 
-[% service.explain({ wsdl => wsdl }) %]
+=head1 METHODS
+[% FOREACH name=operations.keys;
+    operation=operations.$name;
+%]
+=head2 [% name %]
+
+[% operation.documentation %]
+
+SYNOPSIS:
+
+ $service->[% name %]({
+[% FOREACH type = operation.input.types; type; END %] });
+
+[% END %]
 
 =cut
 
 EOT
 
     require Template;
+    my $file_name = "$opt->{ base_path }/$opt->{ interface_prefix }/$service_name.pm";
+    $file_name =~s{::}{/}gms;
+    my $path = dirname $file_name;
+    my $name = basename $file_name;
     my $tt = Template->new(
       OUTPUT_PATH => $path,
     );
-    $tt->process(\$template, { %{ $opt }, operations => \%operations, binding => $binding, wsdl => $self }, $name)
+    $tt->process(\$template, 
+        { %{ $opt }, operations => \%operations, binding => $binding, wsdl => $self }, 
+        $name,
+        binmode => ':utf8'
+    )
       or die $tt->error();
     return 1;
 }
@@ -204,6 +238,7 @@ sub _create_typemap {
     my $self = shift;
     my $opt = shift;
     my $service_name = $opt->{ service }->get_name();
+    $service_name =~s{\.}{\:\:}xmsg;
     my $file_name = "$opt->{ base_path }/$opt->{ typemap_prefix }/$service_name.pm";
     $file_name =~s{::}{/}gms;
     my $path = dirname $file_name;
@@ -212,11 +247,19 @@ sub _create_typemap {
     my $typemap = $opt->{ service }->to_typemap( { %{ $opt }, wsdl => $self } );
     
     my $template = <<'EOT';
-package [% typemap_prefix %][% service.get_name %];
+package [% typemap_prefix %][% service.get_name.replace('\.', '::') %];
 use strict;
 use warnings;
 
 my %typemap = (
+# SOAP 1.1 fault typemap
+'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
+'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
+'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
+'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+
+# generated typemap
 [% typemap %]
 [% custom_types %]
 );
@@ -237,7 +280,11 @@ EOT
     my $tt = Template->new(
       OUTPUT_PATH => $path,
     );
-    $tt->process(\$template, { %{ $opt }, typemap => $typemap }, $name)
+    $tt->process(\$template, 
+        { %{ $opt }, typemap => $typemap }, 
+        $name,
+        binmode => ':utf8',
+    )
       or die $tt->error();
 
 }

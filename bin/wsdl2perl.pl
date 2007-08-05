@@ -5,7 +5,7 @@ use Fcntl;
 use IO::File;
 use Pod::Usage;
 use Getopt::Long;
-use LWP::Simple qw(get);
+use LWP::UserAgent;
 use SOAP::WSDL::SAX::WSDLHandler;
 use XML::LibXML;
 
@@ -17,6 +17,7 @@ my %opt = (
   typemap_prefix => 'MyTypemaps::',
   interface_prefix => 'MyInterfaces::',
   base_path => 'lib/',
+  proxy => undef
 );
 
 GetOptions(\%opt,
@@ -29,6 +30,7 @@ GetOptions(\%opt,
     base_path|b=s
     typemap_include|mi=s
     help|h
+    proxy|x=s
   )
 );
 
@@ -40,7 +42,12 @@ pod2usage( -exit => 1 , verbose => 1 ) if not ($url);
 my $handler = SOAP::WSDL::SAX::WSDLHandler->new();
 my $parser = XML::LibXML->new();
 
-my $xml = get($url) or die "Could not load WSDL schema $url\n";
+local $ENV{HTTP_PROXY} = $opt{proxy} if $opt{proxy};
+my $lwp = LWP::UserAgent->new();
+my $response = $lwp->get($url);
+die $response->message(), "\n" if $response->code != 200;
+
+my $xml = $response->content();
 
 $parser->set_handler( $handler );
 $parser->parse_string( $xml );

@@ -21,6 +21,7 @@ example/lib/MyInterfaces/GlobalWeather.pm
 example/lib/MyTypemaps/FullerData_x0020_Fortune_x0020_Cookie.pm
 example/lib/MyTypemaps/GlobalWeather.pm
 example/weather.pl
+example/weather_wsdl.pl
 example/wsdl/FortuneCookie.xml
 example/wsdl/genericbarcode.xml
 example/wsdl/globalweather.xml
@@ -50,9 +51,9 @@ lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
 lib/SOAP/WSDL/SoapOperation.pm
 lib/SOAP/WSDL/TypeLookup.pm
 lib/SOAP/WSDL/Types.pm
+lib/SOAP/WSDL/XSD/Builtin.pm
 lib/SOAP/WSDL/XSD/ComplexType.pm
 lib/SOAP/WSDL/XSD/Element.pm
-lib/SOAP/WSDL/XSD/Primitive.pm
 lib/SOAP/WSDL/XSD/Schema.pm
 lib/SOAP/WSDL/XSD/Schema/Builtin.pm
 lib/SOAP/WSDL/XSD/SimpleType.pm
@@ -107,7 +108,7 @@ lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
 lib/SOAP/WSDL/XSD/Typelib/Element.pm
 lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
 LICENSE
-MANIFEST
+MANIFEST			This list of files
 META.yml
 README
 t/001_use.t
@@ -126,6 +127,7 @@ t/014_sax_typelib.t
 t/015_to_typemap.t
 t/016_client_object.t
 t/017_generator.t
+t/018_generator.t
 t/020_storable.t
 t/098_pod.t
 t/acceptance/results/03_complexType-all.xml
@@ -179,4 +181,7 @@ t/SOAP/WSDL/10_performance.t
 t/SOAP/WSDL/11_helloworld.NET.t
 t/SOAP/WSDL/12_binding.pl
 t/SOAP/WSDL/XSD/Typelib/Builtin/001_string.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/002_dateTime.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/002_time.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/003_date.t
 TODO

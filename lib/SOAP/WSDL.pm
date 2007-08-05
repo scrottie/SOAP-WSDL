@@ -1,181 +1,188 @@
 package SOAP::WSDL;
 use strict;
 use warnings;
-use vars qw/$AUTOLOAD/;
+use vars qw($AUTOLOAD);
+use Carp;
 use Scalar::Util qw(blessed);
+use SOAP::WSDL::Client;
 use SOAP::WSDL::Envelope;
 use SOAP::WSDL::SAX::WSDLHandler;
-use base qw(SOAP::Lite);
+use Class::Std;
+use XML::LibXML;
+
 use Data::Dumper;
+use LWP::UserAgent;
+our $VERSION='2.00_08';
 
-our $VERSION='2.00_05';
+my %no_dispatch_of      :ATTR(:name<no_dispatch>);
+my %wsdl_of             :ATTR(:name<wsdl>);
+my %proxy_of            :ATTR(:name<proxy>);
+my %readable_of         :ATTR(:name<readable>);
+my %autotype_of         :ATTR(:name<autotype>);
+my %outputxml_of        :ATTR(:name<outputxml>);
+my %outputtree_of       :ATTR(:name<outputtree>);
+my %outputhash_of       :ATTR(:name<outputhash>);
+my %servicename_of      :ATTR(:name<servicename>);
+my %portname_of         :ATTR(:name<portname>);
+my %class_resolver_of   :ATTR(:name<class_resolver>);
 
-BEGIN {
-    eval {
-        use XML::LibXML;
+my %method_info_of      :ATTR(:default<()>);
+my %port_of             :ATTR(:default<()>);
+my %porttype_of         :ATTR(:default<()>);
+my %binding_of          :ATTR(:default<()>);
+my %service_of          :ATTR(:default<()>);
+my %definitions_of      :ATTR(:get<definitions> :default<()>);
+my %serialize_options_of :ATTR(:default<()>);
+my %explain_options_of  :ATTR(:default<()>);
+
+my %client_of           :ATTR(:name<client>     :default<()>);
+
+my %LOOKUP = (
+  no_dispatch           => \%no_dispatch_of,
+  class_resolver        => \%class_resolver_of,
+  wsdl                  => \%wsdl_of,
+  proxy                 => \%proxy_of,
+  readable              => \%readable_of,
+  autotype              => \%autotype_of,
+  outputxml             => \%outputxml_of,
+  outputtree            => \%outputtree_of,
+  outputhash            => \%outputhash_of,
+  portname              => \%portname_of,
+  servicename           => \%servicename_of,
+);
+
+for my $method (keys %LOOKUP ) {
+    no strict qw(refs);
+    *{ $method } = sub {
+        my $self = shift;
+        my $ident = ident $self; 
+        if (@_) {
+            $LOOKUP{ $method }->{ $ident } = shift;
+            return $self;
+        }
+        return $LOOKUP{ $method }->{ $ident };
     };
-    if ($@) {
-        use XML::SAX::ParserFactory;
+}
+
+
+{
+    no warnings qw(redefine);
+    sub new {
+        my $class = shift;
+        my %args_from = @_;
+        my  $self = \do { my $foo = undef };
+        bless $self, $class;
+           
+        for (keys %args_from) {
+            my $method = $self->can("set_$_")
+                or croak "unknown parameter $_ passed to new";
+            $method->($self, $args_from{$_});
+        }
+        my $ident = ident $self;        
+        $self->wsdlinit() if ($wsdl_of{ $ident });
+        
+        $client_of{ $ident } = SOAP::WSDL::Client->new();
+        
+        return $self;
     }
-}
 
-sub AUTOLOAD {
-    my $method = substr($AUTOLOAD, rindex($AUTOLOAD, '::') + 2);
-    die "$method not found";
-}
-
-sub outputtree {
-    my $self = shift;
-    return $self->{ _WSDL }->{ outputtree } if not @_;
-    return $self->{ _WSDL }->{ outputtree } = shift;
-}
-
-sub class_resolver {
-    my $self = shift;
-    return $self->{ _WSDL }->{ class_resolver } if not @_;
-    return $self->{ _WSDL }->{ class_resolver } = shift;
 }
 
 sub wsdlinit {
     my $self = shift;
+    my $ident = ident $self;
     my %opt = @_;
 
-    my $wsdl_xml = SOAP::Schema->new( schema_url => $self->wsdl() )->access(
-        $self->wsdl()
-    );
+    my $lwp = LWP::UserAgent->new();
+    my $response = $lwp->get( $wsdl_of{ $ident } );
+    croak $response->message() if ($response->code != 200);
 
-    my $filter;
-    my $parser = eval { XML::LibXML->new() };
-    if ($parser) {
-            $filter   = SOAP::WSDL::SAX::WSDLHandler->new();
-        $parser->set_handler( $filter );
-    }
-    else {
-        $filter =  SOAP::WSDL::SAX::WSDLHandler->new( base => 'XML::SAX::Base' );
-        $parser = XML::SAX::ParserFactory->parser( Handler => $filter );
-    }
+    # TODO: Port parser to expat and remove XML::LibXML dependency
+    my $parser = XML::LibXML->new();
+    my $filter = SOAP::WSDL::SAX::WSDLHandler->new();
+    $parser->set_handler( $filter );
+    $parser->parse_string( $response->content() );
 
-    $parser->parse_string( $wsdl_xml );
-
-    my $wsdl_definitions = $filter->get_data()
-        or die "unable to parse WSDL";
-
+    # sanity checks
+    my $wsdl_definitions = $filter->get_data() or die "unable to parse WSDL";
     my $types = $wsdl_definitions->first_types()
         or die "unable to extract schema from WSDL";
-
     my $ns = $wsdl_definitions->get_xmlns()
         or die "unable to extract XML Namespaces" . $wsdl_definitions->to_string;
     ( %{ $ns } ) or die "unable to extract XML Namespaces";
 
     # setup lookup variables
-    $self->{ _WSDL }->{ wsdl_definitions }  = $wsdl_definitions;
-    $self->{ _WSDL }->{ serialize_options } = {
+    $definitions_of{ $ident }  = $wsdl_definitions;
+    $serialize_options_of{ $ident } = {
         autotype  => 0,
-        readable  => $self->readable(),
         typelib   => $types,
         namespace => $ns,
     };
-    $self->{ _WSDL }->{ explain_options } = {
+    $explain_options_of{ $ident } = {
         readable  => $self->readable(),
         wsdl      => $wsdl_definitions,
         namespace => $ns,
         typelib   => $types,
     };
 
-    $self->servicename($opt{servicename}) if $opt{servicename};
-    $self->portname($opt{portname}) if $opt{portname};
+    $servicename_of{ $ident } = $opt{servicename} if $opt{servicename};
+    $portname_of{ $ident } = $opt{portname} if $opt{portname};
     return $self;
 } ## end sub wsdlinit
 
-sub _wsdl_get_service {
-        my $self = shift;
-        my $service;
-        my $wsdl = $self->{ _WSDL }->{ wsdl_definitions };
-        my $ns   = $wsdl->get_targetNamespace();
-        if ( $self->{ _WSDL }->{ servicename } )
-        {
-                $service =
-                  $wsdl->find_service( $ns, $self->{ _WSDL }->{ servicename } );
-        }
-        else
-        {
-                $service = $wsdl->get_service()->[ 0 ];
-                warn "no servicename specified - using " . $service->get_name();
-        }
-        return $self->{ _WSDL }->{ service } = $service;
+sub _wsdl_get_service :PRIVATE {
+    my $ident = ident shift;
+    my $wsdl = $definitions_of{ $ident };
+    return $service_of{ $ident } = $servicename_of{ $ident } 
+        ? $wsdl->find_service( $wsdl->get_targetNamespace() , $servicename_of{ $ident } )
+        : $service_of{ $ident } = $wsdl->get_service()->[ 0 ];
 } ## end sub _wsdl_get_service
 
-sub _wsdl_get_port {
-        my $self    = shift;
-        my $service = $self->{ _WSDL }->{ service }
-          || $self->_wsdl_get_service();
-        my $wsdl = $self->{ _WSDL }->{ wsdl_definitions };
-        my $ns   = $wsdl->get_targetNamespace();
-        my $port;
-        if ( $self->{ _WSDL }->{ portname } )
-        {
-                $port = $service->get_port( $ns, $self->{ _WSDL }->{ portname } );
-        }
-        else
-        {
-                $port = $service->get_port()->[ 0 ];
-        }
-        $self->{ _WSDL }->{ port } = $port;
-
-        # preload portType
-        $self->_wsdl_get_portType();
-
-        # Auto-set proxy - required before issuing call()
-        $self->proxy( $port->get_location() );
-
-        return $port;
+sub _wsdl_get_port :PRIVATE  {
+    my $ident = ident shift;
+    my $wsdl = $definitions_of{ $ident };
+    my $ns   = $wsdl->get_targetNamespace();
+    return $port_of{ $ident } = $portname_of{ $ident }
+        ? $service_of{ $ident }->get_port( $ns, $portname_of{ $ident } )
+        : $port_of{ $ident } = $service_of{ $ident }->get_port()->[ 0 ];
 } ## end sub _wsdl_get_port
 
-sub _wsdl_get_binding {
+sub _wsdl_get_binding :PRIVATE {
     my $self = shift;
-    my $wsdl = $self->{ _WSDL }->{ wsdl_definitions };
-    my $ns   = $wsdl->get_targetNamespace();
-    my $port = $self->{ _WSDL }->{ port }
-        || $self->_wsdl_get_port();
-
-    my ( $prefix, $localname ) = split /:/, $port->get_binding();
-
-    # TODO lookup $ns instead of just using
-    # the top element's targetns...
-    my $binding = $wsdl->find_binding( $ns, $localname )
+    my $ident = ident $self;
+    my $wsdl = $definitions_of{ $ident };
+    my $port = $port_of{ $ident } || $self->_wsdl_get_port();
+    $binding_of{ $ident } = $wsdl->find_binding( $wsdl->_expand( $port->get_binding() ) )
         or die "no binding found for ", $port->get_binding();
-    return $self->{ _WSDL }->{ binding } = $binding;
+    return $binding_of{ $ident };
 } ## end sub _wsdl_get_binding
 
-sub _wsdl_get_portType {
+sub _wsdl_get_portType :PRIVATE {
     my $self    = shift;
-    my $wsdl    = $self->{ _WSDL }->{ wsdl_definitions };
-    my $binding = $self->{ _WSDL }->{ binding }
-        || $self->_wsdl_get_binding();
-    my $ns = $wsdl->get_targetNamespace();
-    my ( $prefix, $localname ) = split /:/, $binding->get_type(); 
-    my $portType = $wsdl->find_portType( $ns, $localname );
-    $self->{ _WSDL }->{ portType } = $portType;
-    return $portType;
+    my $ident   = ident $self;
+    my $wsdl    = $definitions_of{ $ident };
+    my $binding = $binding_of{ $ident } || $self->_wsdl_get_binding();
+    $porttype_of{ $ident } = $wsdl->find_portType( $wsdl->_expand( $binding->get_type() ) )
+        or die "cannot find portType for " . $binding->get_type();
+    return $porttype_of{ $ident };
 } ## end sub _wsdl_get_portType
 
 
-sub _wsdl_init_methods {
+sub _wsdl_init_methods :PRIVATE {
     my $self = shift;
-    my $wsdl = $self->{ _WSDL }->{ wsdl_definitions };
+    my $ident = ident $self;
+    my $wsdl = $definitions_of{ $ident };
     my $ns   = $wsdl->get_targetNamespace();
 
     # get bindings, portType, message, part(s)
     # - use cached values where possible for speed,
     # private methods if not for clear separation...
-    my $binding = $self->{ _WSDL }->{ binding }
-       || $self->_wsdl_get_binding()
+    $self->_wsdl_get_service if not ($service_of{ $ident });
+    my $binding = $binding_of{ $ident } || $self->_wsdl_get_binding()
            || die "Can't find binding";
-    my $portType = $self->{ _WSDL }->{ portType }
-       || $self->_wsdl_get_portType()
-           || die "Can't find portType";
+    my $portType = $porttype_of{ $ident } || $self->_wsdl_get_portType();
 
-    my $methodHashRef = {};
+    $method_info_of{ $ident } = {};
 
     foreach my $binding_operation (@{ $binding->get_operation() })
     {
@@ -211,201 +218,60 @@ sub _wsdl_init_methods {
             }
             : undef;
 
-        $methodHashRef->{ $binding_operation->get_name() } = $method;
+        $method_info_of{ $ident }->{ $binding_operation->get_name() } = $method;
     }
 
-    $self->{ _WSDL }->{ methodInfo } = $methodHashRef;
-
-    return $methodHashRef;
+    return $method_info_of{ $ident };
 }
 
 sub call {
     my $self = shift;
+    my $ident = ident $self;
     my $method = shift;
     my $data = ref $_[0] ? $_[0] : { @_ };
 
-    my $content = q{};
-    my $envelope;
-    my $methodInfo;
+    $self->wsdlinit() if not ($definitions_of{ $ident });
+    $self->_wsdl_init_methods() if not ($method_info_of{ $ident });
 
-    if (blessed $data
-        && $data->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
-    {
-        $envelope = SOAP::WSDL::Envelope->serialize( $method, $data );
+    my $client = $client_of{ $ident };
+    $client->set_proxy( $proxy_of{ $ident } || $port_of{ $ident }->get_location() );
+    $client->set_no_dispatch( $no_dispatch_of{ $ident } );
+    $client->set_outputxml( $outputtree_of{ $ident } ? 0 : 1 );
 
-        # TODO replace by something derived from binding - this is just a
-        # workaround...
-        $methodInfo->{ soap_action }
-            = join '/', $data->get_xmlns(), $method;
-    }
-    else {
-        my $methodLookup = $self->{ _WSDL }->{ methodInfo }
-            || $self->_wsdl_init_methods();
+    my $response = (blessed $data) 
+        ? $client->call( $method, $data )
+        : do {
 
-        $methodInfo = $methodLookup->{ $method };
-        my $partListRef = $methodInfo->{ parts };
+            my $content = '';
+            # TODO support RPC-encoding: Top-Level element + namespace...
+            foreach my $part ( @{ $method_info_of{ $ident }->{ $method }->{ parts } } ) {
+                $client->set_on_action( sub { $part->get_targetNamespace() . '/' . $_[1] } );
+                $content .= $part->serialize( $method, $data, 
+                  {
+                    %{ $serialize_options_of{ $ident } },
+                    readable => $readable_of{ $ident },
+                  }  );
+            }
+            $client->call($method, $content);
+        };
 
-        # set serializer options
-        # TODO allow custom options here
-        my $opt = $self->{ _WSDL }->{ serialize_options };
-
-        # set response target namespace
-        # TODO make rpc-encoded encoding recognise this namespace
-        #    $opt->{ targetNamespace } = $soap_binding_operation ?
-        #        $operation->input()->namespace() : undef;
-
-        # serialize content
-        # TODO create surrounding element for rpc-encoded messages
-        foreach my $part ( @{ $partListRef } ) {
-            $content .= $part->serialize( $method, $data, $opt );
-        }
-        $envelope = SOAP::WSDL::Envelope->serialize( $method, $content , $opt );
-    };
-
-
-    if ( $self->no_dispatch() ) {
-        return $envelope;
-    } ## end if ( $self->no_dispatch...
-
-    # get response via transport layer
-    # TODO remove dependency from SOAP::Lite and use a
-    # SAX-based filter using XML::LibXML to get the
-    # result.
-    # Filter should have the following methods:
-    # - result: returns the result of the call (like SOAP::Lite, but as
-    #           perl data structure)
-    # - header: returns the content of the SOAP header
-    # - fault:  returns the result of the call if a SOAP fault is sent back
-    #           by the server. Retuns undef (nothing) if the call has been
-    #           processed without errors.
-    my $response = $self->transport->send_receive(
-        context  => $self,              # this is provided for context
-        endpoint => $self->endpoint(),
-        action   => $methodInfo->{ soap_action },   # SOAPAction from binding
-        envelope => $envelope,          # use custom content
-    );
-
-    return $response if ($self->outputxml() );
-
-    if ($self->outputtree()) {
-
-        my ($parser, $handler);     # replace by globals - singleton is faster
-        if (not $parser) {
-            require SOAP::WSDL::SOAP::Typelib::Fault11;
-            require SOAP::WSDL::SAX::MessageHandler;
-            require XML::LibXML;
-            $handler = SOAP::WSDL::SAX::MessageHandler->new(
-                { class_resolver => $self->class_resolver() },
-            );
-            $parser = XML::LibXML->new();
-            $parser->set_handler( $handler);
-        }
-
-        # if we had no success (Transport layer error status code)
-        # or if transport layer failed
-        if (! $self->transport->is_success() ) {
-            # Try deserializing response - there may be some
-            if ($response) {
-                eval { $parser->parse_string( $response ) };
-                return $handler->get_data if not $@;
-            };
-
-            # generate & return fault if we cannot serialize response
-            # or have none...
-            return SOAP::WSDL::SOAP::Typelib::Fault11->new({
-                faultcode => 'soap:Server',
-                faultactor => 'urn:localhost',
-                faultstring => 'Error sending / receiving message: '
-                    . $self->transport->message()
-            });
-        }
-
-        eval { $parser->parse_string( $response ) };
-
-        # return fault if we cannot deserialize response
-        if ($@) {
-            return SOAP::WSDL::SOAP::Typelib::Fault11->new({
-                faultcode => 'soap:Server',
-                faultactor => 'urn:localhost',
-                faultstring => "Error deserializing message: $@. \n"
-                    . "Message was: \n$response"
-            });
-        }
-
-        return $handler->get_data();
-    }
-
-    # deserialize and store result
-    my $result = $self->{ '_call' } =
-    eval { $self->deserializer->deserialize( $response ) }
-        if $response;
-
-    if (
-        !$self->transport->is_success ||  # transport fault
-        $@                            ||  # not deserializible
-            # fault message even if transport OK
-            # or no transport error (for example, fo TCP, POP3, IO implementations)
-            UNIVERSAL::isa( $result => 'SOAP::SOM' ) && $result->fault
-    ) {
-        return $self->{ '_call' } = (
-            $self->on_fault->( $self, ($@) 
-                ? $@ . ( $response || '' ) 
-                : $result 
-            ) || $result
-        );
-    } ## end if ( !$self->transport...
+    return $response if ( 
+      $outputxml_of{ $ident } 
+#      || $outputhash_of{ $ident }
+      || $outputtree_of{ $ident } 
+      || $no_dispatch_of{ $ident } );
 
     return unless $response;    # nothing to do for one-ways
-    return $result;
-} ## end sub call
+    # now convert into SOAP::SOM - bah !
+    require SOAP::Lite;
+    return SOAP::Deserializer->new()->deserialize( $response );
+} 
 
 sub explain {
-        my $self = shift;
-        my $opt  = $self->{ _WSDL }->{ explain_options };
-
-        return $self->{ _WSDL }->{ wsdl_definitions }->explain( $opt );
-} ## end sub explain
-
-sub _load_method {
-    my $method = shift;
-    no strict "refs";
-    *$method = sub {
-        my $self = shift;
-        return ( @_ ) ? $self->{ _WSDL }->{ $method } = shift
-            : $self->{ _WSDL }->{ $method }
-    };
-} ## end sub _load_method
-
-&_load_method( 'no_dispatch' );
-&_load_method( 'wsdl' );
-
-sub servicename {
-        my $self = shift;
-        return $self->{ _WSDL }->{ servicename } if ( not @_ );
-        $self->{ _WSDL }->{ servicename } = shift;
-
-        my $ns = $self->{ _WSDL }->{ wsdl_definitions }->get_targetNamespace();
-
-        $self->{ _WSDL }->{ service } =
-          $self->{ _WSDL }->{ wsdl_definitions }
-          ->find_service( $ns, $self->{ _WSDL }->{ servicename } )
-          or die "No such service: " . $self->{ _WSDL }->{ servicename };
-        return $self;
-} ## end sub servicename
-
-sub portname {
-        my $self = shift;
-        return $self->{ _WSDL }->{ portname } if ( not @_ );
-        $self->{ _WSDL }->{ portname } = shift;
-
-        my $ns = $self->{ _WSDL }->{ wsdl_definitions }->get_targetNamespace();
-
-        $self->{ _WSDL }->{ port } =
-          $self->{ _WSDL }->{ service }
-          ->find_port( $ns, $self->{ _WSDL }->{ portname } )
-          or die "No such port: " . $self->{ _WSDL }->{ portname };
-        return $self;
-} ## end sub portname
+    my $ident = ident shift;
+    my $opt  = $explain_options_of{ $ident };
+    return $definitions_of{ $ident }->explain( $opt );
+} 
 
 1;
 
@@ -417,12 +283,20 @@ __END__
 
 SOAP::WSDL - SOAP with WSDL support
 
+=head1 Overview
+
+For creating Perl classes instrumenting a web service with a WSDL definition,
+read L<SOAP::WSDL::Manual>.
+
+For using an interpreting (thus slow and somewhat troublesome) WSDL based 
+SOAP client, which mimics L<SOAP::Lite|SOAP::Lite>'s API, read on.
+
 =head1 SYNOPSIS
 
  my $soap = SOAP::WSDL->new(
     wsdl => 'file://bla.wsdl',
     readable => 1,
- )->wsdlinit();
+ );
  
  my $result = $soap->call('MyMethod', %data);
  
@@ -432,16 +306,29 @@ SOAP::WSDL provides easy access to Web Services with WSDL descriptions.
 
 The WSDL is parsed and stored in memory. 
 
-Your data is serialized according to the rules in the WSDL and sent via 
-SOAP::Lite's transport mechanism.
+Your data is serialized according to the rules in the WSDL.
+
+The only transport mechanisms currently supported are http and https.
 
 =head1 METHODS
+
+=head2 new
+
+Constructor. All parameters passed are passed to the corresponding methods.
+
+=head2 call
+
+Performs a SOAP call. The result is either an object tree (with outputtree),
+a hash reference (with outputhash), plain XML (with outputxml) or a SOAP::SOM 
+object (with neither of the above set).
+
+ my $result = $soap->call('method', %data);
 
 =head2 wsdlinit
 
 Reads the WSDL file and initializes SOAP::WSDL for working with it.
 
-Must be called after the wsdl URL has been set, and before calling one of
+Is called automatically from call() if not called directly before.
 
  servicename
  portname
@@ -454,14 +341,6 @@ wsdlinit:
     servicename => 'MyService',
     portname => 'MyPort' 
  );
-
-=head2 call
-
-Performs a SOAP call. The result is either an object tree (with outputtree),
-a hash reference (with outputhash), plain XML (with outputxml) or a SOAP::SOM 
-object (with neither of the above set).
-
- my $result = $soap->call('method', %data);
 
 =head1 CONFIGURATION METHODS
 
@@ -515,8 +394,6 @@ SOAP::WSDL::XSD::ComplexType on how to build / generate one.
 Sets the service to operate on. If no service is set via servicename, the 
 first service found is used.
 
-Must be called after calling wsdlinit().
-
 Returns the soap object, so you can chain calls like
 
  $soap->servicename->('Name')->portname('Port');
@@ -528,8 +405,6 @@ Returns the soap object, so you can chain calls like
 Sets the port to operate on. If no port is set via portname, the 
 first port found is used.
 
-Must be called after calling wsdlinit().
-
 Returns the soap object, so you can chain calls like
 
  $soap->portname('Port')->call('MyMethod', %data);
@@ -539,12 +414,25 @@ Returns the soap object, so you can chain calls like
 When set, call() returns the plain request XML instead of dispatching the 
 SOAP call to the SOAP service. Handy for testing/debugging.
 
-=head2 _wsdl_init_methods
+=head1 ACCESS TO SOAP::WSDL's internals
 
-Creates a lookup table containing the information required for all methods
-specified for the service/port selected. 
+=head2 get_client / set_client
 
-The lookup table is used by L<call|call>.
+Returns the SOAP client implementation used (normally a SOAP::WSDL::Client 
+object).
+
+Useful for enabling tracing:
+
+ # enable tracing via 'warn'
+ $soap->get_client->set_trace(1);
+ 
+ # enable tracing via a custom facility - 
+ # Log::Log4perl in this case...
+ $soap->get_client->set_trace(sub { Log::Log4perl->get_logger->info(@_) } );
+
+=head1 EXAMPLES
+
+See the examples/ directory.
 
 =head1 Differences to previous versions
 
@@ -560,7 +448,8 @@ it's content.
 The object tree has two main functions: It knows how to serialize data passed 
 as hash ref, and how to render the WSDL elements found into perl classes.
 
-Yup your're right, there's a builting code generation facility. 
+Yup your're right, there's a builting code generation facility. Read 
+L<SOAP::WSDL::Manual> for using it.
 
 =item * no_dispatch 
 
@@ -582,32 +471,79 @@ You may pass the servicename and portname as attributes to wsdlinit, though.
 
 =head1 Differences to SOAP::Lite
 
-=head2 Auto-Dispatching
+=head3 Output formats
+
+In contrast to SOAP::Lite, SOAP::WSDL supports the following output formats:
+
+=over
+
+=item * SOAP::SOM objects.
+
+This is the default. SOAP::Lite is required for outputting SOAP::SOM objects.
+
+=item * Object trees.
+
+This is the recommended output format. 
+You need a class resolver (typemap) for outputting object trees. 
+See L<class_resolver|class_resolver> above.
+
+=item * Hash refs
+
+This is for convnience: A single hash ref containing the content of the 
+SOAP body.
+
+=item * xml
+
+See below.
+
+=back
+
+=head3 outputxml
+
+SOAP::Lite returns only the content of the SOAP body when outputxml is set
+to true. SOAP::WSDL returns the complete XML response.
+
+=head3 Auto-Dispatching
 
 SOAP::WSDL does B<does not> support auto-dispatching.
 
 This is on purpose: You may easily create interface classes by using
-SOAP::WSDL and implementing something like
+SOAP::WSDL::Client and implementing something like
 
  sub mySoapMethod {
      my $self = shift;
      $soap_wsdl_client->call( mySoapMethod, @_);
  }
 
-You may even do this in a class factory - SOAP::WSDL provides the methods
-for generating such interfaces.
+You may even do this in a class factory - see L<wsdl2perl.pl> for creating 
+such interfaces.
 
-SOAP::Lite's autodispatching mechanism is - though convenient - a constant
-source of errors: Every typo in a method name gets caught by AUTOLOAD and
-may lead to unpredictable results.
+=head3 Debugging / Tracing
+
+While SOAP::Lite features a global tracing facility, SOAP::WSDL 
+allows to switch tracing on/of on a per-object base.
+
+This has to be done in the SOAP client used by SOAP::WSDL - see 
+L<get_client|get_client> for an example and L<SOAP::WSDL::Client> for 
+details.
 
 =head1 Bugs and Limitations
 
 =over 
 
-=item * readable
+=item * SOAP Headers are not supported
 
-readable() must be called before calling wsdlinit. This is a bug.
+There's no way to use SOAP Headers with SOAP::WSDL yet.
+
+=item * Apache SOAP datatypes are not supported
+
+You currently can't use SOAP::WSDL with Apache SOAP datatypes like map.
+
+If you want this changed, email me a copy of the specs, please.
+
+=item * outputhash
+
+outputhash is not implemented yet.
 
 =item * Unsupported XML Schema definitions
 
@@ -619,7 +555,7 @@ The following XML Schema definitions are not supported:
  simpleContent
  complexContent
 
-=item * Serialization of hash refs dos not work for ambiguous values
+=item * Serialization of hash refs dos not work for ambiguos values
 
 If you have list elements with multiple occurences allowed, SOAP::WSDL 
 has no means of finding out which variant you meant.
@@ -629,11 +565,11 @@ Passing in item => [1,2,3] could serialize to
  <item>1 2</item><item>3</item>
  <item>1</item><item>2 3</item>
 
-Ambiguos data can be avoided by passing an object tree as data.
+Ambiguos data can be avoided by passing an objects as data.
 
 =item * XML Schema facets
 
-Almost all XML schema facets are not yet implemented. The only facets 
+Almost no XML schema facets are implemented yet. The only facets 
 currently implemented are:
 
  fixed
@@ -652,6 +588,24 @@ The following facets have no influence yet:
 
 =back
 
+=head1 ACKNOWLEDGMENTS
+
+There are many people out there who fostered SOAP::WSDL's developement. 
+I would like to thank them all (and apologize to all those I have forgotten).
+
+Giovanni S. Fois wrote a improved version of SOAP::WSDL (which eventually became v1.23)
+
+Damian A. Martinez Gelabert, Dennis S. Hennen, Dan Horne, Peter Orvos, Marc Overmeer, 
+Jon Robens, Isidro Vila Verde and Glenn Wood spotted bugs and/or 
+suggested improvements in the 1.2x releases.
+
+Andreas 'ACID' Specht constantly asked for better performance.
+
+Numerous people sent me their real-world WSDL files for testing. Thank you.
+
+Paul Kulchenko and Byrne Reese wrote and maintained SOAP::Lite and thus provided a 
+base (and counterpart) for SOAP::WSDL.
+
 =head1 LICENSE
 
 Copyright 2004-2007 Martin Kutter.
@@ -661,7 +615,7 @@ the same terms as perl itself
 
 =head1 AUTHOR
 
-Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =cut
 

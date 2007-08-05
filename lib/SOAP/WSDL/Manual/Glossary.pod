@@ -7,7 +7,7 @@ SOAP::WSDL::Manual::Glossary - Those acronyms and stuff
 =head2 web service
 
 Web services are RPC (Remote Procedure Call) interfaces accessible via 
-the internet, typically via HTTP(S). 
+some internet protocol, typically via HTTP(S). 
 
 =head2 SOAP
 
@@ -21,7 +21,7 @@ SOAP services accessible via postcards.
 
 Despite it's name, SOAP has nothing more to do with objects than 
 cars have with pets - SOAP messages may, but not neccessarily do 
-carry object, very much like your car may, but does not need to 
+carry objects, very much like your car may, but does not need to 
 carry your pet.
 
 =head2 WSDL

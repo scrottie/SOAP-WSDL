@@ -17,7 +17,7 @@ __END__
 
 =head1 NAME
 
-SOAP::WSDL::XSD::Typelib::SimpleType - simple type base class
+SOAP::WSDL::XSD::Typelib::SimpleType - simpleType base class
 
 =head1 DESCRIPTION
 

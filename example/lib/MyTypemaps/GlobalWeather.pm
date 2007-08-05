@@ -3,6 +3,14 @@ use strict;
 use warnings;
 
 my %typemap = (
+# SOAP 1.1 fault typemap
+'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
+'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
+'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
+'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+
+# generated typemap
 'GetWeather' => 'MyElements::GetWeather',
 # atomic complex type (sequence)
 'GetWeather/CityName' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
@@ -24,12 +32,9 @@ my %typemap = (
 'GetCitiesByCountryResponse/GetCitiesByCountryResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
 
 # end atomic complex type (sequence)
-Fault => 'SOAP::WSDL::SOAP::Typelib::Fault11',
-'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+
+
+
 
 );
 

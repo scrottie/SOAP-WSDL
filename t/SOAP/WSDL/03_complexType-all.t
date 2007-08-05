@@ -59,14 +59,12 @@ TODO: {
 
 eval 
 { 
-	$xml = $soap->serializer->method( 
-		$soap->call('test', 
+	$xml = $soap->call('test', 
 			testAll => {
 				Test1 => 'Test 1',
 				Test2 => [ 'Test 2', 'Test 3' ]
 			}
-		) 
-	);
+		);
 };
 
 ok( ($@ =~m/illegal\snumber\sof\selements/),
@@ -74,13 +72,11 @@ ok( ($@ =~m/illegal\snumber\sof\selements/),
 );
 
 eval {
-	$xml = $soap->serializer->method( 
-		$soap->call('test', 
+	$xml = $soap->call('test', 
 			testAll => {
 				Test1 => 'Test 1',
 			}
-		) 
-	)
+		);
 };
 ok($@, 'Died on illegal number of elements (not enough)');
 

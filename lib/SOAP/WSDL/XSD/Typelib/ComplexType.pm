@@ -29,46 +29,70 @@ sub _factory {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or die "No class given for $name";
 
+        # require all types here - this is a slow check - 
+        # TODO speedup
         $type->isa('UNIVERSAL')
             or eval "require $type" 
                 or croak $@;
 
+        my $is_list = $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list');
+
         *{ "$class\::set_$name" } = sub  {
             my ($self, $value) = @_;
+
+=pod
+
+=for developers
+
+The structure below looks rather weird, but is optimized for performance.
+
+We could use sub calls for sure, but these are much slower. And the logic 
+is not that easy:
             
-            # we accept:
-            # a) objects
-            # b) scalars            
-            # c) list refs
-            # d) hash refs
-            # e) mixed stuff of all of the above, so we have to 
-            # set our element to 
-            # a) value if it's an object
-            # b) New object with value for simple values
-            # c 1) New object with value for list values and list type
-            # c 2) List ref of new objects with value for list values and non-list type
-            # c + e) List ref of objects for list values (list of objects) and non-list type
-            # d) New object with values passed to new for HASH references
-            # 
-            # Die on non-ARRAY/HASH references - if you can define semantics 
-            # for GLOB references, feel free to add them.
-            $attribute_ref->{ ident $self } = blessed $value
-                ? $value
-                : ref $value 
-                    ? ref $value eq 'ARRAY' 
-                        ?  $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list')
-                            ? $type->new({ value => $value })
-                            : [ map { 
-                                    blessed($_) 
-                                        ? ($_->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
-                                            ? $_
-                                            : croak 'cannot use non-XSD object as value'
-                                        : $type->new({ value => $_ })
-                                } @{ $value } 
-                             ]
-                    : ref $value eq 'HASH' 
+ we accept:
+ a) objects
+ b) scalars            
+ c) list refs
+ d) hash refs
+ e) mixed stuff of all of the above, so we have to set our element to 
+ a) value if it's an object
+ b) New object of expected class with value for simple values
+ c 1) New object with value for list values and list type
+ c 2) List ref of new objects with value for list values and non-list type
+ c + e 1) List ref of objects for list values (list of objects) and non-list type
+ c + e 2) List ref of new objects for list values (list of hashes) and non-list type
+ where the hash ref is passed to new as argument        
+ d) New object with values passed to new for HASH references
+
+ We throw an error on
+ a) list refs of list refs - don't know what to do with this (maybe use for lists of list types ?)
+ b) wrong object types
+ c) non-blessed non-ARRAY/HASH references - if you can define semantics 
+ for GLOB references, feel free to add them.
+ d) we should also die for non-blessed non-ARRAY/HASH references in lists but don't do yet - oh my ! 
+
+=cut
+
+            my $is_ref = ref $value;
+            $attribute_ref->{ ident $self } = ($is_ref) 
+                ? $is_ref eq 'ARRAY' 
+                    ? $is_list
+                        ? $type->new({ value => $value })
+                        : [ map { 
+                            ref $_ 
+                              ? ref $_ eq 'HASH'
+                                  ? $type->new($_)
+                                  : ref $_ eq $type
+                                      ? $_
+                                      : croak "cannot use " . ref($_) . " reference as value for $name - $type required"
+                              : $type->new({ value => $_ })
+                            } @{ $value } 
+                         ]
+                    : $is_ref eq 'HASH' 
                         ?  $type->new( $value )
-                        :  die 'Cannot use non-ARRAY/HASH as data'
+                        :  $is_ref eq $type
+                            ? $value
+                            : die 'Cannot use non-ARRAY/HASH as data'
                 : $type->new({ value => $value });                     
         };
 
@@ -176,7 +200,7 @@ __END__
 
 =head1 NAME
 
-SOAP::WSDL::XSD::Typelib::ComplexType - ComplexType XML Schema definitions
+SOAP::WSDL::XSD::Typelib::ComplexType - complexType base class
 
 =head1 Bugs and limitations
 

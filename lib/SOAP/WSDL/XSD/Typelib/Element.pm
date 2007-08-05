@@ -64,26 +64,70 @@ sub end_tag {
 
 =pod
 
+=head1 NAME
+
+SOAP::WSDL::XSD::Typelib::Element - element base clase
+
 =head1 SYNOPSIS
+
+This example creates a class for this XML schema definition:
+
+ <element name="MyElement" type="xsd:string" nillable="1"
+   minOccurs="1" maxOccurs="1"/>
 
  package MyElement;
  use strict;
  use Class::Std::Storable;
  use base (
     'SOAP::WSDL::XSD::Typelib::Element',
+    'SOAP::WSDL::XSD::Typelib::Builtin::string',
  );
 
  __PACKAGE__->__set_name('MyElementName');
  __PACKAGE__->__set_nillable(1);
  __PACKAGE__->__set_minOccurs(1);
  __PACKAGE__->__set_maxOccurs(1);
- __PACKAGE__->__set_ref(1);
+ __PACKAGE__->__set_ref(0);
 
+Now we create this XML schema definition type class:
+
+ <element name="MyElement2" ref="tns:MyElement"/>
+ 
+ package MyElement2;
+ use strict;
+ use Class::Std::Storable;
+ use base (
+    'SOAP::WSDL::XSD::Typelib::Element',
+    'MyElement'
+ );
+
+ __PACKAGE__->__set_name('MyElementName');
+ __PACKAGE__->__set_nillable(0);
+ __PACKAGE__->__set_ref(1);
+ 
+=head1 NOTES
+
+=over 
+
+=item * type="Foo"
+
+Implemented via inheritance.
+
+=item * ref="Foo"
+
+Implemented via inheritance, too. Calling 
+
+__PACKAGE__->__set_ref(1) is highly encouraged, though it has no 
+effect yet - it will probably be needed for serialization to XML 
+Schema definitions some day.
+
+=back
+ 
 =head1 BUGS AND LIMITATIONS
 
 =over
 
-=item * minOccurs maxOccurs ref not implemented
+=item * minOccurs maxOccurs not implemented
 
 These attributes are not yet supported, though they may be set as class
 properties via __PACKAGE__->__set_FOO methods.

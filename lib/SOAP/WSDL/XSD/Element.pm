@@ -111,18 +111,24 @@ sub serialize {
 sub explain {
 	my ($self, $opt, $name) = @_;
 	my $type;
-    my $text = q{};
+        my $text = q{};
 
 	# if we have a simple / complexType, explain right here
 	if ($type = $self->first_simpleType() )
 	{
-		$text .= $type->explain( $opt, $self->get_name() );
-		return $text;
+            if ($opt->{ anonymous }) {
+                delete $opt->{ anonymous };
+                return $type->explain( $opt, undef );
+            }
+            return $type->explain( $opt, $self->get_name() );
 	}
 	elsif ($type = $self->first_complexType() )
 	{
-		$text .= $type->explain( $opt, $self->get_name() );
-		return $text;
+            if ($opt->{ anonymous }) {
+                delete $opt->{ anonymous };
+                return $type->explain( $opt, undef );
+            }
+            return $type->explain( $opt, $self->get_name() );
 	}
 
 	# return if it's not a derived type - we don't handle
@@ -137,12 +143,15 @@ sub explain {
 		$ns_map{ $prefix }, $localname
 	);
 
-    use Data::Dumper;
+        use Data::Dumper;
 	die "no type for $prefix:$localname ($ns_map{ $prefix })" 
 	   . Dumper $opt->{ wsdl }->first_types()->first_schema()->_DUMP
-	
-	if (not $type);
+            if (not $type);
 
+        if ($opt->{ anonymous }) {
+            delete $opt->{ anonymous };
+            return $text .= $type->explain( $opt, undef );
+        }
 	return $text .= $type->explain( $opt, $self->get_name() );
 	return 'ERROR: '. $@;
 }
@@ -369,47 +378,4 @@ EOT
 
 1;
 
-__END__
 
-=pod
-
-=head1 NAME
-
-SOAP::WSDL::XSD::Element - XSD Element representation
-
-=head1 DESCRIPTION
-
-Represents a XML Schema Definition's Element element for serializing into
-various forms.
-
-=head1 Bugs and limitations
-
-=over
-
-=item * block
-
-Handling of the block attribute is not implemented yet.
-
-=item * final
-
-Handling of the final attribute is not implemented yet.
-
-=item * substitutionGroup
-
-Handling of the substitutionGroup attribute is not implemented yet
-
-=item * explain may produce erroneous results
-
-=back
-
-=head1 COPYING
-
-This module is part of SOAP-WSDL. See SOAP::WSDL for license.
-
-=head1 AUTHOR
-
-Insert @ instead of whitespace into e-mail.
-
- Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
-
-=cut

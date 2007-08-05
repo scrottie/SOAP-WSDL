@@ -128,15 +128,14 @@ sub explain {
     return q{}  if not $flavor;          # empty complexType
     $opt->{ indent } ||= q{   };
     my $xml = q{};
-    $xml .= "$opt->{indent}\'$name'=> " if $name;
+    $xml .= "$opt->{indent}\'$name'=> {\n" if $name;
 
     if ( ($flavor eq "sequence") or ($flavor eq "all") ) {
-        $xml .= "{\n";
         $opt->{ indent } .= "  ";
-        $xml .= join q{}, map { $_->explain( $opt ) }
-            @{ $self->get_element() };
+        for my $element (@{ $self->get_element() }) {
+            $xml .= $element->explain( $opt )
+        }
         $opt->{ indent } =~s/\s{2}$//;                     # step back
-        $xml .= "$opt->{ indent }},\n";
     }
     elsif ($flavor eq "complexContent")
     {
@@ -150,6 +149,11 @@ sub explain {
     {
         warn "found unsupported complexType definition $flavor";
     }
+
+
+    # if we're called inside a element...
+    $xml .= "$opt->{indent}},\n" if $name;
+
     return $xml;
 }
 
@@ -300,26 +304,3 @@ sub _check_value {
 }
 1;
 
-=pod
-
-=head1 Bugs and limitations
-
-=over
-
-=item * attribute definitions
-
-Attribute definitions are ignored
-
-=item * abstract, block, final, mixed
-
-Handling of these attribute is not implemented yet.
-
-=item * simpleContent, complexContent, extension, restriction, group, choice
-
-Handling of these child elements is not implemented yet
-
-=item * explain may produce erroneous results
-
-=back
-
-=cut

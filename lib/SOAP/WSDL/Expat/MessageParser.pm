@@ -38,112 +38,136 @@ sub class_resolver {
     $self->{ class_resolver } = shift;
 }
 
-sub parse {
+sub _initialize {
 	my $self = shift;
-    my $xml = shift; 
+
 	$self->{ data } = undef;
     
     my $characters;
-    my $current = '__STOP__';
-    my $ignore = [ 'Envelope', 'Body' ];
-    my $list = [];
-    my $namespace = {};
-    my $path = [];
+    my $current = undef;
+    my $ignore = [ 'Envelope', 'Body' ];        # top level elements to ignore
+    my $list = [];                              # node list
+    my $path = [];                              # current path (without 
+                                                # number)     
+    my $skip = 0;                               # skip elements
     my $parser = XML::Parser::Expat->new();
+
+    # use "globals" for speed
+    my ($_prefix, $_localname, $_element, $_method, 
+        $_class, $_parser, %_attrs) = ();
 
     no strict qw(refs);     
     $parser->setHandlers(
         Start => sub {
-            my ($parser, $element, %attrs) = @_;
-            my ($prefix, $localname) = split m{:}xms , $element;
-            # for non-prefixed elements
-            if (not $localname) {
-                $localname = $element;
-                $prefix = q{};
-            }
+            ($_parser, $_element, %_attrs) = @_;
+            ($_prefix, $_localname) = split m{:}xms , $_element;
+
+            $_localname ||= $_element;          # for non-prefixed elements
+
             # ignore top level elements
-            if (@{ $ignore } && $localname eq $ignore->[0]) {
+            if (@{ $ignore } && $_localname eq $ignore->[0]) {
                 shift @{ $ignore };
                 return;
             }
-            # empty characters
-            $characters = q{};
-    
-            push @{ $path }, $localname;  # step down...
-            push @{ $list }, $current;    # remember current
-    
+
+            push @{ $path }, $_localname;       # step down in path
+            return if $skip;                    # skip inside __SKIP__
+
             # resolve class of this element
-            my $class = $self->{ class_resolver }->get_class( $path )
+            $_class = $self->{ class_resolver }->get_class( $path )
                 or die "Cannot resolve class for "
                     . join('/', @{ $path }) . " via $self->{ class_resolver }";
-    
+
+            if ($_class eq '__SKIP__') {
+                $skip = join '/', @{ $path };
+                return;
+            }
+             
+            push @$list, $current;   # step down in tree ()remember current)
+                
+            $characters = q{};      # empty characters
+   
             # Check whether we have a primitive - we implement them as classes
             # TODO replace with UNIVERSAL->isa()
             # match is a bit faster if the string does not match, but WAY slower 
             # if $class matches...
-            # if (not $class=~m{^SOAP::WSDL::XSD::Typelib::Builtin}xms) {
-                
-            if (index $class, 'SOAP::WSDL::XSD::Typelib::Builtin', 0 < 0) {           
-
+                    
+            if (index $_class, 'SOAP::WSDL::XSD::Typelib::Builtin', 0 < 0) {           
                 # check wheter there is a CODE reference for $class::new.
                 # If not, require it - all classes required here MUST
                 # define new()
                 # This is the same as $class->can('new'), but it's way faster  
-                *{ "$class\::new" }{ CODE } 
-                    or eval "require $class"   ## no critic qw(ProhibitStringyEval)
+                *{ "$_class\::new" }{ CODE } 
+                    or eval "require $_class"   ## no critic qw(ProhibitStringyEval)
                         or die $@;                        
             }
-            # create object
-            # set current object
-            $current = $class->new({ %attrs });
+
+            $current = $_class->new({ %_attrs });   # set new current object
         
             # remember top level element
             defined $self->{ data } 
                 or ($self->{ data } = $current); 
         },
+        
         Char => sub {
+            return if $skip;
             $characters .= $_[1];
         },
+        
         End => sub {        
-            my $element = $_[1];
+            $_element = $_[1];
 
-            my ($prefix, $localname) = split m{:}xms , $element;
-            # for non-prefixed elements
-            if (not $localname) {
-                $localname = $element;
-                $prefix = q{};
+            ($_prefix, $_localname) = split m{:}xms , $_element;          
+            $_localname ||= $_element;          # for non-prefixed elements            
+
+            pop @{ $path };                     # step up in path
+       
+            if ($skip) {
+                return if $skip ne join '/', @{ $path }, $_localname;
+                $skip = 0;
+                return;
             }
       
             # This one easily handles ignores for us, too...
-            return if not ref $list->[-1];
+            return if not ref $$list[-1];
     
-            if ( $current
-                ->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType') ) {
+            # set characters in current if we are a simple type
+            # we may have characters in complexTypes with simpleContent,
+            # too - maybe we should rely on the presence of characters ?
+            # may get a speedup by defining a ident method in anySimpleType 
+            # and looking it up via exists &$class::ident;
+            if ( $current->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType') ) {
                 $current->set_value( $characters );
             }
+            # currently doesn't work, as anyType does not implement value - 
+            # maybe change ?
+#            $current->set_value( $characters ) if ($characters);
         
             # set appropriate attribute in last element
             # multiple values must be implemented in base class
-            my $method = "add_$localname";
-        
-            $list->[-1]->$method( $current );
-        
-            # step up in path
-            pop @{ $path };
-            
-            # step up in object hierarchy...
-            $current = pop @{ $list };
+            $_method = "add_$_localname";
+            $$list[-1]->$_method( $current );
+                   
+            $current = pop @$list;           # step up in object hierarchy...
         }
     );
-    
-    $parser->parse( $xml );     
+    return $parser;
+}
+
+sub parse {
+    $_[0]->_initialize->parse( $_[1] );
+    return $_[0]->{ data };     
+}
+
+sub parsefile {
+    $_[0]->_initialize->parsefile( $_[1] );
+    return $_[0]->{ data };     
 }
 
 sub get_data {
     my $self = shift;
     return $self->{ data };
 }
-
 
 1;
 
@@ -166,6 +190,13 @@ SOAP::WSDL::Expat::MessageParser - Convert SOAP messages to custom object trees
 Real fast expat based SOAP message parser.
 
 See L<SOAP::WSDL::Parser> for details.
+
+=head2 Skipping unwanted items
+
+Sometimes there's unneccessary information transported in SOAP messages.
+
+To skip XML nodes (including all child nodes), just edit the type map for 
+the message and set the type map entry to '__SKIP__'. 
 
 =head1 Bugs and Limitations
 

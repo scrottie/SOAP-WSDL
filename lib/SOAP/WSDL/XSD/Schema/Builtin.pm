@@ -3,11 +3,11 @@ use strict;
 use warnings;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Schema;
-use SOAP::WSDL::XSD::Primitive;
+use SOAP::WSDL::XSD::Builtin;
 use base qw(SOAP::WSDL::XSD::Schema);
 
 # all builtin types - add validation (e.g. content restrictions) later...
-my %PRIMITIVES = (
+my %BUILTINS = (
 	'string' => {},
 	'boolean' => {},
 	'decimal' => {},
@@ -50,9 +50,9 @@ sub START {
 	my $self = shift;
 	my @args = @_;
 
-	while (my ($name, $value) = each %PRIMITIVES )
+	while (my ($name, $value) = each %BUILTINS )
 	{
-		$self->push_type( SOAP::WSDL::XSD::Primitive->new({
+		$self->push_type( SOAP::WSDL::XSD::Builtin->new({
                 name => $name,
                 targetNamespace => 'http://www.w3.org/2001/XMLSchema',
             } )
