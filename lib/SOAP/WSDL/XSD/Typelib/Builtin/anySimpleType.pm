@@ -29,6 +29,13 @@ sub as_bool :BOOLIFY {
     return $value_of { ident $_[0] };
 }
 
+sub _get_handlers {
+    my $parser = $_[1];
+    return {
+        Char => $parser->characters(),
+    }
+}
+
 Class::Std::initialize();   # make :BOOLIFY overloading serializable
 
 

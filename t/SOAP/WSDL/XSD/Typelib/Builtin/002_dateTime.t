@@ -1,20 +1,33 @@
-use Test::More tests => 2;
+use Test::More tests => 4;
 use strict;
 use warnings;
 use lib '../lib';
+use Date::Parse;
+use Date::Format;
+
+sub timezone {
+    my @time = strptime shift;
+    my $tz = strftime('%z', @time);
+    substr $tz, -2, 0, ':';
+    return $tz;
+}
 
 use_ok('SOAP::WSDL::XSD::Typelib::Builtin::dateTime');
 my $obj;
+my %dates = (
+    '2007-12-31 12:32' => '2007-12-31T12:32:00', 
+    '2007-08-31 00:32' => '2007-08-31T00:32:00',
+    '30 Aug 2007' => '2007-08-30T00:00:00',
+);
 
-$obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new();
+while (my ($date, $converted) = each %dates ) {
 
-$obj->set_value( '2037-12-31' );
-
-is $obj->get_value() , '2037-12-31T00:00:00+01:00', 'conversion';
-
-$obj->set_value('2037-12-31T00:00:00.0000000+01:00');
-
-
+    $obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new();
+    $obj->set_value( $date );
+    
+    is $obj->get_value() , $converted . timezone($date), 'conversion';
+}
+$obj->set_value('2007-12-31T00:00:00.0000000+01:00');
 
 # exit;
 

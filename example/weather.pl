@@ -16,4 +16,4 @@ my $result = $weather->GetWeather({ CountryName => 'Germany', CityName => 'Munic
 
 die $result->get_faultstring()->get_value() if not ($result);   # boolean comparison overloaded
 
-print $result->get_GetWeatherResult()->get_value() "\n";
+print $result->get_GetWeatherResult()->get_value() , "\n";

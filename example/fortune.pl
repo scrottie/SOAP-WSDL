@@ -11,23 +11,37 @@
 
 use lib 'lib/';
 use MyInterfaces::FullerData_x0020_Fortune_x0020_Cookie;
-use MyElements::GetFortuneCookie;
 my $cookieService = MyInterfaces::FullerData_x0020_Fortune_x0020_Cookie->new();
 
-my $cookie = $cookieService->GetFortuneCookie();
+my $cookie;
+$cookie = $cookieService->GetFortuneCookie()
+  or die "$cookie";
 
-if ($cookie) {
-  print $cookie->get_GetFortuneCookieResult()->get_value, "\n";
-}
-else {
-  print $cookie;
-}
+print $cookie; # ->get_GetFortuneCookieResult()->get_value, "\n";
 
-$cookie = $cookieService->GetSpecificCookie({ index => 23 });
-if ($cookie) {
-  print $cookie
-  ->get_GetSpecificCookieResult(), "\n";
-}
-else {
-  print $cookie;
-}
+$cookie = $cookieService->GetSpecificCookie({ index => 23 })
+  or die "$cookie";
+
+print $cookie->get_GetSpecificCookieResult(), "\n";
+
+print $cookie;
+
+
+=for demo:
+
+# the same in SOAP lite (second call)
+#
+
+use SOAP::Lite;
+
+my $lite = SOAP::Lite->new()->on_action(sub { join '/', @_ } )
+  ->proxy('http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx');
+
+$lite->call(
+    SOAP::Data->name('GetSpecificCookie')
+      ->attr({ 'xmlns', 'http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx' }), 
+      SOAP::Data->name('index')->value(23) 
+  );
+
+die $soap->message() if ($soap->fault());
+print $soap->result();

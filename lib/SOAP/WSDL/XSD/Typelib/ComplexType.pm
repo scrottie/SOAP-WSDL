@@ -40,15 +40,13 @@ sub _factory {
         *{ "$class\::set_$name" } = sub  {
             my ($self, $value) = @_;
 
-=pod
-
 =for developers
 
 The structure below looks rather weird, but is optimized for performance.
 
 We could use sub calls for sure, but these are much slower. And the logic 
 is not that easy:
-            
+
  we accept:
  a) objects
  b) scalars            
@@ -92,7 +90,7 @@ is not that easy:
                         ?  $type->new( $value )
                         :  $is_ref eq $type
                             ? $value
-                            : die 'Cannot use non-ARRAY/HASH as data'
+                            : die croak "cannot use $is_ref reference as value for $name - $type required"
                 : $type->new({ value => $value });                     
         };
 
@@ -114,70 +112,69 @@ is not that easy:
             return push @{ $attribute_ref->{ $ident } }, $value;                                          
         };
         
-        *{ "$class\::START" } = sub {
-            my ($self, $ident, $args_of) = @_;
-        
-            # iterate over keys of arguments 
-            # and call set appropriate field in clase
-            map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
-               ? do {
-                    my $method = "set_$_";
-                    $self->$method( $args_of->{ $_ } );    
-               }
-               : $_ =~ m{ \A              # beginning of string
-                          xmlns           # xmlns 
-                    }xms  
-                    ? do {}
-                    : do { use Data::Dumper; 
-                        croak "unknown field $_ in $class. Valid fields are " 
-                          . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
-                          . Dumper @_ };
-            # TODO maybe only warn for unknown fields ?
-        
-            } keys %$args_of;
-        };
-
-        # this serialize method works fine for <all> and <sequence>
-        # complextypes, as well as for <restriction><all> or
-        # <restriction><sequence>.
-        # But what about choice, group, extension ?
-        #
     }
-    *{ "$class\::_serialize" } = sub {
-            my $ident = ident $_[0];
-            # my $class = ref $_[0];
 
-            # return concatenated return value of serialize call of all
-            # elements retrieved from get_elements expanding list refs.
-            # get_elements is inlined for performance.
-            return join q{} , map {     
-                my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
-                
-                if (defined $element) {       
-                    $element = [ $element ]
-                        if not ref $element eq 'ARRAY';
-                    my $name = $_;
+    *{ "$class\::START" } = sub {
+        my ($self, $ident, $args_of) = @_;
+        # iterate over keys of arguments 
+        # and call set appropriate field in clase
+        map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
+            ? do {
+                 my $method = "set_$_";
+                 $self->$method( $args_of->{ $_ } );
+           }
+           : $_ =~ m{ \A              # beginning of string
+                      xmlns           # xmlns 
+                }xms  
+                ? do {}
+                : do { use Data::Dumper; 
+                     croak "unknown field $_ in $class. Valid fields are:\n" 
+                     . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
+                     . "Structure given:\n" . Dumper @_ };
+        } keys %$args_of;
+        return $self;
+    };
+
+
+    # this serialize method works fine for <all> and <sequence>
+    # complextypes, as well as for <restriction><all> or
+    # <restriction><sequence>.
+    # But what about choice, group, extension ?
+    *{ "$class\::_serialize" } = sub {
+        my $ident = ident $_[0];
+        # my $class = ref $_[0];
+        # return concatenated return value of serialize call of all
+        # elements retrieved from get_elements expanding list refs.
+        # get_elements is inlined for performance.
+        return join q{} , map {     
+            my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
+
+            # do we have some content
+            if (defined $element) {
+                $element = [ $element ]
+                    if not ref $element eq 'ARRAY';
+                my $name = $_;
             
-                    map {
-                        # serialize element elements with their own serializer
-                        # but name them like they're named here.
-                        if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
-                                $_->serialize( { name => $name } );
-                        }
-                        # serialize complextype elments (of other types) with their 
-                        # serializer, but add element tags around.
-                        else {
-                            join q{}, $_->start_tag({ name => $name })
-                                , $_->serialize()
-                                , $_->end_tag({ name => $name });       
-                        }
-                    } @{ $element }
-                }
-                else {
-                    q{};
-                }        
-            } (@{ $ELEMENTS_FROM{ $class } });
-        };
+                map {
+                    # serialize element elements with their own serializer
+                    # but name them like they're named here.
+                    if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
+                            $_->serialize( { name => $name } );
+                    }
+                    # serialize complextype elments (of other types) with their 
+                    # serializer, but add element tags around.
+                    else {
+                        join q{}, $_->start_tag({ name => $name })
+                            , $_->serialize()
+                            , $_->end_tag({ name => $name });       
+                    }
+                } @{ $element }
+            }
+            else {
+                 q{};
+            }        
+        } (@{ $ELEMENTS_FROM{ $class } });
+    };
 
     *{ "$class\::serialize" } = sub {
             my ($self, $opt) = @_;
@@ -201,6 +198,81 @@ __END__
 =head1 NAME
 
 SOAP::WSDL::XSD::Typelib::ComplexType - complexType base class
+
+=head1 Subclassing
+
+ package MyComplexType;
+ use Class::Std::Storable
+ use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+ 
+ __PACKAGE__->_factory(
+    \@elements_from,
+    \%attributes_of,
+    \%classes_of 
+ );
+
+When subclassing, the following methods are created in the subclass:
+
+=head2 new
+
+Constructor. For your convenience, new will accept data for the object's 
+properties in the following forms:
+
+ hash refs
+ 1) of scalars
+ 2) of list refs
+ 3) of hash refs
+ 4) of objects
+ 5) mixed stuff of all of the above 
+
+new() will set the data via the set_FOO methods to the object's element 
+properties. 
+
+Data passed to new must comply to the object's structure or new() will 
+complain. Objects passed must be of the expected type, or new() will 
+complain, too.
+
+Examples:
+
+ my $obj = MyClass->new({ MyName => $value });  
+ 
+ my $obj = MyClass->new({
+     MyName => { 
+         DeepName => $value 
+     },
+     MySecondName => $value,
+ });
+ 
+ my $obj = MyClass->new({
+     MyName => [
+        { DeepName => $value },
+        { DeepName => $other_value },
+     ],
+     MySecondName => $object,
+     MyThirdName => [ $object1, $object2 ],
+ });
+
+To be correct, SOAP::WSDL::XSD::Typelib::ComplexType will create a START 
+method, not new() - but new() will be created from Class::Std::Storable and 
+behave like stated above.
+
+=head2 set_FOO
+
+A mutator method for every element property. 
+
+For your convenience, the set_FOO methods will accept all kind of data you 
+can think of (and all combinations of them) as input - with the exception 
+of GLOBS and filehandles.
+
+This means you may set element properties by passing 
+
+ a) objects
+ b) scalars            
+ c) list refs
+ d) hash refs
+ e) mixed stuff of all of the above 
+
+Examples are similar to the examples provided for new() above.
 
 =head1 Bugs and limitations
 

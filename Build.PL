@@ -1,8 +1,9 @@
 use Module::Build;
 Module::Build->new(
+        # create_makefile_pl => 'traditional',
 	dist_abstract => 'SOAP with WSDL support',
 	dist_name => 'SOAP-WSDL',
-	dist_version => '2.00_08',
+	dist_version => '2.00_09',
 	module_name   => 'SOAP::WSDL',
 	license       => 'artistic',
 	requires      => {

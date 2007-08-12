@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_08
+version: 2.00_09
 author:
 abstract: SOAP with WSDL support
 license: artistic
@@ -24,7 +24,7 @@ meta-spec:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00_08
+    version: 2.00_09
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
   SOAP::WSDL::Binding:

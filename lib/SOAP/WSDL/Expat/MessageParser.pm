@@ -5,27 +5,8 @@ use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use XML::Parser::Expat;
 
-=pod
-
-=head2 new
-
-=over
-
-=item SYNOPSIS
-
- my $obj = ->new();
-
-=item DESCRIPTION
-
-Constructor.
-
-=back
-
-=cut
-
 sub new {
-    my $class = shift;
-    my $args = shift;
+    my ($class, $args) = @_;
     my $self = {
         class_resolver => $args->{ class_resolver }
     };
@@ -39,9 +20,9 @@ sub class_resolver {
 }
 
 sub _initialize {
-	my $self = shift;
+	my ($self, $parser) = @_;
 
-	$self->{ data } = undef;
+	delete $self->{ data };
     
     my $characters;
     my $current = undef;
@@ -50,7 +31,6 @@ sub _initialize {
     my $path = [];                              # current path (without 
                                                 # number)     
     my $skip = 0;                               # skip elements
-    my $parser = XML::Parser::Expat->new();
 
     # use "globals" for speed
     my ($_prefix, $_localname, $_element, $_method, 
@@ -78,17 +58,16 @@ sub _initialize {
                 or die "Cannot resolve class for "
                     . join('/', @{ $path }) . " via $self->{ class_resolver }";
 
-            if ($_class eq '__SKIP__') {
-                $skip = join '/', @{ $path };
-                return;
-            }
+            # maybe write as "return $skip = join ... if (...)" ?
+            # would save a BLOCK...
+            return $skip = join('/', @{ $path }) if ($_class eq '__SKIP__');
              
             push @$list, $current;   # step down in tree ()remember current)
                 
             $characters = q{};      # empty characters
    
             # Check whether we have a primitive - we implement them as classes
-            # TODO replace with UNIVERSAL->isa()
+            # We could replace this with UNIVERSAL->isa() - but it's slow...
             # match is a bit faster if the string does not match, but WAY slower 
             # if $class matches...
                     
@@ -155,18 +134,17 @@ sub _initialize {
 }
 
 sub parse {
-    $_[0]->_initialize->parse( $_[1] );
+    $_[0]->_initialize( XML::Parser::Expat->new() )->parse( $_[1] );
     return $_[0]->{ data };     
 }
 
 sub parsefile {
-    $_[0]->_initialize->parsefile( $_[1] );
+    $_[0]->_initialize( XML::Parser::Expat->new() )->parsefile( $_[1] );
     return $_[0]->{ data };     
 }
 
 sub get_data {
-    my $self = shift;
-    return $self->{ data };
+    return $_[0]->{ data };
 }
 
 1;

@@ -7,6 +7,7 @@ use base qw(SOAP::WSDL::Base);
 # child elements
 my %type_of :ATTR(:name<type> :default<[]>);
 my %element_of :ATTR(:name<element> :default<[]>);
+my %group_of :ATTR(:name<group> :default<[]>);
 
 # attributes
 my %attributeFormDefault_of :ATTR(:name<attributeFormDefault> :default<()>);

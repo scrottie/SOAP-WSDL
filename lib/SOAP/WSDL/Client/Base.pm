@@ -34,10 +34,9 @@ sub __create_methods {
             $_->new( $data );
           } @{ $parts_of{ $method } };
           
-          $self->call( $method, @param );
+          return $self->SUPER::call( $method, @param );          
       }
   }
-
 }
 
 1;

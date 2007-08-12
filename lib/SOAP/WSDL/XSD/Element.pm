@@ -90,8 +90,8 @@ sub serialize {
     elsif (my $ref_name = $ref_of{ $ident }) {              # ref
         my ($prefix, $localname) = split /:/ , $ref_name;
         my $ns = $ns_map{ $prefix };
-        $type = $typelib->find_type( $ns, $localname );
-        die "no type for $prefix:$localname" if (not $type);
+        $type = $typelib->find_element( $ns, $localname );
+        die "no element for ref $prefix:$localname" if (not $type);
         return $type->serialize( $name, $value, $opt );
     }
 
@@ -130,6 +130,12 @@ sub explain {
             }
             return $type->explain( $opt, $self->get_name() );
 	}
+        elsif (my $element_name = $self->get_ref() ) {
+            my $element = $opt->{ wsdl }->first_types()->find_element(
+                $opt->{ wsdl }->_expand( $element_name )
+            );
+            return $element->explain( $opt, $self->get_name() );
+        }
 
 	# return if it's not a derived type - we don't handle
 	# other stuff yet.
@@ -152,7 +158,7 @@ sub explain {
             delete $opt->{ anonymous };
             return $text .= $type->explain( $opt, undef );
         }
-	return $text .= $type->explain( $opt, $self->get_name() );
+	return $text .= $type->explain( $opt, $name || $self->get_name() );
 	return 'ERROR: '. $@;
 }
 
@@ -240,6 +246,7 @@ package [% element_prefix %][% self.get_name %];
 use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
+
 [% IF (type = self.first_simpleType) %]
 # <element name="[% self.get_name %]"><simpleType> definition
 use SOAP::WSDL::XSD::Typelib::SimpleType;
@@ -248,6 +255,17 @@ use base qw(
     SOAP::WSDL::XSD::Typelib::SimpleType
     [% type.flavor_class %]
     [% type.base_class($type_prefix) %]
+);
+[% ELSIF (ref_name = self.get_ref);
+    split_name = ref_name.split(':');
+    prefix = split_name.0;
+    localname = split_name.1;
+    ref_class = element_prefix _ localname;
+%]    
+# <element name="[% self.get_name %]" ref="[% ref_name %]"> definition
+# use [% ref_class %];
+use base qw(
+    [% ref_class %]
 );
 [% ELSIF (type = self.first_complexType) %]
 # atomic complexType
@@ -263,7 +281,7 @@ my %[% element.get_name %]_of :ATTR(:get<[% element.get_name %]>);
 [%      END %]
 
 __PACKAGE__->_factory(
-    [ qw([% FOREACH element = type.get_element %] 
+    [ qw([% FOREACH element = type.get_element %]
     [% element.get_name %]
     [% END %]) ],
     { 
@@ -276,10 +294,10 @@ __PACKAGE__->_factory(
         prefix = split_name.0;
         localname = split_name.1;
         IF nsmap.$prefix == 'http://www.w3.org/2001/XMLSchema' %]
-        [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',        
+        [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% localname %]',
         [% ELSE %]
         [% element.get_name %] => '[% type_prefix %][% localname %]',
-        [% END %] 
+        [% END %]
       [% END %]
     }
 );
@@ -304,10 +322,6 @@ use base qw(
     SOAP::WSDL::XSD::Typelib::Element
     [% base_class %]
 );
-[% ELSIF (element = self.get_ref) 
-%]
-#   element ref"element" definition
-#   Sorry, we don't handle this yet... 
 [% END %]
 
 sub get_xmlns { '[% self.get_targetNamespace %]' }

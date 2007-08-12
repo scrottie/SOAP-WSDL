@@ -40,7 +40,7 @@ sub serialize {
         , $self->end_tag($opt);
 }
 
-sub as_num :NUMERIFY {
+sub as_num :NUMERIFY :BOOLIFY {
     return $_[0]->get_value();
 }
 

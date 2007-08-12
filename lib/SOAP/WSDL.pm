@@ -12,7 +12,7 @@ use XML::LibXML;
 
 use Data::Dumper;
 use LWP::UserAgent;
-our $VERSION='2.00_08';
+our $VERSION='2.00_09';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -565,7 +565,7 @@ Passing in item => [1,2,3] could serialize to
  <item>1 2</item><item>3</item>
  <item>1</item><item>2 3</item>
 
-Ambiguos data can be avoided by passing an objects as data.
+Ambiguos data can be avoided by providing data as objects.
 
 =item * XML Schema facets
 
@@ -615,7 +615,7 @@ the same terms as perl itself
 
 =head1 AUTHOR
 
- Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =cut
 

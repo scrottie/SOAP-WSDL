@@ -192,17 +192,17 @@ my %[% element.get_name %]_of :ATTR(:get<[% element.get_name %]>);
 [% END %]
 
 __PACKAGE__->_factory(
-    [ qw([% FOREACH element=self.get_element -%] 
-    [% element.get_name %] 
+    [ qw([% FOREACH element=self.get_element -%]
+    [% element.get_name %]
     [% END %]) ],
-    { 
-      [% FOREACH element=self.get_element %][% element.get_name %] => \%[% element.get_name %]_of, 
-      [% END %]  
+    {
+      [% FOREACH element=self.get_element %][% element.get_name %] => \%[% element.get_name %]_of,
+      [% END %]
     },
     {
-[%- 
+[%-
       FOREACH element=self.get_element;
-        IF (element.get_type);
+        IF (element.get_type);      # element type="..."
           split_name = element.get_type.split(':');
           prefix = split_name.0;
           localname = split_name.1;
@@ -211,7 +211,12 @@ __PACKAGE__->_factory(
 [%        ELSE -%]
       [% element.get_name %] => '[% type_prefix %][% localname %]',
 [%-       END;
-        ELSIF (simpleType = element.first_simpleType); 
+        ELSIF (element.get_ref);    # element ref="..."
+          split_name = element.get_ref.split(':');
+          prefix = split_name.0;
+          localname = split_name.1; %]
+      [% element.get_name %] => '[% type_prefix %][% localname %]',          
+[%        ELSIF (simpleType = element.first_simpleType); 
           base = simpleType.get_base();
 %]
       # basic simple type handling: we treat atomic simple types 
@@ -269,7 +274,12 @@ methods:
 [%        ELSE -%]
       [% element.get_name %] => '[% type_prefix %][% localname %]',
 [%-       END;
-        ELSIF (simpleType = element.first_simpleType); 
+        ELSIF (element.get_ref);    # element ref="..."
+          split_name = element.get_ref.split(':');
+          prefix = split_name.0;
+          localname = split_name.1; %]
+      [% element.get_name %] => '[% type_prefix %][% localname %]',          
+[%      ELSIF (simpleType = element.first_simpleType); 
           base = simpleType.get_base();
           split_name = base.split(':');
           prefix = split_name.0;

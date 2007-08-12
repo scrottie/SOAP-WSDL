@@ -56,7 +56,8 @@ for my $element (@{ $wsdl->first_types()->get_schema()->[1]->get_type() } ) {
       next;
     }
     my $name = 'MessageGateway::' . $element->get_name();
-    ok eval $output, $name;
+    ok eval $output, $name
+        or die $@, $output;
 
     ok $name->can('serialize'), "$name\->can('serialize')";
 }

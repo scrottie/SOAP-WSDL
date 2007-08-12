@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 8;
 use strict;
 use warnings;
 use lib '../lib';
@@ -38,6 +38,16 @@ $soap->no_dispatch(1);
 ok ($xml = $soap->call('test', 
 	testElement1 => 'Test'
 ), 'Serialized (simple) element' );
+
+ok ($xml = $soap->call('testRef', 
+	testElementRef => 'Test'
+), 'Serialized (simple) element' );
+
+is $xml 
+    , q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ><SOAP-ENV:Body><testElementRef  xmlns="urn:Test">Test</testElementRef>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>}
+    , 'element ref serialization result'
+;
 
 TODO: {
     local $TODO="implement min/maxOccurs checks";

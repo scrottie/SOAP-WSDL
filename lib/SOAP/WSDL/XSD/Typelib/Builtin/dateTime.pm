@@ -46,16 +46,19 @@ sub set_value {
         $_[0]->SUPER::set_value($_[1])
     }
     # use a combination of strptime and strftime for converting the date
+    # strptime does not emit timezone info, so we're pretty fucked up here.
+    # 
     # Unfortunately, strftime outputs the time zone as [+-]0000, whereas XML
     # whants it as [+-]00:00
     # We leave out the optional nanoseconds part, as it would always be empty.
     else {
         # strptime sets empty values to undef - and strftime doesn't like that...
         my @time_from = map { ! defined $_ ? 0 : $_ } strptime($_[1]);
+        undef $time_from[-1];
+        
         my $time_str = strftime( '%Y-%m-%dT%H:%M:%S%z', @time_from );
         substr $time_str, -2, 0, ':';
         $_[0]->SUPER::set_value($time_str);
-
     }
 }
 

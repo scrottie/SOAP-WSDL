@@ -185,3 +185,4 @@ t/SOAP/WSDL/XSD/Typelib/Builtin/002_dateTime.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/002_time.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/003_date.t
 TODO
+Makefile.PL

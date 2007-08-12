@@ -36,10 +36,10 @@ BEGIN {
 
 sub set_value {
     # use set_value from base class if we have a XML-DateTime format
-    #2037-12-31T00:00:00.0000000+01:00
+    #2037-12-31+01:00
     if (
         $_[1] =~ m{ ^\d{4} \- \d{2} \- \d{2} 
-            (:? [\+\-] \d{2} \: \d{2} )?
+            (:? [\+\-] \d{2} \: \d{2} )?$
         }xms       
     ) {
         $_[0]->SUPER::set_value($_[1])

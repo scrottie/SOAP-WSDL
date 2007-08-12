@@ -26,7 +26,6 @@ __PACKAGE__->_factory(
     {
       
         GetWeatherResult => 'SOAP::WSDL::XSD::Typelib::Builtin::string',        
-         
       
     }
 );
