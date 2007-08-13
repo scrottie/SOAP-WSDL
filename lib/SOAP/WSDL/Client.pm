@@ -284,7 +284,12 @@ the same terms as perl itself
 
 Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 139 $
+ $LastChangedBy: kutterma $
+ $Id: Client.pm 139 2007-08-12 19:15:59Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
+ 
 =cut
-
-
 

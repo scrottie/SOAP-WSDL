@@ -243,17 +243,24 @@ sub get_xmlns { '[% self.get_targetNamespace %]' }
 
 __END__
 
-=pod
+[% MACRO pod BLOCK %]=pod[% END %]
+[% MACRO cut BLOCK %]=cut[% END %]
+[% MACRO head1 BLOCK %]=head1[% END %]
+[% MACRO head2 BLOCK %]=head2[% END %]
 
-=head1 NAME [% type_prefix %][% self.get_name %]
+[% pod %]
 
-=head1 SYNOPSIS
+[% head1 %] NAME 
 
-=head1 DESCRIPTION
+[% type_prefix %][% self.get_name %]
+
+[% head1 %] SYNOPSIS
+
+[% head1 %] DESCRIPTION
 
 Type class for the XML type [% self.get_name %]. 
 
-=head1 PROPERTIES
+[% head1 %] PROPERTIES
 
 The following properties may be accessed using get_PROPERTY / set_PROPERTY 
 methods:
@@ -302,7 +309,7 @@ Structure as perl hash:
 
  [% structure %]
 
-=cut
+[% cut %]
 
 EOT
 

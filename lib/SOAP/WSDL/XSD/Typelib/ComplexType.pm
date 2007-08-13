@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 package SOAP::WSDL::XSD::Typelib::ComplexType;
 use strict;
+use warnings;
 use Carp;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use Scalar::Util qw(blessed);
 use Class::Std::Storable;
-
 use Data::Dumper;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
@@ -29,54 +29,50 @@ sub _factory {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or die "No class given for $name";
 
-        # require all types here - this is a slow check - 
-        # TODO speedup
+        # require all types here
         $type->isa('UNIVERSAL')
             or eval "require $type" 
                 or croak $@;
 
+        # check now, so we don't need to do it later...
         my $is_list = $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list');
 
         *{ "$class\::set_$name" } = sub  {
             my ($self, $value) = @_;
 
-=for developers
-
-The structure below looks rather weird, but is optimized for performance.
-
-We could use sub calls for sure, but these are much slower. And the logic 
-is not that easy:
-
- we accept:
- a) objects
- b) scalars            
- c) list refs
- d) hash refs
- e) mixed stuff of all of the above, so we have to set our element to 
- a) value if it's an object
- b) New object of expected class with value for simple values
- c 1) New object with value for list values and list type
- c 2) List ref of new objects with value for list values and non-list type
- c + e 1) List ref of objects for list values (list of objects) and non-list type
- c + e 2) List ref of new objects for list values (list of hashes) and non-list type
- where the hash ref is passed to new as argument        
- d) New object with values passed to new for HASH references
-
- We throw an error on
- a) list refs of list refs - don't know what to do with this (maybe use for lists of list types ?)
- b) wrong object types
- c) non-blessed non-ARRAY/HASH references - if you can define semantics 
- for GLOB references, feel free to add them.
- d) we should also die for non-blessed non-ARRAY/HASH references in lists but don't do yet - oh my ! 
-
-=cut
+#  The structure below looks rather weird, but is optimized for performance.
+#
+#  We could use sub calls for sure, but these are much slower. And the logic 
+#  is not that easy:
+#
+#  we accept:
+#  a) objects
+#  b) scalars            
+#  c) list refs
+#  d) hash refs
+#  e) mixed stuff of all of the above, so we have to set our element to 
+#  a) value if it's an object
+#  b) New object of expected class with value for simple values
+#  c 1) New object with value for list values and list type
+#  c 2) List ref of new objects with value for list values and non-list type
+#  c + e 1) List ref of objects for list values (list of objects) and non-list type
+#  c + e 2) List ref of new objects for list values (list of hashes) and non-list type
+#  where the hash ref is passed to new as argument        
+#  d) New object with values passed to new for HASH references
+#
+#  We throw an error on
+#  a) list refs of list refs - don't know what to do with this (maybe use for lists of list types ?)
+#  b) wrong object types
+#  c) non-blessed non-ARRAY/HASH references - if you can define semantics 
+#  for GLOB references, feel free to add them.
+#  d) we should also die for non-blessed non-ARRAY/HASH references in lists but don't do yet - oh my ! 
 
             my $is_ref = ref $value;
             $attribute_ref->{ ident $self } = ($is_ref) 
                 ? $is_ref eq 'ARRAY' 
-                    ? $is_list
-                        ? $type->new({ value => $value })
-                        : [ map { 
+                    ? $is_list                             # remembered from outside closure 
+                        ? $type->new({ value => $value })  # list element - can take list ref as value
+                        : [ map {                          
                             ref $_ 
                               ? ref $_ eq 'HASH'
                                   ? $type->new($_)
@@ -95,21 +91,20 @@ is not that easy:
         };
 
         *{ "$class\::add_$name" } = sub {
-            my ($self, $value) = @_;
-            my $ident = ident $self;
-            if (not defined $value) {
-                warn "attempting to add empty value to " . ref $self;
-            }
+            my $ident = ident $_[0];
+            warn "attempting to add empty value to " . ref $_[0] 
+                if (not defined $_[1]);
             
-            return $attribute_ref->{ $ident } = $value
+            # first call
+            return $attribute_ref->{ $ident } = $_[1]
                 if not defined $attribute_ref->{ $ident };
 
-            # listify previous value if it's no list
+            # second call: listify previous value if it's no list
             $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident } ]
                 if not ref $attribute_ref->{ $ident } eq 'ARRAY';
 
-            # add to list
-            return push @{ $attribute_ref->{ $ident } }, $value;                                          
+            # second and following: add to list
+            return push @{ $attribute_ref->{ $ident } }, $_[1];                                          
         };
         
     }
@@ -139,7 +134,7 @@ is not that easy:
     # this serialize method works fine for <all> and <sequence>
     # complextypes, as well as for <restriction><all> or
     # <restriction><sequence>.
-    # But what about choice, group, extension ?
+    # But what about choice, extension ?
     *{ "$class\::_serialize" } = sub {
         my $ident = ident $_[0];
         # my $class = ref $_[0];

@@ -183,24 +183,28 @@ __PACKAGE__->__create_methods(
 
 __END__
 
-=pod
+[% MACRO pod BLOCK %]=pod[% END %]
+[% MACRO cut BLOCK %]=pod[% END %]
+[% MACRO head1 BLOCK %]=head1[% END %]
+[% MACRO head2 BLOCK %]=head2[% END %]
+[% pod %]
 
-=head1 NAME 
+[% head1 %] NAME 
 
 [% interface_prefix %][% service.get_name %] - SOAP interface to [% service.get_name %] at 
 [% service.first_port.get_location %]
 
-=head1 SYNOPSIS
+[% head1 %] SYNOPSIS
 
  my $interface = [% interface_prefix %][% service.get_name %]->new();
  my $[% operations.keys.1 %] = $interface->[% operations.keys.1 %]();
 
 
-=head1 METHODS
+[% head1 %] METHODS
 [% FOREACH name=operations.keys;
     operation=operations.$name;
 %]
-=head2 [% name %]
+[% head2 %] [% name %]
 
 [% operation.documentation %]
 
@@ -211,7 +215,7 @@ SYNOPSIS:
 
 [% END %]
 
-=cut
+[% cut %]
 
 EOT
 

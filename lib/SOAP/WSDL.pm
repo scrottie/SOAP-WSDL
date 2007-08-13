@@ -9,10 +9,9 @@ use SOAP::WSDL::Envelope;
 use SOAP::WSDL::SAX::WSDLHandler;
 use Class::Std;
 use XML::LibXML;
-
-use Data::Dumper;
 use LWP::UserAgent;
-our $VERSION='2.00_09';
+
+our $VERSION='2.00_10';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -64,8 +63,10 @@ for my $method (keys %LOOKUP ) {
     };
 }
 
-
 {
+    # we need to roll our own for supporting
+    # SOAP::WSDL->new( key => value ) syntax, 
+    # like SOAP::Lite does
     no warnings qw(redefine);
     sub new {
         my $class = shift;
@@ -85,7 +86,6 @@ for my $method (keys %LOOKUP ) {
         
         return $self;
     }
-
 }
 
 sub wsdlinit {
@@ -145,7 +145,7 @@ sub _wsdl_get_port :PRIVATE  {
     return $port_of{ $ident } = $portname_of{ $ident }
         ? $service_of{ $ident }->get_port( $ns, $portname_of{ $ident } )
         : $port_of{ $ident } = $service_of{ $ident }->get_port()->[ 0 ];
-} ## end sub _wsdl_get_port
+} 
 
 sub _wsdl_get_binding :PRIVATE {
     my $self = shift;
@@ -155,7 +155,7 @@ sub _wsdl_get_binding :PRIVATE {
     $binding_of{ $ident } = $wsdl->find_binding( $wsdl->_expand( $port->get_binding() ) )
         or die "no binding found for ", $port->get_binding();
     return $binding_of{ $ident };
-} ## end sub _wsdl_get_binding
+} 
 
 sub _wsdl_get_portType :PRIVATE {
     my $self    = shift;
@@ -165,8 +165,7 @@ sub _wsdl_get_portType :PRIVATE {
     $porttype_of{ $ident } = $wsdl->find_portType( $wsdl->_expand( $binding->get_type() ) )
         or die "cannot find portType for " . $binding->get_type();
     return $porttype_of{ $ident };
-} ## end sub _wsdl_get_portType
-
+} 
 
 sub _wsdl_init_methods :PRIVATE {
     my $self = shift;
@@ -174,9 +173,7 @@ sub _wsdl_init_methods :PRIVATE {
     my $wsdl = $definitions_of{ $ident };
     my $ns   = $wsdl->get_targetNamespace();
 
-    # get bindings, portType, message, part(s)
-    # - use cached values where possible for speed,
-    # private methods if not for clear separation...
+    # get bindings, portType, message, part(s) - use private methods for clear separation...
     $self->_wsdl_get_service if not ($service_of{ $ident });
     my $binding = $binding_of{ $ident } || $self->_wsdl_get_binding()
            || die "Can't find binding";
@@ -241,7 +238,6 @@ sub call {
     my $response = (blessed $data) 
         ? $client->call( $method, $data )
         : do {
-
             my $content = '';
             # TODO support RPC-encoding: Top-Level element + namespace...
             foreach my $part ( @{ $method_info_of{ $ident }->{ $method }->{ parts } } ) {
@@ -471,7 +467,19 @@ You may pass the servicename and portname as attributes to wsdlinit, though.
 
 =head1 Differences to SOAP::Lite
 
-=head3 Output formats
+=head2 Message style/encoding
+
+While SOAP::Lite supports rpc/encoded style/encoding only, SOAP::WSDL currently 
+supports document/literal style/encoding.
+
+=head2 autotype / type information
+
+SOAP::Lite defaults to transmitting XML type information by default, where 
+SOAP::WSDL defaults to leaving it out. 
+
+autotype(1) might even be broken in SOAP::WSDL - it's not well-tested, yet.
+
+=head2 Output formats
 
 In contrast to SOAP::Lite, SOAP::WSDL supports the following output formats:
 
@@ -498,7 +506,7 @@ See below.
 
 =back
 
-=head3 outputxml
+=head2 outputxml
 
 SOAP::Lite returns only the content of the SOAP body when outputxml is set
 to true. SOAP::WSDL returns the complete XML response.
@@ -588,6 +596,40 @@ The following facets have no influence yet:
 
 =back
 
+=head1 SEE ALSO
+
+There are lots of SOAP Clients on CPAN, lately.
+
+You may wish to look at the following:
+
+=over
+
+=item * L<SOAP::Lite|SOAP::Lite>
+
+Full featured SOAP-library, little WSDL support. Supports rpc-encoded style only. Many protocols supported.
+
+=item * L<SOAP::Message|SOAP::Message>
+
+A very basic SOAP library without transport facilities.
+
+Handy if you got your XML message ready and just need an envelope around it.
+
+=item * L<SOAP::MySOAP|SOAP::MySOAP>
+
+An extremely basic SOAP client module - just HTTP support, no encoding / decoding, 
+HTTP headers have to be set as arguments to 'new'
+
+=item * <XML::Compile::WSDL|XML::Compile::WSDL>
+
+A promising-looking approach derived from a cool functional DOM-based XML schema parser.
+
+Will support encoding/decoding of SOAP messages based on WSDL definitions.
+
+Not yet finished at the time of writing - but you may wish to give it a try, especially 
+if you need to adhere very closely to the XML Schema / WSDL specs. 
+
+=back
+
 =head1 ACKNOWLEDGMENTS
 
 There are many people out there who fostered SOAP::WSDL's developement. 
@@ -595,7 +637,7 @@ I would like to thank them all (and apologize to all those I have forgotten).
 
 Giovanni S. Fois wrote a improved version of SOAP::WSDL (which eventually became v1.23)
 
-Damian A. Martinez Gelabert, Dennis S. Hennen, Dan Horne, Peter Orvos, Marc Overmeer, 
+Damian A. Martinez Gelabert, Dennis S. Hennen, Dan Horne, Peter Orvos, Mark Overmeer, 
 Jon Robens, Isidro Vila Verde and Glenn Wood spotted bugs and/or 
 suggested improvements in the 1.2x releases.
 
@@ -617,5 +659,12 @@ the same terms as perl itself
 
 Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 143 $
+ $LastChangedBy: kutterma $
+ $Id: WSDL.pm 143 2007-08-13 18:43:20Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
+ 
 =cut
 
