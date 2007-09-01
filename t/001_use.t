@@ -15,7 +15,6 @@ my @modules = qw(
     SOAP::WSDL::Port
     SOAP::WSDL::PortType
     SOAP::WSDL::Types
-    SOAP::WSDL::SAX::WSDLHandler
     SOAP::WSDL::XSD::Builtin
     SOAP::WSDL::XSD::ComplexType
     SOAP::WSDL::XSD::SimpleType

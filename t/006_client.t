@@ -1,10 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Pod::Simple::Text;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
-use XML::SAX::ParserFactory;
 
 eval {
     require Test::XML;
@@ -31,11 +29,17 @@ ok( $soap->no_dispatch( 1 ) , "Set no_dispatch" );
 ok( $soap->explain() );
 
 
-my $pod = Pod::Simple::Text->new();
-my $output;
-$pod->output_string( \$output );
-$pod->parse_string_document( $soap->explain() );
-
+SKIP: {
+    
+    if (not eval "require Pod::Simple::Text") {
+        skip "cannot test parsing pod without Pod::Test::Simple", 1;
+    };
+    
+    my $pod = Pod::Simple::Text->new();
+    my $output;
+    $pod->output_string( \$output );
+    ok $pod->parse_string_document( $soap->explain() ), 'parse explain pod';
+}
 # print $output;
 
 SKIP: {
@@ -60,6 +64,3 @@ sub skip_without_test_xml {
     my $number = shift || 1;
     skip("Test::XML not available", $number) if (not $Test::XML::VERSION);
 }
-
-__END__
-

@@ -1,11 +1,15 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More;
 use lib '../lib';
-use XML::SAX::ParserFactory;
 
-use diagnostics;
+if (eval "require XML::LibXML") {
+     plan tests => 5;
+}
+else {
+    plan skip_all => "Cannot test without XML::LibXML";
+}
 
 eval {
     require Test::XML;
@@ -18,7 +22,6 @@ my $filter;
 
 ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(), "Object creation");
 
-use XML::LibXML;
 my $parser = XML::LibXML->new();
 $parser->set_handler( $filter );
 

@@ -5,7 +5,6 @@ use Test::More tests => 2;
 use lib '../lib';
 use lib 'lib';
 use lib 't/lib';
-use XML::LibXML;
 use SOAP::WSDL::SAX::MessageHandler;
 
 use_ok(qw/SOAP::WSDL::Expat::MessageParser/);
@@ -13,7 +12,6 @@ use_ok(qw/SOAP::WSDL::Expat::MessageParser/);
 use MyComplexType;
 use MyElement;
 use MySimpleType;
-use Benchmark;
 
 my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
@@ -25,13 +23,6 @@ my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-insta
 my $parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => 'FakeResolver'
 });
-
-my $libxml = XML::LibXML->new();
-my $handler = SOAP::WSDL::SAX::MessageHandler->new({
-    class_resolver => 'FakeResolver',
-});
-$libxml->set_handler( $handler );
-
 
 $parser->parse( $xml );
 

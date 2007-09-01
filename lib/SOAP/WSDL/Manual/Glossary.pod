@@ -11,9 +11,12 @@ some internet protocol, typically via HTTP(S).
 
 =head2 SOAP
 
-SOAP (the Simple Object Access Protocol) is a specification for 
-defining RPC interfaces, including (but not neccessarily limited to) 
-web services. 
+SOAP is an acronym for Simple Object Access Protocol. 
+SOAP is a W3C recommendation. The latest version of the SOAP 
+specification may be found at L<http://www.w3.org/TR/soap/>.
+
+SOAP defines a protocoll for message exchange between applications. 
+The most popular usage is to use SOAP for remote procedure calls (RPC).
 
 While one of the constituting aspects of a web service is its 
 reachability via some internet protocol, you might as well define 
@@ -26,15 +29,52 @@ carry your pet.
 
 =head2 WSDL
 
-WSDL (Web Service Definition Language) is a XML-based markup language 
-for defining web service interfaces. 
+WSDL is an acronym for Web Services Description Language. 
+WSDL is a W3C recommendation. The latest version of the WSDL specification 
+may be found at L<http://www.w3.org/TR/wsdl20/>. 
+
+WSDL defines a XML-based language for describing web service interfaces, 
+including SOAP interfaces.
 
 =head2 WS-I
 
-WS-I (Web Service Interoperability) is a industry consortium dedicated 
-to finding interoperability rules for web services.
+WS-I (Web Services Interoperability Organization) is an open industry 
+organisation chartered to promote Web service interoperability across 
+platforms, operating systems, and programming languages.
 
-SOAP::WSDL aims to be a WS-I compliant SOAP client.
+WS-I publishes profiles, which provide implementation guidelines for 
+how related Web services specifications should be used together for 
+best interoperability. To date, WS-I has finalized the Basic Profile, 
+Attachments Profile and Simple SOAP Binding Profile. 
+
+SOAP::WSDL aims at complying to the Basic Profile (but does not 
+implement full support yet).
+
+=head2 SOAP message styles
+
+=head3 rpc
+
+Meant for transporting a RPC message. All contents of the SOAP body are 
+put into a top-level node named equal to the SOAP operation.
+
+WS-I Basic Profile allows the use of rpc message style.
+
+SOAP::WSDL does not support rpc message style yet.
+
+SOAP::Lite supports rpc message style only.
+
+=head3 document
+
+Meant for transporting arbitrary content. No additional nodes are inserted 
+between the SOAP body and the actual content.
+
+WS-I Basic Profile allows the use of document message style.
+
+=head2 SOAP encoding styles
+
+=head3 encoded
+
+=head3 literal
 
 =head1 LICENSE
 

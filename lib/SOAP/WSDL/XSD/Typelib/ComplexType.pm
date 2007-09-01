@@ -14,6 +14,32 @@ my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
 my %CLASSES_OF;
 
+# STORABLE_ methods for supporting Class::Std::Storable.
+# We could also handle them via AUTOMETHOD,
+# but AUTOMETHOD should always croak...
+sub STORABLE_freeze_pre {  
+}
+
+sub STORABLE_freeze_post {  
+}
+
+sub STORABLE_thaw_pre {  
+}
+
+sub STORABLE_thaw_post {  
+}
+
+# for error reporting. Eases working with data objects...
+sub AUTOMETHOD {
+    my ($self, $ident, @args_from) = @_;
+    
+    my $class = ref $self || $self;
+    confess "Can't locate object method \"$_\" via package \"$class\". \n"
+        . "Valid methods are: " 
+        . join(', ', map { ("get_$_" , "set_$_") } keys %{ $ATTRIBUTES_OF{ $class } })
+        . "\n"
+}
+
 # we store per-class elements.
 # call as __PACKAGE__->_factory
 sub _factory {

@@ -8,28 +8,42 @@ use LWP::UserAgent;
 use HTTP::Request;
 use Scalar::Util qw(blessed);
 
-use SOAP::WSDL::Envelope;
+use SOAP::WSDL::Factory::Serializer;
+use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 
-# Package globals for speed...
+# Package global for speed and memory savings.
+# But should be factored out into serializer/deserializer...
 my $PARSER;
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
 my %outputxml_of        :ATTR(:name<outputxml>      :default<()>);
-my %proxy_of            :ATTR(:name<proxy>          :default<()>);
+my %transport_of        :ATTR(:name<transport>      :default<()>);
+my %endpoint_of         :ATTR(:name<endpoint>       :default<()>);
+
+my %soap_version_of     :ATTR(:get<soap_version>    :init_attr<soap_version> :default<'1.1'>);
 
 my %fault_class_of      :ATTR(:name<fault_class>    :default<SOAP::WSDL::SOAP::Typelib::Fault11>);
 my %trace_of            :ATTR(:set<trace>           :init_arg<trace>    :default<()> );
 my %on_action_of        :ATTR(:name<on_action>      :default<()>);
-my %content_type_of     :ATTR(:name<content_type>   :default<text/xml; charset=utf8>);  
-
-#/#trick editors
+my %content_type_of     :ATTR(:name<content_type>   :default<text/xml; charset=utf8>);  #/#trick editors
+my %serializer_of       :ATTR(:name<serializer>     :default<()>);
 
 # TODO remove when preparing 2.01
 sub outputtree { warn 'outputtree is deprecated and'
     . 'will be removed before reaching v2.01 !' }
+
+sub BUILD {
+    my ($self, $ident, $attrs_of_ref) = @_;
+
+    if (exists $attrs_of_ref->{ proxy }) {
+        $self->set_proxy( $attrs_of_ref->{ proxy } );
+        delete $attrs_of_ref->{ proxy };
+    }
+       
+}
 
 sub get_trace {
     my $ident = ident $_[0];
@@ -38,6 +52,44 @@ sub get_trace {
         ? $trace_of{ $ident }
         : sub { warn @_ }
     : ()
+}
+
+sub get_proxy {
+    return $_[0]->get_transport();
+}
+
+sub set_proxy {
+    my ($self, @args_from) = @_; 
+    my $ident = ident $self;
+
+    # remember old value to return it later - Class::Std does so, too
+    my $old_value = $transport_of{ $ident };
+
+    # accept both list and list ref args
+    @args_from =  @{ $args_from[0] } if ref $args_from[0];
+    
+    # remember endpoint
+    $endpoint_of{ $ident } = $args_from[0];
+
+    # set transport - SOAP::Lite works similar...
+    $transport_of{ $ident } =  SOAP::WSDL::Factory::Transport
+      ->get_transport( @args_from );
+
+    return $old_value;
+}
+
+sub set_soap_version {
+    my $ident = ident shift;
+
+    # remember old value to return it later - Class::Std does so, too
+    my $soap_version = $soap_version_of{ $ident };
+
+    # re-setting the soap version invalidates the 
+    # serializer object
+    delete $serializer_of{ $ident };
+    $soap_version_of{ $ident } = shift;   
+    
+    return $soap_version;
 }
 
 # Mimic SOAP::Lite's behaviour for getter/setter routines
@@ -69,60 +121,79 @@ sub call {
       : (@_>1) 
           ? { @_ }
           : $_[0];
+    my $header = {};
 
-    my $soap_action;
+    my ($soap_action, $operation);
     my $trace_sub = $self->get_trace();
-    my $envelope = SOAP::WSDL::Envelope->serialize( $method, $data );
-
-    if (blessed $data
-        && $data->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
-    {
-        # TODO replace by something derived from binding - this is just a
-        # workaround...
-        $soap_action = join '/', $data->get_xmlns(), $method;
+    
+    if (ref $method eq 'HASH') {
+        $soap_action = $method->{ soap_action };
+        $operation = $method->{ operation }
     }
     else {
-        $envelope = SOAP::WSDL::Envelope->serialize( $method, $data );
-        # TODO add something like SOAP::Lite's on_action mechanism
-        $soap_action = $on_action_of{$ident}->( $self, $method ) if ($on_action_of{$ident});
-    }   
+        $operation = $method;
+    }
+    
+    
+    $serializer_of{ $ident } ||= SOAP::WSDL::Factory::Serializer->get_serializer({
+        soap_version => $self->get_soap_version(),
+    });
+
+    my $envelope = $serializer_of{ $ident }->serialize({
+        method => $operation, 
+        body => $data,
+        header => $header,
+    });
 
     return $envelope if $self->no_dispatch();
 
-    # get response via transport layer
-    # maybe we should return a result with the following methods:
-    # - result: returns the result of the call (like SOAP::Lite, but as
-    #           object tree)
-    # - header: returns the content of the SOAP header
-    # - fault:  returns the result of the call if a SOAP fault is sent back
-    #           by the server. Retuns undef (nothing) if the call has been
-    #           processed without errors.
-    my $ua = LWP::UserAgent->new();
-    my $request = HTTP::Request->new( 'POST',
-        $self->get_proxy(),
-        [   'Content-Type', $content_type_of{ $ident },
-            'Content-Length', length($envelope),
-            'SOAPAction', $soap_action,
-        ],
-        $envelope );
-  
+    # try to guess soap_action if not given
+    if (not defined $soap_action) {
+        $soap_action = (blessed $data 
+            && $data->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')) 
+            ? $soap_action = join '/', $data->get_xmlns(), $operation
+            : ($on_action_of{$ident}) 
+                ? $soap_action = $on_action_of{$ident}->( $self, $operation )
+                : "";
+    }
 
-    $trace_sub->( $request->as_string() ) if $trace_of{ $ident };       # if for speed
-    my $response = $ua->request( $request );
-    $trace_sub->( $response->as_string() ) if $trace_of{ $ident };      # if for speed
+    # always quote SOAPAction header.
+    # WS-I BP 1.0 R1109
+    $soap_action =~s{\A(:?"|')?}{"}xms;
+    $soap_action =~s{(:?"|')?\Z}{"}xms;
 
-    return $response->content() if ($self->outputxml() );
+    # get response via transport layer.
+    # Normally, SOAP::Lite's transport layer is used, though users 
+    # may provide their own.
+    my $transport = $self->get_transport(); 
+    my $response = $transport->send_receive(
+       endpoint => $self->get_endpoint(),
+       content_type => $content_type_of{ $ident },
+       envelope => $envelope,
+       action => $soap_action,
+       on_receive_chunk => sub {}     # optional, may be used for parsing large responses as they arrive.
+                                      # might not be supported by all transport layers...
+                                      # and, of course, only is of interest for chunk parsers - 
+                                      # namely ExpatNB and XML::LibXML's Push parser interface...
+    );
+
+    return $response if ($self->outputxml() );
 
     $PARSER->class_resolver( $self->get_class_resolver() );
 
     # if we had no success (Transport layer error status code)
     # or if transport layer failed
-    if ($response->code() != 200) {
+    if ( ! $transport->is_success() ) {
         # Try deserializing response - there may be some
-        if ($response->content) {
-            eval { $PARSER->parse( $response->content() ); };           
+        if ( $response ) {
+            eval { $PARSER->parse( $response ); };           
             return $PARSER->get_data() if (not $@);       
-            warn "could not deserialize response: $@";                    
+            return $fault_class_of{$ident}->new({
+                faultcode => 'soap:Server',
+                faultactor => 'urn:localhost',
+                faultstring => "Error deserializing message: $@. \n"
+                    . "Message was: \n$response"
+            });
         };
         
         # generate & return fault if we cannot serialize response
@@ -131,11 +202,10 @@ sub call {
             faultcode => 'soap:Server',
             faultactor => 'urn:localhost',
             faultstring => 'Error sending / receiving message: '
-                . $response->message()
-                #$soap->transport->message()
+                . $transport->message()
         });
     }
-    eval { $PARSER->parse( $response->content() ) };
+    eval { $PARSER->parse( $response ) };
 
     # return fault if we cannot deserialize response
     if ($@) {
@@ -161,6 +231,31 @@ SOAP::WSDL::Client - SOAP::WSDL's SOAP Client
 =head1 METHODS
 
 =head2 call
+
+ $soap->call( \%method, \@parts );
+ 
+%method is a hash with the following keys:
+
+ Name           Description
+ ----------------------------------------------------
+ operation      operation name
+ soap_action    SOAPAction HTTP header to use
+ style          Operation style. One of (document|rpc)
+ use            SOAP body encoding. One of (literal|encoded) 
+
+The style and use keys have no influence yet.
+
+@parts is a list containing the elements of the message parts.
+
+For backward compatibility, call may also be called as below:
+
+ $soap->call( $method, \@parts );
+
+In this case, $method is the SOAP operation name, and the SOAPAction header 
+is guessed from the first part's namespace and the operation name (which is 
+mostly correct, but may fail). Operation style and body encoding are assumed to 
+be document/literal
+
 
 =head2 Configuration methods
 
@@ -286,9 +381,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 139 $
+ $Rev: 176 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 139 2007-08-12 19:15:59Z kutterma $
+ $Id: Client.pm 176 2007-08-31 15:28:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
  
 =cut

@@ -13,6 +13,8 @@ sub timezone {
 }
 
 use_ok('SOAP::WSDL::XSD::Typelib::Builtin::dateTime');
+
+print "# timezone is " . timezone( scalar localtime(time) ) . "\n";
 my $obj;
 my %dates = (
     '2007-12-31 12:32' => '2007-12-31T12:32:00', 
@@ -25,14 +27,6 @@ while (my ($date, $converted) = each %dates ) {
     $obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new();
     $obj->set_value( $date );
     
-    is $obj->get_value() , $converted . timezone($date), 'conversion';
+    is $obj->get_value() , $converted . timezone($date), 'conversion with timezone';
 }
 $obj->set_value('2007-12-31T00:00:00.0000000+01:00');
-
-# exit;
-
-#~ use Benchmark;
-#~ timethese 10000, {
-    #~ xml => sub { $obj->set_value('2037-12-31T00:00:00.0000000+01:00') },
-    #~ string => sub { $obj->set_value('2037-12-31') },
-#~ }

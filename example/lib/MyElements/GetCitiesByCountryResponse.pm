@@ -3,6 +3,7 @@ use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 
+
 # atomic complexType
 # <element name="GetCitiesByCountryResponse"><complexType> definition
 use SOAP::WSDL::XSD::Typelib::ComplexType;
@@ -16,7 +17,7 @@ my %GetCitiesByCountryResult_of :ATTR(:get<GetCitiesByCountryResult>);
 
 
 __PACKAGE__->_factory(
-    [ qw( 
+    [ qw(
     GetCitiesByCountryResult
     ) ],
     { 
@@ -25,8 +26,8 @@ __PACKAGE__->_factory(
     },
     {
       
-        GetCitiesByCountryResult => 'SOAP::WSDL::XSD::Typelib::Builtin::string',        
-         
+        GetCitiesByCountryResult => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+        
       
     }
 );
@@ -46,9 +47,16 @@ __PACKAGE__->__set_ref('');
 
 __END__
 
+
+
+
+
+
 =pod
 
-=head1 NAME MyElements::GetCitiesByCountryResponse
+=head1 NAME 
+
+MyElements::GetCitiesByCountryResponse
 
 =head1 SYNOPSIS
 

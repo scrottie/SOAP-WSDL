@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-package SOAP::WSDL::Expat::MessageParser;
+package SOAP::WSDL::Expat::MessageSubParser;
 use strict;
 use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin;
@@ -19,6 +19,8 @@ sub class_resolver {
     $self->{ class_resolver } = shift;
 }
 
+sub _start;
+
 sub _initialize {
 	my ($self, $parser) = @_;
 
@@ -28,18 +30,21 @@ sub _initialize {
     my $current = undef;
     my $ignore = [ 'Envelope', 'Body' ];        # top level elements to ignore
     my $list = [];                              # node list
-    my $path = [];                              # current path 
+    my $path = [];                              # current path (without 
+                                                # number)     
     my $skip = 0;                               # skip elements
 
     # use "globals" for speed
     my ($_prefix, $_localname, $_element, $_method, 
         $_class, $_parser, %_attrs) = ();
 
-    no strict qw(refs);     
-    $parser->setHandlers(
-        Start => sub {
+    no strict qw(refs);  
+
+    my $start_sub = sub {
             ($_parser, $_element, %_attrs) = @_;
             ($_prefix, $_localname) = split m{:}xms , $_element;
+
+            # $parser->setHandlers( Start => \&_start );
 
             $_localname ||= $_element;          # for non-prefixed elements
 
@@ -83,16 +88,16 @@ sub _initialize {
             $current = $_class->new({ %_attrs });   # set new current object
         
             # remember top level element
-            exists $self->{ data } 
+            defined $self->{ data } 
                 or ($self->{ data } = $current); 
-        },
-        
-        Char => sub {
+        };
+
+    my $char_sub = sub {
             return if $skip;
-            $characters .= $_[1];
-        },
-        
-        End => sub {        
+            $characters .= $_[1];       
+    };
+    
+    my $end_sub = sub {
             $_element = $_[1];
 
             ($_prefix, $_localname) = split m{:}xms , $_element;          
@@ -117,17 +122,21 @@ sub _initialize {
             if ( $current->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType') ) {
                 $current->set_value( $characters );
             }
-            # currently doesn't work, as anyType does not implement value - 
-            # maybe change ?
-#            $current->set_value( $characters ) if ($characters);
         
             # set appropriate attribute in last element
             # multiple values must be implemented in base class
             $_method = "add_$_localname";
             $$list[-1]->$_method( $current );
                    
-            $current = pop @$list;           # step up in object hierarchy...
-        }
+            $current = pop @$list;           # step up in object hierarchy...       
+    };
+
+    $parser->setHandlers(
+        Start => sub { 
+            $_[0]->setHandlers( Start => $start_sub );
+            $start_sub->(@_) },
+        Char => $char_sub,
+        End => $end_sub,
     );
     return $parser;
 }
@@ -141,13 +150,6 @@ sub parsefile {
     $_[0]->_initialize( XML::Parser::Expat->new() )->parsefile( $_[1] );
     return $_[0]->{ data };     
 }
-
-# SAX-like aliases
-sub parse_string;
-*parse_string = \&parse;
-
-sub parse_file;
-*parse_file = \&parsefile;
 
 sub get_data {
     return $_[0]->{ data };
@@ -212,5 +214,6 @@ This module may be used under the same terms as perl itself.
  $LastChangedRevision: 176 $
  $LastChangedBy: kutterma $
 
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/SubParser.pm $
+
 

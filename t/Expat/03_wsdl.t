@@ -1,76 +1,107 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More;
+use diagnostics;
+use Test::More tests => 7;
+use Data::Dumper;
 use lib '../lib';
-
-if (eval "require XML::LibXML") {
-     plan tests => 16;
-}
-else {
-    plan skip_all => "Cannot test without XML::LibXML";
-}
 
 eval {
     require Test::XML;
     import Test::XML;
 };
 
-use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
+use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);
 
-my $filter;
+my $parser;
+ok $parser = SOAP::WSDL::Expat::WSDLParser->new(), "Object creation";
 
-ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(), "Object creation");
+$parser->parse( xml() );
 
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
-
-eval { $parser->parse_string( xml() ) };
+eval { $parser->parse( xml() ) };
 if ($@)
 {
 	fail("parsing WSDL");
-	die "Can't test without parsed WSDL: $@";
+	die "Can't test without parsed WSDL: " , Dumper $@;
 }
 else
 {
 	pass("parsing XML");
 }
 
-
-my $TMessage;
 my $wsdl;
-ok( $wsdl = $filter->get_data() , "get object tree");
+ok $wsdl = $parser->get_data() , "get object tree";
 
-my %content;
+my $schema = $wsdl->first_types()->get_schema()->[1] || die "No schema !";
 
-for my $element (@{ $wsdl->first_types()->get_schema()->[1]->get_type() } ) {
-    local $SIG{__WARN__} = sub {
-      like $_[0], qr{toClass \s is \s deprecated}xms, 'deprecated method warning';
-    };
-    my $output;
-    $element->to_class({ prefix => 'MessageGateway::', wsdl => $wsdl, 
-            output => \$output
-        });   
-    
-    # skip eval'ing TMessage - it requires evalling other 
-    # types first
-    if ($element->get_name() =~ m{\A (TMessage|TEnqueueMessage) \Z}xmsg ) {
-      $content{$1} = $output;
-      next;
-    }
-    my $name = 'MessageGateway::' . $element->get_name();
-    ok eval $output, $name
-        or die $@, $output;
+my $element = $schema->find_element(
+  'http://www.example.org/MessageGateway2/'
+  , 'EnqueueMessage'
+);
 
-    ok $name->can('serialize'), "$name\->can('serialize')";
+ok $element, 'find element';
+is $element->get_xmlns()->{ 'http://www.example.org/MessageGateway2/' }, 'tns', 'Namespace definition';
+
+
+my $opt = {
+	typelib => $wsdl->first_types,
+	readable => 1,
+	autotype => 0,
+	namespace => { 'http://www.example.org/MessageGateway2/' => 'tns',
+		'http://www.w3.org/2001/XMLSchema' => 'xsd',
+		'http://schemas.xmlsoap.org/wsdl/' => 'wsdl',
+	},
+	indent => "",
+};
+
+my $data = { EnqueueMessage => {
+	MMessage => {
+		MRecipientURI => 'anyURI',
+		MSenderAddress => 'a string',
+		MMessageContent => 'a string',
+		MSubject => 'a string',
+		MDeliveryReportRecipientURI => 'anyURI',
+		MKeepalive => {
+			MKeepaliveTimeout => 1234567,
+			MKeepaliveErrorPolicy => ' ( suppress | report ) ',
+		}
+	}
 }
 
-while ( my ($name, $code) = (each %content) ) {
-  ok eval "$code", $name;
+};
+ 
+
+SKIP: { skip_without_test_xml();
+    is_xml( $wsdl->find_message(
+        "http://www.example.org/MessageGateway2/" ,'EnqueueMessageRequest'
+        )->first_part()->serialize( 'test', $data, $opt ),
+        xml_message()
+        , "Serialized message part"
+    );
 }
 
-ok MessageGateway::TMessage->can('serialize'), 'MessageGateway::TMessage->can("serialize")';
-ok MessageGateway::TEnqueueMessage->can('serialize'), "MessageGateway::TEnqueueMessage->can('serialize')";
+sub skip_without_test_xml {
+    skip("Test::XML not available", 1) if (not $Test::XML::VERSION);
+}
+
+sub xml_message {
+	return
+q{<EnqueueMessage xmlns="http://www.example.org/MessageGateway2/">
+	<MMessage>
+		<MRecipientURI>anyURI</MRecipientURI>
+		<MSenderAddress>a string</MSenderAddress>
+		<MMessageContent>a string</MMessageContent>
+		<MSubject>a string</MSubject>
+		<MDeliveryReportRecipientURI>anyURI</MDeliveryReportRecipientURI>
+		<MKeepalive>
+			<MKeepaliveTimeout>1234567</MKeepaliveTimeout>
+			<MKeepaliveErrorPolicy> ( suppress | report ) </MKeepaliveErrorPolicy>
+		</MKeepalive>
+	</MMessage>
+</EnqueueMessage>
+};
+
+}
 
 sub xml {
 	return q{<?xml version="1.0" encoding="UTF-8"?>
@@ -82,10 +113,11 @@ sub xml {
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-      xmlns:tns="http://www.example.org/MessageGateway2/"
       targetNamespace="http://www.example.org/MessageGateway2/">
 
-      <xsd:element name="EnqueueMessage" type="tns:TEnqueueMessage">
+      <xsd:element name="EnqueueMessage" type="tns:TEnqueueMessage"
+        xmlns:tns="http://www.example.org/MessageGateway2/"
+        >
         <xsd:annotation>
           <xsd:documentation>Enqueue message request element</xsd:documentation>
         </xsd:annotation>
@@ -319,7 +351,7 @@ sub xml {
 
   <wsdl:portType name="MGWPortType">
     <wsdl:documentation>
-      generic port type for all methods required for sending messages over the 
+      generic port type for all methods required for sending messages over the mosaic
       message gatewa
     </wsdl:documentation>
     <wsdl:operation name="EnqueueMessage">
@@ -367,11 +399,11 @@ sub xml {
   </wsdl:binding>
   <wsdl:service name="MessageGateway">
     <wsdl:documentation>
-      Web Service for sending messages over the message gatewa
+      Web Service for sending messages over the mosaic message gatewa
     </wsdl:documentation>
 
     <wsdl:port name="HTTPPort" binding="tns:MGWBinding">
-      <wsdl:documentation>HTTP(S) port for the message gatewa</wsdl:documentation>
+      <wsdl:documentation>HTTP(S) port for the mosaic message gatewa</wsdl:documentation>
       <soap:address location="https://www.example.org/MessageGateway/" />
     </wsdl:port>
   </wsdl:service>

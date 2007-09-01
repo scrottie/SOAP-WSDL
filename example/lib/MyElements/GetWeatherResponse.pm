@@ -3,6 +3,7 @@ use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 
+
 # atomic complexType
 # <element name="GetWeatherResponse"><complexType> definition
 use SOAP::WSDL::XSD::Typelib::ComplexType;
@@ -16,7 +17,7 @@ my %GetWeatherResult_of :ATTR(:get<GetWeatherResult>);
 
 
 __PACKAGE__->_factory(
-    [ qw( 
+    [ qw(
     GetWeatherResult
     ) ],
     { 
@@ -25,7 +26,8 @@ __PACKAGE__->_factory(
     },
     {
       
-        GetWeatherResult => 'SOAP::WSDL::XSD::Typelib::Builtin::string',        
+        GetWeatherResult => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+        
       
     }
 );
@@ -45,9 +47,16 @@ __PACKAGE__->__set_ref('');
 
 __END__
 
+
+
+
+
+
 =pod
 
-=head1 NAME MyElements::GetWeatherResponse
+=head1 NAME 
+
+MyElements::GetWeatherResponse
 
 =head1 SYNOPSIS
 

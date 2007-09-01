@@ -273,9 +273,9 @@ This module may be used under the same terms as perl itself.
 
  $ID: $
 
- $LastChangedDate: $
- $LastChangedRevision: $
- $LastChangedBy: $
+ $LastChangedDate: 2007-08-31 17:28:29 +0200 (Fr, 31 Aug 2007) $
+ $LastChangedRevision: 176 $
+ $LastChangedBy: kutterma $
 
- $HeadURL: $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SAX/MessageHandler.pm $
 

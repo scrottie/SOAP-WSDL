@@ -8,7 +8,7 @@
 # Use this script at your own risk.
 #
 # This script demonstrates the use of SOAP::WSDL in SOAP::Lite style.
-
+=for later
 use lib 'lib/';
 use lib '../lib';
 use SOAP::WSDL;
@@ -17,23 +17,27 @@ use File::Spec;
 my $path = File::Spec->rel2abs( dirname __FILE__);
 
 my $soap = SOAP::WSDL->new();
-my $som = $soap->wsdl("file:///$path/wsdl/globalweather.xml")
+my $som = $soap->wsdl("file:///$path/wsdl/globalweather.xml")->no_dispatch(1)
   ->call('GetWeather', GetWeather => { CountryName => 'Germany', CityName => 'Munich' });
+
+print $som;
+
+=for later use
 
 die $som->message() if $som->fault();
 
 print $som->result();
 
+=cut
 
-# SOAP::Lite variant:
+use Carp;
+use diagnostics;
 
-use SOAP::Lite;
-my $soap = SOAP::Lite->new()->on_action( sub { join'/', @_ } )
-  ->proxy("http://www.webservicex.net/globalweather.asmx");
-my $som = $soap->call(
-    SOAP::Data->name('GetWeather')->attr({ xmlns => 'http://www.webserviceX.NET' }), 
-    SOAP::Data->name('CountryName')->value('Germany'), 
-    SOAP::Data->name('CityName')->value('Munich') 
+use XML::Compile::WSDL;
+my $schema = XML::Compile::WSDL->new('wsdl/globalweather.xml',
+    schema_dirs => 'D:/Test/XMLC/'
 );
 
-print $som->result();
+my $operation = $schema->prepare('GetWeather', role => 'CLIENT', port => 'GlobalWeatherSoap');
+use Data::Dumper;
+print Dumper $operation;

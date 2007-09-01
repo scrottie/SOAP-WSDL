@@ -6,8 +6,8 @@ SOAP::WSDL::Parser - How SOAP::WSDL parses XML messages
 
 =head1 Which XML message does SOAP::WSDL parse ?
 
-Naturally, there are two kinds of XMLdocuments (or messages) SOAP::WSDL 
-has to parse:
+Naturally, there are two kinds of XML documents (or messages) 
+SOAP::WSDL has to parse:
 
 =over
 
@@ -19,12 +19,54 @@ has to parse:
 
 =head1 Parser implementations
 
-There are different parser implementations available for SOAP messages - 
-currently there's only one for WSDL definitions.
+There are different parser implementations available for SOAP messages 
+and WSDL definitions.
+
+Historically, SOAP::WSDL used SAX for parsing XML. The SAX handlers 
+were implemented as L<XML::LibXML|XML::LibXML> handlers, which 
+also worked with L<XML::SAX::ParserFactory|XML::SAX::ParserFactory>.
+
+The use of SAX and L<XML::LibXML|XML::LibXML> in SOAP::WSDL is 
+deprecated for the following reasons:
+
+=over
+
+=item * Speed
+
+L<XML::Parser::Expat|XML::Parser::Expat> is faster than 
+L<XML::LibXML|XML::LibXML> - at least when optimized for speed.
+
+=item * Availability
+
+L<XML::Parser|XML::Parser> is more popular than 
+L<XML::LibXML|XML::LibXML>.
+
+=item * Stability
+
+XML::LibXML is based on the libxml2 library. Several versions of 
+libxml2 are known to have specific bugs. As a workaround, there are 
+often several versions of libxml2 installed on one system. This may 
+lead to problems on operating systems which cannot load more than 
+one version of a shared library simultaneously.
+
+=item * SOAP::Lite uses XML::Parser
+
+L<SOAP::Lite|SOAP::Lite> uses L<XML::Parser|XML::Parser> if available. 
+SOAP::WSDL should not require users to install both L<XML::Parser|XML::Parser> 
+and L<XML::LibXML|XML::LibXML>.
+
+=back
 
 =head2 WSDL definitions parser
 
 =over
+
+=item * SOAP::WSDL::Expat::WSDLParser
+
+A parser for WSDL definitions based on L<XML::Parser::Expat|XML::Parser::Expat>.
+
+ my $parser = SOAP::WSDL::Expat::WSDLParser->new();
+ my $wsdl = $parser->parse_file( $filename );
 
 =item * SOAP::WSDL::SAX::WSDLHandler
 
@@ -132,6 +174,19 @@ L<SOAP::WSDL::XSD::Typelib::ComplexType> and L<SOAP::WSDL::XSD::Typelib::SimpleT
 
 =over
 
+=item * SOAP::WSDL::Expat::MessageParser
+
+A L<XML::Parser::Expat|XML::Parser::Expat> based parser. This is the fastest 
+parser for most SOAP messages and the default for SOAP::WSDL::Client.
+
+=item * SOAP::WSDL::Expat::MessageStreamParser
+
+A XML::Parser::ExpatNB based parser. Useful for parsing huge HTTP responses, 
+as you don't need to keep everything in memory.
+
+See L<SOAP::WSDL::Expat::MessageStreamParser|SOAP::WSDL::Expat::MessageStreamParser> 
+for details.
+
 =item * SOAP::WSDL::SAX::MessageHandler
 
 This is a SAX handler for parsing WSDL files into object trees SOAP::WSDL 
@@ -143,18 +198,6 @@ XML::SAX::ParserFactory.
 Can be used for parsing both streams (chunks) and documents. 
 
 See L<SOAP::WSDL::SAX::MessageHandler> for details.
-
-=item * SOAP::WSDL::Expat::MessageParser
-
-A L<XML::Parser::Expat|XML::Parser::Expat> based parser. This is the fastest 
-parser for most SOAP messages and the default for SOAP::WSDL::Client.
-
-=item * SOAP::WSDL::Expat::MessageStreamParser
-
-A XML::Parser::ExpatNB based parser. Useful for parsing huge HTTP responses, 
-as you don't need to keep everything in memory.
-
-See L<SOAP::WSDL::Expat::MessageStreamParser|SOAP::WSDL::Expat::MessageStreamParser> for details.
 
 =back
 

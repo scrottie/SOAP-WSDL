@@ -1,13 +1,14 @@
 #!/usr/bin/perl -w
 use strict;
+use warnings;
 use Test::More tests => 5;
 use lib 't/lib';
 use lib '../lib';
 use lib 'lib';
-use XML::Simple;
+
 use SOAP::WSDL::SAX::WSDLHandler;
 use Cwd;
-use XML::LibXML::SAX;
+
 use_ok(qw/SOAP::WSDL::SAX::MessageHandler/);
 
 use SOAP::WSDL;
@@ -15,28 +16,26 @@ use SOAP::WSDL::XSD::Typelib::Builtin;
 my $path = cwd;
 $path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
 
-$XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
-my $filter;
-ok($filter = SOAP::WSDL::SAX::MessageHandler->new( {
+my $parser; 
+
+ok $parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => FakeResolver->new(),
-} ), "Object creation");
+}), "Object creation";
 
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
+# TODO factor out into bool test
 
-$parser->parse_string( xml() );
+$parser->parse( xml() );
 
-# print $filter->get_data();
-# print $filter->get_data()->get_MMessage()->_DUMP();
-
-if($filter->get_data()->get_MMessage()->get_MDeliveryReportRecipientURI()) {
+if($parser->get_data()->get_MMessage()->get_MDeliveryReportRecipientURI()) {
     pass "bool context overloading";
 }
 else
 {
     fail "bool context overloading"
 }
+
+# TODO factor out into different test
 
 my $soap = SOAP::WSDL->new(
     readable => 1,
@@ -86,6 +85,4 @@ BEGIN {
                 : warn "no class found for $name";
         };
     };
-
-
 };

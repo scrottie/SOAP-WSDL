@@ -1,13 +1,17 @@
 #!/usr/bin/perl -w
-package SOAP::WSDL::Envelope;
+package SOAP::WSDL::Serializer::SOAP11;
 use strict;
-use base qw/SOAP::WSDL::Base/;
+use warnings;
+use Class::Std::Storable;
+# use base qw/SOAP::WSDL::Base/;
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 my $XML_INSTANCE_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 
 sub serialize {
-    my ($self, $name, $data, $opt) = @_;
+    my ($self, $args_of_ref) = @_;
+    
+    my $opt = $args_of_ref->{ options };   
 
     if (not $opt->{ namespace }->{ $SOAP_NS })
     {
@@ -32,8 +36,9 @@ sub serialize {
 
     # TODO insert encoding
     $xml.='>';
-    $xml .= $self->serialize_header($name, $data, $opt);
-    $xml .= $self->serialize_body($name, $data, $opt);
+    $xml .= $self->serialize_header($args_of_ref->{ method }, $args_of_ref->{ header }, $opt);
+    $xml .= "\n" if ($opt->{ readable });
+    $xml .= $self->serialize_body($args_of_ref->{ method }, $args_of_ref->{ body }, $opt);
     $xml .= "\n" if ($opt->{ readable });
     $xml .= '</' . $soap_prefix .':Envelope>';
     $xml .= "\n" if ($opt->{ readable });

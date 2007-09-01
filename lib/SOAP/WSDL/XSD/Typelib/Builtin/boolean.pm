@@ -1,6 +1,7 @@
 package SOAP::WSDL::XSD::Typelib::Builtin::boolean;
 use strict;
 use warnings;
+use Class::Std::Storable;
 
 my %pattern_of          :ATTR(:name<pattern> :default<()>);
 my %whiteSpace_of       :ATTR(:name<whiteSpace> :default<()>);
@@ -9,7 +10,7 @@ my %value_of            :ATTR(:get<value> :init_attr<value> :default<()>);
 
 # Speed up. Class::Std::new is slow - and we don't need it's functionality...
 BEGIN {
-    use Class::Std::Storable;
+#    use Class::Std::Storable;
     use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
     no warnings qw(redefine);

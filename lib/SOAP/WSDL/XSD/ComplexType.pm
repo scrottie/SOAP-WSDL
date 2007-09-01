@@ -269,7 +269,7 @@ methods:
  [% element.get_name -%]
 [%      END %]
 
-=head1 Object structure
+[% head1 %] Object structure
 
 [% FOREACH element=self.get_element;
         IF (element.get_type);

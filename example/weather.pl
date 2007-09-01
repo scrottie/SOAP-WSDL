@@ -14,6 +14,7 @@ use MyInterfaces::GlobalWeather;
 my $weather = MyInterfaces::GlobalWeather->new();
 my $result = $weather->GetWeather({ CountryName => 'Germany', CityName => 'Munich' });
 
-die $result->get_faultstring()->get_value() if not ($result);   # boolean comparison overloaded
+# boolean comparison overloaded
+die $result->get_faultstring()->get_value() if not ($result);   
 
 print $result->get_GetWeatherResult()->get_value() , "\n";

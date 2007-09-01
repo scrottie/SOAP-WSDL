@@ -1,23 +1,18 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More tests => 19;
 use lib '../lib';
-use XML::LibXML;
-use SOAP::WSDL::SAX::WSDLHandler;
-use SOAP::WSDL::SAX::MessageHandler;
+use SOAP::WSDL::Expat::WSDLParser;
+use SOAP::WSDL::Expat::MessageParser;
 use File::Path;
 use File::Basename;
 
 my $path = dirname __FILE__;
 
-my $filter = SOAP::WSDL::SAX::WSDLHandler->new();
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
-$parser->parse_string( xml() );
-
 my $wsdl;
-ok( $wsdl = $filter->get_data() , "get object tree");
+ok( $wsdl = SOAP::WSDL::Expat::WSDLParser->new()
+    ->parse_string( xml() ) , "get object tree");
 
 $wsdl->create({
   base_path => "$path/testlib",
@@ -49,17 +44,19 @@ my $data = {
 
 ok Test::Element::EnqueueMessage->new( $data ) , '(generated) object constructor';
 
-my $handler = SOAP::WSDL::SAX::MessageHandler->new({
+my $message_parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => 'Test::Typemap::MessageGateway'
 });
-$parser->set_handler( $handler );
+
+eval { $message_parser->parse_string( xml_message2() ) };
+ok ( !$@, 'parse XML message');
+
 
 TODO: {
   local $TODO = 'support embedded atomic simpleType/complexType definitions';
-  eval { $parser->parse_string( xml_message() ) };
-  ok ( !$@, 'parse XML message into object tree');
+  eval { $message_parser->parse_string( xml_message() ) };
+  ok ( !$@, 'parse XML message using atomic type definitions');
 };
-
 
 SKIP: {
     eval "require Test::Pod";
@@ -91,8 +88,22 @@ q{<EnqueueMessage xmlns="http://www.example.org/MessageGateway2/">
 	</MMessage>
 </EnqueueMessage>
 };
-
 }
+
+sub xml_message2 {
+	return
+q{<EnqueueMessage xmlns="http://www.example.org/MessageGateway2/">
+	<MMessage>
+		<MRecipientURI>anyURI</MRecipientURI>
+		<MSenderAddress>a string</MSenderAddress>
+		<MMessageContent>a string</MMessageContent>
+		<MSubject>a string</MSubject>
+		<MDeliveryReportRecipientURI>anyURI</MDeliveryReportRecipientURI>
+	</MMessage>
+</EnqueueMessage>
+};
+}
+
 
 sub xml {
 	return q{<?xml version="1.0" encoding="UTF-8"?>

@@ -1,13 +1,19 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 1;
+use Test::More;
 use lib '../lib';
-use XML::LibXML;
 use SOAP::WSDL::SAX::WSDLHandler;
 use SOAP::WSDL::SAX::MessageHandler;
 use File::Path;
 use File::Basename;
+
+if (eval "require XML::LibXML") {
+     plan tests => 1;
+}
+else {
+    plan skip_all => "Cannot test without XML::LibXML";
+}
 
 my $path = dirname __FILE__;
 

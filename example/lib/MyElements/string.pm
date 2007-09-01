@@ -3,6 +3,7 @@ use strict;
 use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 
+
 #
 # <element name="string" type="s:string"/> definition
 #
@@ -26,9 +27,16 @@ __PACKAGE__->__set_ref('');
 
 __END__
 
+
+
+
+
+
 =pod
 
-=head1 NAME MyElements::string
+=head1 NAME 
+
+MyElements::string
 
 =head1 SYNOPSIS
 

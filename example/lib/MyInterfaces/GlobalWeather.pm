@@ -1,4 +1,5 @@
 package MyInterfaces::GlobalWeather;
+
 use strict;
 use warnings;
 use MyTypemaps::GlobalWeather;
@@ -16,14 +17,28 @@ sub new {
 }
 
 __PACKAGE__->__create_methods(
-              GetWeather => [ 'MyElements::GetWeather', ],
-              GetCitiesByCountry => [ 'MyElements::GetCitiesByCountry', ],
-      
+        GetWeather => {
+            parts => [ 'MyElements::GetWeather', ],
+            soap_action => 'http://www.webserviceX.NET/GetWeather',
+            style => 'document',
+            # use => '', # use not implemented yet 
+        },
+        GetCitiesByCountry => {
+            parts => [ 'MyElements::GetCitiesByCountry', ],
+            soap_action => 'http://www.webserviceX.NET/GetCitiesByCountry',
+            style => 'document',
+            # use => '', # use not implemented yet 
+        },
+
 );
 
 1;
 
 __END__
+
+
+
+
 
 =pod
 
@@ -64,5 +79,5 @@ SYNOPSIS:
 
 
 
-=cut
+=pod
 

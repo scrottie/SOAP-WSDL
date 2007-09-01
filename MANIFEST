@@ -22,6 +22,7 @@ example/lib/MyTypemaps/FullerData_x0020_Fortune_x0020_Cookie.pm
 example/lib/MyTypemaps/GlobalWeather.pm
 example/weather.pl
 example/weather_wsdl.pl
+example/weather_xml_compile.pl
 example/wsdl/FortuneCookie.xml
 example/wsdl/genericbarcode.xml
 example/wsdl/globalweather.xml
@@ -32,11 +33,16 @@ lib/SOAP/WSDL/Binding.pm
 lib/SOAP/WSDL/Client.pm
 lib/SOAP/WSDL/Client/Base.pm
 lib/SOAP/WSDL/Definitions.pm
-lib/SOAP/WSDL/Envelope.pm
 lib/SOAP/WSDL/Expat/MessageParser.pm
 lib/SOAP/WSDL/Expat/MessageStreamParser.pm
+lib/SOAP/WSDL/Expat/MessageSubParser.pm
+lib/SOAP/WSDL/Expat/SubParser.pm
+lib/SOAP/WSDL/Expat/WSDLParser.pm
+lib/SOAP/WSDL/Factory/Serializer.pm
+lib/SOAP/WSDL/Factory/Transport.pm
 lib/SOAP/WSDL/Manual.pod
 lib/SOAP/WSDL/Manual/Glossary.pod
+lib/SOAP/WSDL/Manual/WS_I_BasicProfile_Compliance.pod
 lib/SOAP/WSDL/Message.pm
 lib/SOAP/WSDL/Operation.pm
 lib/SOAP/WSDL/OpMessage.pm
@@ -44,11 +50,14 @@ lib/SOAP/WSDL/Parser.pod
 lib/SOAP/WSDL/Part.pm
 lib/SOAP/WSDL/Port.pm
 lib/SOAP/WSDL/PortType.pm
+lib/SOAP/WSDL/RELEASE_NOTES
 lib/SOAP/WSDL/SAX/MessageHandler.pm
 lib/SOAP/WSDL/SAX/WSDLHandler.pm
+lib/SOAP/WSDL/Serializer/SOAP11.pm
 lib/SOAP/WSDL/Service.pm
 lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
 lib/SOAP/WSDL/SoapOperation.pm
+lib/SOAP/WSDL/Transport/HTTP.pm
 lib/SOAP/WSDL/TypeLookup.pm
 lib/SOAP/WSDL/Types.pm
 lib/SOAP/WSDL/XSD/Builtin.pm
@@ -108,13 +117,18 @@ lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
 lib/SOAP/WSDL/XSD/Typelib/Element.pm
 lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
 LICENSE
+Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
 t/001_use.t
+t/002_parse_wsdl.t
 t/002_sax.t
 t/003_sax_serializer.t
+t/003_wsdl_based_serializer.t
+t/004_parse_wsdl.t
 t/004_sax_wsdl.t
+t/005_parse_contributed.t
 t/005_sax_contributed_wsdl.t
 t/006_client.t
 t/007_envelope.t
@@ -126,9 +140,13 @@ t/013_complexType.t
 t/014_sax_typelib.t
 t/015_to_typemap.t
 t/016_client_object.t
-t/017_generator.t
-t/018_generator.t
+t/017_generator_expat.t
+t/017_generator_libxml.t
+t/018_generator_expat.t
+t/018_generator_libxml.t
 t/020_storable.t
+t/021_generator_element_ref_expat.t
+t/021_generator_element_ref_libxml.t
 t/098_pod.t
 t/acceptance/results/03_complexType-all.xml
 t/acceptance/results/03_complexType-sequence.xml
@@ -142,6 +160,7 @@ t/acceptance/wsdl/006_sax_client.wsdl
 t/acceptance/wsdl/008_complexType.wsdl
 t/acceptance/wsdl/02_port.wsdl
 t/acceptance/wsdl/03_complexType-all.wsdl
+t/acceptance/wsdl/03_complexType-element-ref.wsdl
 t/acceptance/wsdl/03_complexType-sequence.wsdl
 t/acceptance/wsdl/04_element-simpleType.wsdl
 t/acceptance/wsdl/04_element.wsdl
@@ -156,6 +175,8 @@ t/acceptance/wsdl/contributed/OITest.wsdl
 t/acceptance/wsdl/contributed/tools.wsdl
 t/acceptance/wsdl/email_account.wsdl
 t/Expat/01_expat.t
+t/Expat/02_sub_parser.t
+t/Expat/03_wsdl.t
 t/lib/MyComplexType.pm
 t/lib/MyElement.pm
 t/lib/MySimpleType.pm
@@ -168,6 +189,7 @@ t/SOAP/WSDL/02_port.t
 t/SOAP/WSDL/03_complexType-all.t
 t/SOAP/WSDL/03_complexType-choice.t
 t/SOAP/WSDL/03_complexType-complexContent.t
+t/SOAP/WSDL/03_complexType-element-ref.t
 t/SOAP/WSDL/03_complexType-group.t
 t/SOAP/WSDL/03_complexType-sequence.t
 t/SOAP/WSDL/03_complexType-simpleContent.t
@@ -177,7 +199,6 @@ t/SOAP/WSDL/04_element.t
 t/SOAP/WSDL/05_simpleType-list.t
 t/SOAP/WSDL/05_simpleType-restriction.t
 t/SOAP/WSDL/05_simpleType-union.t
-t/SOAP/WSDL/10_performance.t
 t/SOAP/WSDL/11_helloworld.NET.t
 t/SOAP/WSDL/12_binding.pl
 t/SOAP/WSDL/XSD/Typelib/Builtin/001_string.t
@@ -185,4 +206,3 @@ t/SOAP/WSDL/XSD/Typelib/Builtin/002_dateTime.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/002_time.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/003_date.t
 TODO
-Makefile.PL

@@ -1,36 +1,35 @@
-- support embedded atomic types by including a second (and third and fourth) 
-package type_prefix::complex_type::element_name element package.
-Allow unlimited depth (though this is rather wicked).
-- fixup generated pod so it looks nice in SOAP::WSDL::Definitions.
-- remove benchmarks from tests. Create benchmark/ directory and store benchmarks in.
-- add tests for SOAP::WSDL::Definitions::create 
-   - test for correct creation
-   - test against web service (fullerdata.com?)
-- Improve docs
-   - Partially DONE
-- Remove SOAP::Lite dependency - for now, just support HTTP(s) via LWP::UserAgent.
-   - Partially DONE. SOAP::WSDL still uses SOAP::Schema
-- write inheritance Test for all XSD::Typelib::Builtin::* classes
-- Check & probably fix simpleType support. 
-The WS at http://www.webservicex.net/genericbarcode.asmx?wsdl should make up a good example for simpleType 
-definitions.
-- add default Fault11 typemap to generated typemaps
-  - DONE
-- SOAP::WSDL::Definitions::create creates bad interface docs. Fix it.
-   - DONE
-- update all Builtin Types to new constructor BEGIN block (Class::Std unfortunately is way slow)
-   - DONE.
-- Remove useless (but on CPAN annoying) doc from Builtin::* classes
-   - DONE
-- add example WS scripts
-   - DONE.
-- SOAP::WSDL::XSD::Typelib::Builtin::string does not unescape XML builtin entities on get_value()
-   - WONTFIX. 
-   Entities are unescaped by XML parser. 
-   If you want the plain value, you have to use get_value, as XML conversion is overloaded on stringification.
-- Make callin WS easier: implent WS-I-based SOAP::WSDL::Client::WSI
-   - WONTFIX - SOAP::WSDL::Base should behave equal
-- add capability to create request objects based on input part definitions to SOAP::WSDL::Client::Base
-   - DONE.
+TODO list for SOAP::WSDL
+
+2.00 Pre-releases
+--------
+* SOAP Header support (#1764845)
+
+* Implement a interface similar to SOAP::Schema (#1783639)
+
+* (#1785195) Support deserializer plugins
+   * Support XML::Compiled as one serializer/deserializer
+
+* Check & probably fix simpleType support. 
+The WS at http://www.webservicex.net/genericbarcode.asmx?wsdl should 
+make up a good example for simpleType definitions.
+
+* Remove benchmarks from test. Create benchmark/ directory to store benchmarks.
+
+* write inheritance Test for all XSD::Typelib::Builtin::* classes
+
+* support embedded atomic types (#1761532) 
+Implement by including a second (and third and fourth) 
+
+package type_prefix::complex_type::element_name;
+
+element package.
+Maybe even allow unlimited depth? What does the specs say?
+
+2.1 release
+--------
 
 
+Past 2.1 release
+--------
+* XML schema support ("minimal conformant") (#1764845)
+* Support SOAP attachments

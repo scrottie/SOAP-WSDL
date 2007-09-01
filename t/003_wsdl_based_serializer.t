@@ -1,13 +1,7 @@
-use Test::More;
+use Test::More tests => 11;
+use Data::Dumper;
 use lib '../lib';
-
-if (eval "require XML::LibXML") {
-     plan tests => 11;
-}
-else {
-    plan skip_all => "Cannot test without XML::LibXML";
-}
-
+use XML::LibXML;
 
 use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
 
@@ -102,37 +96,6 @@ is( $wsdl->find_message('myNamespace', 'testRequest')->first_part()->serialize(
 
 
 exit;
-
-foreach my $service (@{ $wsdl->service() })
-{
-	print "Service: ", $service->name(), "\n";
-
-	foreach my $port( @{ $service->port() })
-	{
-		print "  ", "port name: ", $port->name, "\n";
-		print "    ", "binding: ", $port->binding(), "\n";
-		print "    ", "location: ", $port->location,"\n";
-		my $portType = $wsdl->get_portType(
-			$wsdl->get_binding( $port->binding() )->type()
-		);
-		foreach my $operation ( @{ $portType->operation() } )
-		{
-			print "      ", "Operation name: ", $operation->name(), "\n";
-			print "        ", "Input message: ",
-				$operation->input()->message(), "\n"
-					if ($operation->input());
-			my $input = $wsdl->get_message( $operation->input()->message() );
-			print "          ", "Type: ", $input->name(), "\n";
-
-			print "        ", "Output message: ",
-				$operation->output()->message(), "\n"
-					if ($operation->output());
-			my $output = $wsdl->get_message( $operation->output()->message() );
-			print "          ", "Type: ", $output->name(), "\n";
-		}
-	}
-}
-
 
 sub xml
 {

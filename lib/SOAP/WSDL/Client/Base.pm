@@ -21,20 +21,35 @@ sub __create_new {
 }
 
 sub __create_methods {
-  my ($package, %parts_of) = @_;
+  my ($package, %info_of) = @_;
   
   no strict qw(refs);
   
-  for my $method (keys %parts_of){
+  for my $method (keys %info_of){
+      my ($soap_action, @parts); 
+      
+      # up to 2.00_10 we had list refs...
+      if (ref $info_of{ $method }eq 'HASH') {
+          @parts = @{ $info_of{ $method }->{ parts } };
+          $soap_action = $info_of{ $method }->{ soap_action };
+      }
+      else {
+          @parts = @{ $info_of{ $method } };
+          $soap_action = ();          
+      }
+      
       *{ "$package\::$method" } = sub {
           my $self = shift;
           my @param = map { 
             my $data = shift || {};
             eval "require $_";
             $_->new( $data );
-          } @{ $parts_of{ $method } };
+          } @parts;
           
-          return $self->SUPER::call( $method, @param );          
+          return $self->SUPER::call( { 
+              operation => $method, 
+              soap_action => $soap_action,
+          }, @param );          
       }
   }
 }
@@ -47,13 +62,40 @@ __END__
 
 =head1 NAME
 
-SOAP::WSDL::Client::Base - Base client for WSDL-based SOAP access
+SOAP::WSDL::Client::Base - Factory class for WSDL-based SOAP access
 
 =head1 SYNOPSIS
 
- package MySoapClient;
+ package MySoapInterface;
  use SOAP::WSDL::Client::Base;
+ __PACKAGE__->__create_new( 
+        proxy => 'http://somewhere.over.the.rainbow',
+        class_resolver => 'Typemap::MySoapInterface'
+ );
  __PACKAGE__->__create_methods( qw(one two three) );
  1;
 
+=head1 DESCRIPTION
+
+Factory class for creating interface classes. Should probably be renamed to 
+SOAP::WSDL::Factory::Interface...
+
+=head1 LICENSE
+
+Copyright 2004-2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under 
+the same terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 176 $
+ $LastChangedBy: kutterma $
+ $Id: Base.pm 176 2007-08-31 15:28:29Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
+ 
 =cut

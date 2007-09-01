@@ -78,12 +78,15 @@ sub init {
     my @args = @_;
     foreach my $value (@args)
     {
-        die $value if (not defined ($value->{ Name }));
+        die @args if (not defined ($value->{ Name }));
         if ($value->{ Name } =~m{^xmlns\:}xms) {
             die $xmlns_of{ ident $self }
                 if ref $xmlns_of{ ident $self } ne 'HASH';
+
+            # add namespaces
             $xmlns_of{ ident $self }->{ $value->{ Value } } =
                 $value->{ LocalName };
+
             next;
         }
         elsif ($value->{ Name } =~m{^xmlns$}xms) {

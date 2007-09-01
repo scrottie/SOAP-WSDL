@@ -117,6 +117,16 @@ sub _create_interface {
     my %operations = ();
     for my $operation ( @{ $operation_ref } ) {
         my $operation_name = $operation->get_name();
+        my $soap_operation = $operation->first_operation();
+        
+        $operations{ $operation_name }->{ style } = $soap_operation 
+            ? $soap_operation->get_style()
+            : undef;
+            
+        $operations{ $operation_name }->{ soap_action } = $soap_operation 
+            ? $soap_operation->get_soapAction()
+            : undef; 
+        
         my $port_op = first { $_->get_name() eq $operation_name } @{ $port_operation_ref };
         
         $operations{ $operation_name }->{ documentation } = $port_op->get_documentation();
@@ -151,9 +161,6 @@ sub _create_interface {
         }
     }
 
-#    use Data::Dumper;
-#    die Dumper \%operations;
-
     my $template = <<'EOT';
 package [% interface_prefix %][% service.get_name.replace('\.', '::') %];
 
@@ -174,9 +181,14 @@ sub new {
 }
 
 __PACKAGE__->__create_methods(
-      [% FOREACH name = operations.keys -%]
-        [% name %] => [ [% FOREACH class = operations.$name.input.class %]'[% class %]', [% END %]],
-      [% END %]
+[% FOREACH name = operations.keys -%]
+        [% name %] => {
+            parts => [ [% FOREACH class = operations.$name.input.class %]'[% class %]', [% END %]],
+            soap_action => '[% operations.$name.soap_action %]',
+            style => '[% operations.$name.style %]',
+            # use => '', # use not implemented yet 
+        },
+[% END %]
 );
 
 1;

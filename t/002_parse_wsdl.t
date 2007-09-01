@@ -1,15 +1,10 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More;
+use Test::More tests => 18; # qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
 
-if (eval "require XML::LibXML") {
-     plan tests => 18;
-}
-else {
-    plan skip_all => "Cannot test without XML::LibXML";
-}
+use XML::LibXML;
 
 eval {
     require Test::XML;

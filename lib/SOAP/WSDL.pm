@@ -598,26 +598,13 @@ The following facets have no influence yet:
 
 =head1 SEE ALSO
 
-There are lots of SOAP Clients on CPAN, lately.
-
-You may wish to look at the following:
+=head2 Related projects
 
 =over
 
 =item * L<SOAP::Lite|SOAP::Lite>
 
 Full featured SOAP-library, little WSDL support. Supports rpc-encoded style only. Many protocols supported.
-
-=item * L<SOAP::Message|SOAP::Message>
-
-A very basic SOAP library without transport facilities.
-
-Handy if you got your XML message ready and just need an envelope around it.
-
-=item * L<SOAP::MySOAP|SOAP::MySOAP>
-
-An extremely basic SOAP client module - just HTTP support, no encoding / decoding, 
-HTTP headers have to be set as arguments to 'new'
 
 =item * <XML::Compile::WSDL|XML::Compile::WSDL>
 
@@ -627,6 +614,20 @@ Will support encoding/decoding of SOAP messages based on WSDL definitions.
 
 Not yet finished at the time of writing - but you may wish to give it a try, especially 
 if you need to adhere very closely to the XML Schema / WSDL specs. 
+
+=back
+
+=head2 Sources of documentation
+
+=over 
+
+=item * SOAP::WSDL homepage at sourceforge.net
+
+L<http://soap-wsdl.sourceforge.net>
+
+=item * SOAP::WSDL forum at CPAN::Forum
+
+L<http://www.cpanforum.com/dist/SOAP-WSDL>
 
 =back
 
@@ -661,9 +662,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 143 $
+ $Rev: 176 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 143 2007-08-13 18:43:20Z kutterma $
+ $Id: WSDL.pm 176 2007-08-31 15:28:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
  
 =cut

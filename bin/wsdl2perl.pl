@@ -1,13 +1,10 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Fcntl;
-use IO::File;
 use Pod::Usage;
 use Getopt::Long;
 use LWP::UserAgent;
-use SOAP::WSDL::SAX::WSDLHandler;
-use XML::LibXML;
+use SOAP::WSDL::Expat::WSDLParser;
 
 my %opt = (
   url => '',
@@ -39,8 +36,7 @@ my $url = $ARGV[0];
 pod2usage( -exit => 1 , verbose => 2 ) if ($opt{help});
 pod2usage( -exit => 1 , verbose => 1 ) if not ($url);
 
-my $handler = SOAP::WSDL::SAX::WSDLHandler->new();
-my $parser = XML::LibXML->new();
+my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
 local $ENV{HTTP_PROXY} = $opt{proxy} if $opt{proxy};
 my $lwp = LWP::UserAgent->new();
@@ -49,16 +45,13 @@ die $response->message(), "\n" if $response->code != 200;
 
 my $xml = $response->content();
 
-$parser->set_handler( $handler );
-$parser->parse_string( $xml );
-
-my $wsdl = $handler->get_data();
+my $wsdl = $parser->parse_string( $xml );
 
 if ($opt{typemap_include}) {
-  my $fh = IO::File->new($opt{typemap_include} , O_RDONLY)
+  open my $fh , $opt{typemap_include}
     or die "cannot open typemap_include file $opt{typemap_include}\n";
-  $opt{custom_types} = join q{}, $fh->getlines();
-  $fh->close();
+  $opt{custom_types} .= join q{}, <$fh>;
+  close $fh;
   delete $opt{typemap_include};
 }
 

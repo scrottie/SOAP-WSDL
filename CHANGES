@@ -1,4 +1,143 @@
 ------------------------------------------------------------------------
+r176 | kutterma | 2007-08-31 17:28:29 +0200 (Fr, 31 Aug 2007) | 2 lines
+
+- set SVN keywords
+- updated docs
+------------------------------------------------------------------------
+r175 | kutterma | 2007-08-31 17:05:42 +0200 (Fr, 31 Aug 2007) | 6 lines
+
+- modified SOAP::WSDL::Client to allow passing the SOAPAction header to call()
+- modified SOAP::WSDL::Definitions's generator to emit interfaces which include 
+  soap_action and style information for every operation
+- re-generated GetWeather example interface
+- fixed wsdl2perl.pl (typo)
+
+------------------------------------------------------------------------
+r174 | kutterma | 2007-08-31 15:49:04 +0200 (Fr, 31 Aug 2007) | 2 lines
+
+- SOAPAction header is now always quoted.
+- updated docs
+------------------------------------------------------------------------
+r173 | kutterma | 2007-08-31 15:48:10 +0200 (Fr, 31 Aug 2007) | 1 line
+
+- added WS-I basic profile compliance docs. Looks like we're far from being compliant...
+------------------------------------------------------------------------
+r172 | kutterma | 2007-08-30 22:58:41 +0200 (Do, 30 Aug 2007) | 1 line
+
+- updated TODO list
+------------------------------------------------------------------------
+r170 | kutterma | 2007-08-30 22:32:56 +0200 (Do, 30 Aug 2007) | 1 line
+
+- added RELEASE_NOTES
+------------------------------------------------------------------------
+r169 | kutterma | 2007-08-30 21:33:50 +0200 (Do, 30 Aug 2007) | 1 line
+
+- fixed SOAP11 serializer package name
+------------------------------------------------------------------------
+r168 | kutterma | 2007-08-30 21:32:39 +0200 (Do, 30 Aug 2007) | 4 lines
+
+- added Serializer factory
+- modified client to use serializer
+- moved old SOAP::WSDL::Envelope into Serializer namespace
+- moved Tranport factory into Factory namespace
+------------------------------------------------------------------------
+r167 | kutterma | 2007-08-30 21:30:17 +0200 (Do, 30 Aug 2007) | 1 line
+
+- fixed Envelope to comply to new serializer scheme
+------------------------------------------------------------------------
+r166 | kutterma | 2007-08-30 18:44:48 +0200 (Do, 30 Aug 2007) | 1 line
+
+- re-fixed Transport factory
+------------------------------------------------------------------------
+r165 | kutterma | 2007-08-30 18:43:36 +0200 (Do, 30 Aug 2007) | 1 line
+
+- added HTTP Transport class (really)
+------------------------------------------------------------------------
+r164 | kutterma | 2007-08-30 14:38:47 +0200 (Do, 30 Aug 2007) | 1 line
+
+- first try at serializer factory.
+------------------------------------------------------------------------
+r163 | kutterma | 2007-08-30 10:34:00 +0200 (Do, 30 Aug 2007) | 1 line
+
+- updated docs (reference to homepage and forum)
+------------------------------------------------------------------------
+r162 | kutterma | 2007-08-30 10:29:49 +0200 (Do, 30 Aug 2007) | 1 line
+
+- updated docs
+------------------------------------------------------------------------
+r161 | kutterma | 2007-08-30 10:17:28 +0200 (Do, 30 Aug 2007) | 2 lines
+
+- modified client to use SOAP::WSDL::Transport factory
+- fixed SOAP::WSDL::Transport factory
+------------------------------------------------------------------------
+r160 | kutterma | 2007-08-30 00:20:09 +0200 (Do, 30 Aug 2007) | 1 line
+
+- added weird SOAP::Lite nameing scheme to registered && SOAP::Lite Transport instantiations
+------------------------------------------------------------------------
+r159 | kutterma | 2007-08-30 00:00:15 +0200 (Do, 30 Aug 2007) | 1 line
+
+- first try at Transport factory and Transport::HTTP implementation class.
+------------------------------------------------------------------------
+r158 | kutterma | 2007-08-29 22:36:34 +0200 (Mi, 29 Aug 2007) | 1 line
+
+- updated TODO list
+------------------------------------------------------------------------
+r153 | kutterma | 2007-08-29 11:24:40 +0200 (Mi, 29 Aug 2007) | 4 lines
+
+- removed XML::LibXML dependencies (is now required, not used in test scripts)
+- fixed WSDLParser to switch on expat namespace support when parsing files
+- added expat based tests ported from XML::LibXML based WSDL parser tests
+- updated docs
+------------------------------------------------------------------------
+r152 | kutterma | 2007-08-28 23:28:06 +0200 (Di, 28 Aug 2007) | 3 lines
+
+- updated Build.PL
+- updated CHANGES
+- updated MANIFEST
+------------------------------------------------------------------------
+r151 | kutterma | 2007-08-28 23:07:14 +0200 (Di, 28 Aug 2007) | 1 line
+
+- fixed namespace test
+------------------------------------------------------------------------
+r150 | kutterma | 2007-08-28 23:06:00 +0200 (Di, 28 Aug 2007) | 1 line
+
+- renamed tests to better meet their content
+------------------------------------------------------------------------
+r149 | kutterma | 2007-08-28 23:03:30 +0200 (Di, 28 Aug 2007) | 1 line
+
+- cleanup
+------------------------------------------------------------------------
+r148 | kutterma | 2007-08-28 23:02:01 +0200 (Di, 28 Aug 2007) | 2 lines
+
+- added namespace test
+- removed SAX handler from usage test
+------------------------------------------------------------------------
+r147 | kutterma | 2007-08-28 22:57:48 +0200 (Di, 28 Aug 2007) | 1 line
+
+- added namespace support
+------------------------------------------------------------------------
+r146 | kutterma | 2007-08-28 21:56:35 +0200 (Di, 28 Aug 2007) | 1 line
+
+- removed POD directive from template, so the CPAN indexer won't show it...
+------------------------------------------------------------------------
+r145 | kutterma | 2007-08-28 16:35:18 +0200 (Di, 28 Aug 2007) | 5 lines
+
+- XML::SAX::Base and XML::SAX::ParserFactory and Pod::Simple::Text dependencies to ease testing
+- removed unneccessary performance test
+- Added Expat-based WSDL parser and test to get rid of XML::LibXML dependency some day...
+   - needs further work: namespaces are not processed correctly, yet
+
+------------------------------------------------------------------------
+r144 | kutterma | 2007-08-14 11:05:40 +0200 (Di, 14 Aug 2007) | 1 line
+
+- added missing prerequisite 'Template' to Build.PL
+------------------------------------------------------------------------
+r143 | kutterma | 2007-08-13 20:43:20 +0200 (Mo, 13 Aug 2007) | 3 lines
+
+- fixed POD (#1772710)
+- fixed Makefile.PL - now try the passthrough variant first. If too many CPAN testers still fail, we may switch to traditional, some day...
+- prepared 2.00_10 pre-release
+------------------------------------------------------------------------
 r142 | kutterma | 2007-08-13 15:55:45 +0200 (Mo, 13 Aug 2007) | 1 line
 
 typo

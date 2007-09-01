@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_10
+version: 2.00_11
 author:
 abstract: SOAP with WSDL support
 license: artistic
@@ -11,12 +11,11 @@ requires:
   Date::Parse: 0
   File::Basename: 0
   File::Path: 0
+  Getopt::Long: 0
   LWP::UserAgent: 0
   List::Util: 0
-  XML::LibXML: 0
+  Template: 0
   XML::Parser::Expat: 0
-  XML::SAX::Base: 0
-  XML::SAX::ParserFactory: 0
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
@@ -35,12 +34,16 @@ provides:
     file: lib/SOAP/WSDL/Client/Base.pm
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
-  SOAP::WSDL::Envelope:
-    file: lib/SOAP/WSDL/Envelope.pm
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
   SOAP::WSDL::Expat::MessageStreamParser:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
+  SOAP::WSDL::Expat::MessageSubParser:
+    file: lib/SOAP/WSDL/Expat/MessageSubParser.pm
+  SOAP::WSDL::Factory::Serializer:
+    file: lib/SOAP/WSDL/Factory/Serializer.pm
+  SOAP::WSDL::Factory::Transport:
+    file: lib/SOAP/WSDL/Factory/Transport.pm
   SOAP::WSDL::Message:
     file: lib/SOAP/WSDL/Message.pm
   SOAP::WSDL::OpMessage:
@@ -57,10 +60,14 @@ provides:
     file: lib/SOAP/WSDL/SAX/MessageHandler.pm
   SOAP::WSDL::SOAP::Typelib::Fault11:
     file: lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
+  SOAP::WSDL::Serializer::SOAP11:
+    file: lib/SOAP/WSDL/Serializer/SOAP11.pm
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::SoapOperation:
     file: lib/SOAP/WSDL/SoapOperation.pm
+  SOAP::WSDL::Transport::HTTP:
+    file: lib/SOAP/WSDL/Transport/HTTP.pm
   SOAP::WSDL::TypeLookup:
     file: lib/SOAP/WSDL/TypeLookup.pm
   SOAP::WSDL::Types:
