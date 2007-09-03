@@ -4,7 +4,7 @@ Module::Build->new(
 	create_makefile_pl => 'passthrough',
 	dist_abstract      => 'SOAP with WSDL support',
 	dist_name          => 'SOAP-WSDL',
-	dist_version       => '2.00_11',
+	dist_version       => '2.00_12',
 	module_name        => 'SOAP::WSDL',
 	license            => 'artistic',
 	requires           => {

@@ -1,16 +1,14 @@
 use Test::More tests => 11;
 use Data::Dumper;
 use lib '../lib';
-use XML::LibXML;
 
-use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
+use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);
 
 my $filter;
 
-ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(), "Object creation");
+my $parser;
 
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
+ok($parser = SOAP::WSDL::Expat::WSDLParser->new() );
 
 eval { $parser->parse_string( xml() ) };
 if ($@)
@@ -24,8 +22,7 @@ else
 }
 
 my $wsdl;
-ok( $wsdl = $filter->get_data() , "get object tree");
-
+ok( $wsdl = $parser->get_data() , "get object tree");
 
 my $schema = $wsdl->first_types();
 

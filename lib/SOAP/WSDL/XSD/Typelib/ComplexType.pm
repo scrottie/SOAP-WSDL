@@ -4,9 +4,9 @@ use strict;
 use warnings;
 use Carp;
 use SOAP::WSDL::XSD::Typelib::Builtin;
-use Scalar::Util qw(blessed);
-use Class::Std::Storable;
+use Scalar::Util qw(blessed refaddr);
 use Data::Dumper;
+use Class::Std::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
@@ -64,7 +64,7 @@ sub _factory {
         my $is_list = $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list');
 
         *{ "$class\::set_$name" } = sub  {
-            my ($self, $value) = @_;
+            # my ($self, $value) = @_;
 
 #  The structure below looks rather weird, but is optimized for performance.
 #
@@ -93,11 +93,11 @@ sub _factory {
 #  for GLOB references, feel free to add them.
 #  d) we should also die for non-blessed non-ARRAY/HASH references in lists but don't do yet - oh my ! 
 
-            my $is_ref = ref $value;
-            $attribute_ref->{ ident $self } = ($is_ref) 
+            my $is_ref = ref $_[1];
+            $attribute_ref->{ ident $_[0] } = ($is_ref) 
                 ? $is_ref eq 'ARRAY' 
                     ? $is_list                             # remembered from outside closure 
-                        ? $type->new({ value => $value })  # list element - can take list ref as value
+                        ? $type->new({ value => $_[1] })   # list element - can take list ref as value
                         : [ map {                          
                             ref $_ 
                               ? ref $_ eq 'HASH'
@@ -106,20 +106,20 @@ sub _factory {
                                       ? $_
                                       : croak "cannot use " . ref($_) . " reference as value for $name - $type required"
                               : $type->new({ value => $_ })
-                            } @{ $value } 
+                            } @{ $_[1] } 
                          ]
                     : $is_ref eq 'HASH' 
-                        ?  $type->new( $value )
+                        ?  $type->new( $_[1] )
                         :  $is_ref eq $type
-                            ? $value
+                            ? $_[1]
                             : die croak "cannot use $is_ref reference as value for $name - $type required"
-                : $type->new({ value => $value });                     
+                : $type->new({ value => $_[1] });                     
         };
 
         *{ "$class\::add_$name" } = sub {
             my $ident = ident $_[0];
             warn "attempting to add empty value to " . ref $_[0] 
-                if (not defined $_[1]);
+                if not defined $_[1];
             
             # first call
             return $attribute_ref->{ $ident } = $_[1]
@@ -133,16 +133,30 @@ sub _factory {
             return push @{ $attribute_ref->{ $ident } }, $_[1];                                          
         };
         
+        *{ "$class\::$name" } = *{ "$class\::add_$name" };
     }
 
-    *{ "$class\::START" } = sub {
-        my ($self, $ident, $args_of) = @_;
+    *{ "$class\::new" } = sub {
+        my $self = bless \my ($o), $_[0];
+        $self->BUILD( ident $self, $_[1] ) if exists &BUILD;
+        $self->_init( ident $self, $_[1] );
+        $self->START( ident $self, $_[1] ) if exists &START;        
+        return $self;
+    };
+
+    *{ "$class\::_init" } = sub {
+        # We're working on @_ for speed.
+        # Normally, the first line would look like this:
+        # my ($self, $ident, $args_of) = @_;
+        #
+        # The hanging side comment show you what would be there, then.
+        
         # iterate over keys of arguments 
         # and call set appropriate field in clase
         map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
             ? do {
                  my $method = "set_$_";
-                 $self->$method( $args_of->{ $_ } );
+                 $_[0]->$method( $_[2]->{ $_ } );               # ( $args_of->{ $_ } );
            }
            : $_ =~ m{ \A              # beginning of string
                       xmlns           # xmlns 
@@ -152,8 +166,8 @@ sub _factory {
                      croak "unknown field $_ in $class. Valid fields are:\n" 
                      . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
                      . "Structure given:\n" . Dumper @_ };
-        } keys %$args_of;
-        return $self;
+        } keys %{ $_[2] };                                      # %$args_of;
+        return $_[0];                                           # $self;
     };
 
 

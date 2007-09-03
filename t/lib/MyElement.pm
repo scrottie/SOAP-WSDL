@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 package MyElement;
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use base (
@@ -14,7 +13,6 @@ sub get_xmlns { 'urn:Test' };
 
 package MyComplexTypeElement;
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 use MyComplexType;
 use base (
@@ -27,7 +25,6 @@ sub get_xmlns { 'urn:Test' };
 
 package MyTestElement;
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 use SOAP::WSDL::XSD::Typelib::Builtin::string;
 use base (
@@ -41,7 +38,6 @@ sub get_xmlns { 'urn:Test' };
 
 package MyTestElement2;
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use base (
@@ -57,7 +53,6 @@ sub get_xmlns { 'urn:Test' };
 package MyAtomicComplexTypeElement;
 
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Element;
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use SOAP::WSDL::XSD::Typelib::Builtin;

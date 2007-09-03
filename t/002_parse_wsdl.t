@@ -1,30 +1,24 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 18; # qw/no_plan/; # TODO: change to tests => N;
+use Test::More tests => 17;
 use lib '../lib';
-
-use XML::LibXML;
 
 eval {
     require Test::XML;
     import Test::XML;
 };
 
-use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
+use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);
 
 my $filter;
 
-ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(
-), "Object creation");
-
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
+my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
 $parser->parse_string( xml() );
 
 my $wsdl;
-ok( $wsdl = $filter->get_data() , "get object tree");
+ok( $wsdl = $parser->get_data() , "get object tree");
 
 my $types = $wsdl->first_types();
 

@@ -35,9 +35,6 @@ the service's interface structure.
 The results of all calls to your service object's methods (except new) 
 are objects based on SOAP::WSDL's XML schema implementation.
 
-These objects are false in boolean context, and serialize to XML when 
-printed.
-
 To access the object's properties use get_NAME / set_NAME getter/setter 
 methods whith NAME corresponding to the XML tag name.
 

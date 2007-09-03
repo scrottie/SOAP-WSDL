@@ -13,6 +13,8 @@ use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 
+our $VERSION='2.00_12';
+
 # Package global for speed and memory savings.
 # But should be factored out into serializer/deserializer...
 my $PARSER;
@@ -381,9 +383,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 188 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 176 2007-08-31 15:28:29Z kutterma $
+ $Id: Client.pm 188 2007-09-03 15:15:19Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
  
 =cut

@@ -4,21 +4,16 @@ use warnings;
 use Test::More tests => 5;
 use lib '../lib';
 
-use XML::LibXML;
-
 eval {
     require Test::XML;
     import Test::XML;
 };
 
-use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
+use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);
 
-my $filter;
+my $parser;
 
-ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(), "Object creation");
-
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
+ok($parser = SOAP::WSDL::Expat::WSDLParser->new(), "Object creation");
 
 eval { $parser->parse_string( xml() ) };
 if ($@)
@@ -32,7 +27,7 @@ else
 }
 
 my $wsdl;
-ok( $wsdl = $filter->get_data() , "get object tree");
+ok( $wsdl = $parser->get_data() , "get object tree");
 
 my $schema = $wsdl->get_types()->[0]->get_schema()->[0] || die "No schema !";
 

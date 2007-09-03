@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-SOAP::WSDL WS-I Basic Profile Compliance - How SOAP::WSDL complies to WS-I Basic Profile 1.0
+SOAP::WSDL::Manual::WS_I - How SOAP::WSDL complies to WS-I Basic Profile 1.0
 
 =head1 DESCRIPTION
 
@@ -294,6 +294,17 @@ SOAP::WSDL::Client always assures the SOAPaction header is quoted, thus
 automatically inserts the empty string if no SOAPAction header is defined.
 
 
+=head2 R1015
+
+ A RECEIVER MUST generate a fault if they encounter a message whose document 
+ element has a local name of "Envelope" but a namespace name that is not 
+ "http://schemas.xmlsoap.org/soap/envelope/".
+
+SOAP::WSDL::Expat::MessageParser checks the namespace of the SOAP envelope.
+
+SOAP::WSDL::Expat::MessageParser does not check that Envelope is the root 
+element, yet.
+
 
 =head1 RULES NOT CONFIRMED
 
@@ -346,16 +357,6 @@ element.
 However, rpc-literal bindings are not supported, yet.
 
 TODO support rpc-literal bindings.
-
-=head2 R1015
-
- A RECEIVER MUST generate a fault if they encounter a message whose document 
- element has a local name of "Envelope" but a namespace name that is not 
- "http://schemas.xmlsoap.org/soap/envelope/".
-
-SOAP::WSDL::Expat::MessageParser does not check the namespace of the SOAP envelope.
-
-TODO implement checking namespace of the SOAP envelope and emit fault if not "http://schemas.xmlsoap.org/soap/envelope/".
 
 =head2 R2008   
 

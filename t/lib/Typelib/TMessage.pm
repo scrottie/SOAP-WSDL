@@ -1,7 +1,6 @@
 package Typelib::TMessage;
 use strict;
 use base qw(Typelib::Base);
-use Class::Std::Storable;
 
 my %MRecipientURI_of   :ATTR(:name<MRecipientURI> :default<()>);
 my %MMessageContent_of :ATTR(:name<MMessageContent> :default<()>);

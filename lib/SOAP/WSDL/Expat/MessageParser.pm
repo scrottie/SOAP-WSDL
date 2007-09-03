@@ -8,7 +8,7 @@ use XML::Parser::Expat;
 sub new {
     my ($class, $args) = @_;
     my $self = {
-        class_resolver => $args->{ class_resolver }
+        class_resolver => $args->{ class_resolver },
     };
     bless $self, $class;
     return $self;
@@ -20,9 +20,9 @@ sub class_resolver {
 }
 
 sub _initialize {
-	my ($self, $parser) = @_;
+    my ($self, $parser) = @_;
 
-	delete $self->{ data };
+    delete $self->{ data };                     # remove potential old results
     
     my $characters;
     my $current = undef;
@@ -41,10 +41,18 @@ sub _initialize {
             ($_parser, $_element, %_attrs) = @_;
             ($_prefix, $_localname) = split m{:}xms , $_element;
 
-            $_localname ||= $_element;          # for non-prefixed elements
-
+            $_localname ||= $_element;          # for non-prefixed elements          
+            
             # ignore top level elements
             if (@{ $ignore } && $_localname eq $ignore->[0]) {
+                CHECK_ENVELOPE: {
+                    last CHECK_ENVELOPE if $_localname ne 'Envelope';
+                    last CHECK_ENVELOPE if exists $_attrs{ 'xmlns' } 
+                      && $_attrs{ 'xmlns' } eq 'http://schemas.xmlsoap.org/soap/envelope/';
+                    last CHECK_ENVELOPE if $_attrs{ "xmlns:$_prefix"} 
+                      eq 'http://schemas.xmlsoap.org/soap/envelope/';
+                    die "Bad namespace for SOAP envelope: " . $parser->recognized_string();
+                }
                 shift @{ $ignore };
                 return;
             }
@@ -55,7 +63,7 @@ sub _initialize {
             # resolve class of this element
             $_class = $self->{ class_resolver }->get_class( $path )
                 or die "Cannot resolve class for "
-                    . join('/', @{ $path }) . " via $self->{ class_resolver }";
+                    . join('/', @{ $path }) . " via " . $self->{ class_resolver };
 
             # maybe write as "return $skip = join ... if (...)" ?
             # would save a BLOCK...
@@ -71,15 +79,17 @@ sub _initialize {
             # if $class matches...
                     
             if (index $_class, 'SOAP::WSDL::XSD::Typelib::Builtin', 0 < 0) {           
-                # check wheter there is a CODE reference for $class::new.
+                # check wheter there is a non-empty ARRAY reference for $_class::ISA
+                # or a "new" method
                 # If not, require it - all classes required here MUST
                 # define new()
-                # This is the same as $class->can('new'), but it's way faster  
-                *{ "$_class\::new" }{ CODE } 
+                # This is not exactly the same as $class->can('new'), but it's way faster  
+                defined *{ "$_class\::new" }{ CODE }
+                  or scalar @{ *{ "$_class\::ISA" }{ ARRAY } }
                     or eval "require $_class"   ## no critic qw(ProhibitStringyEval)
-                        or die $@;                        
+                      or die $@;                        
             }
-
+            
             $current = $_class->new({ %_attrs });   # set new current object
         
             # remember top level element
@@ -125,7 +135,7 @@ sub _initialize {
             # multiple values must be implemented in base class
             $_method = "add_$_localname";
             $$list[-1]->$_method( $current );
-                   
+            
             $current = pop @$list;           # step up in object hierarchy...
         }
     );
@@ -208,8 +218,8 @@ This module may be used under the same terms as perl itself.
 
  $ID: $
 
- $LastChangedDate: 2007-08-31 17:28:29 +0200 (Fr, 31 Aug 2007) $
- $LastChangedRevision: 176 $
+ $LastChangedDate: 2007-09-02 21:05:18 +0200 (So, 02 Sep 2007) $
+ $LastChangedRevision: 184 $
  $LastChangedBy: kutterma $
 
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

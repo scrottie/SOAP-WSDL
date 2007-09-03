@@ -5,13 +5,11 @@ use vars qw($AUTOLOAD);
 use Carp;
 use Scalar::Util qw(blessed);
 use SOAP::WSDL::Client;
-use SOAP::WSDL::Envelope;
-use SOAP::WSDL::SAX::WSDLHandler;
+use SOAP::WSDL::Expat::WSDLParser;
 use Class::Std;
-use XML::LibXML;
 use LWP::UserAgent;
 
-our $VERSION='2.00_10';
+our $VERSION='2.00_12';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -98,13 +96,11 @@ sub wsdlinit {
     croak $response->message() if ($response->code != 200);
 
     # TODO: Port parser to expat and remove XML::LibXML dependency
-    my $parser = XML::LibXML->new();
-    my $filter = SOAP::WSDL::SAX::WSDLHandler->new();
-    $parser->set_handler( $filter );
+    my $parser = SOAP::WSDL::Expat::WSDLParser->new();
     $parser->parse_string( $response->content() );
 
     # sanity checks
-    my $wsdl_definitions = $filter->get_data() or die "unable to parse WSDL";
+    my $wsdl_definitions = $parser->get_data() or die "unable to parse WSDL";
     my $types = $wsdl_definitions->first_types()
         or die "unable to extract schema from WSDL";
     my $ns = $wsdl_definitions->get_xmlns()
@@ -662,9 +658,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 188 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 176 2007-08-31 15:28:29Z kutterma $
+ $Id: WSDL.pm 188 2007-09-03 15:15:19Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
  
 =cut

@@ -181,7 +181,7 @@ sub to_class {
 my $template = <<'EOT';
 package [% type_prefix %][% self.get_name %];
 use strict;
-use Class::Std::Storable;
+
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use base qw(
     SOAP::WSDL::XSD::Typelib::ComplexType

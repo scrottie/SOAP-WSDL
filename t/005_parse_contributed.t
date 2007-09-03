@@ -4,19 +4,13 @@ use warnings;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
 use Data::Dumper;
 use lib '../lib';
-use XML::LibXML;
-
 use diagnostics;
 
-use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
+use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);
 
-my $filter;
+my $parser;
 
-ok($filter = SOAP::WSDL::SAX::WSDLHandler->new(), "Object creation");
-
-my $parser = XML::LibXML->new();
-$parser->set_handler( $filter );
-
+ok($parser = SOAP::WSDL::Expat::WSDLParser->new(), "Object creation");
 eval { $parser->parse_string( xml() ) };
 if ($@)
 {
@@ -29,7 +23,7 @@ else
 }
 
 my $wsdl;
-ok( $wsdl = $filter->get_data() , "get object tree");
+ok( $wsdl = $parser->get_data() , "get object tree");
 
 my $opt = {
 	namespace => $wsdl->get_xmlns(),

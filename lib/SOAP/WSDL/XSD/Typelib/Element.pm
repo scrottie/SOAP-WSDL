@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 package SOAP::WSDL::XSD::Typelib::Element;
 use strict;
-use Class::Std::Storable;
-use Data::Dumper;
 
 my %NAME;
 my %NILLABLE;

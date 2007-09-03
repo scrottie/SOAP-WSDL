@@ -244,7 +244,7 @@ sub to_class {
 my $template = <<'EOT';
 package [% element_prefix %][% self.get_name %];
 use strict;
-use Class::Std::Storable;
+
 use SOAP::WSDL::XSD::Typelib::Element;
 
 [% IF (type = self.first_simpleType) %]

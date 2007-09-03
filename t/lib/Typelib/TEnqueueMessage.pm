@@ -1,7 +1,6 @@
 package Typelib::TEnqueueMessage;
 use strict;
 use base qw(Typelib::Base);
-use Class::Std::Storable;
 
 my %MMessage_of :ATTR(:name<MMessage> :default<()>);
 
