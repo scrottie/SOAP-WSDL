@@ -187,6 +187,14 @@ sub xml
                          </xsd:sequence>
                 </xsd:complexType>
 
+                <xsd:complexType name="mixed" mixed="true">
+                        <xsd:sequence>
+                                  <xsd:element name="length" type="tns:length3"/>
+                                  <xsd:element name="int" type="xsd:int"/>
+                         </xsd:sequence>
+                </xsd:complexType>
+
+
                 <xsd:element name="TestElement" type="xsd:int"/>
                 <xsd:element name="TestElementComplexType" type="tns:length3"/>
                 <xsd:simpleType name="testSimpleType1">

@@ -14,6 +14,8 @@ my %base_of         :ATTR(:name<base>       :default<()>);
 my %itemType_of     :ATTR(:name<itemType>   :default<()>);
 my %enumeration_of  :ATTR(:name<enumeration>   :default<()>);
 my %abstract_of     :ATTR(:name<abstract>   :default<()>);
+my %mixed_of        :ATTR(:name<mixed>      :default<()>);      # default is false
+
 # is set to simpleContent/complexContent
 my %content_Model_of    :ATTR(:name<contentModel>   :default<()>);
 

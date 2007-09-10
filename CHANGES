@@ -26,10 +26,49 @@ Features:
 
 
 The following changes have been made:
+2.00_13
+----
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+   * [ 1790619 ] Test transport backend
+   A test transport backend has been implemented (SOAP::WSDL::Transport::Test).
+   It returns the contents from a file and discards the response.
+   The filename is determined from the soap_action field.
+   
+   * [ 1785196 ] Replace outputsom(1) by deserializer plugin
+   outputsom(1) in SOAP::WSDL is now implemented via using the deserializer 
+   plugin SOAP::WSDL::Deserializer::SOM.
+
+   * [1785195] Support deserializer plugins
+   Deserializer plugin API added via SOAP::WSDL::Factory::Deserializer.
+  
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [1789581] Support ComplexType mixed
+   WSDL parser now supports using the mixed="true" attribute in complexType 
+   definitions. Mixed content in messages is only supported via SOAP::SOM yet.
+
+   * [1787975] 016_client_object.t fails due to testing XML as string
+   Removed string test.
+  
+   * [1787959] Test wsdl seems to be broken
+   Corrected typo.
+  
+   * [1787955] ::XSD::Typelib::date is broken
+   SOAP::WSDL::XSD::Typelib::Builtin::date now converts time-zoned dates properly, 
+   and adds the local time zone if none is given.
+
+   * [1785646] SOAPAction header not set from soap:operation soapAction
+   SOAP::WSDL now sets the SOAPAction header correctly.
+
+The following uncategorized improvements have been mad:
+
+   * Documentation improvements
 
 2.00_12
 ----
-
+  
 The following bugs have been fixed (the numbers in square brackets are the 
 tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
 
@@ -40,6 +79,16 @@ tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
    * [1787054] Test suite requires XML::LibXML in 2.00_11
    The test suite no longer requires XML::LibXML to pass.
 
+   * [1785678] SOAP envelope not checked for namespace
+   The SOAP envelope is now checked for the correct namespace.
+   
+   * [1786644] SOAP::WSDL::Manual - doc error
+   Documentation improvements
+    
+The following uncategorized improvements have been made
+
+   * The SOAPAction header is now alway quoted (R1109 in WS-I BP 1.0).
+   
 2.00_11
 ----
 
@@ -75,7 +124,8 @@ The following uncategorized improvements have been made
         - XML::LibXML
 
    * The missing prerequisite Template has been added.
-   * Documentation has been improved.
+   * Documentation has been improved:
+        - WS-I Compliance document added.
 
 
 2.00_10

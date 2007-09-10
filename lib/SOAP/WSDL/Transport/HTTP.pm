@@ -56,13 +56,7 @@ sub send_receive {
         ],
         $envelope );
   
-    use Data::Dumper;
-    warn Dumper $request;
-  
     my $response = $self->request( $request );
-
-    warn Dumper $response;
-
 
     $self->code( $response->code);
     $self->message( $response->message);
@@ -98,9 +92,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 218 $
  $LastChangedBy: kutterma $
- $Id: HTTP.pm 176 2007-08-31 15:28:29Z kutterma $
+ $Id: HTTP.pm 218 2007-09-10 16:19:23Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
  
 =cut

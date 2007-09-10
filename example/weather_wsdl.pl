@@ -11,29 +11,33 @@
 
 use lib 'lib/';
 use lib '../lib';
-use SOAP::WSDL;
 use File::Basename qw(dirname);
 use File::Spec;
 my $path = File::Spec->rel2abs( dirname __FILE__);
 
+# SOAP::WSDL variant
+use SOAP::WSDL;
 my $soap = SOAP::WSDL->new();
 my $som = $soap->wsdl("file:///$path/wsdl/globalweather.xml")
-  ->call('GetWeather', GetWeather => { CountryName => 'Germany', CityName => 'Munich' });
+  ->call('GetWeather', GetWeather => 
+    { CountryName => 'Germany', CityName => 'Munich' }
+);
 
-die $som->message() if $som->fault();
-
+die "Error" if $som->fault();
 print $som->result();
 
-
 # SOAP::Lite variant:
+# Note that you have to look both the proxy and the xmlns attribute 
+# set on the GetWeather SOAP::Data object from the WSDL.
 
-use SOAP::Lite;
+use SOAP::Lite; # +trace;
 my $soap = SOAP::Lite->new()->on_action( sub { join'/', @_ } )
-  ->proxy("http://www.webservicex.net/globalweather.asmx");
+  ->proxy("http://www.webservicex.net/globalweather.asmx");     # from WSDL
 my $som = $soap->call(
-    SOAP::Data->name('GetWeather')->attr({ xmlns => 'http://www.webserviceX.NET' }), 
+    SOAP::Data->name('GetWeather')
+        ->attr({ xmlns => 'http://www.webserviceX.NET' }),      # from WSDL
     SOAP::Data->name('CountryName')->value('Germany'), 
     SOAP::Data->name('CityName')->value('Munich') 
 );
-
+die "Error" if $som->fault();
 print $som->result();

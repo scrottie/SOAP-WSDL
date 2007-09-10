@@ -69,7 +69,7 @@ TODO: {
 
 SKIP: {
     eval "require Test::Pod";
-    skip 'Cannot test generated POD without Test::POD' , 6 if $@;
+    skip 'Cannot test generated POD without Test::POD' , 12 if $@;
     
     foreach my $module (Test::Pod::all_pod_files( "$path/testlib")) {
         Test::Pod::pod_file_ok( $module )

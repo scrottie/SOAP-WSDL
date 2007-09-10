@@ -11,8 +11,6 @@ else {
     plan skip_all => "Cannot test without XML::LibXML";
 }
 
-use diagnostics;
-
 use_ok(qw/SOAP::WSDL::SAX::WSDLHandler/);
 
 my $filter;

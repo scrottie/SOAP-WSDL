@@ -3,7 +3,8 @@ package SOAP::WSDL::Serializer::SOAP11;
 use strict;
 use warnings;
 use Class::Std::Storable;
-# use base qw/SOAP::WSDL::Base/;
+
+our $VERSION='2.00_13';
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 my $XML_INSTANCE_NS = 'http://www.w3.org/2001/XMLSchema-instance';
@@ -46,26 +47,25 @@ sub serialize {
 }
 
 sub serialize_header {
-    my $xml = '';
-    return $xml;
+    my ($self, $name, $data, $opt) = @_;
+    
+    # header is optional. Leave out if there's no header data
+    return q{} if not $data;
+    return join ( ($opt->{ readable }) ? "\n" : q{}, 
+        "<$opt->{ namespace }->{ $SOAP_NS }\:Header>",
+        "$data",
+        "</$opt->{ namespace }->{ $SOAP_NS }\:Header>",
+    );
 }
 
 sub serialize_body {
-    my $self = shift;
-    my $name = shift;
-    my $data = shift;
-    my $opt = shift;
+    my ($self, $name, $data, $opt) = @_;
 
-    my $soap_prefix = $opt->{ namespace }->{ $SOAP_NS };
-
-    my $xml = '';
-    $xml .= "\n" if ($opt->{ readable });
-    $xml .= "<$soap_prefix\:Body>";
-    $xml .= "\n" if ($opt->{ readable });
-
-    # include parts
-    $xml .= $data if ( defined($data) );
-
-    $xml .= "</$soap_prefix\:Body>";
-    return $xml;
+    # Body is NOT optional. Serialize to empty body 
+    # if we have no data.
+    return join ( ($opt->{ readable }) ? "\n" : q{}, 
+        "<$opt->{ namespace }->{ $SOAP_NS }\:Body>",
+        defined $data ? "$data" : (),
+        "</$opt->{ namespace }->{ $SOAP_NS }\:Body>",
+    );
 }

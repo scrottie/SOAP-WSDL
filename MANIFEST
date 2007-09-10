@@ -1,4 +1,7 @@
 benchmark/01_expat.t
+benchmark/XSD/01_anyType.t
+benchmark/XSD/02_anySimpleType.t
+benchmark/XSD/03_string.t
 bin/wsdl2perl.pl
 Build.PL
 CHANGES
@@ -33,11 +36,14 @@ lib/SOAP/WSDL/Binding.pm
 lib/SOAP/WSDL/Client.pm
 lib/SOAP/WSDL/Client/Base.pm
 lib/SOAP/WSDL/Definitions.pm
+lib/SOAP/WSDL/Deserializer/SOAP11.pm
+lib/SOAP/WSDL/Deserializer/SOM.pm
 lib/SOAP/WSDL/Expat/MessageParser.pm
 lib/SOAP/WSDL/Expat/MessageStreamParser.pm
 lib/SOAP/WSDL/Expat/MessageSubParser.pm
 lib/SOAP/WSDL/Expat/SubParser.pm
 lib/SOAP/WSDL/Expat/WSDLParser.pm
+lib/SOAP/WSDL/Factory/Deserializer.pm
 lib/SOAP/WSDL/Factory/Serializer.pm
 lib/SOAP/WSDL/Factory/Transport.pm
 lib/SOAP/WSDL/Manual.pod
@@ -203,4 +209,6 @@ t/SOAP/WSDL/12_binding.pl
 t/SOAP/WSDL/XSD/Typelib/Builtin/001_string.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/002_dateTime.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/003_date.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/004_time.t
+t/test.pl
 TODO

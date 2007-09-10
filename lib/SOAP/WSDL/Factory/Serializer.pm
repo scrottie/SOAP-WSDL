@@ -120,9 +120,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 218 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 176 2007-08-31 15:28:29Z kutterma $
+ $Id: Serializer.pm 218 2007-09-10 16:19:23Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

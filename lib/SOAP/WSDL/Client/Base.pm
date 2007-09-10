@@ -93,9 +93,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 214 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 176 2007-08-31 15:28:29Z kutterma $
+ $Id: Base.pm 214 2007-09-10 15:54:52Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
  
 =cut

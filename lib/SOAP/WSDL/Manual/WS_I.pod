@@ -44,8 +44,6 @@ parts to web service SOAP::WSDL does not implement.
 
 =head1 RULES CONFIRMED
 
-
-
 =head2 R1005
 
  A MESSAGE MUST NOT contain soap:encodingStyle attributes on any of the elements 
@@ -66,13 +64,13 @@ element.
 
  A MESSAGE MUST NOT contain a Document Type Declaration.
 
-SOAP::WSDL::Serializer::SOAP11 does not DTDs.
+SOAP::WSDL::Serializer::SOAP11 does not add DTDs.
 
 =head2 R1009 
 
  A MESSAGE MUST NOT contain Processing Instructions.
 
-SOAP::WSDL::Serializer::SOAP11 does not Processing Instructions
+SOAP::WSDL::Serializer::SOAP11 does not add Processing Instructions
 
 =head2 R1010
 
@@ -85,7 +83,7 @@ SOAP::WSDL::Expat::MessageParser allows the use of XML Declarations.
  A MESSAGE MUST NOT have any element children of soap:Envelope following 
  the soap:Body element.
 
-SOAP::WSDL::Serializer::SOAP11 does emit children of soap:Envelope following 
+SOAP::WSDL::Serializer::SOAP11 does not emit children of soap:Envelope following 
 the soap:Body element. Other serializers may behave differentls.
 
 =head2 R1012
@@ -100,7 +98,7 @@ SOAP::WSDL::Serializer::SOAP11 serializes messages as UTF-8.
  encoding, using the charset parameter.
 
 SOAP::WSDL::Transport::HTTP sets the Content-type header to 
-"text/xml; charset=utf8". SOAP::Transport::Lite does, too. Other transport 
+"text/xml; charset=utf8". SOAP::Transport does, too. Other transport 
 backends may behave different.
 
 =head2 R1014

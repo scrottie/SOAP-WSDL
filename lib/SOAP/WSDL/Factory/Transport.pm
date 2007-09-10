@@ -25,6 +25,7 @@ my %SOAP_WSDL_TRANSPORT_OF = (
 # class methods only
 sub register {
     my ($class, $scheme, $package) = @_;
+    die "cannot use reference as scheme" if ref $scheme;
     $registered_transport_of{ $scheme } = $package;
 }
 
@@ -222,9 +223,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 218 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 176 2007-08-31 15:28:29Z kutterma $
+ $Id: Transport.pm 218 2007-09-10 16:19:23Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
  
 =cut

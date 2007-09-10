@@ -2,9 +2,7 @@
 use strict;
 use warnings;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
-use Data::Dumper;
 use lib '../lib';
-use diagnostics;
 
 use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);
 

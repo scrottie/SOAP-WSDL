@@ -39,27 +39,39 @@ sub set_value {
     #2037-12-31+01:00
     if (
         $_[1] =~ m{ ^\d{4} \- \d{2} \- \d{2} 
-            (:? [\+\-] \d{2} \: \d{2} )?$
+            (:? [\+\-] \d{2} \: \d{2} )$
         }xms       
     ) {
         $_[0]->SUPER::set_value($_[1])
     }
-    # use a combination of strptime and strftime for converting the date
-    # Unfortunately, strftime outputs the time zone as [+-]0000, whereas XML
-    # whants it as [+-]00:00
-    # We know that the latter part of the TZ is always :00 (there's no time 
-    # zone whith minute offset yet), so we just use substr to get the part 
-    # up to the last 2 timezone digits and append :00
-    # We leave out the optional nanoseconds part, as it would always be empty.
+    # converting a date is hard work: It needs a timezone, because 
+    # 2007-12-30+12:00 and 2007-12-31-12:00 mean the same day - just in 
+    # different locations.
+    # strftime actually prints out the correct date, but always prints the 
+    # local timezone with %z.
+    # So, if our timezone is not 0, we strftime it without timezone and 
+    # append it by hand by the following formula:
+    # The timezone hours are the int (timesone seconds / 3600)
+    # The timezone minutes (if someone ever specifies something like that) 
+    # are int( (seconds % 3600) / 60 ) 
+    # say, int( (seconds modulo 3600) / 60 )
+    #
+    # If we have no timezone (meaning the timezone is 
     else {
         # strptime sets empty values to undef - and strftime doesn't like that...
-        my @time_from = map { ! defined $_ ? 0 : $_ } strptime($_[1]);
+        my @time_from =  strptime($_[1]);
+        my $time_zone_seconds = $time_from[6];
+        @time_from = map { (! defined $_) ? 0 : $_ } @time_from;
 #        use Data::Dumper;
-#        die Dumper \@time_from;
-        my $time_str = strftime( '%Y-%m-%d%z', @time_from );
+#        warn Dumper \@time_from, sprintf('%+03d%02d', $time_from[6] / 3600, $time_from[6] % 60 );
+        my $time_str = defined $time_zone_seconds
+          ? strftime( '%Y-%m-%d', @time_from ) 
+            . sprintf('%+03d%02d', int($time_from[6] / 3600), int ( ($time_from[6] % 3600) / 60 ) )
+          : do { 
+              strftime( '%Y-%m-%d%z', @time_from );
+          };
         substr $time_str, -2, 0, ':';
         $_[0]->SUPER::set_value($time_str);
-
     }
 }
 

@@ -12,7 +12,7 @@
 
 use strict;
 use Test::More tests => 4;
-use lib '../..';
+use lib '../../../lib/';
 use Cwd;
 use File::Basename;
 

@@ -215,13 +215,20 @@ All input variants supported by Date::Parse are supported. You may even pass
 in dateTime strings - the time part will be ignored. Note that 
 set_value is around 100 times slower when setting non-XML-time strings
 
+When setting dates before the beginning of the epoch (negative UNIX timestamp), 
+you should use the XML date string format for setting dates. The behaviour of 
+Date::Parse for dates before the epoch is system dependent.
+
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::dateTime
 
 dateTime values are automatically converted into XML dateTime strings during setting:
 
  YYYY-MM-DDThh:mm:ss.nnnnnnn+zz:zz
 
-The optional nanoseconds parts is excluded in converted values, as it would always be 0.
+The fraction of seconds (nnnnnnn) part is optional. Fractions of seconds may 
+be given with arbitrary precision
+
+The fraction of seconds part is excluded in converted values, as it would always be 0.
 
 All input variants supported by Date::Parse are supported. Note that 
 set_value is around 100 times slower when setting non-XML-time strings

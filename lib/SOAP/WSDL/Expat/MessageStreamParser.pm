@@ -67,8 +67,8 @@ This module may be used under the same terms as perl itself.
 
  $ID: $
 
- $LastChangedDate: 2007-08-31 17:28:29 +0200 (Fr, 31 Aug 2007) $
- $LastChangedRevision: 176 $
+ $LastChangedDate: 2007-09-10 17:54:52 +0200 (Mo, 10 Sep 2007) $
+ $LastChangedRevision: 214 $
  $LastChangedBy: kutterma $
 
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $

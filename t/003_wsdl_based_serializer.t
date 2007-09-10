@@ -1,5 +1,4 @@
 use Test::More tests => 11;
-use Data::Dumper;
 use lib '../lib';
 
 use_ok(qw/SOAP::WSDL::Expat::WSDLParser/);

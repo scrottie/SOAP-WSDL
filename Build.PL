@@ -4,7 +4,7 @@ Module::Build->new(
 	create_makefile_pl => 'passthrough',
 	dist_abstract      => 'SOAP with WSDL support',
 	dist_name          => 'SOAP-WSDL',
-	dist_version       => '2.00_12',
+	dist_version       => '2.00_13',
 	module_name        => 'SOAP::WSDL',
 	license            => 'artistic',
 	requires           => {
@@ -35,6 +35,7 @@ Module::Build->new(
 		'Getopt::Long'            => 0,
 		'Cwd'                     => 0,
 		'File::Find'              => 0,
+		'Storable'                => 0,
 	},
 	recursive_test_files => 1,
 )->create_build_script;

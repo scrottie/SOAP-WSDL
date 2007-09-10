@@ -6,9 +6,6 @@ TODO list for SOAP::WSDL
 
 * Implement a interface similar to SOAP::Schema (#1783639)
 
-* (#1785195) Support deserializer plugins
-   * Support XML::Compiled as one serializer/deserializer
-
 * Check & probably fix simpleType support. 
 The WS at http://www.webservicex.net/genericbarcode.asmx?wsdl should 
 make up a good example for simpleType definitions.
@@ -29,7 +26,11 @@ Maybe even allow unlimited depth? What does the specs say?
 --------
 
 
-Past 2.1 release
+2.2 release
 --------
 * XML schema support ("minimal conformant") (#1764845)
 * Support SOAP attachments
+
+3.0 release
+--------
+We're not thinking that far ahead right now.

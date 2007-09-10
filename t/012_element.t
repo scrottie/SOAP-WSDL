@@ -40,8 +40,6 @@ is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><test >Test</test>'
     . '</MyAtomicComplexTypeElement>'
     , 'multi value stringification';
 
-use diagnostics;
-
 ok $obj = MyComplexTypeElement->new({ MyTestName => 'test' });
 is $obj, '<MyComplexTypeElement xmlns="urn:Test" ><MyTestName >test</MyTestName ></MyComplexTypeElement>';
 

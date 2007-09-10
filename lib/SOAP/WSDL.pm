@@ -7,16 +7,17 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Client;
 use SOAP::WSDL::Expat::WSDLParser;
 use Class::Std;
+use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-our $VERSION='2.00_12';
+our $VERSION='2.00_13';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
 my %proxy_of            :ATTR(:name<proxy>);
 my %readable_of         :ATTR(:name<readable>);
 my %autotype_of         :ATTR(:name<autotype>);
-my %outputxml_of        :ATTR(:name<outputxml>);
+my %outputxml_of        :ATTR(:name<outputxml> :default<0>);
 my %outputtree_of       :ATTR(:name<outputtree>);
 my %outputhash_of       :ATTR(:name<outputhash>);
 my %servicename_of      :ATTR(:name<servicename>);
@@ -218,10 +219,14 @@ sub _wsdl_init_methods :PRIVATE {
 }
 
 sub call {
-    my $self = shift;
+    my ($self, $method, @data_from) = @_;
     my $ident = ident $self;
-    my $method = shift;
-    my $data = ref $_[0] ? $_[0] : { @_ };
+
+    my ($data, $header) = ref $data_from[0] 
+      ? ($data_from[0], $data_from[1] ) 
+      : (@data_from>1) 
+          ? ( { @data_from }, undef )
+          : ( $data_from[0], undef );
 
     $self->wsdlinit() if not ($definitions_of{ $ident });
     $self->_wsdl_init_methods() if not ($method_info_of{ $ident });
@@ -229,34 +234,54 @@ sub call {
     my $client = $client_of{ $ident };
     $client->set_proxy( $proxy_of{ $ident } || $port_of{ $ident }->get_location() );
     $client->set_no_dispatch( $no_dispatch_of{ $ident } );
-    $client->set_outputxml( $outputtree_of{ $ident } ? 0 : 1 );
 
+    $client->set_outputxml( $outputxml_of{ $ident } ? 1 : 0 );
+
+    # maybe we should introduce something like $output{ $ident } with a fixed 
+    # set of values - m{^(TREE|HASH|XML|SOM)$}xms ?
+    if ( ( ! $outputtree_of{ $ident } )
+      && ( ! $outputhash_of{ $ident } ) 
+      && ( ! $outputxml_of{ $ident } ) ) {
+        require SOAP::WSDL::Deserializer::SOM;
+        $client->set_deserializer( SOAP::WSDL::Deserializer::SOM->new() );
+    };
+
+    my $method_info = $method_info_of{ $ident }->{ $method };
+
+    # TODO serialize both header and body, not only header
     my $response = (blessed $data) 
-        ? $client->call( $method, $data )
+        ? $client->call( {
+            operation => $method,
+            soap_action => $method_info->{ soap_action },
+          }, $data )
         : do {
             my $content = '';
             # TODO support RPC-encoding: Top-Level element + namespace...
-            foreach my $part ( @{ $method_info_of{ $ident }->{ $method }->{ parts } } ) {
-                $client->set_on_action( sub { $part->get_targetNamespace() . '/' . $_[1] } );
+            foreach my $part ( @{ $method_info->{ parts } } ) {
                 $content .= $part->serialize( $method, $data, 
                   {
                     %{ $serialize_options_of{ $ident } },
                     readable => $readable_of{ $ident },
                   }  );
             }
-            $client->call($method, $content);
+            $client->call(
+                {
+                    operation => $method,
+                    soap_action => $method_info->{ soap_action }
+                },
+                # absolutely stupid, but we need a reference which 
+                # serializes to XML on stringification...
+                SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new({
+                    value => $content
+                }), 
+                SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new({
+                    value => $header
+                })
+            );
         };
 
-    return $response if ( 
-      $outputxml_of{ $ident } 
-#      || $outputhash_of{ $ident }
-      || $outputtree_of{ $ident } 
-      || $no_dispatch_of{ $ident } );
-
-    return unless $response;    # nothing to do for one-ways
-    # now convert into SOAP::SOM - bah !
-    require SOAP::Lite;
-    return SOAP::Deserializer->new()->deserialize( $response );
+    return unless defined $response;    # nothing to do for one-ways
+    return $response;
 } 
 
 sub explain {
@@ -314,7 +339,24 @@ Performs a SOAP call. The result is either an object tree (with outputtree),
 a hash reference (with outputhash), plain XML (with outputxml) or a SOAP::SOM 
 object (with neither of the above set).
 
+call() can be called in different ways:
+
+=over
+
+=item * Old-style idiom
+
  my $result = $soap->call('method', %data);
+
+Does not support SOAP header data.
+
+=item * New-style idiom
+
+ my $result = $soap->call('method', $body_ref, $header_ref );
+
+Does support SOAP header data. $body_ref and $header ref may either be 
+hash refs or SOAP::WSDL::XSD::Typelib::* derived objects.
+
+=back
 
 =head2 wsdlinit
 
@@ -658,9 +700,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 188 $
+ $Rev: 218 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 188 2007-09-03 15:15:19Z kutterma $
+ $Id: WSDL.pm 218 2007-09-10 16:19:23Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
  
 =cut

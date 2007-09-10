@@ -2,7 +2,7 @@
 <definitions name="urn:simpleType" 
 	targetNamespace="urn:simpleType"
 	xmlns:tns="urn:simpleType"
-	xmlns:wsd="http://www.w3c.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3c.org/2001/XMLSchema"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 >

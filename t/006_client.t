@@ -9,8 +9,6 @@ eval {
     import Test::XML
 };
 
-use diagnostics;
-
 use Cwd;
 
 my $path = cwd;

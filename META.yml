@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_12
+version: 2.00_13
 author:
 abstract: SOAP with WSDL support
 license: artistic
@@ -23,24 +23,32 @@ meta-spec:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00_12
+    version: 2.00_13
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
   SOAP::WSDL::Binding:
     file: lib/SOAP/WSDL/Binding.pm
   SOAP::WSDL::Client:
     file: lib/SOAP/WSDL/Client.pm
-    version: 2.00_12
+    version: 2.00_13
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
+  SOAP::WSDL::Deserializer::SOAP11:
+    file: lib/SOAP/WSDL/Deserializer/SOAP11.pm
+    version: 2.00_13
+  SOAP::WSDL::Deserializer::SOM:
+    file: lib/SOAP/WSDL/Deserializer/SOM.pm
+    version: 2.00_13
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
   SOAP::WSDL::Expat::MessageStreamParser:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
   SOAP::WSDL::Expat::MessageSubParser:
     file: lib/SOAP/WSDL/Expat/MessageSubParser.pm
+  SOAP::WSDL::Factory::Deserializer:
+    file: lib/SOAP/WSDL/Factory/Deserializer.pm
   SOAP::WSDL::Factory::Serializer:
     file: lib/SOAP/WSDL/Factory/Serializer.pm
   SOAP::WSDL::Factory::Transport:
@@ -63,6 +71,7 @@ provides:
     file: lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
   SOAP::WSDL::Serializer::SOAP11:
     file: lib/SOAP/WSDL/Serializer/SOAP11.pm
+    version: 2.00_13
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::SoapOperation:
