@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_14
+version: 2.00_15
 author:
 abstract: SOAP with WSDL support
 license: artistic
@@ -40,7 +40,7 @@ provides:
     version: 2.00_13
   SOAP::WSDL::Deserializer::SOM:
     file: lib/SOAP/WSDL/Deserializer/SOM.pm
-    version: 2.00_14
+    version: 2.00_15
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
   SOAP::WSDL::Expat::MessageStreamParser:

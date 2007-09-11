@@ -36,6 +36,11 @@ ok( $soap->wsdlinit(
 ), 'parsed WSDL' );
 $soap->no_dispatch(1);
 
+# won't work without - would require SOAP::WSDL::Deserializer::SOM,
+# which requires SOAP::Lite
+$soap->outputxml(1);
+
+
 #4
 ok $xml = $soap->call('test', 
 	testSequence => {

@@ -42,6 +42,10 @@ ok $soap->wsdlinit(
 ), 'parse WSDL';
 ok $soap->no_dispatch(1), 'set no dispatch';
 
+# won't work without - would require SOAP::WSDL::Deserializer::SOM,
+# which requires SOAP::Lite
+$soap->outputxml(1);
+
 ok ($xml = $soap->call('test',  
 			testAll => {
 				Test1 => 'Test 1',

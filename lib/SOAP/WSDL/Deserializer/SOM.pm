@@ -2,19 +2,16 @@ package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
 
-our $VERSION = '2.00_14';
-our @ISA = qw(SOAP::Deserializer);
+our $VERSION = '2.00_15';
+our @ISA;
 
-my $HAVE_SOAP_LITE = eval { require SOAP::Lite };
-
-sub deserialize {
-    my $self = shift;
-    die 'Cannot deserialize to SOM object without SOAP::Lite. 
-Please install SOAP::Lite.
-'
-        if not $HAVE_SOAP_LITE;
-    $self->SUPER::deserialize(@_);
+eval { 
+    require SOAP::Lite;
+    push @ISA, 'SOAP::Deserializer'; 
 }
+or die "Cannot load SOAP::Lite. 
+Cannot deserialize to SOM object without SOAP::Lite. 
+Please install SOAP::Lite.";
 
 sub generate_fault {
     my ($self, $args_from_ref) = @_;

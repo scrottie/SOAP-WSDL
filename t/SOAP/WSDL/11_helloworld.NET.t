@@ -43,6 +43,10 @@ ok $soap = SOAP::WSDL->new(
 	no_dispatch => 1
 ), 'Create SOAP::WSDL object'; 
 
+# won't work without - would require SOAP::WSDL::Deserializer::SOM,
+# which requires SOAP::Lite
+$soap->outputxml(1);
+
 $soap->proxy('http://helloworld/helloworld.asmx');
 
 ok $soap->wsdlinit(

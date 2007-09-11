@@ -30,6 +30,8 @@ ok( $soap = SOAP::WSDL->new(
 
 #3
 $soap->readable(1);
+$soap->outputxml(1);
+
 ok( $soap->wsdlinit(
     servicename => 'testService',
 ), 'parsed WSDL' );

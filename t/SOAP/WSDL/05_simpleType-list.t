@@ -23,6 +23,9 @@ ok( $soap = SOAP::WSDL->new(
 ), 'Instantiated object' );
 
 $soap->readable(1);
+# won't work without - would require SOAP::WSDL::Deserializer::SOM,
+# which requires SOAP::Lite
+$soap->outputxml(1);
 
 #3
 ok( $soap->wsdlinit(

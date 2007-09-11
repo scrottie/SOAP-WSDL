@@ -27,20 +27,3 @@ ok( $soap = SOAP::WSDL->new(
 ok $soap->wsdlinit( url => $url );
 ok $soap->servicename('testService');
 ok $soap->portname('testPort');
-
-
-
-
-__END__
-
-my $xpath = $soap->_wsdl_xpath(  );
-
-my @ports = $xpath->findnodes( '/definitions/service[@name="' . $soap->servicename() . '"]/port/soap:address[@location="' . $url .'"]');
-if (@ports)
-{
-	print "# found testPort URL\n";
-	my $address = shift @ports;
-	my $port = $address->getParentNode();
-	print $port->getAttribute('binding'), "\n";
-	print $port->getAttribute('name'), "\n";
-}

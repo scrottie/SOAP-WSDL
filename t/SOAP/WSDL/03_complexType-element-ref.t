@@ -28,6 +28,10 @@ ok( $soap = SOAP::WSDL->new(
     no_dispatch => 1,
 ), 'Instantiated object' );
 
+# won't work without - would require SOAP::WSDL::Deserializer::SOM,
+# which requires SOAP::Lite
+$soap->outputxml(1);
+
 ok ($xml = $soap->call('test',  
 			testAll => {
 				Test2 => 'Test2',

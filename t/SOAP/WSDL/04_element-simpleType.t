@@ -26,6 +26,11 @@ ok( $soap = SOAP::WSDL->new(
 
 #3
 $soap->readable(1);
+
+# won't work without - would require SOAP::WSDL::Deserializer::SOM,
+# which requires SOAP::Lite
+$soap->outputxml(1);
+
 ok( $soap->wsdlinit(
     servicename => 'testService',
 ), 'parsed WSDL' );
@@ -33,8 +38,6 @@ $soap->no_dispatch(1);
 
 ok ( $xml = $soap->call('test', testElement1 => 1 ) ,
 	'Serialized (simpler) element' );
-
-# print $xml, "\n";
 
 	
 TODO: {
