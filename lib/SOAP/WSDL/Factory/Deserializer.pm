@@ -14,7 +14,15 @@ sub register {
 
 sub get_deserializer {
     my ($self, $args_of_ref) = @_;
-    eval "require $DESERIALIZER{ $args_of_ref->{ soap_version } }" or die $@;
+
+    # sanity check
+    die "no deserializer registered for SOAP version $args_of_ref->{ soap_version }"
+        if not exists ($DESERIALIZER{ $args_of_ref->{ soap_version } });
+
+    # load module
+    eval "require $DESERIALIZER{ $args_of_ref->{ soap_version } }" 
+        or die "Cannot load serializer $DESERIALIZER{ $args_of_ref->{ soap_version } }", $@;
+
     return $DESERIALIZER{ $args_of_ref->{ soap_version } }->new($args_of_ref);
 }
 
@@ -24,21 +32,21 @@ sub get_deserializer {
 
 =head1 NAME
 
-SOAP::WSDL::Factory::Deserializer - factory for retrieving Deserializer objects
+SOAP::WSDL::Factory::Deserializer - Factory for retrieving Deserializer objects
 
 =head1 SYNOPSIS
 
  # from SOAP::WSDL::Client:
- $deserializer = SOAP::WSDL::Factory::Serializer->get_deserializer({
+ $deserializer = SOAP::WSDL::Factory::Deserializer->get_deserializer({
      soap_version => $soap_version,
      class_resolver => $class_resolver,
  });
 
- # in serializer class:
- package MyWickedSerializer;
+ # in deserializer class:
+ package MyWickedDeserializer;
  use SOAP::WSDL::Factory::Deserializer;
  
- # u don't know the SOAP 1.2 recommendation? poor boy...
+ # register class as deserializer for SOAP1.2 messages
  SOAP::WSDL::Factory::Deserializer->register( '1.2' , __PACKAGE__ );
  
 =head1 DESCRIPTION
@@ -50,15 +58,22 @@ The actual work is done by specific deserializer classes.
 
 SOAP::WSDL::Deserializer tries to load one of the following classes:
 
- a) the class registered for the scheme via register()
+=over
+
+=item * The class registered for the scheme via register()
+
+=back
+
+By default, L<SOAP::WSDL::Deserializer::SOAP11|SOAP::WSDL::Deserializer::SOAP11> 
+is registered for SOAP1.1 messages.
 
 =head1 METHODS
 
 =head2 register
 
- SOAP::WSDL::Serializer->register('1.1', 'MyWickedSerializer');
+ SOAP::WSDL::Deserializer->register('1.1', 'MyWickedDeserializer');
 
-Globally registers a class for use as serializer class.
+Globally registers a class for use as deserializer class.
 
 =head2 get_deserializer
 
@@ -66,23 +81,25 @@ Returns an object of the deserializer class for this endpoint.
 
 =head1 WRITING YOUR OWN DESERIALIZER CLASS
 
-Deserializer classes may register with 
-SOAP::WSDL::Factory::Deserializer.
+Deserializer classes may register with SOAP::WSDL::Factory::Deserializer.
 
-Registering a deserializer class with 
-SOAP::WSDL::Factory::Deserializer is done by executing the 
-following code where $version is the SOAP version the class should 
-be used for, and $class is the class
-name.
+=head2 Registering a deserializer
+
+Registering a deserializer class with SOAP::WSDL::Factory::Deserializer 
+is done by executing the following code where $version is the SOAP version 
+the class should be used for, and $class is the class name.
 
  SOAP::WSDL::Factory::Deserializer->register( $version, $class);
 
 To auto-register your transport class on loading, execute register() 
 in your tranport class (see L<SYNOPSIS|SYNOPSIS> above).
 
-Deserializer modules must be named equal to the deserializer 
-class they contain. There can only be one deserializer class per 
-deserializer module.
+=head2 Deserializer package layout
+
+Deserializer modules must be named equal to the deserializer class they 
+contain. There can only be one deserializer class per deserializer module.
+
+=head2 Methods to implement
 
 Deserializer classes must implement the following methods:
 
@@ -96,19 +113,17 @@ Constructor.
 
 Deserialize data from XML to arbitrary formats. 
 
-deserialize() must return a fault indicating that deserializing 
-failed if any error is encountered during the process of 
-deserializing the XML message.
+deserialize() must return a fault indicating that deserializing failed if 
+any error is encountered during the process of deserializing the XML message.
 
-The following 
-positional parameters are passed to the deserialize method:
+The following positional parameters are passed to the deserialize method:
 
  $content   - the xml message 
 
 =item * generate_fault
 
-Generate a fault in the supported format. The following named 
-parameters are passed as a single hash ref:
+Generate a fault in the supported format. The following named parameters are 
+passed as a single hash ref:
 
  code       - The fault code, e.g. 'soap:Server' or the like
  role       - The fault role (actor in SOAP1.1) 

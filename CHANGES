@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_12
+Release notes for SOAP::WSDL 2.00_14
 -------
 
 I'm very happy to present a new pre-release version of SOAP::WSDL.
@@ -23,13 +23,39 @@ Features:
       The following plugins are supported:
           o Transport plugins via SOAP::WSDL::Factory::Transport
           o Serializer plugins via SOAP::WSDL::Factory::Serializer
+          o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 
 The following changes have been made:
+
+2.00_14
+----
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1792235 ] SOAP::WSDL::Transport::Test missing from 2.00_13
+   The package has been re-added
+
+   * [ 1792221 ] class_resolver not set from ::Client in 2.00_13
+   Changed to set class_resolver correctly.
+   
+The following uncategorized improvements have been made:
+
+   * The ::SOM deserializer has been simplified to be just a subclass 
+   of SOAP::Deserializer from SOAP::Lite
+   * Factories now emit more useful error messages when no class is registered
+   for the protocol/soap_version requested
+   * Documentation has been improved
+      - refined ::Factory:: modules' documentation
+   * Several tests have been added
+   * XSD classes have been improved for testability
+
 2.00_13
 ----
 The following features were added (the numbers in square brackets are the 
 tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
    * [ 1790619 ] Test transport backend
    A test transport backend has been implemented (SOAP::WSDL::Transport::Test).
    It returns the contents from a file and discards the response.
@@ -62,7 +88,7 @@ tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
    * [1785646] SOAPAction header not set from soap:operation soapAction
    SOAP::WSDL now sets the SOAPAction header correctly.
 
-The following uncategorized improvements have been mad:
+The following uncategorized improvements have been made:
 
    * Documentation improvements
 

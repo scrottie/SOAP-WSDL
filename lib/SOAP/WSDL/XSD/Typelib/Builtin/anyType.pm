@@ -3,7 +3,9 @@ use strict;
 use warnings;
 use Class::Std::Storable;
 
-my %xmlns_of :ATTR(:name<xmlns> :default<()>);
+my %xmlns_of :ATTR(:get<xmlns> :init_arg<xmlns> :default<()>);
+
+sub set_xmlns { $xmlns_of{ ident $_[0] } = $_[1] };
 
 # use $_[1] for performance
 sub start_tag { 
@@ -18,6 +20,8 @@ sub end_tag {
         ? "</$_[1]->{name} >"
         : q{};
 };
+
+sub serialize { q{} };
 
 sub serialize_qualified :STRINGIFY {
     return $_[0]->serialize( { qualified => 1 } );

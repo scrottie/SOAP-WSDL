@@ -31,9 +31,9 @@ print $som->result();
 # set on the GetWeather SOAP::Data object from the WSDL.
 
 use SOAP::Lite; # +trace;
-my $soap = SOAP::Lite->new()->on_action( sub { join'/', @_ } )
+$soap = SOAP::Lite->new()->on_action( sub { join'/', @_ } )
   ->proxy("http://www.webservicex.net/globalweather.asmx");     # from WSDL
-my $som = $soap->call(
+$som = $soap->call(
     SOAP::Data->name('GetWeather')
         ->attr({ xmlns => 'http://www.webserviceX.NET' }),      # from WSDL
     SOAP::Data->name('CountryName')->value('Germany'), 

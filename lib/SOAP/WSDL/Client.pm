@@ -13,7 +13,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-our $VERSION='2.00_13';
+our $VERSION = '2.00_14';
 
 # Package global for speed and memory savings.
 # But should be factored out into serializer/deserializer...
@@ -183,15 +183,13 @@ sub call {
     });
 
     # set class resolver if serializer supports it
-    $deserializer_of{ $ident }->class_resolver( $class_resolver_of{ $ident } )
-        if ( $deserializer_of{ $ident }->can('class_resolver') );
-
-    my $result;
+    $deserializer_of{ $ident }->set_class_resolver( $class_resolver_of{ $ident } )
+        if ( $deserializer_of{ $ident }->can('set_class_resolver') );
 
     # Try deserializing response - there may be some,
     # even if transport did not succeed (got a 500 response)
     if ( $response ) {
-        eval { $result = $deserializer_of{ $ident }->deserialize( $response ); };
+        my $result = eval { $deserializer_of{ $ident }->deserialize( $response ); };
         return $result if (not $@);       
         return $deserializer_of{ $ident }->generate_fault({
             code => 'soap:Server',
@@ -377,9 +375,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 218 $
+ $Rev: 239 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 218 2007-09-10 16:19:23Z kutterma $
+ $Id: Client.pm 239 2007-09-11 09:45:42Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
  
 =cut

@@ -78,7 +78,7 @@ sub get_transport {
 
 =head1 NAME
 
-SOAP::WSDL::Factory::Transport - factory for retrieving transport objects
+SOAP::WSDL::Factory::Transport - Factory for retrieving transport objects
 
 =head1 SYNOPSIS
 
@@ -89,22 +89,29 @@ SOAP::WSDL::Factory::Transport - factory for retrieving transport objects
  package MyWickedTransport;
  use SOAP::WSDL::Factory::Transport;
  
- # u don't know the httpr protocol? poor boy...
+ # register class as transport module for httpr and https
+ # (httpr is "reliable http", a protocol developed by IBM).
  SOAP::WSDL::Factory::Transport->register( 'httpr' , __PACKAGE__ );
  SOAP::WSDL::Factory::Transport->register( 'https' , __PACKAGE__ );
  
 =head1 DESCRIPTION
 
-SOAP::WSDL::Transport serves as factory for retrieving 
-transport objects for SOAP::WSDL.
+SOAP::WSDL::Transport serves as factory for retrieving transport objects for 
+SOAP::WSDL.
 
 The actual work is done by specific transport classes.
 
 SOAP::WSDL::Transport tries to load one of the following classes:
 
- a) the class registered for the scheme via register()
- b) the SOAP::Lite class matching the scheme
- c) the SOAP::WSDL class matching the scheme
+=over 
+
+=item * the class registered for the scheme via register()
+
+=item * the SOAP::Lite class matching the scheme
+
+=item * the SOAP::WSDL class matching the scheme
+
+=back
 
 =head1 METHODS
 
@@ -132,31 +139,34 @@ Gets the current transport object.
 
 =head1 WRITING YOUR OWN TRANSPORT CLASS
 
+=head2 Registering a transport class
+
 Transport classes must be registered with SOAP::WSDL::Factory::Transport. 
 
-This is done by executing the following code where $scheme is the 
-URL scheme the class should be used for, and $module is the class' 
-module name. 
+This is done by executing the following code where $scheme is the URL scheme 
+the class should be used for, and $module is the class' module name. 
 
  SOAP::WSDL::Factory::Transport->register( $scheme, $module);
 
-To auto-register your transport class on loading, execute register() 
-in your tranport class (see L<SYNOPSIS|SYNOPSIS> above).
+To auto-register your transport class on loading, execute register() in your 
+tranport class (see L<SYNOPSIS|SYNOPSIS> above).
 
 Multiple protocols ore multiple classes are registered by multiple calls to 
 register().
 
+=head2 Transport plugin package layout
+
 You may only use transport classes whose name is either 
 the module name or the module name with '::Client' appended.
 
-Transport classes must implement the interface required for 
-SOAP::Lite transport classes. 
+=head2 Methods to implement
 
-See L<SOAP::Lite::Transport> for details, 
-L<SOAP::WSDL::Transport::HTTP|SOAP::WSDL::Transport::HTTP> 
-for an example.
+Transport classes must implement the interface required for SOAP::Lite 
+transport classes (see L<SOAP::Lite::Transport> for details, 
+L<SOAP::WSDL::Transport::HTTP|SOAP::WSDL::Transport::HTTP> for an example).
 
-Transport modules must implement the following methods:
+To provide this interface, transport modules must implement the following 
+methods:
 
 =over 
 
@@ -200,15 +210,14 @@ SOAP::WSDL does not require you to follow these restrictions.
 
 There is only one restriction in SOAP::WSDL:
 
-You may only use transport classes whose name is either 
-the module name or the module name with '::Client' appended.
+You may only use transport classes whose name is either the module name or 
+the module name with '::Client' appended.
 
-SOAP::WSDL will try to instantiate an object of your 
-transport class with '::Client' appended to allow using transport 
-classes written for SOAP::Lite.
+SOAP::WSDL will try to instantiate an object of your transport class with 
+'::Client' appended to allow using transport classes written for SOAP::Lite.
 
-This may lead to errors when a different module with the name 
-of your transport module suffixed with ::Client is also loaded.
+This may lead to errors when a different module with the name of your 
+transport module suffixed with ::Client is also loaded.
 
 =head1 LICENSE
 
@@ -223,9 +232,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 218 $
+ $Rev: 225 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 218 2007-09-10 16:19:23Z kutterma $
+ $Id: Transport.pm 225 2007-09-10 19:04:57Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
  
 =cut

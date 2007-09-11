@@ -14,7 +14,15 @@ sub register {
 
 sub get_serializer {
     my ($self, $args_of_ref) = @_;
-    eval "require $SERIALIZER{ $args_of_ref->{ soap_version } }" or die $@;
+
+    # sanity check
+    die "no deserializer registered for SOAP version $args_of_ref->{ soap_version }"
+        if not exists ($SERIALIZER{ $args_of_ref->{ soap_version } });
+
+    # load module
+    eval "require $SERIALIZER{ $args_of_ref->{ soap_version } }" 
+        or die "Cannot load serializer $SERIALIZER{ $args_of_ref->{ soap_version } }", $@;
+
     return $SERIALIZER{ $args_of_ref->{ soap_version } }->new();
 }
 
@@ -24,7 +32,7 @@ sub get_serializer {
 
 =head1 NAME
 
-SOAP::WSDL::Factory::Serializer - factory for retrieving serializer objects
+SOAP::WSDL::Factory::Serializer - Factory for retrieving serializer objects
 
 =head1 SYNOPSIS
 
@@ -37,7 +45,7 @@ SOAP::WSDL::Factory::Serializer - factory for retrieving serializer objects
  package MyWickedSerializer;
  use SOAP::WSDL::Factory::Serializer;
  
- # u don't know the SOAP 1.2 recommendation? poor boy...
+ # register as serializer for SOAP1.2 messages
  SOAP::WSDL::Factory::Serializer->register( '1.2' , __PACKAGE__ );
  
 =head1 DESCRIPTION
@@ -49,7 +57,11 @@ The actual work is done by specific serializer classes.
 
 SOAP::WSDL::Serializer tries to load one of the following classes:
 
- a) the class registered for the scheme via register()
+=over
+
+=item * the class registered for the scheme via register()
+
+=back
 
 =head1 METHODS
 
@@ -65,28 +77,32 @@ Returns an object of the serializer class for this endpoint.
 
 =head1 WRITING YOUR OWN SERIALIZER CLASS
 
+=head2 Registering a deserializer
+
 Serializer classes may register with SOAP::WSDL::Factory::Serializer.
 
-Serializer objects may also be passed directly to SOAP::WSDL::Client 
-by using the set_serializer method. Note that serializers objects set 
-via SOAP::WSDL::Client's set_serializer method are discarded when the 
-SOAP version is changed via set_soap_version.
+Serializer objects may also be passed directly to SOAP::WSDL::Client by 
+using the set_serializer method. Note that serializers objects set via 
+SOAP::WSDL::Client's set_serializer method are discarded when the SOAP 
+version is changed via set_soap_version.
 
-Registering a serializer class with SOAP::WSDL::Factory::Serializer 
-is done by executing the following code where $version is the 
-SOAP version the class should be used for, and $class is the class
-name.
+Registering a serializer class with SOAP::WSDL::Factory::Serializer is done 
+by executing the following code where $version is the SOAP version the 
+class should be used for, and $class is the class name.
 
  SOAP::WSDL::Factory::Serializer->register( $version, $class);
 
-To auto-register your transport class on loading, execute register() 
-in your tranport class (see L<SYNOPSIS|SYNOPSIS> above).
+To auto-register your transport class on loading, execute register() in 
+your tranport class (see L<SYNOPSIS|SYNOPSIS> above).
 
-Serializer modules must be named equal to the serializer 
-class they contain. There can only be one serializer class per 
-serializer module.
+=head2 Serializer package layout
 
-Serializer class must implement the following methods:
+Serializer modules must be named equal to the serializer class they contain. 
+There can only be one serializer class per serializer module.
+
+=head2 Methods to implement
+
+Serializer classes must implement the following methods:
 
 =over 
 
@@ -96,8 +112,8 @@ Constructor.
 
 =item * serialize
 
-Serializes data to XML. The following named parameters are passed to 
-the serialize method in a anonymous hash ref:
+Serializes data to XML. The following named parameters are passed to the 
+serialize method in a anonymous hash ref:
 
  {
    method => $operation_name,
@@ -120,9 +136,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 218 $
+ $Rev: 225 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 218 2007-09-10 16:19:23Z kutterma $
+ $Id: Serializer.pm 225 2007-09-10 19:04:57Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

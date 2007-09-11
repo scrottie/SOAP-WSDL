@@ -63,6 +63,7 @@ lib/SOAP/WSDL/Service.pm
 lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
 lib/SOAP/WSDL/SoapOperation.pm
 lib/SOAP/WSDL/Transport/HTTP.pm
+lib/SOAP/WSDL/Transport/Test.pm
 lib/SOAP/WSDL/TypeLookup.pm
 lib/SOAP/WSDL/Types.pm
 lib/SOAP/WSDL/XSD/Builtin.pm
@@ -123,7 +124,7 @@ lib/SOAP/WSDL/XSD/Typelib/Element.pm
 lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
 LICENSE
 Makefile.PL
-MANIFEST			This list of files
+MANIFEST
 META.yml
 README
 t/001_use.t
@@ -206,9 +207,14 @@ t/SOAP/WSDL/05_simpleType-restriction.t
 t/SOAP/WSDL/05_simpleType-union.t
 t/SOAP/WSDL/11_helloworld.NET.t
 t/SOAP/WSDL/12_binding.pl
-t/SOAP/WSDL/XSD/Typelib/Builtin/001_string.t
-t/SOAP/WSDL/XSD/Typelib/Builtin/002_dateTime.t
+t/SOAP/WSDL/Transport/01_Test.t
+t/SOAP/WSDL/Transport/acceptance/test2.xml
+t/SOAP/WSDL/Transport/acceptance/test3.xml
+t/SOAP/WSDL/XSD/Typelib/Builtin/001_anyType.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/002_anySimpleType.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/003_date.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/004_time.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/005_dateTime.t
+t/SOAP/WSDL/XSD/Typelib/Builtin/006_string.t
 t/test.pl
 TODO

@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_13
+version: 2.00_14
 author:
 abstract: SOAP with WSDL support
 license: artistic
@@ -30,7 +30,7 @@ provides:
     file: lib/SOAP/WSDL/Binding.pm
   SOAP::WSDL::Client:
     file: lib/SOAP/WSDL/Client.pm
-    version: 2.00_13
+    version: 2.00_14
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
   SOAP::WSDL::Definitions:
@@ -40,7 +40,7 @@ provides:
     version: 2.00_13
   SOAP::WSDL::Deserializer::SOM:
     file: lib/SOAP/WSDL/Deserializer/SOM.pm
-    version: 2.00_13
+    version: 2.00_14
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
   SOAP::WSDL::Expat::MessageStreamParser:
@@ -78,6 +78,9 @@ provides:
     file: lib/SOAP/WSDL/SoapOperation.pm
   SOAP::WSDL::Transport::HTTP:
     file: lib/SOAP/WSDL/Transport/HTTP.pm
+  SOAP::WSDL::Transport::Test:
+    file: lib/SOAP/WSDL/Transport/Test.pm
+    version: 2.00_14
   SOAP::WSDL::TypeLookup:
     file: lib/SOAP/WSDL/TypeLookup.pm
   SOAP::WSDL::Types:

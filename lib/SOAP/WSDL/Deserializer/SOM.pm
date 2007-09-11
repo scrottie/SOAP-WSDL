@@ -1,23 +1,19 @@
 package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
-use Class::Std::Storable;
-use SOAP::Lite;
 
-our $VERSION='2.00_13';
+our $VERSION = '2.00_14';
+our @ISA = qw(SOAP::Deserializer);
 
-sub BUILD {
-    my ($self, $ident, $args_of_ref) = @_;
-    
-    # ignore all options
-    for (keys %{ $args_of_ref }) {
-        delete $args_of_ref->{ $_ };
-    }
-}
+my $HAVE_SOAP_LITE = eval { require SOAP::Lite };
 
 sub deserialize {
-    my ($self, $content) = @_;
-    return SOAP::Deserializer->new()->deserialize( $content );
+    my $self = shift;
+    die 'Cannot deserialize to SOM object without SOAP::Lite. 
+Please install SOAP::Lite.
+'
+        if not $HAVE_SOAP_LITE;
+    $self->SUPER::deserialize(@_);
 }
 
 sub generate_fault {
@@ -49,13 +45,44 @@ SOAP::WSDL::Deserializer::SOM - Deserializer SOAP messages into SOM objects
 
 Deserializer for creating SOAP::Lite's SOM object as result of a SOAP call.
 
-This package is mainly here for compatibility reasons: You don't have to 
-change the rest of your SOAP::Lite based app when switching to SOAP::WSDL, 
-but can just use SOAP::WSDL::Deserializer::SOM to get back the same objects 
-as you were used to.
+This package is here for two reasons:
 
-SOAP::WSDL::Deserializer will not auroregister itself - just use the lines 
-from the L</SYNOPSIS> to register it as deserializer for SOAP::WSDL.
+=over
+
+=item * Compatibility
+
+You don't have to change the rest of your SOAP::Lite based app when switching 
+to SOAP::WSDL, but can just use SOAP::WSDL::Deserializer::SOM to get back the 
+same objects as you were used to.
+
+=item * Completeness
+
+SOAP::Lite covers much more of the SOAP specification than SOAP::WSDL. 
+
+SOAP::WSDL::Deserializer::SOM can be used for content which cannot be 
+deserialized by L<SOAP::WSDL::Deserializer::SOAP11|SOAP::WSDL::Deserializer::SOAP11>. 
+This may be XML including mixed content, attachements and other XML data not 
+(yet) handled by L<SOAP::WSDL::Deserializer::SOAP11|SOAP::WSDL::Deserializer::SOAP11>. 
+
+=back
+
+SOAP::WSDL::Deserializer::SOM is a subclass of L<SOAP::Deserializer|SOAP::Deserializer> 
+from the L<SOAP::Lite|SOAP::Lite> package. 
+
+You may 
+
+=head1 USAGE
+
+SOAP::WSDL::Deserializer will not auroregister itself - to use it for a particular 
+SOAP version just use the following lines:
+
+ my $soap_version = '1.1'; # or '1.2', further versions may appear.
+ 
+ use SOAP::WSDL::Deserializer::SOM;
+ use SOAP::WSDL::Factory::Deserializer;
+ SOAP::WSDL::Factory::Deserializer->register( $soap_version, __PACKAGE__ );
+
+=head1 DIFFERENCES FROM OTHER CLASSES
 
 =head2 Differences from SOAP::Lite
 
