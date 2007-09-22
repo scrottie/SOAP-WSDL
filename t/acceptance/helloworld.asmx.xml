@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:s="http://www.w3.org/2001/XMLSchema"
+xmlns:s0="urn:HelloWorld"
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+targetNamespace="urn:HelloWorld"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <s:schema elementFormDefault="qualified"
+    targetNamespace="urn:HelloWorld">
+      <s:element name="sayHello">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="name"
+            type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+
+      <s:element name="sayGoodBye">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="name"
+            type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+
+      <s:element name="sayHelloResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sayHelloResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+
+      <s:element name="sayGoodByeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1"  name="sayGoodByeResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+ <s:complexType name="contact_detail_list">
+  <s:complexContent>
+   <s:restriction base="soapenc:Array">
+    <s:attribute ref="soapenc:arrayType" wsdl:arrayType="s0:person_detail[]"/>
+   </s:restriction>
+  </s:complexContent>
+ </s:complexType>
+ <s:complexType name="person_detail">
+  <s:all>
+   <s:element name="email_address" type="s:string"/>
+   <s:element name="user_name" type="s:string"/>
+   <s:element name="first_name" type="s:string"/>
+   <s:element name="last_name" type="s:string"/>
+   <s:element name="department" type="s:string"/>
+   <s:element name="id" type="s:string"/>
+   <s:element name="title" type="s:string"/>
+  </s:all>
+ </s:complexType>
+    </s:schema>
+  </types>
+
+  <message name="sayHelloSoapIn">
+    <part name="parameters" element="s0:sayHello" />
+  </message>
+
+  <message name="sayGoodByeSoapIn">
+    <part name="parameters" element="s0:sayHello" />
+  </message>
+
+  <message name="sayGoodByeSoapInSecond">
+  </message>
+
+  <message name="sayGoodByeSoapInThird">
+    <part name="name" type="s:string" />
+    <part name="recipients" type="s0:contact_detail_list" />
+  </message>
+
+
+  <message name="sayHelloSoapOut">
+    <part name="parameters" element="s0:sayGoodByeResponse" />
+  </message>
+
+  <message name="sayGoodByeSoapOut">
+    <part name="parameters" element="s0:sayGoodByeResponse" />
+  </message>
+
+  <portType name="Service1Soap">
+    <operation name="sayHello">
+      <input message="s0:sayHelloSoapIn" />
+
+      <output message="s0:sayHelloSoapOut" />
+    </operation>
+  </portType>
+
+
+  <portType name="Service2Soap">
+
+    <operation name="sayGoodBye">
+      <input message="s0:sayGoodByeSoapIn" />
+      <output message="s0:sayGoodByeSoapOut" />
+    </operation>
+
+    <operation name="sayGoodByeOverload">
+      <input message="s0:sayGoodByeSoapIn" name="firstOverload" />
+      <output message="s0:sayGoodByeSoapOut" />
+    </operation>
+
+    <operation name="sayGoodByeOverload">
+      <input message="s0:sayGoodByeSoapInSecond" name="secondOverload" />
+      <output message="s0:sayGoodByeSoapOut" />
+    </operation>
+
+    <operation name="sayGoodByeOverload">
+      <input message="s0:sayGoodByeSoapInThird" name="thirdOverload" />
+      <output message="s0:sayGoodByeSoapOut" />
+    </operation>
+
+
+  </portType>
+  <binding name="Service1Soap" type="s0:Service1Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+    style="document" />
+
+    <operation name="sayHello">
+      <soap:operation soapAction="urn:HelloWorld#sayHello"
+      style="document" />
+      <input>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="Service2Soap" type="s0:Service2Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+    style="document" />
+    <operation name="sayGoodBye">
+      <soap:operation soapAction="urn:HelloWorld#sayGoodBye" style="document" />
+      <input>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+
+      <output>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="sayGoodByeOverload">
+      <soap:operation soapAction="urn:HelloWorld#sayGoodBye" style="document" />
+      <input>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+
+      <output>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="Service1">
+    <port name="Service1Soap" binding="s0:Service1Soap">
+      <soap:address
+      location="http://helloworld/helloworld.asmx" />
+    </port>
+  </service>
+  <service name="Service2">
+    <port name="Service2Soap" binding="s0:Service2Soap">
+      <soap:address
+      location="http://helloworld/helloworld.asmx" />
+    </port>
+  </service>
+</definitions>
+
