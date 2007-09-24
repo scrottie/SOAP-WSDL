@@ -11,7 +11,7 @@ use warnings;
 
 @ISA = qw(SOAP::Lite);
 
-$VERSION = "1.24";
+$VERSION = "1.25";
 
 # SOAP::Lite has changed the name for speciying a schema in 0.6?
 # method before: schema
@@ -1568,6 +1568,6 @@ Replace whitespace by '@' in E-Mail addresses.
 
  $LastChangedBy: kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/branches/1.21/lib/SOAP/WSDL.pm $
- $Rev: 20 $
+ $Rev: 274 $
 
 =cut

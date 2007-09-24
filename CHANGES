@@ -1,3 +1,9 @@
+* v1.25 2007/09/24 - maintenance
+- added Makefile.PL to ease installation
+
+* v1.24 2007/09/22 - bugfix
+- fixes issue reported by David Bussenschutt: wsdlinit always uses new SOAP::Schema instance.
+
 * v1.23 2007/06/05 - bugfixes and optimizations
 - fixes #27426: missing prereq XML::XPath
 - fixed build_requires

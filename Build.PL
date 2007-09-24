@@ -2,6 +2,8 @@
 use Module::Build;
 
 Module::Build->new(
+	create_makefile_pl => 'passthrough',
+	dist_name          => 'SOAP-WSDL',
 	dist_abstract => 'WSDL support for SOAP::Lite',
 	module_name   => 'SOAP::WSDL',
 	license       => 'artistic',

@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 1.24
+version: 1.25
 author: []
 abstract: WSDL support for SOAP::Lite
 license: artistic
@@ -12,7 +12,7 @@ requires:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 1.24
+    version: 1.25
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
