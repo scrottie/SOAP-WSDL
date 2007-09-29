@@ -1,0 +1,13 @@
+[% IF (complexType.get_variety == 'all');
+	INCLUDE complexType/all.tt(complexType = complexType);
+ELSIF (complexType.get_variety == 'sequence');
+	INCLUDE complexType/all.tt(complexType = complexType);
+ELSIF (complexType.get_variety == 'group');
+	THROW NOT_IMPLEMENTED, "${ element.get_name } - complexType group not implemented yet";
+ELSIF (complexType.get_variety == 'choice');
+	THROW NOT_IMPLEMENTED, "${ element.get_name } - complexType choice not implemented yet";
+ELSIF (complexType.get_variety == 'simpleContent');
+	THROW NOT_IMPLEMENTED, "${ element.get_name } - complexType choice not implemented yet";
+ELSIF (complexType.get_variety == 'complexContent');
+	THROW NOT_IMPLEMENTED, "${ element.get_name } - complexType choice not implemented yet";
+END %]

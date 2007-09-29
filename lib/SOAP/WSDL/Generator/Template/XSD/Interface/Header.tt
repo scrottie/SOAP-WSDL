@@ -1,0 +1,28 @@
+[%
+    RETURN IF NOT item;
+    message = definitions.find_message( item.expand( item.get_message ) );
+    PERL %]
+    my $message = $stash->{ message };
+    my $item = $stash->{ item };
+    my $def = $stash->{ definitions };
+    my $type_prefix = $stash->{ type_prefix };
+    my $element_prefix = $stash->{ element_prefix };
+    my ($ns, $lname) = $def->expand( $item->get_part() );
+    my ($part) = grep {
+        $_->get_name eq $lname  
+        && $_->get_targetNamespace eq $ns } @{ $message->get_part( ) }; 
+    my $part_class = do {
+                my $name;
+                ($name = $part->get_element) 
+                    ? "$element_prefix::$name"
+                    : ($name = $part->get_type)
+                        ? "$type_prefix::$name"
+                        : die "input must have either type or element";
+    };
+    $stash->{ part_class } = $part_class;
+    [% END;
+ %]
+           'use' => '[% item.get_use %]',
+            namespace => '[% item.get_namespace %]',
+            encodingStyle => '[% item.get_encodingStyle %]',
+            parts => '[qw( [% part_class %] )]',

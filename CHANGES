@@ -1,165 +1,254 @@
-* v1.25 2007/09/24 - maintenance
-- added Makefile.PL to ease installation
+Release notes for SOAP::WSDL 2.00_16
+-------
 
-* v1.24 2007/09/22 - bugfix
-- fixes issue reported by David Bussenschutt: wsdlinit always uses new SOAP::Schema instance.
+I'm proud to present a new pre-release version of SOAP::WSDL.
 
-* v1.23 2007/06/05 - bugfixes and optimizations
-- fixes #27426: missing prereq XML::XPath
-- fixed build_requires
-- some doc fixes
-- now performs some initializations on calling portname()
+SOAP::WSDL is a toolkit for creating WSDL-based SOAP client interfaces in perl.
 
-* v1.22 2007/05/30 - auto-discover service and port again
-- re-introduces auto-detecting of servicename and portname
-- fixes #27325: Test fails with Test::Pod::Coverage v 1.06.
-- Now build requires Test::More
-- documentation update
-- cosmetics
+Features:
 
-2007/05/28 private methods made private and pod update
-  - added pod tests
-  - made encodeComplexType and method generators private
-  - updated pod
-  - fixed test scripts to work again from within/without t/
-  - moved development repository to
-  https://svn.sourceforge.net/svnroot/soap-wsdl/ (finally !)
+    * WSDL based SOAP client
+          o SOAP1.1 support
+          o Supports document/literal message style/encoding
+    * Code generator for generating WSDL-based interface classes
+          o Generated code includes usage documentation for the web service interface
+    * Easy-to use API
+          o Automatically encodes perl data structures as message data
+          o Automatically sets HTTP headers right
+    * SOAP::Lite like look and feel
+          o Where possible, SOAP::WSDL mimics SOAP::Lite's API to allow easy migrations
+    * XML schema based class library for creating data objects
+    * High-performance XML parser
+    * Plugin support. SOAP::WSDL can be extended through plugins in various aspects. 
+      The following plugins are supported:
+          o Transport plugins via SOAP::WSDL::Factory::Transport
+          o Serializer plugins via SOAP::WSDL::Factory::Serializer
+          o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
-2007/05/21 updated base version to customized version from Giovanni S Fois
-  - merged in doc changes, so that they don't refer to "customized version"
-  - changed build process to Build.PL
-  - changed repository layout to support new build process
+  
+The following changes have been made:
+2.00_16
+----
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
 
-2006/11/06 only in the customized version
-  Added the support for default values in the wsdl file
+   * [ 1761532 ] Support embedded atomic types
+   SOAP::WSDL now supports a greater variety of XML Schema type definitions.
+   Note that XML Schema support is still incomplete, though.
+   * [ 1797943 ] Create Perl Hash Deserializer
+   There's a new deserializer which outputs perl hashes as data structures.
+   Much like XML::Simple, but faster. No XML Attribute support, though.
+   * [ 1797678 ] Move Code generator from WSDL::Definitions to separate class
+   * [ 1803330 ] Create one interface per port
+   SOAP::WSDL now creats one interface per port, not one per service.
 
-2006/11/04 only in the customized version
-  Changed the calling interface. Now it's driven by the by the service
-  and port names.
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
 
-2006/11/03 only in the customized version
-  Corrected the Check for the correct number of elements in complex types
+   * [ 1804441 ] parts from binding not regarded in SOAP::WSDL
+   SOAP::WSDL (interpreter mode) now respects the body parts specified in the 
+   binding.
+   * [ 1803763 ] nonNegativeInteger misspelled in Schema::Builtin
+   * [ 1793965 ] _expand() does not work on non-root-node ns declarations
+   * [ 1792348 ] 006_client.t requires SOAP::Lite in 2.00_15
+   SOAP::WSDL no longer attempts to load SOAP::WSDL::Deserializer::SOM when 
+   no_dispatch is set.
+   006_client.t now sets outputxml(1), to be really sure.
+   
+The following uncategorized improvements have been made:   
 
-  If a complex type is marked optional in a WSDL file, but sub-parts are marked as
-  required, SOAP::WSDL used to die if the complex type was found in the data.
-  Now, if a complex type has not data associated and is not strictly required, it
-  will not be encoded.
+   * Code generator only generates interface for the first port in a service
+   The code generator now generates interfaces for all ports.
+   Note: The naming scheme has changed. It is now
+    InterfacePrefix::Service::Port
+   
+   * XML Parser speedup
+   The XML parser has received a little speedup.
+   
+   * A number of errors in parsing / traversing WSDL documents have been 
+   corrected.
+   
+   * Documentation has been improved
+   
+   * A number of (incorrect, but passing) tests have been fixed.
 
-A quick-and-dirty workaround is to turn off the check with
+   * Code cleanup: The SOAP::WSDL::SAX* modules are no longer included, as they 
+   are not supported any more. They can still be found in SOAP::WSDL's 
+   subversion repository in the attic directory, though.
+   
+2.00_15
+----
 
- $soap->wsdl_checkoccurs(0);
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
 
-2006/11/02 only in the customized version
-  - small changes for .Net compatibility when encoding complex types
-  - added some test cases to the test suite try perl t/3_varous.t for more details
+   * [ 1792321 ] 2.00_14 requires SOAP::Lite for passing tests
+
+2.00_14
+----
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1792235 ] SOAP::WSDL::Transport::Test missing from 2.00_13
+   The package has been re-added
+
+   * [ 1792221 ] class_resolver not set from ::Client in 2.00_13
+   Changed to set class_resolver correctly.
+
+The following uncategorized improvements have been made:
+
+   * The ::SOM deserializer has been simplified to be just a subclass 
+   of SOAP::Deserializer from SOAP::Lite
+   * Factories now emit more useful error messages when no class is registered
+   for the protocol/soap_version requested
+   * Documentation has been improved
+      - refined ::Factory:: modules' documentation
+   * Several tests have been added
+   * XSD classes have been improved for testability
+
+2.00_13
+----
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1790619 ] Test transport backend
+   A test transport backend has been implemented (SOAP::WSDL::Transport::Test).
+   It returns the contents from a file and discards the response.
+   The filename is determined from the soap_action field.
+   
+   * [ 1785196 ] Replace outputsom(1) by deserializer plugin
+   outputsom(1) in SOAP::WSDL is now implemented via using the deserializer 
+   plugin SOAP::WSDL::Deserializer::SOM.
+
+   * [1785195] Support deserializer plugins
+   Deserializer plugin API added via SOAP::WSDL::Factory::Deserializer.
+  
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [1789581] Support ComplexType mixed
+   WSDL parser now supports using the mixed="true" attribute in complexType 
+   definitions. Mixed content in messages is only supported via SOAP::SOM yet.
+
+   * [1787975] 016_client_object.t fails due to testing XML as string
+   Removed string test.
+  
+   * [1787959] Test wsdl seems to be broken
+   Corrected typo.
+  
+   * [1787955] ::XSD::Typelib::date is broken
+   SOAP::WSDL::XSD::Typelib::Builtin::date now converts time-zoned dates properly, 
+   and adds the local time zone if none is given.
+
+   * [1785646] SOAPAction header not set from soap:operation soapAction
+   SOAP::WSDL now sets the SOAPAction header correctly.
+
+The following uncategorized improvements have been made:
+
+   * Documentation improvements
+
+2.00_12
+----
+  
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [1787146] SOAP::WSDL still uses XML::LibXML
+   The superficious usage of XML::LibXML has been removed. XML::LibXML with 
+   sax filter has been replaced by SOAP::WSDL::Expat::WSDLParser.
+   
+   * [1787054] Test suite requires XML::LibXML in 2.00_11
+   The test suite no longer requires XML::LibXML to pass.
+
+   * [1785678] SOAP envelope not checked for namespace
+   The SOAP envelope is now checked for the correct namespace.
+   
+   * [1786644] SOAP::WSDL::Manual - doc error
+   Documentation improvements
+    
+The following uncategorized improvements have been made
+
+   * The SOAPAction header is now alway quoted (R1109 in WS-I BP 1.0).
+   
+2.00_11
+----
+
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+  * [1767963] Transport plugins via SOAP::WSDL::Factory::Transport.
+    SOAP::WSDL uses SOAP::Lite's tranport modules as default, with a 
+    lightweight HTTP(S) transport plugin as fallback.
+    Custom transport modules can be registered via SOAP::WSDL::Factory::Transport.
+
+  * [ 1772730 ] Serializer plugins via SOAP::WSDL::Factory::Serializer 
+    The default serializer for SOAP1.1 is SOAP::WSDL::Serializer::SOAP11.
+    Custom serializers classes can be registered via 
+    SOAP::WSDL::Factory::Serializer or set via SOAP::WSDL's set_serializer 
+    method.
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1764854 ] Port WSDL parser to expat and remove XML::LibXML dependency
+     SOAP::WSDL now requires only XML::Parser to be installed.
+     XML::LibXML is not required any more, though XML::LibXML based modules still 
+     exist.
+
+The following uncategorized improvements have been made
+
+   * The number of dependencies has been reduced. SOAP::WSDL no longer requires the 
+     following modules to be installed:
+        - XML::SAX::Base
+        - XML::SAX::ParserFactory
+        - Pod::Simple::Text
+        - XML::LibXML
+
+   * The missing prerequisite Template has been added.
+   * Documentation has been improved:
+        - WS-I Compliance document added.
 
 
-2006/10/28 only in the customized version
-  - added a small support for the complexType restrictions of Arrays
+2.00_10
+----
+   * Changed Makefile.PL to use Module::Build (passthrough mode)
+   * fixed element ref="" handling
 
-2006/10/02 only in the customized version
-           (Thanks to Dan Horne for having spotted so many bugs in a row)
-- the xml prefix was used as the default wsdl namespace when looking for the complextype restrictions
-- the module crashed when the operation had no part declaration
-- the port name stated in the service definition was used as the portType
-- the test suited failed when the module was unzipped in a t.* named directory
+2.00_09
+----
+   * SOAP::WSDL::XSD::Typelib::Builtin::boolean objects now return their numerical 
+     value in bool context, not "true" or "false" (always true...)
+   * date/time test are now timezone-sensitive
+   * examples added
 
+2.00_08
+---
+   * SOAP::WSDL::XSD::Typelib::ComplexType objects now check the class of their 
+     child objects.
+     This provides early feedback to developers.
+   * SOAP message parser can skip unwanted parts of the message to improve parsing 
+     speed - see SOAP::WSDL::Expat::MessageParser for details.
+   * HTTP Content-Type is configurable
+   * SOAP::WSDL::XSD::Typelib::ComplexType based objects accept any combination of 
+     hash refs, list refs and objects as parameter to set_value() and new().
+   * SOAP::WSDL::XSD::Typelib::Builtin::dateTime and ::date convert date 
+      strings into XML date strings
+   * SOAP::WSDL::Definitions::create now
+      - converts '.' in service names to '::' (.NET class separator to perl class 
+      separator)
+      - outputs Typemaps and Interface classes in UTF8 to allow proper inclusion 
+      of UTF8 documentation from WSDL
+   * SOAP::WSDL::Definitions::create() includes doc in generated interface classes
+   * WSDLHandler now handles <wsdl:documentation> tags
+   * fixed explain in SimpleType, ComplexType and Element
 
-
-2006/09/15 only in the customized version
-           (Thanks to Terje Kristensen for his support and twisted wsdl files :)
-- cleaned up the code for readability
-- cleaned up the code for "use warnings" and "use strict"
-- added support for wsdl files with multiple schema declarations
-- added supporto for some restriction on complexTypes
-
-
-
-
-2006/07/10 only in the customized version
-   - added the support for SOAP::header calls
-
-2006/06/10 only in the customized version
-
-  - removed the overload based on the type of the call's parameters
-
-  - added an overloading support based on the unique name of the input message of the call. The input message must be provided by the calling script (sorry, the module has no mean to find this).
-
-  - added a light support to the sympletypes.
-
-  - added a light support to the imported namespaces in the types section.
-
-  - added the support for the multiple SOAP bindings. The correct binding must be provided by the calling script (sorry, the module has no mean to find this).
-
-  - the method will use his own soapAction if defined
-
-  - the method will use his own namespace if defined
-
-  - some other code cleaning
-
-2006/04/23 only in the customized version
-
-  - corrected a bug related to the presence of the same method name on multiple
-    webservices
-
-  - added an overloading support based on the type of the call's parameters
-
-  - multiple extensions support added: a complextype can be an extension of a complextype which is an extension and so on
-
-
-
-Revision 1.7  2004/07/27 13:00:03  lsc
-- added missing test file
-
-Revision 1.18  2004/07/16 07:43:05  lsc
-fixed test scripts for windows
-
-Revision 1.17  2004/07/05 08:19:49  lsc
-- added wsdl_checkoccurs
-
-Revision 1.16  2004/07/04 09:01:14  lsc
-- change <definitions> element lookup from find('/definitions') and find('wsdl:definitions') to find('/*[1]') to process arbitrary default (wsdl) namespaces correctly
-- fixed test output in test 06
-
-Revision 1.15  2004/07/02 12:28:31  lsc
-- documentation update
-- cosmetics
-
-Revision 1.14  2004/07/02 10:53:36  lsc
-- API change:
-    - call now behaves (almost)  like SOAP::Lite::call
-    - call() takes a list (hash) as second argument
-    - call does no longer support the "dispatch" option
-    - dispatching calls can be suppressed by passing
-         "no_dispatch => 1" to new()
-    - dispatching calls can be suppressed by calling
-           $soap->no_dispatch(1);
-       and re-enabled by calling
-           $soap->no_dispatch(0);
-- Updated test skripts to reflect API change.
-
-Revision 1.13  2004/06/30 12:08:40  lsc
-- added IServiceInstance (ecmed) to acceptance tests
-- refined documentation
-
-Revision 1.12  2004/06/26 14:13:29  lsc
-- refined file caching
-- added descriptive output to test scripts
-
-Revision 1.11  2004/06/26 07:55:40  lsc
-- fixed "freeze" caching bug
-- improved test scripts to test file system caching (and show the difference)
-
-Revision 1.10  2004/06/26 06:30:33  lsc
-- added filesystem caching using Cache::FileCache
-
-Revision 1.9  2004/06/24 12:27:23  lsc
-Cleanup
-
-Revision 1.8  2004/06/11 19:49:15  lsc
-- moved .t files to more self-describing names
-- changed WSDL.pm to accept AXIS wsdl files
-- implemented XPath query result caching on all absolute queries
-
-Revision 1.7  2004/06/07 13:01:16  lsc
-added changelog to pod
+2.00_07 and below
+---
+   * Implemented a Code generator for creating SOAP interfaces based on WSDL definitions
+   * Implemented a high-speed stream based SOAP message parser
+     SOAP message parser returns a objects based on XML schema based class library
+   * Implemented a XML schema based class library 
+   * Implemented a stream based WSDL parser.
+     Parses WSDL into objects. Objects can serialize data, and explain how to use the 
+     service(s) they make up (output documentation).

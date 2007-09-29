@@ -1,0 +1,11 @@
+[%- INDENT = INDENT _ '  ';
+IF type.isa('SOAP::WSDL::XSD::ComplexType'); -%]
+ { #[% IF (type.get_name); %][% TYPE_PREFIX %]::[% type.get_name %][% ELSE; %]__ATOMIC__[% END;
+	FOREACH element = type.get_element; 
+	INCLUDE Interface/POD/Element.tt( element = element );
+END %]
+[% INDENT; %]}
+[%- ELSE -%]
+$someValue,
+[%- END;
+INDENT.replace('\s{2}$',''); %]
