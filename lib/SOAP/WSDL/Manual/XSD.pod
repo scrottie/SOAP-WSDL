@@ -1,0 +1,249 @@
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::XSD - SOAP::WSDL's XML Schema implementation
+
+=head1 DESCRIPTION
+
+SOAP::WSDL's XML Schema implementation translates XML Schema definitions into 
+perl classes.
+
+Every top-level type or element in a XML schema is translated into a perl 
+class (usually in it's own file).
+
+Atomic types are either directly included in the class of their parent's 
+node, or as sub-package in their parent class' file.
+
+=head2 Base classes
+
+SOAP::WSDL::XSD provides a set of base classes for the construction of XML 
+schema defined type classes.
+
+=head3 Builtin types 
+
+SOAP::WSDL::XSD provides classes for all builtin XML Schema datatypes.
+
+For a list and reference on these classes, see 
+SOAP::WSDL::XSD::Typelib::Builtin.
+
+=head3 Derivation classes
+
+For derivation by list, the list derivation class 
+SOAP::WSDL::XSD::Typelib::Builtin::list exists.
+
+Derivation by restriction is handled without the help of additional classes.
+
+=head3 Element construction class
+
+For the construction of element classes, the element superclass 
+SOAP::WSDL::XSD::Typelib::Element exists. All elements are ultimately derived 
+from this class. Elements may inherit from type classes, too - see 
+L</TRANSLATION RULES> for details.
+
+=head3 complexType construction class
+
+For the construction of complexType classes, the 
+
+=head1 TRANSLATION RULES
+
+=head2 element
+
+TODO add more elaborate description
+
+=head3 element with type attribute
+
+Elements defined by referencing a builtin or user defined type inherit 
+from SOAP::WSDL::XSD::Typelib::Element and from the corresponding type class.
+
+  Element       Type 
+  base class    class
+     ^            ^
+     |            |
+      ------------ 
+          |
+ Element type="" class          
+     
+=head3 element with ref attribute
+
+Elements defined by referencing another element inherit from the 
+corresponding element class.
+
+ referenced Element class
+          ^
+          |
+ Element ref="" class          
+
+=head3 element with atomic simpleType
+
+Elements defined by a atomic simpleType from 
+SOAP::WSDL::XSD::Typelib::Element and from the base type of the atomic type.
+
+   Element     atomic Type 
+  base class   base class
+     ^             ^
+     |             |
+      ------------- 
+            |
+ element simpleType class          
+
+=head3 element with atomic complexType
+
+Elements defined with a atomic complexType inherit from 
+SOAP::WSDL::XSD::Typelib::Element and from 
+SOAP::WSDL::XSD::Typelib::ComplexType.
+
+   Element     complexType
+  base class   base class
+     ^             ^
+     |             |
+      ------------- 
+            |
+ element complexType class          
+
+=head2 complexType
+
+TODO add more elaborate description
+
+Some content models are not implemented yet. The content models 
+implemented are described below.
+
+=head3 complexType with "sequence" variety
+
+=head3 complexType with "all" variety
+
+The implementation for all does enforce the order of elements as described 
+in the WSDL, even though this is not required by the XML Schema 
+specification.
+
+=head3 complexType with "choice" variety
+
+The implementation for choice currently is the same as for all - which means, 
+no check for occurence are made.
+
+=head3 complexType with complexContent content model
+
+=over
+
+=item * restriction variety
+
+ComplexType classes with restriction variety inherit from their base type. 
+No additional processing or content checking is performed yet.
+
+Note that complexType with restriction variety classes don't exhibit their 
+type via the xsi:type attribute yet, so they currently cannot be used as 
+a replacement for their base type.
+
+=item * extension variety
+
+=back
+
+=head2 SimpleType
+
+TODO add more elaborate description
+
+Some derivation methods are not implemented yet. The derivation methods 
+implemented are described below.
+
+=head3 Derivation by list
+
+Derivation by list is implemented by inheriting from both the base type and 
+SOAP::WSDL::XSD::Typelib::XSD::list.
+
+=head3 Derivation by restriction
+
+Derivation by restriction is implemented by inheriting from a base type and 
+applying the required restrictions.
+
+=head2 Complex Types
+
+=head1 FACETS
+
+XML Schema facets are not implemented yet.
+
+They will probably implemented some day by putting constant methods into 
+the correspondent classes.
+
+=head1 ATTRIBUTES
+
+XML attributes are not implemented yet. If you have a good idea on how to 
+implement them, feel free to email me a proposal.
+
+=head1 BUGS AND LIMITATIONS
+
+The following XML Schema declaration elements are not supported yet:
+
+=over 
+
+=item * Declaration elements
+
+ attribute
+ notation
+
+=item * Type definition elements
+
+ complexContent - only restriction supported
+ simpleContent
+ union
+
+=item * Content model definition elements
+
+ any
+ anyAttribute
+ attributeGroup
+ group
+
+=item * Identity definition elements
+
+ field
+ key
+ keyref
+ selector
+ unique
+
+=item * Inclusion elements
+
+ import
+ include
+ redefine
+
+=back
+
+The following XML Schema declaration elements are supported, but have no 
+effect yet:
+
+=over 
+
+=item * Factes
+
+ enumeration
+ fractionDigits
+ lenght
+ maxExclusive
+ maxInclusiove
+ maxLength
+ minExclusive
+ minInclusive
+ minLength
+ pattern
+ totalDigits
+ whitespace
+
+=item * Documentation elements
+
+ appinfo
+
+=back
+
+=head1 LICENSE
+
+Copyright 2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under 
+the same terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=cut

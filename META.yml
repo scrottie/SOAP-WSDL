@@ -1,18 +1,243 @@
 ---
 name: SOAP-WSDL
-version: 1.26
+version: 2.00_17
 author: []
-abstract: WSDL support for SOAP::Lite
+abstract: SOAP with WSDL support
 license: artistic
 resources:
   license: http://opensource.org/licenses/artistic-license.php
 requires:
-  SOAP::Lite: 0
-  XML::XPath: 0
+  Class::Std: v0.0.8
+  Class::Std::Storable: 0
+  Data::Dumper: 0
+  Date::Format: 0
+  Date::Parse: 0
+  File::Basename: 0
+  File::Path: 0
+  Getopt::Long: 0
+  LWP::UserAgent: 0
+  List::Util: 0
+  Template: 0
+  Term::ReadKey: 0
+  XML::Parser::Expat: 0
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 1.25
+    version: 2.00_17
+  SOAP::WSDL::Base:
+    file: lib/SOAP/WSDL/Base.pm
+    version: 2.00_17
+  SOAP::WSDL::Binding:
+    file: lib/SOAP/WSDL/Binding.pm
+  SOAP::WSDL::Client:
+    file: lib/SOAP/WSDL/Client.pm
+    version: 2.00_17
+  SOAP::WSDL::Client::Base:
+    file: lib/SOAP/WSDL/Client/Base.pm
+    version: 2.00_17
+  SOAP::WSDL::Definitions:
+    file: lib/SOAP/WSDL/Definitions.pm
+    version: 2.00_17
+  SOAP::WSDL::Deserializer::Hash:
+    file: lib/SOAP/WSDL/Deserializer/Hash.pm
+    version: 2.00_17
+  SOAP::WSDL::Deserializer::SOAP11:
+    file: lib/SOAP/WSDL/Deserializer/SOAP11.pm
+    version: 2.00_17
+  SOAP::WSDL::Deserializer::SOM:
+    file: lib/SOAP/WSDL/Deserializer/SOM.pm
+    version: 2.00_15
+  SOAP::WSDL::Expat::Base:
+    file: lib/SOAP/WSDL/Expat/Base.pm
+  SOAP::WSDL::Expat::Message2Hash:
+    file: lib/SOAP/WSDL/Expat/Message2Hash.pm
+  SOAP::WSDL::Expat::MessageParser:
+    file: lib/SOAP/WSDL/Expat/MessageParser.pm
+  SOAP::WSDL::Expat::MessageStreamParser:
+    file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
+  SOAP::WSDL::Factory::Deserializer:
+    file: lib/SOAP/WSDL/Factory/Deserializer.pm
+  SOAP::WSDL::Factory::Serializer:
+    file: lib/SOAP/WSDL/Factory/Serializer.pm
+    version: 2.00_17
+  SOAP::WSDL::Factory::Transport:
+    file: lib/SOAP/WSDL/Factory/Transport.pm
+    version: 2.00_17
+  SOAP::WSDL::Generator::Template:
+    file: lib/SOAP/WSDL/Generator/Template.pm
+    version: 2.00_17
+  SOAP::WSDL::Generator::Template::XSD:
+    file: lib/SOAP/WSDL/Generator/Template/XSD.pm
+  SOAP::WSDL::Generator::Visitor:
+    file: lib/SOAP/WSDL/Generator/Visitor.pm
+    version: 2.00_17
+  SOAP::WSDL::Generator::Visitor::Typelib:
+    file: lib/SOAP/WSDL/Generator/Visitor/Typelib.pm
+  SOAP::WSDL::Generator::Visitor::Typemap:
+    file: lib/SOAP/WSDL/Generator/Visitor/Typemap.pm
+  SOAP::WSDL::Message:
+    file: lib/SOAP/WSDL/Message.pm
+  SOAP::WSDL::OpMessage:
+    file: lib/SOAP/WSDL/OpMessage.pm
+  SOAP::WSDL::Operation:
+    file: lib/SOAP/WSDL/Operation.pm
+  SOAP::WSDL::Part:
+    file: lib/SOAP/WSDL/Part.pm
+  SOAP::WSDL::Port:
+    file: lib/SOAP/WSDL/Port.pm
+  SOAP::WSDL::PortType:
+    file: lib/SOAP/WSDL/PortType.pm
+  SOAP::WSDL::SOAP::Address:
+    file: lib/SOAP/WSDL/SOAP/Address.pm
+  SOAP::WSDL::SOAP::Body:
+    file: lib/SOAP/WSDL/SOAP/Body.pm
+  SOAP::WSDL::SOAP::Header:
+    file: lib/SOAP/WSDL/SOAP/Header.pm
+  SOAP::WSDL::SOAP::HeaderFault:
+    file: lib/SOAP/WSDL/SOAP/HeaderFault.pm
+  SOAP::WSDL::SOAP::Operation:
+    file: lib/SOAP/WSDL/SOAP/Operation.pm
+    version: 2.00_17
+  SOAP::WSDL::SOAP::Typelib::Fault11:
+    file: lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
+    version: 2.00_17
+  SOAP::WSDL::Serializer::SOAP11:
+    file: lib/SOAP/WSDL/Serializer/SOAP11.pm
+    version: 2.00_13
+  SOAP::WSDL::Service:
+    file: lib/SOAP/WSDL/Service.pm
+  SOAP::WSDL::Transport::HTTP:
+    file: lib/SOAP/WSDL/Transport/HTTP.pm
+  SOAP::WSDL::Transport::Loopback:
+    file: lib/SOAP/WSDL/Transport/Loopback.pm
+    version: 2.00_17
+  SOAP::WSDL::Transport::Test:
+    file: lib/SOAP/WSDL/Transport/Test.pm
+    version: 2.00_14
+  SOAP::WSDL::TypeLookup:
+    file: lib/SOAP/WSDL/TypeLookup.pm
+  SOAP::WSDL::Types:
+    file: lib/SOAP/WSDL/Types.pm
+  SOAP::WSDL::XSD::Builtin:
+    file: lib/SOAP/WSDL/XSD/Builtin.pm
+  SOAP::WSDL::XSD::ComplexType:
+    file: lib/SOAP/WSDL/XSD/ComplexType.pm
+    version: 2.00_17
+  SOAP::WSDL::XSD::Element:
+    file: lib/SOAP/WSDL/XSD/Element.pm
+    version: 2.00_17
+  SOAP::WSDL::XSD::Schema:
+    file: lib/SOAP/WSDL/XSD/Schema.pm
+  SOAP::WSDL::XSD::Schema::Builtin:
+    file: lib/SOAP/WSDL/XSD/Schema/Builtin.pm
+  SOAP::WSDL::XSD::SimpleType:
+    file: lib/SOAP/WSDL/XSD/SimpleType.pm
+    version: 2.00_17
+  SOAP::WSDL::XSD::Typelib::Builtin:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
+    version: 2.00_17
+  SOAP::WSDL::XSD::Typelib::Builtin::ENTITY:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/ENTITY.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::ID:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/ID.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::IDREF:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/IDREF.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::IDREFS:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/IDREFS.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::NCName:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NCName.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::NMTOKEN:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NMTOKEN.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::NMTOKENS:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NMTOKENS.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::NOTATION:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/NOTATION.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::Name:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/Name.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::QName:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/QName.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anySimpleType.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::anyType:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anyType.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::anyURI:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anyURI.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::base64Binary:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/base64Binary.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::boolean:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/boolean.pm
+    version: 2.00_17
+  SOAP::WSDL::XSD::Typelib::Builtin::byte:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/byte.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::date:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/date.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::dateTime:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/dateTime.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::decimal:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/decimal.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::double:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/double.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::duration:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/duration.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::float:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/float.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::gDay:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gDay.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::gMonth:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gMonth.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::gMonthDay:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gMonthDay.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::gYear:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gYear.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::gYearMonth:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/gYearMonth.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::hexBinary:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/hexBinary.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::int:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/int.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::integer:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/integer.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::language:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/language.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::list:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/list.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::long:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/long.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::negativeInteger:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/negativeInteger.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/nonNegativeInteger.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/nonPositiveInteger.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::normalizedString:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/normalizedString.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::positiveInteger:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/positiveInteger.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::short:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/short.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::string:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/string.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::time:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/time.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::token:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/token.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedByte.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedInt.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedLong.pm
+  SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort:
+    file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
+  SOAP::WSDL::XSD::Typelib::ComplexType:
+    file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
+    version: 2.00_16
+  SOAP::WSDL::XSD::Typelib::Element:
+    file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
+  SOAP::WSDL::XSD::Typelib::SimpleType:
+    file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
+  SOAP::WSDL::XSD::Typelib::SimpleType::restriction:
+    file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

@@ -1,0 +1,27 @@
+TODO list for SOAP::WSDL
+
+2.00 Pre-releases
+--------
+* Implement a Generator Plugin API
+
+* Implement a interface similar to SOAP::Schema (#1783639)
+
+2.1 release
+--------
+* Support namespaces in SOAP message payload
+
+* Support the xsi:type attribute on derived types on the wire
+
+* SOAP1.2 support
+
+2.2 release
+--------
+* XML schema support ("minimal conformant") (#1764845)
+
+* Support SOAP attachments
+
+* Act as SOAP Server
+
+3.0 release
+--------
+We're not thinking that far ahead right now.
