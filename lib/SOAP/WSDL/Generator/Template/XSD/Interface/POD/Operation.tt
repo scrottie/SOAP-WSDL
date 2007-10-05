@@ -1,8 +1,0 @@
-=head3 [% operation.get_name %]
-
-[%     type = definitions.find_portType( binding.expand( binding.get_type ) );
-    port_op = type.find_operation( definitions.get_targetNamespace, operation.get_name );
-port_op.get_documentation %]
-
- $interface->[% operation.get_name %]([% INCLUDE Interface/POD/Message.tt %] );
- 
