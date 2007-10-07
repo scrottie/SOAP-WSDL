@@ -5,6 +5,7 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
 >
     <types>
         <xsd:schema targetNamespace="urn:Test">
@@ -197,9 +198,9 @@
 	</portType>
 
 	<binding type="tns:testPort" name="testBinding">
-            <operation name="testChoice">
-                <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-				<soap:operation soapAction="testChoice"/>
+           <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+           <operation name="testChoice">
+				<soap:operation soapAction="testChoice" style="document"/>
 					<input>
 						<soap:body use="literal"/>
 					</input>
@@ -209,8 +210,7 @@
 		    </operation>
             
             <operation name="test">
-                <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-				<soap:operation soapAction="test"/>
+				<soap:operation soapAction="test" style="document"/>
 					<input>
 						<soap:body use="literal"/>
 					</input>
@@ -218,10 +218,8 @@
 						<soap:body use="literal"/>
 					</output>
 		    </operation>
-            
             <operation name="testHeader">
         		<soap:operation soapAction="testHeader"/>
-                <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 				<input>
 					<soap:body use="literal" parts="tns:testBody"/>
 					<soap:header use="literal" part="tns:testHeader" message="tns:testHeaderRequest"/>

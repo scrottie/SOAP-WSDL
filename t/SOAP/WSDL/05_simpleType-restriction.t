@@ -20,7 +20,6 @@ ok( $soap = SOAP::WSDL->new(
 ), 'Instantiated object' );
 
 #3
-$soap->readable(1);
 ok( $soap->wsdlinit(
     servicename => 'testService',
 ), 'parsed WSDL' );

@@ -7,6 +7,6 @@ my $soap = SOAP::WSDL->new();
 
 
 TODO: {
-    local $TODO="implement <choice> support";
+    local $TODO="implement tests";
     fail "serialize choice element";
 }

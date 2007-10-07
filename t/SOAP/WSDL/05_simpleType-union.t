@@ -16,7 +16,6 @@ ok $soap = SOAP::WSDL->new(
 ), 'Instantiated object';
 
 #3
-$soap->readable(1);
 ok $soap->wsdlinit(), 'parsed WSDL';
 $soap->no_dispatch(1);
 # won't work without - would require SOAP::WSDL::Deserializer::SOM,

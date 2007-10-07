@@ -14,13 +14,9 @@ my $soap = undef;
 
 my $path = File::Spec->rel2abs( dirname __FILE__ );
 
-#2
 ok( $soap = SOAP::WSDL->new(
 	wsdl => 'file:///' . $path . '/../../acceptance/wsdl/04_element-simpleType.wsdl'
 ), 'Instantiated object' );
-
-#3
-$soap->readable(1);
 
 # won't work without - would require SOAP::WSDL::Deserializer::SOM,
 # which requires SOAP::Lite

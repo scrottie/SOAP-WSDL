@@ -4,6 +4,8 @@ use warnings;
 use Date::Parse;
 use Date::Format;
 
+our $VERSION='2.00_18';
+
 # Speed up. Class::Std::new is slow - and we don't need it's functionality...
 BEGIN {
     use Class::Std::Storable;
@@ -40,8 +42,16 @@ sub set_value {
     # We leave out the optional nanoseconds part, as it would always be empty.
     else {
         # strptime sets empty values to undef - and strftime doesn't like that...
-        # we even need to set it to 1 to prevent a "Day '0' out of range 1..31" warning...
-        my @time_from = map { ! defined $_ ? 1 : $_ } strptime($_[1]);
+        # we even need to set it to 1 to prevent a "Day '0' out of range 1..31" warning..
+        
+        # we need to set the current date for correct TZ conversion - 
+        # could be daylight savings time
+        my @now = localtime;
+        my @time_from = map { my $alternative = shift @now; 
+            ! defined $_ 
+                ? $alternative 
+                : $_ } strptime($_[1]);
+        undef $time_from[-1];
         my $time_str = strftime( '%H:%M:%S%z', @time_from );
         substr $time_str, -2, 0, ':';
         $_[0]->SUPER::set_value($time_str);

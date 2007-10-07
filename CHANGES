@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_17
+Release notes for SOAP::WSDL 2.00_18
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -20,7 +20,7 @@ Features:
           the module's internals
     * Thorough test suite
           o SOAP::WSDL is heavily regression tested, with a test coverage of 
-          over 90%.
+          over 95%.
     * SOAP::Lite like look and feel
           o Where possible, SOAP::WSDL mimics SOAP::Lite's API to allow easy migrations
     * XML schema based class library for creating data objects
@@ -32,6 +32,27 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_18
+----
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1790983 ] Create generator Plugin API
+   Generator factory is SOAP::WSDL::Factory::Generator
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1805252 ] t/SOAP/WSDL/XSD/Typelib/Builtin/004_time.t fails
+   The default timezone conversion has been fixed.
+
+The following uncategorized improvements have been made:   
+
+   * Documentation improvements
+   * Test updates
+   * readable() has been converted into a no-op, as it already had no effect 
+   any more
 
 2.00_17
 ----

@@ -227,7 +227,7 @@ L<SOAP::WSDL::XSD::Typelib::ComplexType>, L<SOAP::WSDL::XSD::Typelib::SimpleType
 L<SOAP::WSDL::XSD::Typelib::Element> tell you how to create subclasses of XML schema 
 types.
 
-L<SOAP::WSDL::Parser> will tell you how to create a typemap class.
+L<SOAP::WSDL::Manual::Parser> will tell you how to create a typemap class.
 
 =back
 
@@ -273,7 +273,7 @@ class. This unfortunately means that you have to set the endpoint URL, too:
 
 You may, of course, decide to just hack the generated class. Be advised that 
 subclassing might be a more appropriate solution - re-generating overwrites 
-your changes.
+changes in interface classes.
 
 =head3 Accessing HTTPS webservices protected by certificate authentication
 

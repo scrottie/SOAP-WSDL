@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-SOAP::WSDL::Parser - How SOAP::WSDL parses XML messages
+SOAP::WSDL::Manual::Parser - How SOAP::WSDL parses XML messages
 
 =head1 Which XML message does SOAP::WSDL parse ?
 

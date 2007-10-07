@@ -17,6 +17,6 @@ my $soap = SOAP::WSDL->new();
 
 
 TODO: {
-    local $TODO="implement <complexContent> support";
+    local $TODO="implement <complexContent> tests";
     fail "serialize complexContent element";
 }

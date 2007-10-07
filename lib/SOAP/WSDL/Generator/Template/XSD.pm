@@ -9,7 +9,8 @@ use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Visitor::Typelib;
 use base qw(SOAP::WSDL::Generator::Template);
 
-my %output_of :ATTR(:name<output> :default<()>);
+my %output_of  :ATTR(:name<output> :default<()>);
+my %typemap_of :ATTR(:name<typemap> :default<({})>);
 
 sub BUILD {
     my ($self, $ident, $arg_ref) = @_;
@@ -19,6 +20,13 @@ sub BUILD {
         ? $arg_ref->{INCLUDE_PATH}
         : File::Spec->rel2abs( dirname __FILE__  ). '/XSD/'
     );
+}
+
+sub generate {
+    my $self = shift;
+    $self->generate_typelib();
+    $self->generate_interface();
+    $self->generate_typemap();
 }
 
 sub generate_typelib {
@@ -73,7 +81,8 @@ sub generate_typemap {
             'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
             'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
             'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-            'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',           
+            'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+            %{ $typemap_of{ident $self }},           
         }
     });
     for my $service (@{ $self->get_definitions->get_service }) {

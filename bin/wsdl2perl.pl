@@ -5,7 +5,7 @@ use Pod::Usage;
 use Getopt::Long;
 use LWP::UserAgent;
 use SOAP::WSDL::Expat::WSDLParser;
-use SOAP::WSDL::Generator::Template::XSD;
+use SOAP::WSDL::Factory::Generator;
 use Term::ReadKey;
 
 my %opt = (
@@ -16,7 +16,8 @@ my %opt = (
   typemap_prefix => 'MyTypemaps',
   interface_prefix => 'MyInterfaces',
   base_path => 'lib/',
-  proxy => undef
+  proxy => undef,
+  generator => 'XSD',
 );
 
 {   # a block just to scope "no warnings"
@@ -57,6 +58,7 @@ GetOptions(\%opt,
     keep_alive
     user=s
     password=s
+    generator=s
   )
 );
 
@@ -91,20 +93,29 @@ if ($opt{typemap_include}) {
   %typemap = do $opt{typemap_include};
 }
 
-my $generator = SOAP::WSDL::Generator::Template::XSD->new({
-    type_prefix => $opt{ type_prefix },
-    typemap_prefix => $opt{ typemap_prefix },
-    element_prefix => $opt{ element_prefix },
-    interface_prefix => $opt{ interface_prefix },
-    OUTPUT_PATH => $opt{ base_path },
-    definitions => $definitions, 
-});
+my $generator = SOAP::WSDL::Factory::Generator->get_generator({ type => $opt{'generator'} });
+
+if (%typemap) {
+    if ($generator->can('set_typemap')) {
+        $generator->set_typemap( \%typemap );
+    }
+    else {
+        warn "Typemap snippet given, but generator does not support it\n";
+    }
+};
+
+$generator->set_type_prefix( $opt{ type_prefix }) if $generator->can('set_type_prefix');
+$generator->set_typemap_prefix( $opt{ typemap_prefix }) if $generator->can('set_typemap_prefix');
+$generator->set_element_prefix($opt{ element_prefix }) if $generator->can('set_element_prefix');
+$generator->set_interface_prefix($opt{ interface_prefix }) if $generator->can('set_interface_prefix');
+$generator->set_OUTPUT_PATH($opt{ base_path }) if $generator->can('set_OUTPUT_PATH');
+$generator->set_definitions($definitions) if $generator->can('set_definitions');
+$generator->set_wsdl($xml) if $generator->can('set_wsdl');
 
 # start with typelib, as errors will most likely occur here...
-$generator->generate_typelib();
-$generator->generate_interface();
-$generator->generate_typemap({ (%typemap) ? (typemap => \%typemap) : () });
+$generator->generate();
 
+__END__
 
 =pod
 
@@ -133,13 +144,15 @@ wsdl2perl.pl - create perl bindings for SOAP webservices.
  base_path         b   Path to create classes in.
                        Default: .
  typemap_include   mi  File to include in typemap. Must eval() to a valid 
-                       perl hash (not a has ref !).
+                       perl hash (not a hash ref !).
  proxy             x   HTTP(S) proxy to use (if any). wsdl2perl will also 
                        use the proxy settings specified via the HTTP_PROXY
                        and HTTPS_PROXY environment variables.
  keep_alive            Use http keep_alive.
  user                  Username for HTTP authentication
  password              Password. wsdl2perl will prompt if not given.
+ generator         g   Generator to use. 
+                       Default: XSD 
  help              h   Show help content
 
 =head1 DESCRIPTION

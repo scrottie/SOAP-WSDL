@@ -199,7 +199,7 @@ SOAP::WSDL::Expat::MessageParser - Convert SOAP messages to custom object trees
 
 Real fast expat based SOAP message parser.
 
-See L<SOAP::WSDL::Parser> for details.
+See L<SOAP::WSDL::Manual::Parser> for details.
 
 =head2 Skipping unwanted items
 
@@ -234,8 +234,8 @@ This module may be used under the same terms as perl itself.
 
  $ID: $
 
- $LastChangedDate: 2007-10-03 20:46:56 +0200 (Mit, 03 Okt 2007) $
- $LastChangedRevision: 305 $
+ $LastChangedDate: 2007-10-07 19:27:58 +0200 (Son, 07 Okt 2007) $
+ $LastChangedRevision: 313 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

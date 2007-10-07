@@ -48,6 +48,7 @@ lib/SOAP/WSDL/Expat/MessageParser.pm
 lib/SOAP/WSDL/Expat/MessageStreamParser.pm
 lib/SOAP/WSDL/Expat/WSDLParser.pm
 lib/SOAP/WSDL/Factory/Deserializer.pm
+lib/SOAP/WSDL/Factory/Generator.pm
 lib/SOAP/WSDL/Factory/Serializer.pm
 lib/SOAP/WSDL/Factory/Transport.pm
 lib/SOAP/WSDL/Generator/Template.pm
@@ -90,12 +91,12 @@ lib/SOAP/WSDL/Generator/Visitor/Typelib.pm
 lib/SOAP/WSDL/Generator/Visitor/Typemap.pm
 lib/SOAP/WSDL/Manual.pod
 lib/SOAP/WSDL/Manual/Glossary.pod
+lib/SOAP/WSDL/Manual/Parser.pod
 lib/SOAP/WSDL/Manual/WS_I.pod
 lib/SOAP/WSDL/Manual/XSD.pod
 lib/SOAP/WSDL/Message.pm
 lib/SOAP/WSDL/Operation.pm
 lib/SOAP/WSDL/OpMessage.pm
-lib/SOAP/WSDL/Parser.pod
 lib/SOAP/WSDL/Part.pm
 lib/SOAP/WSDL/Port.pm
 lib/SOAP/WSDL/PortType.pm
@@ -262,6 +263,7 @@ t/SOAP/WSDL/Factory/Transport.t
 t/SOAP/WSDL/Generator/Template.t
 t/SOAP/WSDL/Generator/Visitor.t
 t/SOAP/WSDL/Generator/Visitor/Typemap.t
+t/SOAP/WSDL/Generator/XCS.t
 t/SOAP/WSDL/Generator/XSD.t
 t/SOAP/WSDL/Generator/XSD_unsupported.t
 t/SOAP/WSDL/Transport/01_Test.t

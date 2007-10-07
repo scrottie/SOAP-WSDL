@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_17
+version: 2.00_18
 author: []
 abstract: SOAP with WSDL support
 license: artistic
@@ -57,6 +57,9 @@ provides:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
   SOAP::WSDL::Factory::Deserializer:
     file: lib/SOAP/WSDL/Factory/Deserializer.pm
+  SOAP::WSDL::Factory::Generator:
+    file: lib/SOAP/WSDL/Factory/Generator.pm
+    version: 2.00_18
   SOAP::WSDL::Factory::Serializer:
     file: lib/SOAP/WSDL/Factory/Serializer.pm
     version: 2.00_17
@@ -219,6 +222,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/string.pm
   SOAP::WSDL::XSD::Typelib::Builtin::time:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/time.pm
+    version: 2.00_18
   SOAP::WSDL::XSD::Typelib::Builtin::token:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/token.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte:

@@ -17,7 +17,6 @@ ok( $soap = SOAP::WSDL->new(
 	wsdl => 'file:///' . $path . '/../../acceptance/wsdl/05_simpleType-list.wsdl'
 ), 'Instantiated object' );
 
-$soap->readable(1);
 # won't work without - would require SOAP::WSDL::Deserializer::SOM,
 # which requires SOAP::Lite
 $soap->outputxml(1);

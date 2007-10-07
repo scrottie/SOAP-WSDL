@@ -20,7 +20,6 @@ my $soap;
 #2
 ok( $soap = SOAP::WSDL->new(
 	wsdl => 'file://' . $path . '/../../acceptance/wsdl/03_complexType-element-ref.wsdl',
-	readable => 1,
     no_dispatch => 1,
 ), 'Instantiated object' );
 

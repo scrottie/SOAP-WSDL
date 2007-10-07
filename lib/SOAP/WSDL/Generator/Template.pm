@@ -18,18 +18,18 @@ my %OUTPUT_PATH_of      :ATTR(:name<OUTPUT_PATH>    :default<.>);
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
-    $tt_of{$ident} = Template->new( 
+}
+
+sub _process :PROTECTED {
+    my ($self, $template, $arg_ref, $output) = @_;
+    my $ident = ident $self;
+    my $tt = $tt_of{$ident} ||= Template->new( 
         DEBUG => 1,
         EVAL_PERL => $EVAL_PERL_of{ $ident },
         RECURSION => $RECURSION_of{ $ident },
         INCLUDE_PATH => $INCLUDE_PATH_of{ $ident },
         OUTPUT_PATH => $OUTPUT_PATH_of{ $ident },
     );
-}
-
-sub _process :PROTECTED {
-    my ($self, $template, $arg_ref, $output) = @_;
-    my $tt = $self->get_tt();
     $tt->process( $template, 
     { 
         definitions => $self->get_definitions,

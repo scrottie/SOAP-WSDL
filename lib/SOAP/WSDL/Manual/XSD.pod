@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-SOAP::WSDL::XSD - SOAP::WSDL's XML Schema implementation
+SOAP::WSDL::Manual::XSD - SOAP::WSDL's XML Schema implementation
 
 =head1 DESCRIPTION
 
@@ -14,6 +14,32 @@ class (usually in it's own file).
 
 Atomic types are either directly included in the class of their parent's 
 node, or as sub-package in their parent class' file.
+
+While the implementation is still incomplete, it covers the XML schema 
+definitions used by most object mappers.
+
+=head1 USAGE
+
+You can use SOAP::WSDL::XSD based classes just like any perl class - you may 
+instantiate it, inherit from it etc.
+
+You should be aware, that SOAP::WSDL::XSD based classes are inside-out 
+classes using Class::Std, though - things you would expect from hash-based 
+classes like using the blessed hash ref as data storage won't work.
+
+Moreover, most classes override Class::Std's default constructor for speed - 
+you should not expect BUILD or START methods to work, unless you call them 
+yourself (or define a new constructor).
+
+All SOAP::WSDL::XSD based complexType classes allow a hash ref mathing their 
+data structure as only parameter to new(). You may mix hash and list refs and 
+objects in the structure passed to new - as long as the structure matches, it 
+will work fine.
+
+All SOAP::WSDL::XSD based simpleType (and builtin) classes accept a single 
+hash ref with the only key "value" and the value to be set as value.
+
+=head1 HOW IT WORKS
 
 =head2 Base classes
 
@@ -43,7 +69,14 @@ L</TRANSLATION RULES> for details.
 
 =head3 complexType construction class
 
-For the construction of complexType classes, the 
+For the construction of complexType classes, the construction class 
+SOAP::WSDL::XSD::Typelib::ComplexType is provided. It provides a __factory 
+method for placing attributes in generated classes, and generating 
+appropriate setter/getter accessors.
+
+The setters are special: They handle complex data structures of any type 
+(meaning hash refs, list refs and objects, and any combination of them), as 
+long as their structure matches the expected structure.
 
 =head1 TRANSLATION RULES
 
@@ -81,9 +114,9 @@ SOAP::WSDL::XSD::Typelib::Element and from the base type of the atomic type.
 
    Element     atomic Type 
   base class   base class
-     ^             ^
-     |             |
-      ------------- 
+     ^              ^
+     |              |
+      -------------- 
             |
  element simpleType class          
 
@@ -95,9 +128,9 @@ SOAP::WSDL::XSD::Typelib::ComplexType.
 
    Element     complexType
   base class   base class
-     ^             ^
-     |             |
-      ------------- 
+     ^              ^
+     |              |
+      -------------- 
             |
  element complexType class          
 
@@ -108,13 +141,35 @@ TODO add more elaborate description
 Some content models are not implemented yet. The content models 
 implemented are described below.
 
-=head3 complexType with "sequence" variety
-
 =head3 complexType with "all" variety
+
+Complex types with "all" variety inherit from 
+SOAP::WSDL::XSD::Typelib::ComplexType, and call it's factory method for 
+creating fields and accessors/mutators for the complexType's elements.
+
+All element's type classes are loaded. Complex type classes have a "has a" 
+relationship to their element fields.
+
+Element fields may either be element classes (for element ref="") or type 
+classes (for element type=""). No extra element classes are created for 
+a complexType's elements.
+
+  complexType
+  base class
+       ^
+       |
+ complexType all
+ ----------------     has a
+ element name="a" ------------> Element or type class object
+ element name="b" ------------> Element or type class object
 
 The implementation for all does enforce the order of elements as described 
 in the WSDL, even though this is not required by the XML Schema 
 specification.
+
+=head3 complexType with "sequence" variety
+
+The implementation of the "sequence" variety is the same as for all.
 
 =head3 complexType with "choice" variety
 
@@ -129,6 +184,13 @@ no check for occurence are made.
 
 ComplexType classes with restriction variety inherit from their base type. 
 No additional processing or content checking is performed yet.
+
+    complexType
+  base type class
+        ^
+        |
+   complexType 
+   restriction
 
 Note that complexType with restriction variety classes don't exhibit their 
 type via the xsi:type attribute yet, so they currently cannot be used as 

@@ -89,7 +89,7 @@ SOAP::WSDL::Expat::Message2Hash - Convert SOAP messages to perl hash refs
 
 Real fast expat based SOAP message parser.
 
-See L<SOAP::WSDL::Parser> for details.
+See L<SOAP::WSDL::Manual::Parser> for details.
 
 =head1 Bugs and Limitations
 

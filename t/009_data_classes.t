@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More tests => 5;
 use lib 't/lib';
 use lib '../lib';
 use lib 'lib';
@@ -39,14 +39,12 @@ else
 # TODO factor out into different test
 
 my $soap = SOAP::WSDL->new(
-    readable => 1,
     wsdl => 'file:///' . $path .'/t/acceptance/wsdl/006_sax_client.wsdl',
 )->wsdlinit();
 
 $soap->servicename('MessageGateway');
 
 ok( $soap->no_dispatch( 1 ) , "Set no_dispatch" );
-ok( $soap->readable( 0 ) , "Set readable");
 
 sub xml {
 q{<SOAP-ENV:Envelope

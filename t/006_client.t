@@ -21,7 +21,6 @@ my $soap = SOAP::WSDL->new(
     wsdl => 'file:///' . $path .'/t/acceptance/wsdl/006_sax_client.wsdl',
     outputxml => 1, # required, if not set ::SOM serializer will be loaded on 
                     # call
-    readable => 1,
 )->wsdlinit();
 
 $soap->servicename('MessageGateway');
