@@ -19,14 +19,8 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     definitions => $definitions,
 });
 my $output = q{};
-$generator->generate_interface({
-    NO_POD => 1,
-    output => \$output,
-});
 
-ok eval $output;
 
-$output = q{};
 $generator->generate_typemap({
     NO_POD => 1,
     output => \$output,
@@ -35,7 +29,19 @@ $generator->generate_typemap({
 ok eval $output;
 print $@ if $@;
 
-print $output;
+#print $output;
+
+$output = q{};
+$generator->generate_interface({
+    NO_POD => 1,
+    output => \$output,
+});
+
+ok eval $output;
+print $@ if $@;
+
+
+# print $output;
 __END__
 
 my $tt = Template->new( 

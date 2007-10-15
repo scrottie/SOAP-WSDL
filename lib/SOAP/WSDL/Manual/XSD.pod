@@ -178,6 +178,13 @@ no check for occurence are made.
 
 =head3 complexType with complexContent content model
 
+Note that complexType classes with complexContent content model don't exhibit 
+their type via the xsi:type attribute yet, so they currently cannot be used 
+as a replacement for their base type.
+
+SOAP::WSDL's XSD deserializer backend does not recognize the xsi:type="" 
+attribute either yet.
+
 =over
 
 =item * restriction variety
@@ -192,11 +199,29 @@ No additional processing or content checking is performed yet.
    complexType 
    restriction
 
-Note that complexType with restriction variety classes don't exhibit their 
-type via the xsi:type attribute yet, so they currently cannot be used as 
-a replacement for their base type.
-
 =item * extension variety
+
+ComplexType classes with extension variety inherit from the XSD base 
+complexType class and from their base type. 
+
+Extension classes are checked for (re-)defining all elements of their parent 
+class.
+
+Note that a derived type's elements (=properties) overrides the getter / 
+setter methods for all inherited elements. All object data is stored in the 
+derived type's class, not in the defining class (See L<Class::Std> for a 
+discussion on inside out object data storage).
+
+No additional processing or content checking is performed yet.
+
+  complexType        complexType
+  base class       base type class
+       ^                 ^
+       |                 |
+        -----------------
+       |
+   complexType 
+    extension
 
 =back
 
@@ -216,8 +241,6 @@ SOAP::WSDL::XSD::Typelib::XSD::list.
 
 Derivation by restriction is implemented by inheriting from a base type and 
 applying the required restrictions.
-
-=head2 Complex Types
 
 =head1 FACETS
 
@@ -244,7 +267,6 @@ The following XML Schema declaration elements are not supported yet:
 
 =item * Type definition elements
 
- complexContent - only restriction supported
  simpleContent
  union
 

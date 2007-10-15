@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_18
+version: 2.00_19
 author: []
 abstract: SOAP with WSDL support
 license: artistic
@@ -246,3 +246,5 @@ generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
+no_index:
+  namespace: SOAP::WSDL::Generator::Template::XSD

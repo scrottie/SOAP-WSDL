@@ -59,12 +59,14 @@ lib/SOAP/WSDL/Generator/Template/XSD/complexType/all.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/atomicTypes.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/complexContent.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/contentModel.tt
+lib/SOAP/WSDL/Generator/Template/XSD/complexType/extension.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/all.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/choice.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/complexContent.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/restriction.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/structure.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/restriction.tt
+lib/SOAP/WSDL/Generator/Template/XSD/complexType/variety.tt
 lib/SOAP/WSDL/Generator/Template/XSD/element.tt
 lib/SOAP/WSDL/Generator/Template/XSD/element/POD/structure.tt
 lib/SOAP/WSDL/Generator/Template/XSD/Interface.tt

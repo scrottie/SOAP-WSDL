@@ -4,7 +4,7 @@ $build = Module::Build->new(
 	create_makefile_pl => 'passthrough',
 	dist_abstract      => 'SOAP with WSDL support',
 	dist_name          => 'SOAP-WSDL',
-	dist_version       => '2.00_18',
+	dist_version       => '2.00_19',
 	module_name        => 'SOAP::WSDL',
 	license            => 'artistic',
 	requires           => {
@@ -40,6 +40,11 @@ $build = Module::Build->new(
 		'XML::Parser::Expat'      => 0,
 	},
 	recursive_test_files => 1,
+	meta_add => {
+	    no_index => {
+	        namespace => 'SOAP::WSDL::Generator::Template::XSD',
+	    },
+	}
 );
 $build->add_build_element('tt');
 $build->create_build_script;

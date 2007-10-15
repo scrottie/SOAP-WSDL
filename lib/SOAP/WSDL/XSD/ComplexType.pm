@@ -18,7 +18,7 @@ my %abstract_of     :ATTR(:name<abstract>   :default<()>);
 my %mixed_of        :ATTR(:name<mixed>      :default<()>);      # default is false
 
 # is set to simpleContent/complexContent
-my %content_model_of    :ATTR(:name<contentModel>   :default<()>);
+my %content_model_of    :ATTR(:name<contentModel>   :default<NONE>);
 
 sub get_variety; *get_variety = \&get_flavor;
 
@@ -45,6 +45,12 @@ sub set_restriction {
     $base_of{ ident $self } = $element->{ Value };
 }
 
+sub set_extension {
+    my $self = shift;
+    my $element = shift;
+    $flavor_of{ ident $self } = 'extension';
+    $base_of{ ident $self } = $element->{ Value };
+}
 
 sub init {
 	my $self = shift;

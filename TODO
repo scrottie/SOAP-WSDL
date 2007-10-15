@@ -2,7 +2,6 @@ TODO list for SOAP::WSDL
 
 2.00 Pre-releases
 --------
-* Implement a Generator Plugin API
 
 * Implement a interface similar to SOAP::Schema (#1783639)
 

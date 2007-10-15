@@ -1,4 +1,4 @@
-use Test::More tests => 26;
+use Test::More tests => 30;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -106,6 +106,16 @@ $complexRestriction = MyTypes::testComplexTypeRestriction->new({
 });
 is $complexRestriction->get_Test1(), 'test1';
 is $complexRestriction->get_Test2(), 'test2';
+
+ok eval { require MyTypes::testComplexTypeExtension };
+$complexExtension = MyTypes::testComplexTypeExtension->new({
+    Test1 => 'test1',
+    Test2 => 'test2',
+    Test3 => 'test3',
+});
+is $complexExtension->get_Test1(), 'test1';
+is $complexExtension->get_Test2(), 'test2';
+is $complexExtension->get_Test3(), 'test3';
 
 
 rmtree "$path/testlib";

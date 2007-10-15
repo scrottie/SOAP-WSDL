@@ -136,6 +136,10 @@ my %TYPES = (
             type => 'METHOD',
             method => 'set_restriction',
         },
+        extension => {
+            type => 'METHOD',
+            method => 'set_extension',
+        },
         list => {
             type => 'METHOD',
             method => 'set_list',

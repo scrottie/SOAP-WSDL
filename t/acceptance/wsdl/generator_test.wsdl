@@ -84,6 +84,21 @@
         </xsd:complexContent>
       </xsd:complexType>
 
+      <xsd:complexType name="testComplexTypeExtension">
+        	<xsd:annotation>
+          		<xsd:documentation>complexType extension test</xsd:documentation>
+        	</xsd:annotation>
+	        <xsd:complexContent>
+		        <xsd:extension base="tns:testComplexTypeAll">
+		          	<xsd:sequence>
+						<xsd:element name="Test1" type="xsd:string" />
+          				<xsd:element name="Test2" type="xsd:string" minOccurs="1"/>
+			          	<xsd:element name="Test3" type="xsd:string" minOccurs="1"/>
+		          	</xsd:sequence>
+		        </xsd:extension>
+	        </xsd:complexContent>
+      </xsd:complexType>
+
 		<xsd:complexType name="testComplexTypeChoice">
             <xsd:annotation>
                 <xsd:documentation>
