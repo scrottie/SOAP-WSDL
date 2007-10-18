@@ -17,10 +17,14 @@ use_ok(qw/SOAP::WSDL/);
 my $soap;
 my $xml;
 my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file://' . $path . '/../../acceptance/wsdl/04_element.wsdl'
+	wsdl => 'file://' . $url . '/../../acceptance/wsdl/04_element.wsdl'
 ), 'Instantiated object' );
 
 #3

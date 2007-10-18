@@ -734,7 +734,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 308 $
  $LastChangedBy: kutterma $
  $Id: WSDL.pm 308 2007-10-05 17:35:28Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
  
 =cut
 

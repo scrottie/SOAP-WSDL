@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_19
+Release notes for SOAP::WSDL 2.00_20
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -32,6 +32,25 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_20
+----
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1815646 ] Only include last part of port name in interface
+   * [ 1815648 ] Methods with empty body cannot be called as ->method()
+   * [ 1815651 ] Empty complexType definitions not supported
+   
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1815643 ] ComplexTypes cannot be freezed/thawed
+
+The following uncategorized improvements have been made:   
+
+   * WSDL definitions are decoded into utf8
+   * fixed tests to use correct path on windows
 
 2.00_19
 ----

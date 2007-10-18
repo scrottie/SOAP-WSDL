@@ -14,6 +14,12 @@ if ($@)
 }
 
 my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
+
+# print $url;
 
 use_ok(qw/SOAP::WSDL/);
 
@@ -24,7 +30,7 @@ my $soap;
 
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file://' . $path . '/../../acceptance/wsdl/03_complexType-all.wsdl',
+	wsdl => 'file://' . $url . '/../../acceptance/wsdl/03_complexType-all.wsdl',
 ), 'Instantiated object' );
 
 #3

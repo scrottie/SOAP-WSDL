@@ -95,7 +95,7 @@ class should be used for, and $class is the class name.
  SOAP::WSDL::Factory::Serializer->register( $version, $class);
 
 To auto-register your transport class on loading, execute register() in 
-your tranport class (see L<SYNOPSIS|SYNOPSIS> above).
+your tranport class (see L</SYNOPSIS> above).
 
 =head2 Serializer package layout
 
@@ -138,9 +138,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 302 $
+ $Rev: 325 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 302 2007-09-30 19:25:25Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
+ $Id: Serializer.pm 325 2007-10-18 10:27:46Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

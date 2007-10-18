@@ -1,16 +1,16 @@
-package [% interface_prefix %]::[% service.get_name %]::[% port.get_name %];
+package [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('^.+\.','') %];
 use strict;
 use warnings;
 use Class::Std::Storable;
 use base qw(SOAP::WSDL::Client::Base);
 
 # only load if it hasn't been loaded before
-require [% typemap_prefix %]::[% service.get_name %]
-	if not [% typemap_prefix %]::[% service.get_name %]->can('get_class');
+require [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]
+	if not [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]->can('get_class');
 
 sub START {
     $_[0]->set_proxy('[% port.first_address.get_location %]') if not $_[2]->{proxy};
-    $_[0]->set_class_resolver('[% typemap_prefix %]::[% service.get_name %]')
+    $_[0]->set_class_resolver('[% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]')
         if not $_[2]->{class_resolver};
 }
 

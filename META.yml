@@ -1,11 +1,9 @@
 ---
 name: SOAP-WSDL
-version: 2.00_19
-author: []
+version: 2.00_20
+author:
 abstract: SOAP with WSDL support
 license: artistic
-resources:
-  license: http://opensource.org/licenses/artistic-license.php
 requires:
   Class::Std: v0.0.8
   Class::Std::Storable: 0
@@ -20,6 +18,12 @@ requires:
   Template: 0
   Term::ReadKey: 0
   XML::Parser::Expat: 0
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
+no_index:
+  namespace: SOAP::WSDL::Generator::Template::XSD
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
@@ -242,9 +246,5 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
-generated_by: Module::Build version 0.2808
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
-no_index:
-  namespace: SOAP::WSDL::Generator::Template::XSD
+resources:
+  license: http://opensource.org/licenses/artistic-license.php

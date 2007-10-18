@@ -19,10 +19,11 @@ my %CLASSES_OF;
 # We could also handle them via AUTOMETHOD,
 # but AUTOMETHOD should always croak...
 # Do we really need this ?
-#sub STORABLE_freeze_pre {}
-#sub STORABLE_freeze_post {}
-#sub STORABLE_thaw_pre {}
-#sub STORABLE_thaw_post {}
+# ... looks like we do...
+sub STORABLE_freeze_pre {}
+sub STORABLE_freeze_post {}
+sub STORABLE_thaw_pre {}
+sub STORABLE_thaw_post {}
 
 # for error reporting. Eases working with data objects...
 sub AUTOMETHOD {
@@ -376,10 +377,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 309 $
+ $Rev: 323 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 309 2007-10-05 17:48:37Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
+ $Id: ComplexType.pm 323 2007-10-17 15:23:05Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
  
 =cut
 

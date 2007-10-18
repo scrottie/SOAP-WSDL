@@ -24,9 +24,10 @@ sub BUILD {
 
 sub generate {
     my $self = shift;
-    $self->generate_typelib();
-    $self->generate_interface();
-    $self->generate_typemap();
+    my $opt = shift;
+    $self->generate_typelib( $opt );
+    $self->generate_interface( $opt );
+    $self->generate_typemap( $opt );
 }
 
 sub generate_typelib {
@@ -54,17 +55,22 @@ sub generate_interface {
             next if not $port->first_address;
             next if not $port->first_address->isa('SOAP::WSDL::SOAP::Address');
 
+            my $port_name = $port->get_name;
+            $port_name =~s{ \A .+\. }{}xms;
             my $output = $arg_ref->{ output } 
                 ? $arg_ref->{ output } 
-                : $self->_generate_filename( $self->get_interface_prefix(), $service->get_name(), $port->get_name ); 
-
+                : $self->_generate_filename( 
+                    $self->get_interface_prefix(), 
+                    $service->get_name(), 
+                    $port_name,
+            ); 
             $self->_process('Interface.tt', 
             {
                 service => $service,
                 port => $port,
                 NO_POD => $arg_ref->{ NO_POD } ? 1 : 0 ,
-            },
-            $output);
+             },
+            $output, binmode => ':utf8');
         }
     }
 }

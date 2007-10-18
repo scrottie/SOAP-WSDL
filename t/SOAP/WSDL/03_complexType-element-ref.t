@@ -12,14 +12,17 @@ use_ok(qw/SOAP::WSDL/);
 print "# SOAP::WSDL Version: $SOAP::WSDL::VERSION\n";
 
 my $path = File::Spec->rel2abs( dirname __FILE__ );
-
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 my $xml;
 my $soap;
 
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file://' . $path . '/../../acceptance/wsdl/03_complexType-element-ref.wsdl',
+	wsdl => 'file://' . $url . '/../../acceptance/wsdl/03_complexType-element-ref.wsdl',
     no_dispatch => 1,
 ), 'Instantiated object' );
 

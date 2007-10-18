@@ -9,6 +9,7 @@ our $VERSION = '2.00_17';
 sub call {
     my ($self, $method, $body, $header) = @_;
     if (not blessed $body) {
+        $body = {} if not defined $body; 
         my $class = $method->{ body }->{ parts }->[0];
         eval "require $class" || die $@;
         $body = $class->new($body); 
@@ -116,9 +117,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 303 $
+ $Rev: 323 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 303 2007-10-01 18:51:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
+ $Id: Base.pm 323 2007-10-17 15:23:05Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
  
 =cut
