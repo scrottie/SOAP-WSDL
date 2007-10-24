@@ -10,7 +10,7 @@ eval {
     import Test::XML;
 };
 
-use_ok qw/SOAP::WSDL::Serializer::SOAP11/;
+use_ok qw/SOAP::WSDL::Serializer::XSD/;
 
 my $opt = {
     readable => 1,
@@ -18,7 +18,7 @@ my $opt = {
     },
 };
 my $xml;
-ok( $xml = SOAP::WSDL::Serializer::SOAP11->serialize(
+ok( $xml = SOAP::WSDL::Serializer::XSD->serialize(
     undef, undef, $opt
     ),
     "serialize empty envelope"

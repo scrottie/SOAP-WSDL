@@ -1,11 +1,10 @@
 #!/usr/bin/perl -w
-# TODO rename to ::XSD
-package SOAP::WSDL::Serializer::SOAP11;
+package SOAP::WSDL::Serializer::XSD;
 use strict;
 use warnings;
 use Class::Std::Storable;
 
-our $VERSION='2.00_13';
+our $VERSION='2.00_21';
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 my $XML_INSTANCE_NS = 'http://www.w3.org/2001/XMLSchema-instance';

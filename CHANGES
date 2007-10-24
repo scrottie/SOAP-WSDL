@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_20
+Release notes for SOAP::WSDL 2.00_22
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -32,6 +32,34 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_22
+----
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1817697 ] Dots in service/port names lead to broken interfaces
+   * [ 1817699 ] Templates not found on all OS
+
+The following uncategorized improvements have been made:   
+
+   * Code cleanup. The XSD library has been cleaned up a bit. Should result 
+   in a minor speedup in serializing and deserializing XML messages,
+
+
+2.00_21 - not released
+----
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1810058 ] .tt's pod indexed on CPAN (again)
+   * [ 1809284 ] Rename SOAP::WSDL::Deserializer::SOAP11 to ::XSD
+
+The following uncategorized improvements have been made:   
+
+   * Requires at least perl 5.8.0. This is due to a bug in perls before - 
+   see http://aspn.activestate.com/ASPN/Mail/Message/perl5-porters/929746
 
 2.00_20
 ----

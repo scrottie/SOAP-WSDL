@@ -18,7 +18,29 @@ sub BUILD {
     $self->set_RECURSION(1);
     $self->set_INCLUDE_PATH( exists $arg_ref->{INCLUDE_PATH}
         ? $arg_ref->{INCLUDE_PATH}
-        : File::Spec->rel2abs( dirname __FILE__  ). '/XSD/'
+        : do { 
+            # ignore uninitialized warnings - File::Spec warns about 
+            # uninitialized values, probably because we have no filename
+            local $SIG{__WARN__} = sub {
+                return if ($_[0]=~m{\buninitialized\b});
+                CORE::warn @_;
+            };
+            
+            # makeup path for the OS we're running on
+            my ($volume, $dir, $file) = File::Spec->splitpath( 
+                File::Spec->rel2abs( dirname __FILE__  )
+            );
+            $dir = File::Spec->catdir($dir, $file, 'XSD');
+            # return path put together...
+            my $path = File::Spec->catpath( $volume, $dir );
+            
+            # Fixup path for windows - / works fine, \ does 
+            # not...
+            if ( eval { &Win32::BuildNumber } ) {
+                $path =~s{\\}{/}g;
+            }
+            $path;
+        }
     );
 }
 
@@ -64,6 +86,8 @@ sub generate_interface {
                     $service->get_name(), 
                     $port_name,
             ); 
+            print "Creating interface class $output\n";
+            
             $self->_process('Interface.tt', 
             {
                 service => $service,
@@ -96,6 +120,8 @@ sub generate_typemap {
             my $output = $arg_ref->{ output } 
                 ? $arg_ref->{ output } 
                 : $self->_generate_filename( $self->get_typemap_prefix(), $service->get_name() ); 
+
+            print "Creating typemap class $output\n";
             $self->_process('Typemap.tt', 
             {
                 service => $service,

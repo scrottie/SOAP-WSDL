@@ -8,6 +8,8 @@ my %REF;
 my %MIN_OCCURS;
 my %MAX_OCCURS;
 
+# TODO replace by generated methods?
+#
 # Class data - remember, we're the base class for a class factory or for
 # generated code...
 # use BLOCK: for scoping
@@ -48,6 +50,9 @@ sub start_tag {
     if ($_[1]->{qualified}) {
         push @attr_from, 'xmlns="' . $_[0]->get_xmlns . '"';
     }
+    
+    # do we need to check for name ? Element ref="" should have it's own 
+    # start_tag. If we don't need to check, we can speed things up
     return join q{ }, "<$_[1]->{ name }" , @attr_from , $ending if $_[1]->{ name };
     return join q{ }, "<$NAME{ ref $_[0]}" , @attr_from , $ending;
 }
@@ -61,6 +66,9 @@ sub start_tag {
 # return "</$opt->{name}>" if $opt->{name};
 # return "</"$NAME{$class}>";
 #
+# do we need to check for name ? Element ref="" should have it's own 
+# end_tag. If we don't need to check, we can speed things up by defining
+# end tag with () prototype - perl will inline it for us if we do...
 sub end_tag {
     return "</$_[1]->{name}>" if $_[1]->{name}; 
     return "</$NAME{ ref $_[0] }>";

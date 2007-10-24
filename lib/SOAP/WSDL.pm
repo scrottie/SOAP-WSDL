@@ -604,6 +604,11 @@ details.
 
 =over 
 
+=item * perl 5.8.0 or higher required
+
+SOAP::WSDL needs perl 5.8.0 or higher. This is due to a bug in perls 
+before - see http://aspn.activestate.com/ASPN/Mail/Message/perl5-porters/929746 for details. 
+
 =item * Apache SOAP datatypes are not supported
 
 You currently can't use SOAP::WSDL with Apache SOAP datatypes like map.
@@ -731,9 +736,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 308 $
+ $Rev: 332 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 308 2007-10-05 17:35:28Z kutterma $
+ $Id: WSDL.pm 332 2007-10-19 07:29:03Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
  
 =cut

@@ -42,7 +42,7 @@ sub _process :PROTECTED {
         %{ $arg_ref }
     }, 
     $output)
-        or die $tt->error();
+        or die $INCLUDE_PATH_of{ $ident }, '\\', $template, ' ', $tt->error();
     
 }
 

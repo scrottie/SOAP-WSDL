@@ -3,9 +3,6 @@ use strict;
 use warnings;
 use Class::Std::Storable;
 
-# my %xmlns_of :ATTR(:get<xmlns> :init_arg<xmlns> :default<()>);
-
-# sub set_xmlns { $xmlns_of{ ident $_[0] } = $_[1] };
 sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' };
 
 # use $_[1] for performance

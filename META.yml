@@ -1,9 +1,11 @@
 ---
 name: SOAP-WSDL
-version: 2.00_20
-author:
+version: 2.00_22
+author: []
 abstract: SOAP with WSDL support
 license: artistic
+resources:
+  license: http://opensource.org/licenses/artistic-license.php
 requires:
   Class::Std: v0.0.8
   Class::Std::Storable: 0
@@ -18,12 +20,7 @@ requires:
   Template: 0
   Term::ReadKey: 0
   XML::Parser::Expat: 0
-generated_by: Module::Build version 0.2808
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
-no_index:
-  namespace: SOAP::WSDL::Generator::Template::XSD
+  perl: 5.8.0
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
@@ -45,12 +42,12 @@ provides:
   SOAP::WSDL::Deserializer::Hash:
     file: lib/SOAP/WSDL/Deserializer/Hash.pm
     version: 2.00_17
-  SOAP::WSDL::Deserializer::SOAP11:
-    file: lib/SOAP/WSDL/Deserializer/SOAP11.pm
-    version: 2.00_17
   SOAP::WSDL::Deserializer::SOM:
     file: lib/SOAP/WSDL/Deserializer/SOM.pm
     version: 2.00_15
+  SOAP::WSDL::Deserializer::XSD:
+    file: lib/SOAP/WSDL/Deserializer/XSD.pm
+    version: 2.00_21
   SOAP::WSDL::Expat::Base:
     file: lib/SOAP/WSDL/Expat/Base.pm
   SOAP::WSDL::Expat::Message2Hash:
@@ -108,9 +105,9 @@ provides:
   SOAP::WSDL::SOAP::Typelib::Fault11:
     file: lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
     version: 2.00_17
-  SOAP::WSDL::Serializer::SOAP11:
-    file: lib/SOAP/WSDL/Serializer/SOAP11.pm
-    version: 2.00_13
+  SOAP::WSDL::Serializer::XSD:
+    file: lib/SOAP/WSDL/Serializer/XSD.pm
+    version: 2.00_21
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::Transport::HTTP:
@@ -132,7 +129,7 @@ provides:
     version: 2.00_17
   SOAP::WSDL::XSD::Element:
     file: lib/SOAP/WSDL/XSD/Element.pm
-    version: 2.00_17
+    version: 2.00_22
   SOAP::WSDL::XSD::Schema:
     file: lib/SOAP/WSDL/XSD/Schema.pm
   SOAP::WSDL::XSD::Schema::Builtin:
@@ -239,12 +236,16 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_16
+    version: 2.00_22
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
   SOAP::WSDL::XSD::Typelib::SimpleType:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
-resources:
-  license: http://opensource.org/licenses/artistic-license.php
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
+no_index:
+  directory: lib/SOAP/WSDL/Generator/Template/XSD/

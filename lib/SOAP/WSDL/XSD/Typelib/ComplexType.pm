@@ -9,7 +9,7 @@ use Class::Std::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_16';
+our $VERSION = '2.00_22';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
@@ -116,7 +116,8 @@ sub _factory {
                         :  $is_ref eq $type
                             ? $_[1]
                             : die croak "cannot use $is_ref reference as value for $name - $type required"
-                : $type->new({ value => $_[1] });                     
+                : $type->new({ value => $_[1] });
+            return;                     
         };
 
         *{ "$class\::add_$name" } = sub {
@@ -125,15 +126,20 @@ sub _factory {
                 if not defined $_[1];
             
             # first call
-            return $attribute_ref->{ $ident } = $_[1]
-                if not defined $attribute_ref->{ $ident };
-
-            # second call: listify previous value if it's no list
-            $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident } ]
-                if not ref $attribute_ref->{ $ident } eq 'ARRAY';
+            if (not defined $attribute_ref->{ $ident }) {
+                $attribute_ref->{ $ident } = $_[1];
+                return;
+            }
+                
+            if (not ref $attribute_ref->{ $ident } eq 'ARRAY') {
+                # second call: listify previous value if it's no list
+                $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident } ];
+                return;
+            }
 
             # second and following: add to list
-            return push @{ $attribute_ref->{ $ident } }, $_[1];                                          
+            push @{ $attribute_ref->{ $ident } }, $_[1];
+            return;                                          
         };
         
         *{ "$class\::$name" } = *{ "$class\::add_$name" };
@@ -175,7 +181,6 @@ sub _factory {
     # But what about choice, extension ?
     *{ "$class\::_serialize" } = sub {
         my $ident = ident $_[0];
-        # my $class = ref $_[0];
         # return concatenated return value of serialize call of all
         # elements retrieved from get_elements expanding list refs.
         # get_elements is inlined for performance.
@@ -210,14 +215,13 @@ sub _factory {
     };
 
     *{ "$class\::serialize" } = sub {
-            my ($self, $opt) = @_;
-            $opt ||= {};
+            $_[1] ||= {};   # maybe even replace by assigning a constant var
         
             # do we have a empty element ? 
-            return $self->start_tag({ %$opt, empty => 1 })
+            return $_[0]->start_tag({ %{ $_[1] }, empty => 1 })
                 if not defined $ELEMENTS_FROM{ $class } or not @{ $ELEMENTS_FROM{ $class } };
-            return join q{}, $self->start_tag($opt),
-                    $self->_serialize(), $self->end_tag();
+            return join q{}, $_[0]->start_tag($_[1]),
+                    $_[0]->_serialize(), $_[0]->end_tag();
     }
     
 }
@@ -377,9 +381,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 323 $
+ $Rev: 337 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 323 2007-10-17 15:23:05Z kutterma $
+ $Id: ComplexType.pm 337 2007-10-22 20:04:59Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
  
 =cut

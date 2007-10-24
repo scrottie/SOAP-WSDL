@@ -40,7 +40,7 @@ lib/SOAP/WSDL/Client.pm
 lib/SOAP/WSDL/Client/Base.pm
 lib/SOAP/WSDL/Definitions.pm
 lib/SOAP/WSDL/Deserializer/Hash.pm
-lib/SOAP/WSDL/Deserializer/SOAP11.pm
+lib/SOAP/WSDL/Deserializer/XSD.pm
 lib/SOAP/WSDL/Deserializer/SOM.pm
 lib/SOAP/WSDL/Expat/Base.pm
 lib/SOAP/WSDL/Expat/Message2Hash.pm
@@ -102,7 +102,7 @@ lib/SOAP/WSDL/OpMessage.pm
 lib/SOAP/WSDL/Part.pm
 lib/SOAP/WSDL/Port.pm
 lib/SOAP/WSDL/PortType.pm
-lib/SOAP/WSDL/Serializer/SOAP11.pm
+lib/SOAP/WSDL/Serializer/XSD.pm
 lib/SOAP/WSDL/Service.pm
 lib/SOAP/WSDL/SOAP/Address.pm
 lib/SOAP/WSDL/SOAP/Body.pm
@@ -314,3 +314,6 @@ t/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.t
 t/test.wsdl
 TEST_COVERAGE
 TODO
+
+SOAP-WSDL-2.00_21.ppd
+SOAP-WSDL-2.00_21.zip

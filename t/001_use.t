@@ -7,8 +7,8 @@ use lib '../lib';
 my @modules = qw(
     SOAP::WSDL
     SOAP::WSDL::Client
-    SOAP::WSDL::Serializer::SOAP11
-    SOAP::WSDL::Deserializer::SOAP11
+    SOAP::WSDL::Serializer::XSD
+    SOAP::WSDL::Deserializer::XSD
     SOAP::WSDL::Transport::HTTP
     SOAP::WSDL::Definitions
     SOAP::WSDL::Message

@@ -1,11 +1,11 @@
-package SOAP::WSDL::Deserializer::SOAP11;
+package SOAP::WSDL::Deserializer::XSD;
 use strict;
 use warnings;
 use Class::Std::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::MessageParser;
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_21';
 
 my %class_resolver_of :ATTR(:name<class_resolver> :default<()>);
 

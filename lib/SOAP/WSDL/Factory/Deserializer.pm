@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 my %DESERIALIZER = (
-    '1.1' => 'SOAP::WSDL::Deserializer::SOAP11',
+    '1.1' => 'SOAP::WSDL::Deserializer::XSD',
 );
 
 # class method
@@ -64,7 +64,7 @@ SOAP::WSDL::Deserializer tries to load one of the following classes:
 
 =back
 
-By default, L<SOAP::WSDL::Deserializer::SOAP11|SOAP::WSDL::Deserializer::SOAP11> 
+By default, L<SOAP::WSDL::Deserializer::XSD|SOAP::WSDL::Deserializer::XSD> 
 is registered for SOAP1.1 messages.
 
 =head1 METHODS

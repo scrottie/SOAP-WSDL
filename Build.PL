@@ -4,11 +4,15 @@ $build = Module::Build->new(
 	create_makefile_pl => 'passthrough',
 	dist_abstract      => 'SOAP with WSDL support',
 	dist_name          => 'SOAP-WSDL',
-	dist_version       => '2.00_20',
+	dist_version       => '2.00_22',
 	module_name        => 'SOAP::WSDL',
 	license            => 'artistic',
 	requires           => {
-		'Class::Std'              => q/v0.0.8/,
+        # 5.6.x is way too buggy and has no unicode support 
+        # for us. SOAP-WSDL relies on unicode (WS-I demands it)
+        # and triggers several 5.6 bugs...
+		'perl'                    => '5.8.0',
+        'Class::Std'              => q/v0.0.8/,
 		'Class::Std::Storable'    => 0,
         'Data::Dumper'            => 0,
 		'Date::Parse'             => 0,
@@ -42,7 +46,7 @@ $build = Module::Build->new(
 	recursive_test_files => 1,
 	meta_add => {
 	    no_index => {
-	        namespace => 'SOAP::WSDL::Generator::Template::XSD',
+	        directory => 'lib/SOAP/WSDL/Generator/Template/XSD/',
 	    },
 	}
 );

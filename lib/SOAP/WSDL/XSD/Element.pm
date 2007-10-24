@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_22';
 
 my %annotation_of   :ATTR(:name<annotation> :default<()>);
 my %simpleType_of   :ATTR(:name<simpleType> :default<()>);
