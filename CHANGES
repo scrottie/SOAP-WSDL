@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_22
+Release notes for SOAP::WSDL 2.00_23
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -32,6 +32,20 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_23
+---
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+
+   * [ 1826382 ] nillable elements not serialized as xsi:nil
+   * [ 1826337 ] Second element in complexType gets eaten up
+   * [ 1792348 ] 006_client.t requires SOAP::Lite (again)
+
+The following uncategorized improvements have been made:   
+
+   * Test for complexType containing element with atomic simpleType added
 
 2.00_22
 ----
@@ -201,7 +215,7 @@ tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
    * [ 1797678 ] Move Code generator from WSDL::Definitions to separate class
 
    * [ 1803330 ] Create one interface per port
-   SOAP::WSDL now creats one interface per port, not one per service.
+   SOAP::WSDL now creates one interface per port, not one per service.
 
 The following bugs have been fixed (the numbers in square brackets are the 
 tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):

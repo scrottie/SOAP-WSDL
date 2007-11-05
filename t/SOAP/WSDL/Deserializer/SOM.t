@@ -1,6 +1,6 @@
 use Test::More;
 use SOAP::Lite;
-eval { require SOAP::Lite } or do {
+eval { require SOAP::Lite; 1; } or do {
     plan skip_all => 'SOAP::Lite not available';
     exit 0;
 };

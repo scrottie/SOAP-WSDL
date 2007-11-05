@@ -1,4 +1,4 @@
-use Test::More tests => 30;
+use Test::More tests => 34;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -117,5 +117,16 @@ is $complexExtension->get_Test1(), 'test1';
 is $complexExtension->get_Test2(), 'test2';
 is $complexExtension->get_Test3(), 'test3';
 
+
+ok eval { require MyTypes::testComplexTypeElementAtomicSimpleType; };
+my $ct_east = MyTypes::testComplexTypeElementAtomicSimpleType->new({
+    testString => 'Just some test',
+    testAtomicSimpleTypeElement => 42,
+});
+
+is $ct_east->get_testAtomicSimpleTypeElement, 42;
+is $ct_east->get_testAtomicSimpleTypeElement->get_value(), 42;
+isa_ok($ct_east->get_testAtomicSimpleTypeElement, 
+    'MyTypes::testComplexTypeElementAtomicSimpleType::_testAtomicSimpleTypeElement');
 
 rmtree "$path/testlib";

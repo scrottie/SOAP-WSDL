@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 %DB::packages=(SOAP::WSDL::Expat::MessageParser => 1);
+%DB::packages=(SOAP::WSDL::Expat::MessageParser => 1);
 use strict;
 use warnings;
 use lib '../lib';
@@ -7,7 +8,7 @@ use lib 'lib';
 use lib '../t/lib';
 # use SOAP::WSDL::SAX::MessageHandler;
 
-use Benchmark;
+use Benchmark qw(cmpthese timethese);
 use SOAP::WSDL::Expat::MessageParser;
 use SOAP::WSDL::Expat::Message2Hash;
 use XML::Simple;
@@ -18,8 +19,9 @@ use MySimpleType;
 
 my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
-    <SOAP-ENV:Body><MyAtomicComplexTypeElement xmlns="urn:Test" >
-    <test>Test</test>
+    <SOAP-ENV:Body>
+    <MyAtomicComplexTypeElement xmlns="urn:Test" >
+    <test>
     <test2 >Test2</test2>
     <test2 >Test2</test2>
     <test2 >Test2</test2>
@@ -32,20 +34,11 @@ my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-insta
     <test2 >Test2</test2>
     <test2 >Test2</test2>
     <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
-    <test>Test</test>
+    <test2 >Test55</test2>
+    </test>
     </MyAtomicComplexTypeElement>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>};
+
 
 
 my $parser = SOAP::WSDL::Expat::MessageParser->new({
@@ -56,23 +49,61 @@ my $hash_parser = SOAP::WSDL::Expat::Message2Hash->new();
 
 $XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
+print "xml length: ${ \length $xml } bytes\n";
+
 my $libxml = XML::LibXML->new();
+$libxml->keep_blanks(0);
 my @data;
-timethese 10000, 
-{
-  'Hash (SOAP:WSDL)' => sub { push @data, $hash_parser->parse( $xml ) },
-  'XSD (SOAP::WSDL)' => sub { push @data, $parser->parse( $xml ) },
-  'XML::Simple (Hash)' => sub { push @data, XMLin $xml },
-#  'XML::LibXML (DOM)' => sub { push @data,  $libxml->parse_string( $xml ) },
+
+sub libxml_test { 
+        my $dom = $libxml->parse_string( $xml );
+        push @data, dom2hash( $dom->firstChild );
 };
 
-# use Test::More tests => 1;
-#is $parser->get_data(), q{<MyAtomicComplexTypeElement xmlns="urn:Test" >}
-#    . q{<test >Test</test><test2 >Test2</test2></MyAtomicComplexTypeElement>}
-#    , 'Content comparison';
+sub dom2hash {
+    for ($_[0]->childNodes) {  
+        if (exists $_[1]->{ $_->nodeName }) {
+            if (ref $_[1]->{ $_->nodeName } eq 'ARRAY') {
+                if ($_->nodeName eq '#text') {
+                    push @{ $_[1] } ,$_->textContent;
+                }
+                else {
+                    push @{ $_[1]->{ $_->nodeName } }, dom2hash( $_, {} );
+                }
+            }
+            else {
+                if ($_->nodeName eq '#text') {
+                    $_[1] = [ $_[1], $_->textContent() ];
+                }
+                else {
+                    $_[1]->{ $_->nodeName } = [ $_[1]->{ $_->nodeName } , 
+                        dom2hash( $_, {} ) ];
+                }
+            }
+        }
+        else {
+            if ($_->nodeName eq '#text') {
+                $_[1] = $_->textContent();
+            }
+            else {
+                $_[1]->{ $_->nodeName } = dom2hash( $_, {} );
+            }
+        }
+    }
+    return $_[1];
+}
 
-#$parser->class_resolver( 'FakeResolver2' );
+cmpthese 5000, 
+{
+  'SOAP::WSDL (Hash)' => sub { push @data, $hash_parser->parse( $xml ) },
+  'SOAP::WSDL (XSD)' => sub { push @data, $parser->parse( $xml ) },
+  'XML::Simple (Hash)' => sub { push @data, XMLin $xml },
+  'XML::LibXML (DOM)' => sub { push @data,  $libxml->parse_string( $xml ) },
+  'XML::LibXML (Hash)' => \&libxml_test,
+};
 
+
+# for (1..10000) { push @data, $parser->parse( $xml ) };
 
 # data classes reside in t/lib/Typelib/
 BEGIN {
@@ -80,8 +111,8 @@ BEGIN {
     {
         my %class_list = (
             'MyAtomicComplexTypeElement' => 'MyAtomicComplexTypeElement',
-            'MyAtomicComplexTypeElement/test' => 'MyTestElement',
-            'MyAtomicComplexTypeElement/test2' => 'MyTestElement2',
+            'MyAtomicComplexTypeElement/test' => 'MyAtomicComplexTypeElement',
+            'MyAtomicComplexTypeElement/test/test2' => 'MyTestElement2',
         );
 
         sub get_map { return \%class_list };

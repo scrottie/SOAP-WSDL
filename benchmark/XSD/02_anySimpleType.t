@@ -9,14 +9,13 @@ my $obj = SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new();
 timethese 10000, {
     'new' => sub { SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new() },
     'new + params' => sub { SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new({
-        xmlns => 'urn:Test',
         value => 'Teststring'
     }) },
-    'set_FOO' => sub { $obj->set_xmlns('Test') },
+    'set_FOO' => sub { $obj->set_value('Test') },
 };
 
 my $data;
 timethese 1000000, {
-    'set_FOO' => sub { $obj->set_xmlns('Test') },
-    'get_FOO' => sub { $data = $obj->get_xmlns() },
+    'set_FOO' => sub { $obj->set_value('Test') },
+    'get_FOO' => sub { $data = $obj->get_value() },
 };

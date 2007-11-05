@@ -239,6 +239,6 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 304 $
  $LastChangedBy: kutterma $
  $Id: Transport.pm 304 2007-10-02 20:07:21Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
  
 =cut

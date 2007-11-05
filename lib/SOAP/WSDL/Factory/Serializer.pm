@@ -141,6 +141,6 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 329 $
  $LastChangedBy: kutterma $
  $Id: Serializer.pm 329 2007-10-18 19:42:09Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

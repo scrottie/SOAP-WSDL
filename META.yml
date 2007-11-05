@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_22
+version: 2.00_23
 author: []
 abstract: SOAP with WSDL support
 license: artistic
@@ -236,9 +236,10 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_22
+    version: 2.00_23
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
+    version: 2.00_23
   SOAP::WSDL::XSD::Typelib::SimpleType:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:

@@ -9,7 +9,7 @@ use Class::Std::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_22';
+our $VERSION = '2.00_23';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
@@ -98,11 +98,11 @@ sub _factory {
         *{ "$class\::set_$name" } = sub  {
             my $is_ref = ref $_[1];
             $attribute_ref->{ ident $_[0] } = ($is_ref) 
-                ? $is_ref eq 'ARRAY' 
+                ? ($is_ref eq 'ARRAY') 
                     ? $is_list                             # remembered from outside closure 
-                        ? $type->new({ value => $_[1] })   # list element - can take list ref as value
-                        : [ map {                          
-                            ref $_ 
+                        ? $type->new({ value => $_[1] })   # it's a list element - can take list ref as value
+                        : [ map {                          # it's not a list element - set value to list of objects
+                            ref $_        
                               ? ref $_ eq 'HASH'
                                   ? $type->new($_)
                                   : ref $_ eq $type
@@ -113,9 +113,13 @@ sub _factory {
                          ]
                     : $is_ref eq 'HASH' 
                         ?  $type->new( $_[1] )
-                        :  $is_ref eq $type
-                            ? $_[1]
+
+                        # neither ARRAY nor HASH - probably an object...
+                        :  ($is_ref eq $type)               # of required type ? ->isa would be a better test...
+                            ? $_[1]                         # use it
                             : die croak "cannot use $is_ref reference as value for $name - $type required"
+
+                # not $is_ref
                 : $type->new({ value => $_[1] });
             return;                     
         };
@@ -126,14 +130,15 @@ sub _factory {
                 if not defined $_[1];
             
             # first call
-            if (not defined $attribute_ref->{ $ident }) {
+            # test for existance, not for definedness
+            if (not exists $attribute_ref->{ $ident }) {
                 $attribute_ref->{ $ident } = $_[1];
                 return;
             }
                 
             if (not ref $attribute_ref->{ $ident } eq 'ARRAY') {
-                # second call: listify previous value if it's no list
-                $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident } ];
+                # second call: listify previous value if it's no list and add current
+                $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident }, $_[1] ];
                 return;
             }
 
@@ -142,6 +147,8 @@ sub _factory {
             return;                                          
         };
         
+        # TODO: remove this alias - we don't use it, and it's pretty much 
+        # misleading...
         *{ "$class\::$name" } = *{ "$class\::add_$name" };
     }
 
@@ -381,10 +388,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 337 $
+ $Rev: 346 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 337 2007-10-22 20:04:59Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
+ $Id: ComplexType.pm 346 2007-11-05 21:38:56Z kutterma $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
  
 =cut
 

@@ -6,17 +6,20 @@ use SOAP::WSDL::XSD::Typelib::Builtin::string;
 
 my $obj = SOAP::WSDL::XSD::Typelib::Builtin::string->new();
 
-timethese 10000, {
+timethese 20000, {
     'new' => sub { SOAP::WSDL::XSD::Typelib::Builtin::string->new() },
     'new + params' => sub { SOAP::WSDL::XSD::Typelib::Builtin::string->new({
-        xmlns => 'urn:Test',
         value => 'Teststring'
     }) },
-    'set_FOO' => sub { $obj->set_xmlns('Test') },
+};
+
+$obj->set_value('Foobar');
+timethese 20000, {
+    serialize => sub { $obj->serialize() }
 };
 
 my $data;
 timethese 1000000, {
-    'set_FOO' => sub { $obj->set_xmlns('Test') },
-    'get_FOO' => sub { $data = $obj->get_xmlns() },
+    'set_FOO' => sub { $obj->set_value('Test') },
+    'get_FOO' => sub { $data = $obj->get_value() },
 };

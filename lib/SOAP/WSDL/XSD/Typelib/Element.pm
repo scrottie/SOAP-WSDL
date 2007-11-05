@@ -2,6 +2,8 @@
 package SOAP::WSDL::XSD::Typelib::Element;
 use strict;
 
+our $VERSION = '2.00_23';
+
 my %NAME;
 my %NILLABLE;
 my %REF;
@@ -43,7 +45,7 @@ sub start_tag {
     my @attr_from = ();
     
     if ($_[1]->{ nil }) {
-        return q{} if not $NILLABLE{ ref $_[1] };
+        return q{} if not $NILLABLE{ ref $_[0] };
         push @attr_from, 'xsi:nil="true"';
         $ending = '/>';
     }

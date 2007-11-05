@@ -314,6 +314,3 @@ t/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.t
 t/test.wsdl
 TEST_COVERAGE
 TODO
-
-SOAP-WSDL-2.00_21.ppd
-SOAP-WSDL-2.00_21.zip

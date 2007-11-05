@@ -90,7 +90,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 288 $
  $LastChangedBy: kutterma $
  $Id: HTTP.pm 288 2007-09-29 19:34:20Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
  
 =cut
 

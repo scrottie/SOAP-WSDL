@@ -35,8 +35,8 @@ sub serialize {
     my ($self, $opt) = @_;
     my $ident = ident $self;
     $opt ||= {};
-    my $value = $self->get_value();
-    return $self->start_tag({ %$opt, nil => 1})
+    my $value = $self->get_value();;
+    return $self->start_tag({ %{ $opt }, nil => 1})
         if not defined $value;
 
     # HTML::Entities does the same - and more, thus it's around 1/3 slower...
