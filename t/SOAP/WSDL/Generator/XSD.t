@@ -1,4 +1,4 @@
-use Test::More tests => 34;
+use Test::More tests => 37;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -40,9 +40,10 @@ $generator->set_typemap_prefix('MyTypemaps');
 $generator->set_interface_prefix('MyInterfaces');
 
 $generator->set_output(undef);
-$generator->generate_typelib();
-$generator->generate_typemap();
-$generator->generate_interface();
+$generator->generate();
+#$generator->generate_typelib();
+#$generator->generate_typemap();
+#$generator->generate_interface();
 
 eval "use lib '$path/testlib'";
 use_ok qw( MyInterfaces::testService::testPort );
@@ -122,11 +123,19 @@ ok eval { require MyTypes::testComplexTypeElementAtomicSimpleType; };
 my $ct_east = MyTypes::testComplexTypeElementAtomicSimpleType->new({
     testString => 'Just some test',
     testAtomicSimpleTypeElement => 42,
+    testAtomicSimpleTypeElement2 => 23,
 });
 
 is $ct_east->get_testAtomicSimpleTypeElement, 42;
 is $ct_east->get_testAtomicSimpleTypeElement->get_value(), 42;
 isa_ok($ct_east->get_testAtomicSimpleTypeElement, 
     'MyTypes::testComplexTypeElementAtomicSimpleType::_testAtomicSimpleTypeElement');
+
+
+is $ct_east->get_testAtomicSimpleTypeElement2, 23;
+is $ct_east->get_testAtomicSimpleTypeElement2->get_value(), 23;
+isa_ok($ct_east->get_testAtomicSimpleTypeElement2, 
+    'MyTypes::testComplexTypeElementAtomicSimpleType::_testAtomicSimpleTypeElement2');
+
 
 rmtree "$path/testlib";

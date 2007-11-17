@@ -1,8 +1,8 @@
 [% IF (complexType.get_variety == 'restriction');
-	INCLUDE complexType/restriction.tt(complexType = complexType);
+    INCLUDE complexType/restriction.tt(complexType = complexType);
 ELSIF (complexType.get_variety == 'sequence');
-	INCLUDE complexType/extension.tt(complexType = complexType);
+    INCLUDE complexType/extension.tt(complexType = complexType);
 ELSE;
-	THROW UNKNOWN, "unknown variety ${ complexType.get_variety }";
+    THROW UNKNOWN, "unknown variety ${ complexType.get_variety }";
 END;
 %]

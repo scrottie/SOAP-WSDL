@@ -61,10 +61,10 @@ sub serialize {
     my $value = shift;
     my $opt = shift;
     my $ident = ident $self;
-    
+
     $opt->{ attributes } ||= [];
     $opt->{ indent } ||= q{};
-      
+
     return $self->_serialize_single($name, $value , $opt)
       if ( $flavor_of{ $ident } eq 'restriction'
         or $flavor_of{ $ident } eq 'union'
@@ -81,7 +81,7 @@ sub serialize {
 sub _serialize_single {
     my ($self, $name, $value, $opt) = @_;
     my $xml = '';
-    $xml .= $opt->{ indent } if ($opt->{ readable });	# add indentation
+    $xml .= $opt->{ indent } if ($opt->{ readable });       # add indentation
     $xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
     if ( $opt->{ autotype }) {
         my $ns = $self->get_targetNamespace();
@@ -89,10 +89,10 @@ sub _serialize_single {
            || die 'No prefix found for namespace '. $ns;
         $xml .= ' type="' . $prefix . ':' . $self->get_name() .'"';
     }
-    
+
     # nillabel ?
     return $xml .'/>' if not defined $value;
-    
+
     $xml .= join q{}, '>' , $value , '</' , $name , '>';
     $xml .= "\n" if ($opt->{ readable });
     return $xml;

@@ -9,9 +9,9 @@ BEGIN {
     no warnings qw(redefine);
     no strict qw(refs);
 
-    # Yes, I know it's ugly - but this is the fastest constructor to write 
+    # Yes, I know it's ugly - but this is the fastest constructor to write
     # for Class::Std-Style inside out objects..
-    *{ __PACKAGE__ . '::new' } = sub {   
+    *{ __PACKAGE__ . '::new' } = sub {
         my $self = bless \do { my $foo } , shift;
         if (@_) {
             $self->set_value( $_[0]->{ value } )

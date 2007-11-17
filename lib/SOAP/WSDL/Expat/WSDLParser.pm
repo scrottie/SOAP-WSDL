@@ -11,12 +11,12 @@ sub _initialize {
     # init object data
     $self->{ parser } = $parser;
     delete $self->{ data };
-    
+
     # setup local variables for keeping temp data
     my $characters = undef;
     my $current = undef;
     my $list = [];        # node list
-   
+
     # TODO skip non-XML Schema namespace tags
     $parser->setHandlers(
         Start => sub {
@@ -33,21 +33,21 @@ sub _initialize {
             if ($action->{ type } eq 'CLASS') {
                 eval "require $action->{ class }";
                 croak $@ if ($@);
-    
+
                 my $obj = $action->{ class }->new({ parent => $current })
                   ->init( _fixup_attrs( $parser, %attrs ) );
-    
+
                 if ($current) {
                     # inherit namespace, but don't override
                     $obj->set_targetNamespace( $current->get_targetNamespace() )
                         if not $obj->get_targetNamespace();
-    
+
                     # push on parent's element/type list
                     my $method = "push_$localname";
 
                     no strict qw(refs);
                     $current->$method( $obj );
-        
+
                     # remember element for stepping back
                     push @{ $list }, $current;
                 }
@@ -62,7 +62,7 @@ sub _initialize {
             }
             elsif ($action->{ type } eq 'METHOD') {
                 my $method = $action->{ method } || $localname;
-       
+
                 no strict qw(refs);
                 # call method with
                 # - default value ($action->{ value } if defined,
@@ -74,26 +74,26 @@ sub _initialize {
                     ? ref $action->{ value }
                         ? @{ $action->{ value } }
                         : ($action->{ value })
-                    : _fixup_attrs($parser, %attrs) 
+                    : _fixup_attrs($parser, %attrs)
                 );
             }
-            
+
             return;
         },
-        
+
         Char => sub { $characters .= $_[1]; return;  },
-        
-        End => sub {        
+
+        End => sub {
             my ($parser, $localname) = @_;
-        
+
             my $action = SOAP::WSDL::TypeLookup->lookup(
                 $parser->namespace( $localname ),
                 $localname
             ) || {};
-        
+
             return if not ($action->{ type });
-            if ( $action->{ type } eq 'CLASS' )	{
-        	   $current = pop @{ $list };
+            if ( $action->{ type } eq 'CLASS' ) {
+               $current = pop @{ $list };
             }
             elsif ($action->{ type } eq 'CONTENT' ) {
                 my $method = $action->{ method };
@@ -114,24 +114,24 @@ sub _initialize {
 # make attrs SAX style
 sub _fixup_attrs {
     my ($parser, %attrs_of) = @_;
-    
-    my @attrs_from = map { $_ = 
+
+    my @attrs_from = map { $_ =
         {
-            Name => $_, 
-            Value => $attrs_of{ $_ }, 
-            LocalName => $_ 
-        } 
+            Name => $_,
+            Value => $attrs_of{ $_ },
+            LocalName => $_
+        }
     } keys %attrs_of;
 
-    # add xmlns: attrs. expat eats them.  
-    push @attrs_from, map { 
-        # ignore xmlns=FOO namespaces - must be XML schema 
+    # add xmlns: attrs. expat eats them.
+    push @attrs_from, map {
+        # ignore xmlns=FOO namespaces - must be XML schema
         # Other nodes should be ignored somewhere else
         ($_ eq '#default')
-        ? () 
+        ? ()
         :
-        { 
-            Name => "xmlns:$_", 
+        {
+            Name => "xmlns:$_",
             Value => $parser->expand_ns_prefix( $_ ),
             LocalName => $_
         }

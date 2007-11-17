@@ -1,8 +1,8 @@
 [% IF (base=complexType.get_base);
-	base_name=complexType.expand(base);
+    base_name=complexType.expand(base);
 -%]
-use base qw([% type_prefix %]::[% base_name.1.replace('\.', '::') %]);	
-[%	
+use base qw([% type_prefix %]::[% base_name.1.replace('\.', '::') %]);
+[%
 ELSE;
-	THROW NOT_IMPLEMENTED, "restriction without base not supported";
+    THROW NOT_IMPLEMENTED, "restriction without base not supported";
 END %]

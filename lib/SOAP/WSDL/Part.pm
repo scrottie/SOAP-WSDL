@@ -22,11 +22,11 @@ sub serialize
     if ($item_name = $self->get_type() ) {
         # resolve type
         my ($prefix, $localname) = split /:/ , $item_name, 2;
-        my $type = $typelib->find_type( $ns_map{ $prefix }, $localname	)
+        my $type = $typelib->find_type( $ns_map{ $prefix }, $localname)
           or die "type $item_name , $ns_map{ $prefix } not found";
-          
+
         my $name = $self->get_name();
-	   return $type->serialize( $name, $data->{ $name }, $opt );
+        return $type->serialize( $name, $data->{ $name }, $opt );
     }
     elsif ( $item_name = $self->get_element() ) {
         my ($prefix, $localname) = split /:/ , $item_name, 2;

@@ -15,7 +15,7 @@ my %attributes_of :ATTR();
 # Function factory - we could be writing this method for all %attribute
 # keys, too, but that's just C&P (eehm, Copy & Paste...)
 foreach my $method(keys %attributes_of ) {
-    no strict qw/refs/;
+    no strict qw(refs);             ## no critic ProhibitNoStrict
 
     # ... btw, we mean this method here...
     *{ "find_$method" } = sub {

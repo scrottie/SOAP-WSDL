@@ -16,12 +16,12 @@ my %SOAP_LITE_TRANSPORT_OF = (
     mailto => 'SOAP::Transport::MAILTO',
     'local' => 'SOAP::Transport::LOCAL',
     jabber => 'SOAP::Transport::JABBER',
-    mq => 'SOAP::Transport::MQ',        
+    mq => 'SOAP::Transport::MQ',
 );
 
 my %SOAP_WSDL_TRANSPORT_OF = (
     http => 'SOAP::WSDL::Transport::HTTP',
-    https => 'SOAP::WSDL::Transport::HTTP',   
+    https => 'SOAP::WSDL::Transport::HTTP',
 );
 
 # class methods only
@@ -35,16 +35,16 @@ sub get_transport {
     my ($class, $scheme, %attrs) = @_;
 
     $scheme =~s{ \A ([^\:]+) \: .+ }{$1}smx;
-       
+
     if ($registered_transport_of{ $scheme }) {
         eval "require $registered_transport_of{ $scheme }"
             or die "Cannot load transport class $registered_transport_of{ $scheme } : $@";
-        
-        # try "foo::Client" class first - SOAP::Tranport always requires 
+
+        # try "foo::Client" class first - SOAP::Tranport always requires
         # a package withoug the ::Client appended, and then
         # instantiates a ::Client object...
         # ... pretty weird ...
-        # ... must be from some time when the max number of files was a 
+        # ... must be from some time when the max number of files was a
         # sparse resource ...
         # ... but we've decided to mimic SOAP::Lite...
 
@@ -68,7 +68,7 @@ sub get_transport {
     }
 
     if (exists $SOAP_WSDL_TRANSPORT_OF{ $scheme }) {
-        eval "require $SOAP_WSDL_TRANSPORT_OF{ $scheme }" 
+        eval "require $SOAP_WSDL_TRANSPORT_OF{ $scheme }"
             or die "Cannot load transport class $SOAP_WSDL_TRANSPORT_OF{ $scheme } : $@";
         return $SOAP_WSDL_TRANSPORT_OF{ $scheme }->new( %attrs );
     }
@@ -100,14 +100,14 @@ SOAP::WSDL::Factory::Transport - Factory for retrieving transport objects
  
 =head1 DESCRIPTION
 
-SOAP::WSDL::Transport serves as factory for retrieving transport objects for 
+SOAP::WSDL::Transport serves as factory for retrieving transport objects for
 SOAP::WSDL.
 
 The actual work is done by specific transport classes.
 
 SOAP::WSDL::Transport tries to load one of the following classes:
 
-=over 
+=over
 
 =item * the class registered for the scheme via register()
 
@@ -129,7 +129,7 @@ Globally registers a class for use as transport class.
 
  $trans->proxy('http://soap-wsdl.sourceforge.net');
 
-Sets the proxy (endpoint). 
+Sets the proxy (endpoint).
 
 Returns the transport for this protocol.
 
@@ -145,34 +145,34 @@ Gets the current transport object.
 
 =head2 Registering a transport class
 
-Transport classes must be registered with SOAP::WSDL::Factory::Transport. 
+Transport classes must be registered with SOAP::WSDL::Factory::Transport.
 
-This is done by executing the following code where $scheme is the URL scheme 
-the class should be used for, and $module is the class' module name. 
+This is done by executing the following code where $scheme is the URL scheme
+the class should be used for, and $module is the class' module name.
 
  SOAP::WSDL::Factory::Transport->register( $scheme, $module);
 
-To auto-register your transport class on loading, execute register() in your 
+To auto-register your transport class on loading, execute register() in your
 tranport class (see L<SYNOPSIS|SYNOPSIS> above).
 
-Multiple protocols ore multiple classes are registered by multiple calls to 
+Multiple protocols ore multiple classes are registered by multiple calls to
 register().
 
 =head2 Transport plugin package layout
 
-You may only use transport classes whose name is either 
+You may only use transport classes whose name is either
 the module name or the module name with '::Client' appended.
 
 =head2 Methods to implement
 
-Transport classes must implement the interface required for SOAP::Lite 
-transport classes (see L<SOAP::Lite::Transport> for details, 
+Transport classes must implement the interface required for SOAP::Lite
+transport classes (see L<SOAP::Lite::Transport> for details,
 L<SOAP::WSDL::Transport::HTTP|SOAP::WSDL::Transport::HTTP> for an example).
 
-To provide this interface, transport modules must implement the following 
+To provide this interface, transport modules must implement the following
 methods:
 
-=over 
+=over
 
 =item * new
 
@@ -198,12 +198,12 @@ Returns true after a send_receive was successful, false if it was not.
 
 =back
 
-SOAP::Lite requires transport modules to pack client and server 
+SOAP::Lite requires transport modules to pack client and server
 classes in one file, and to follow this naming scheme:
 
- Module name: 
+ Module name:
    "SOAP::Transport::" . uc($scheme)
-   
+ 
  Client class (additional package in module):
    "SOAP::Transport::" . uc($scheme) . "::Client"
  
@@ -214,20 +214,20 @@ SOAP::WSDL does not require you to follow these restrictions.
 
 There is only one restriction in SOAP::WSDL:
 
-You may only use transport classes whose name is either the module name or 
+You may only use transport classes whose name is either the module name or
 the module name with '::Client' appended.
 
-SOAP::WSDL will try to instantiate an object of your transport class with 
+SOAP::WSDL will try to instantiate an object of your transport class with
 '::Client' appended to allow using transport classes written for SOAP::Lite.
 
-This may lead to errors when a different module with the name of your 
+This may lead to errors when a different module with the name of your
 transport module suffixed with ::Client is also loaded.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR
@@ -236,9 +236,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 304 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 304 2007-10-02 20:07:21Z kutterma $
+ $Id: Transport.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
  
 =cut

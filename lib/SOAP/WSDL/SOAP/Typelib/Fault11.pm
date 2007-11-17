@@ -24,13 +24,13 @@ __PACKAGE__->_factory(
         faultcode => \%faultcode_of,
         faultstring => \%faultstring_of,
         faultactor => \%faultactor_of,
-        detail => \%detail_of,          
+        detail => \%detail_of,
     },
     {
         faultcode => 'SOAP::WSDL::XSD::Typelib::Builtin::QName',
         faultstring => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
         faultactor => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
-        detail => 'SOAP::WSDL::XSD::Typelib::Builtin::anyType',            
+        detail => 'SOAP::WSDL::XSD::Typelib::Builtin::anyType',
     }
 );
 
@@ -58,7 +58,7 @@ SOAP::WSDL::SOAP::Typelib::Fault11 - SOAP 1.1 Fault class
 
 Models a SOAP 1.1 Fault.
 
-SOAP::WSDL::SOAP::Typelib::Fault11 objects are false in boolean context 
+SOAP::WSDL::SOAP::Typelib::Fault11 objects are false in boolean context
 and serialize to XML on stringification.
 
 This means you can do something like:
@@ -88,15 +88,23 @@ Getter/setter for object's the faultactor property.
 
 Getter/setter for detail object's detail property.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2007 Martin Kutter.
+Copyright 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR
 
 Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 391 $
+ $LastChangedBy: kutterma $
+ $Id: Fault11.pm 391 2007-11-17 21:56:13Z kutterma $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
+
 =cut
+

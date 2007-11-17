@@ -2,8 +2,8 @@ package [% type_prefix %]::[% complexType.get_name %];
 use strict;
 use warnings;
 [% INCLUDE complexType/contentModel.tt %]
-[%# 
-# Don't include any perl source here - there may be sub-packages... 
+[%#
+# Don't include any perl source here - there may be sub-packages...
 #-%]
 
 1;
@@ -21,7 +21,7 @@ Perl data type class for the XML Schema defined complextype
 
 =head2 PROPERTIES
 
-The following properties may be accessed using get_PROPERTY / set_PROPERTY 
+The following properties may be accessed using get_PROPERTY / set_PROPERTY
 methods:
 
 [% FOREACH element = complexType.get_element -%]

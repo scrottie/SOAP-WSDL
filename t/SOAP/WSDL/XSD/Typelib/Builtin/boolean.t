@@ -1,4 +1,4 @@
-use Test::More tests => 18;
+use Test::More tests => 19;
 use strict;
 use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin::boolean;
@@ -46,6 +46,7 @@ is "$bool", 'false', 'stringification';
 ok $bool->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType'), 'inheritance';
 
 is $bool->serialize({ name => 'test'}), '<test >false</test >';
+is $bool->serialize(), 'false';
 
 $bool->delete_value();
 is "$bool", '', 'serialized undef to empty string';

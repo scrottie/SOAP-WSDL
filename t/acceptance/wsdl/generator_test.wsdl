@@ -182,6 +182,13 @@
 		        </xsd:restriction>
 		      </xsd:simpleType>
 		    </xsd:element>
+		    <xsd:element name="testAtomicSimpleTypeElement2" minOccurs="0">
+		      <xsd:simpleType>
+		        <xsd:restriction base="xsd:decimal">
+		          <xsd:minInclusive value="0"/>
+		        </xsd:restriction>
+		      </xsd:simpleType>
+		    </xsd:element>
 		  </xsd:sequence>
 		</xsd:complexType>
 		

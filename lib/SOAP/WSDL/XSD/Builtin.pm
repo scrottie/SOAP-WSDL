@@ -9,7 +9,7 @@ sub serialize {
     my $xml;
     $opt->{ indent } ||= "";
     $opt->{ attributes } ||= [];
-        
+
     $xml .= $opt->{ indent } if ($opt->{ readable });
     $xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
     if ( $opt->{ autotype }) {
@@ -20,7 +20,7 @@ sub serialize {
           . $self->get_name() . '"' if ($self->get_name() );
     }
 
-    if (defined $value)	{
+    if (defined $value) {
         $xml .= '>';
         $xml .= "$value";
         $xml .= '</' . $name . '>' ;

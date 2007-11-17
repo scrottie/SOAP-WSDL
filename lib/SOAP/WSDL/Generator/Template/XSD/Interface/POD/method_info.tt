@@ -1,7 +1,7 @@
-Method synopsis is displayed with hash refs as parameters. 
+Method synopsis is displayed with hash refs as parameters.
 
-The commented class names in the method's parameters denote that objects 
+The commented class names in the method's parameters denote that objects
 of the corresponding class can be passed instead of the marked hash ref.
 
-You may pass any combination of objects, hash and list refs to these 
+You may pass any combination of objects, hash and list refs to these
 methods, as long as you meet the structure.

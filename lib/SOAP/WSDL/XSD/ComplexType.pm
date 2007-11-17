@@ -53,9 +53,9 @@ sub set_extension {
 }
 
 sub init {
-	my $self = shift;
-	my @args = @_;
-	$self->SUPER::init( @args );
+    my $self = shift;
+    my @args = @_;
+    $self->SUPER::init( @args );
 }
 
 sub serialize {
@@ -70,12 +70,12 @@ sub serialize {
     if ( $opt->{ qualify } ) {
         $opt->{ attributes } = [ ' xmlns="' . $self->get_targetNamespace .'"' ];
         delete $opt->{ qualify };
-    }      
+    }
 
 
     $xml .= join q{ } , "<$name" , @{ $opt->{ attributes } };
     delete $opt->{ attributes };                                # don't propagate...
-    
+
     if ( $opt->{ autotype }) {
       my $ns = $self->get_targetNamespace();
       my $prefix = $opt->{ namespace }->{ $ns }
@@ -84,32 +84,31 @@ sub serialize {
         if ($self->get_name() );
     }
     $xml .= '>';
-    $xml .= "\n" if ( $opt->{ readable } );				# add linebreak
-    if ( ($flavor eq "sequence") or ($flavor eq "all") )
-    {
+    $xml .= "\n" if ( $opt->{ readable } );                 # add linebreak
+    if ( ($flavor eq "sequence") or ($flavor eq "all") ) {
         $opt->{ indent } .= "\t";
         for my $element (@{ $self->get_element() }) {
             # might be list - listify
             $value = [ $value ] if not ref $value eq 'ARRAY';
 
             for my $single_value (@{ $value }) {
-    		my $element_value;
-	       	if (blessed $single_value) {
+                my $element_value;
+                if (blessed $single_value) {
                     my $method = 'get_' . $element->get_name();
-		    $element_value = $single_value->$method();
+                    $element_value = $single_value->$method();
                 }
-    		else {
+                else {
                     $element_value = $single_value->{ $element->get_name() };
                 }
-    		$element_value = [ $element_value ]
+                $element_value = [ $element_value ]
                     if not ref $element_value eq 'ARRAY';
 
-    		$xml .= join q{}
-                  , map { $element->serialize( undef, $_, $opt ) }
-	              @{ $element_value };
+                $xml .= join q{}
+                    , map { $element->serialize( undef, $_, $opt ) }
+                       @{ $element_value };
             }
         }
-      $opt->{ indent } =~s/\t$//;
+        $opt->{ indent } =~s/\t$//;
     }
     else {
       die "sorry, we just handle all and sequence types yet...";

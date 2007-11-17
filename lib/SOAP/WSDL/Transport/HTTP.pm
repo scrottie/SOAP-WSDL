@@ -6,7 +6,7 @@ use base qw(LWP::UserAgent);
 SUBFACTORY: {
     no strict qw(refs);
     foreach my $method ( qw(code message status is_success) ) {
-        *{ $method } = sub { 
+        *{ $method } = sub {
             my $self = shift;
             return $self->{ $method } if not @_;
             return $self->{ $method } = shift;
@@ -19,8 +19,8 @@ sub send_receive {
     my ($envelope, $soap_action, $endpoint, $encoding, $content_type) =
         @parameters{qw(envelope action endpoint encoding content_type)};
 
-    $encoding = defined($encoding) 
-        ? 'utf8' 
+    $encoding = defined($encoding)
+        ? 'utf8'
         : lc($encoding);
 
     # what's this all about?
@@ -40,7 +40,7 @@ sub send_receive {
 
     # use bytes is lexically scoped
     my $bytelength = do { use bytes; length $envelope };
-    $envelope = pack('C0A*', $envelope) 
+    $envelope = pack('C0A*', $envelope)
         if length($envelope) != $bytelength;
 
     my $request = HTTP::Request->new( 'POST',
@@ -50,15 +50,15 @@ sub send_receive {
             'SOAPAction', $soap_action,
         ],
         $envelope );
-  
+
     my $response = $self->request( $request );
 
     $self->code( $response->code);
     $self->message( $response->message);
     $self->is_success($response->is_success);
     $self->status($response->status_line);
-    
-    return $response->content();    
+
+    return $response->content();
 }
 
 1;
@@ -71,14 +71,14 @@ SOAP::WSDL::Transport::HTTP - Fallback http(s) transport class
 
 =head1 DESCRIPTION
 
-Provides a thin transport class used by SOAP::WSDL::Transport when 
+Provides a thin transport class used by SOAP::WSDL::Transport when
 SOAP::Lite is not available.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright (c) 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR
@@ -87,9 +87,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 288 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: HTTP.pm 288 2007-09-29 19:34:20Z kutterma $
+ $Id: HTTP.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
  
 =cut

@@ -57,7 +57,7 @@ sub serialize {
 
     if ( $opt->{ qualify } ) {
         $opt->{ attributes } = [ ' xmlns="' . $self->get_targetNamespace .'"' ];
-    }      
+    }
 
 
     # set default and fixed - fixed overrides everything,
@@ -93,9 +93,9 @@ sub serialize {
     # lookup type
     my ($prefix, $localname) = split /:/ , $self->get_type();
     my $ns = $ns_map{ $prefix };
-	$type = $typelib->find_type(
-		$ns, $localname
-	);
+    $type = $typelib->find_type(
+        $ns, $localname
+    );
 
     # safety check
     die "no type for $prefix:$localname $ns_map{$prefix}" if (not $type);
@@ -104,5 +104,4 @@ sub serialize {
 }
 
 1;
-
 

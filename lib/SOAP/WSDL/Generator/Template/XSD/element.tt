@@ -14,26 +14,26 @@ __PACKAGE__->__set_ref([% IF element.get_ref; %]'[% element.get_ref %]'[% END %]
 
 [%- IF (type = element.get_type); -%]
 use base qw(
-	SOAP::WSDL::XSD::Typelib::Element
-	[% INCLUDE _type_class.tt( type = type, node = element ) %]
+    SOAP::WSDL::XSD::Typelib::Element
+    [% INCLUDE _type_class.tt( type = type, node = element ) %]
 );
 [%- ELSIF (ref = element.get_ref); -%]
 # element ref="[% ref %]"
 use base qw(
-	[% element_prefix %]::[% ref.split(':').1 %]
+    [% element_prefix %]::[% ref.split(':').1 %]
 );
 [%- ELSIF (simpleType = element.first_simpleType) %]
-# atomic simpleType: <element><simpleType 
+# atomic simpleType: <element><simpleType
 use base qw(
-	SOAP::WSDL::XSD::Typelib::Element
+    SOAP::WSDL::XSD::Typelib::Element
 );
 [% INCLUDE simpleType/contentModel.tt %]
 [% ELSIF (complexType = element.first_complexType) %]
 use base qw(
-	SOAP::WSDL::XSD::Typelib::Element
-	SOAP::WSDL::XSD::Typelib::ComplexType
+    SOAP::WSDL::XSD::Typelib::Element
+    SOAP::WSDL::XSD::Typelib::ComplexType
 );
-[% INCLUDE complexType/contentModel.tt;		
+[% INCLUDE complexType/contentModel.tt;
 END %]
 
 

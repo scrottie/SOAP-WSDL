@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Generator;
 use strict;
 use warnings;
 
-our $VERSION='2.00_18';
+our $VERSION='2.00_24';
 
 my %GENERATOR = (
     'XSD' => 'SOAP::WSDL::Generator::Template::XSD',
@@ -19,13 +19,13 @@ sub get_generator {
 
     # sanity check
 #    die "no generator registered for generation method $args_of_ref->{ type }"
-#        
-    my $generator_class = (exists ($GENERATOR{ $args_of_ref->{ type } })) 
+#
+    my $generator_class = (exists ($GENERATOR{ $args_of_ref->{ type } }))
         ? $GENERATOR{ $args_of_ref->{ type } }
         : $args_of_ref->{ type };
 
     # load module
-    eval "require $generator_class" 
+    eval "require $generator_class"
         or die "Cannot load generator $generator_class", $@;
 
     return $generator_class->new();
@@ -55,7 +55,7 @@ SOAP::WSDL::Factory:Generator - Factory for retrieving generator objects
  
 =head1 DESCRIPTION
 
-SOAP::WSDL::Factory::Generator serves as factory for retrieving 
+SOAP::WSDL::Factory::Generator serves as factory for retrieving
 generator objects for SOAP::WSDL.
 
 The actual work is done by specific generator classes.
@@ -86,25 +86,25 @@ Returns an object of the generator class for this endpoint.
 
 Generator classes may register with SOAP::WSDL::Factory::Generator.
 
-Registering a generator class with SOAP::WSDL::Factory::Generator is done 
-by executing the following code where $version is the SOAP version the 
+Registering a generator class with SOAP::WSDL::Factory::Generator is done
+by executing the following code where $version is the SOAP version the
 class should be used for, and $class is the class name.
 
  SOAP::WSDL::Factory::Generator->register( $version, $class);
 
-To auto-register your transport class on loading, execute register() in 
+To auto-register your transport class on loading, execute register() in
 your generator class (see L<SYNOPSIS|SYNOPSIS> above).
 
 =head2 Generator package layout
 
-Generator modules must be named equal to the generator class they contain. 
+Generator modules must be named equal to the generator class they contain.
 There can only be one generator class per generator module.
 
 =head2 Methods to implement
 
 Generator classes must implement the following methods:
 
-=over 
+=over
 
 =item * new
 
@@ -116,7 +116,7 @@ Generate SOAP interface
 
 =back
 
-Generators may implements one or more of the following configuration 
+Generators may implements one or more of the following configuration
 methods. All of them are tried via can() by wsdl2perl.
 
 =over
@@ -151,12 +151,12 @@ Set user-defined typemap snippet
 
 =back
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2004-2007 Martin Kutter.
+Copyright 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under the same 
-terms as perl itself
+This file is part of SOAP-WSDL. You may distribte/modify it under
+the same terms as perl itself
 
 =head1 AUTHOR
 
@@ -164,9 +164,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 302 $
+ $Rev: 176 $
  $LastChangedBy: kutterma $
- $Id: Generator.pm 302 2007-09-30 19:25:25Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Generator.pm $
+ $Id: Serializer.pm 176 2007-08-31 15:28:29Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

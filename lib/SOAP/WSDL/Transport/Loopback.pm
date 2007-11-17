@@ -4,23 +4,23 @@ use warnings;
 use Class::Std::Storable;
 use SOAP::WSDL::Factory::Transport;
 
-our $VERSION = '2.00_17'; 
+our $VERSION = '2.00_17';
 
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );
 
-my %code_of :ATTR(:name<code>           :default<()>);
-my %status_of :ATTR(:name<status>       :default<()>);
-my %message_of :ATTR(:name<message>     :default<()>);
-my %is_success_of :ATTR(:name<is_success> :default<()>);
+my %code_of         :ATTR(:name<code>           :default<()>);
+my %status_of       :ATTR(:name<status>         :default<()>);
+my %message_of      :ATTR(:name<message>        :default<()>);
+my %is_success_of   :ATTR(:name<is_success>     :default<()>);
 
 {
     no warnings qw(redefine);
-    
+
     sub new {
         my $class = shift;
         return bless \my ($o), $class;
-    }    
+    }
 }
 
 # create methods normally inherited from SOAP::Client
@@ -53,18 +53,18 @@ SOAP::WSDL::Transport::Test - Loopback transport class for SOAP::WSDL
 
 =head1 DESCRIPTION
 
-SOAP::WSDL::Transport::Loopback is a loopback test transport backend for 
-SOAP::WSDL. 
+SOAP::WSDL::Transport::Loopback is a loopback test transport backend for
+SOAP::WSDL.
 
-When SOAP::WSDL::Transport::Loopback is used as transport backend, the 
-request is returned as response. No data ever goes over the wire.                                      
+When SOAP::WSDL::Transport::Loopback is used as transport backend, the
+request is returned as response. No data ever goes over the wire.
 This is particularly useful for testing SOAP::WSDL plugins and applications.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright (c) 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

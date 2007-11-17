@@ -2,7 +2,7 @@
 package SOAP::WSDL::XSD::Typelib::Element;
 use strict;
 
-our $VERSION = '2.00_23';
+our $VERSION = '2.00_24';
 
 my %NAME;
 my %NILLABLE;
@@ -27,11 +27,11 @@ BLOCK: {
     no strict qw(refs);
     while (my ($name, $value) = each %method_lookup ) {
         *{ "__set$name" } = sub {
-            my $class = ref $_[0] || $_[0];
+            my $class = ref $_[0] || $_[0] or die "Cannot call __set$name without parameter";
             $value->{ $class } = $_[1];
         };
         *{ "__get$name" } = sub {
-            my $class = ref $_[0] || $_[0];
+            my $class = ref $_[0] || $_[0] or die "Cannot call __get$name as function";
             return $value->{ $class };
         };
     }
@@ -43,7 +43,7 @@ sub start_tag {
     # my ($self, $opt, $value) = @_;
     my $ending = ($_[1]->{ empty }) ? '/>' : '>';
     my @attr_from = ();
-    
+
     if ($_[1]->{ nil }) {
         return q{} if not $NILLABLE{ ref $_[0] };
         push @attr_from, 'xsi:nil="true"';
@@ -52,15 +52,15 @@ sub start_tag {
     if ($_[1]->{qualified}) {
         push @attr_from, 'xmlns="' . $_[0]->get_xmlns . '"';
     }
-    
-    # do we need to check for name ? Element ref="" should have it's own 
+
+    # do we need to check for name ? Element ref="" should have it's own
     # start_tag. If we don't need to check, we can speed things up
     return join q{ }, "<$_[1]->{ name }" , @attr_from , $ending if $_[1]->{ name };
     return join q{ }, "<$NAME{ ref $_[0]}" , @attr_from , $ending;
 }
 
 # use $_[0] and $_[1] for speed.
-# 
+#
 # read it as:
 #
 # my ($self, $opt)  = @_;
@@ -68,11 +68,11 @@ sub start_tag {
 # return "</$opt->{name}>" if $opt->{name};
 # return "</"$NAME{$class}>";
 #
-# do we need to check for name ? Element ref="" should have it's own 
+# do we need to check for name ? Element ref="" should have it's own
 # end_tag. If we don't need to check, we can speed things up by defining
 # end tag with () prototype - perl will inline it for us if we do...
 sub end_tag {
-    return "</$_[1]->{name}>" if $_[1]->{name}; 
+    return "</$_[1]->{name}>" if $_[1]->{name};
     return "</$NAME{ ref $_[0] }>";
 }
 
@@ -120,10 +120,10 @@ Now we create this XML schema definition type class:
  __PACKAGE__->__set_name('MyElementName');
  __PACKAGE__->__set_nillable(0);
  __PACKAGE__->__set_ref(1);
- 
+
 =head1 NOTES
 
-=over 
+=over
 
 =item * type="Foo"
 
@@ -131,14 +131,14 @@ Implemented via inheritance.
 
 =item * ref="Foo"
 
-Implemented via inheritance, too. Calling 
+Implemented via inheritance, too. Calling
 
-__PACKAGE__->__set_ref(1) is highly encouraged, though it has no 
-effect yet - it will probably be needed for serialization to XML 
+__PACKAGE__->__set_ref(1) is highly encouraged, though it has no
+effect yet - it will probably be needed for serialization to XML
 Schema definitions some day.
 
 =back
- 
+
 =head1 BUGS AND LIMITATIONS
 
 =over

@@ -1,17 +1,17 @@
 
-[% FOREACH type = atomic_types; %]
+[% FOREACH type IN atomic_types; %]
 
-package [% type_prefix %]::[% complexType.get_name %]::_[% element.get_name %];
+package [% type_prefix %]::[% complexType.get_name %]::_[% type.key %];
 use strict;
 use warnings;
 {
-[% IF ( type.isa('SOAP::WSDL::XSD::ComplexType') );
-	INCLUDE complexType/contentModel.tt(complexType = type ); 
-ELSIF ( type.isa('SOAP::WSDL::XSD::SimpleType') );
-	INCLUDE simpleType/contentModel.tt(simpleType = type );
-ELSE; 
-	PERL; %] die $stash->{ type }->_DUMP [% END;
-	THROW UNKNOWN, "neither complex nor simple type - don't know what to do";
+[% IF ( type.value.isa('SOAP::WSDL::XSD::ComplexType') );
+    INCLUDE complexType/contentModel.tt(complexType = type.value );
+ELSIF ( type.value.isa('SOAP::WSDL::XSD::SimpleType') );
+    INCLUDE simpleType/contentModel.tt(simpleType = type.value );
+ELSE;
+    PERL; %] die $stash->{ type } [% END;
+    THROW UNKNOWN, "neither complex nor simple type - don't know what to do";
 END
  %]
 }

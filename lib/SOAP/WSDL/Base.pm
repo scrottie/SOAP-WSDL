@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Storable;
 use List::Util qw(first);
-use Carp qw(confess);
+use Carp qw(croak carp confess);
 
 our $VERSION='2.00_17';
 
@@ -18,6 +18,7 @@ sub DEMOLISH {
   my $self = shift;
   # delete upward references
   delete $parent_of{ ident $self };
+  return;
 }
 
 sub STORABLE_freeze_pre :CUMULATIVE {};
@@ -31,8 +32,8 @@ sub _accept {
     $class =~ s{ \A SOAP::WSDL:: }{}xms;
     $class =~ s{ (:? :: ) }{_}gxms;
     my $method = "visit_$class";
-    no strict qw(refs);
-    shift->$method( $self );
+    no strict qw(refs); ## no critic ProhibitNoStrict
+    return shift->$method( $self );
 }
 
 # unfortunately, AUTOMETHOD is SLOW.
@@ -46,13 +47,13 @@ sub AUTOMETHOD {
     if ($subname =~s{^push_}{}xms) {
         my $getter = "get_$subname";
         my $setter = "set_$subname";
-        ## Checking here is paranoid - will fail fatally if 
+        ## Checking here is paranoid - will fail fatally if
         ## there is no setter...
         ## And we would have to check getters, too.
         ## Maybe do it the Conway way via the Symbol table...
         ## ... can is way slow...
         return sub {
-            no strict qw(refs);
+            no strict qw(refs);                 ## no critic ProhibitNoStrict
             my $old_value = $self->$getter();
             # Listify if not a list ref
             $old_value = $old_value ? [ $old_value ] : [] if not ref $old_value;
@@ -85,13 +86,12 @@ sub AUTOMETHOD {
 }
 
 sub init {
-    my $self = shift;
-    my @args = @_;
+    my ($self, @args) = @_;
     foreach my $value (@args)
     {
-        die @args if (not defined ($value->{ Name }));
+        croak @args if (not defined ($value->{ Name }));
         if ($value->{ Name } =~m{^xmlns\:}xms) {
-            die $xmlns_of{ ident $self }
+            croak $xmlns_of{ ident $self }
                 if ref $xmlns_of{ ident $self } ne 'HASH';
 
             # add namespaces
@@ -115,16 +115,27 @@ sub init {
 
 sub expand {
     my ($self, , $qname) = @_;
-    my ($prefix, $localname) = split /:/, $qname;
+    my ($prefix, $localname) = split /:/x, $qname;
     my %ns_map = reverse %{ $self->get_xmlns() };
     return ($ns_map{ $prefix }, $localname) if ($ns_map{ $prefix });
-    
+
     if (my $parent = $self->get_parent()) {
         return $parent->expand($qname);
     }
     confess "unbound prefix $prefix found for $prefix:$localname";
 }
-sub _expand; 
+sub _expand;
 *_expand = \&expand;
 
 1;
+
+__END__
+
+# REPOSITORY INFORMATION
+#
+# $Rev: 332 $
+# $LastChangedBy: kutterma $
+# $Id: WSDL.pm 332 2007-10-19 07:29:03Z kutterma $
+# $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
+#
+

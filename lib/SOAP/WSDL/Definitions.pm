@@ -19,7 +19,7 @@ my %service_of  :ATTR(:name<service>    :default<()>);
 my %namespace_of  :ATTR(:name<namespace> :default<()>);
 
 # must be attr for Class::Std::Storable
-my %attributes_of :ATTR();      
+my %attributes_of :ATTR();
 %attributes_of = (
     binding => \%binding_of,
     message => \%message_of,
@@ -29,29 +29,20 @@ my %attributes_of :ATTR();
 
 # Function factory - we could be writing this method for all %attribute
 # keys, too, but that's just C&P (eehm, Copy & Paste...)
-BLOCK: {    
-  no strict qw/refs/;
+BLOCK: {
   foreach my $method(keys %attributes_of ) {
-  
+  no strict qw/refs/;               ## no critic ProhibitNoStrict
       *{ "find_$method" } = sub {
           my ($self, @args_from) = @_;
           @args_from = @{ $args_from[0] } if ref $args_from[0] eq 'ARRAY';
-          return first { 
-                  $_->get_targetNamespace() eq $args_from[0] 
-                  && $_->get_name() eq $args_from[1] 
+          return first {
+                  $_->get_targetNamespace() eq $args_from[0]
+                  && $_->get_name() eq $args_from[1]
               }
               @{ $attributes_of{ $method }->{ ident $self } };
       };
   }
 }
-
-#sub listify {
-#    my $data = shift;
-#    return if not defined $data;
-#    return [ $data ] if not ref $data;
-#    return [ $data ] if not ref $data eq 'ARRAY';
-#    return $data;
-#}
 
 1;
 
@@ -67,7 +58,7 @@ SOAP::WSDL::Definitions - model a WSDL E<gt>definitionsE<lt> element
 
 =head2 first_service get_service set_service push_service
 
-Accessors/Mutators for accessing / setting the E<gt>serviceE<lt> child 
+Accessors/Mutators for accessing / setting the E<gt>serviceE<lt> child
 element(s).
 
 =head2 find_service
@@ -78,7 +69,7 @@ Returns the service matching the namespace/localname pair passed as arguments.
 
 =head2 first_binding get_binding set_binding push_binding
 
-Accessors/Mutators for accessing / setting the E<gt>bindingE<lt> child 
+Accessors/Mutators for accessing / setting the E<gt>bindingE<lt> child
 element(s).
 
 =head2 find_service
@@ -89,7 +80,7 @@ Returns the binding matching the namespace/localname pair passed as arguments.
 
 =head2 first_portType get_portType set_portType push_portType
 
-Accessors/Mutators for accessing / setting the E<gt>portTypeE<lt> child 
+Accessors/Mutators for accessing / setting the E<gt>portTypeE<lt> child
 element(s).
 
 =head2 find_portType
@@ -100,7 +91,7 @@ Returns the portType matching the namespace/localname pair passed as arguments.
 
 =head2 first_message get_message set_message push_message
 
-Accessors/Mutators for accessing / setting the E<gt>messageE<lt> child 
+Accessors/Mutators for accessing / setting the E<gt>messageE<lt> child
 element(s).
 
 =head2 find_service
@@ -111,19 +102,26 @@ Returns the message matching the namespace/localname pair passed as arguments.
 
 =head2 first_types get_types set_types push_types
 
-Accessors/Mutators for accessing / setting the E<gt>typesE<lt> child 
+Accessors/Mutators for accessing / setting the E<gt>typesE<lt> child
 element(s).
 
-=head1 LICENSE
+=head1 LICENSE and COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR
 
 Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 391 $
+ $LastChangedBy: kutterma $
+ $Id: Definitions.pm 391 2007-11-17 21:56:13Z kutterma $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut
 

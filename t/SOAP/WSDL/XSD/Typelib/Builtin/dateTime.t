@@ -22,6 +22,10 @@ my %dates = (
     '30 Aug 2007' => '2007-08-30T00:00:00',
 );
 
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new();
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new({});
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new({ value => '2007-08-31T00:32:00' });
+
 while (my ($date, $converted) = each %dates ) {
 
     $obj = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new();

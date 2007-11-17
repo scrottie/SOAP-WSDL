@@ -2,11 +2,12 @@ package [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% p
 use strict;
 use warnings;
 use Class::Std::Storable;
+use Scalar::Util qw(blessed);
 use base qw(SOAP::WSDL::Client::Base);
 
 # only load if it hasn't been loaded before
 require [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]
-	if not [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]->can('get_class');
+    if not [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]->can('get_class');
 
 sub START {
     $_[0]->set_proxy('[% port.first_address.get_location %]') if not $_[2]->{proxy};
@@ -18,6 +19,7 @@ sub START {
         FOREACH operation = binding.get_operation;
 %][% INCLUDE Interface/Operation.tt %]
 [%
+
         END;
 %]
 
@@ -32,11 +34,22 @@ __END__
 =head1 NAME
 
 
-[% interface_prefix %]::[% service.get_name %]::[% port.get_name %] - SOAP Interface for the [% service.get_name %] Web Service
+[% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %] - SOAP Interface for the [% service.get_name %] Web Service
+
+=head1 SYNOPSIS
+
+ use [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %];
+ my $interface = [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %]->new();
+ 
+ my $response;
+[%      FOREACH operation = binding.get_operation;
+%] $response = $interface->[% operation.get_name %]();
+[%      END %]
+ 
 
 =head1 DESCRIPTION
 
-SOAP Interface for the [% service.get_name %] web service 
+SOAP Interface for the [% service.get_name %] web service
 located at [% port.first_address.get_location %].
 
 =head1 SERVICE [% service.get_name %]
@@ -64,7 +77,7 @@ All arguments are forwarded to L<SOAP::WSDL::Client|SOAP::WSDL::Client>.
 
 [%      FOREACH operation = binding.get_operation;
 %][% INCLUDE Interface/POD/Operation.tt %]
-[%		END %]	
+[%      END %]
 
 =head1 AUTHOR
 

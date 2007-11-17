@@ -17,6 +17,7 @@ my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-insta
     <SOAP-ENV:Body><MyAtomicComplexTypeElement xmlns="urn:Test" >
     <test>Test</test>
     <test2 >Test2</test2>
+    <foo><bar></bar><baz></baz></foo>
     </MyAtomicComplexTypeElement></SOAP-ENV:Body></SOAP-ENV:Envelope>};
 
 my $parser = SOAP::WSDL::Expat::MessageParser->new({
@@ -37,6 +38,9 @@ BEGIN {
             'MyAtomicComplexTypeElement' => 'MyAtomicComplexTypeElement',
             'MyAtomicComplexTypeElement/test' => 'MyTestElement',
             'MyAtomicComplexTypeElement/test2' => 'MyTestElement2',
+            'MyAtomicComplexTypeElement/foo' => '__SKIP__',
+            'MyAtomicComplexTypeElement/foo/bar' => 'MyFooElement',
+            'MyAtomicComplexTypeElement/foo/baz' => 'MyFooElement',
         );
 
         sub new { return bless {}, 'FakeResolver' };

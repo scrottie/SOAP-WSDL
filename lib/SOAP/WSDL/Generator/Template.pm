@@ -23,15 +23,15 @@ sub START {
 sub _process :PROTECTED {
     my ($self, $template, $arg_ref, $output) = @_;
     my $ident = ident $self;
-    my $tt = $tt_of{$ident} ||= Template->new( 
+    my $tt = $tt_of{$ident} ||= Template->new(
         DEBUG => 1,
         EVAL_PERL => $EVAL_PERL_of{ $ident },
         RECURSION => $RECURSION_of{ $ident },
         INCLUDE_PATH => $INCLUDE_PATH_of{ $ident },
         OUTPUT_PATH => $OUTPUT_PATH_of{ $ident },
     );
-    $tt->process( $template, 
-    { 
+    $tt->process( $template,
+    {
         definitions => $self->get_definitions,
         interface_prefix => $self->get_interface_prefix,
         type_prefix => $self->get_type_prefix,
@@ -40,10 +40,9 @@ sub _process :PROTECTED {
         element_prefix => $self->get_element_prefix,
         NO_POD => delete $arg_ref->{ NO_POD } ? 1 : 0 ,
         %{ $arg_ref }
-    }, 
+    },
     $output)
         or die $INCLUDE_PATH_of{ $ident }, '\\', $template, ' ', $tt->error();
-    
 }
 
 1;

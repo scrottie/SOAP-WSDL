@@ -25,13 +25,15 @@ SOAP::WSDL::XSD::Typelib::Builtin::list - list derivation base class
 =head1 DESCRIPTION
 
 To derive from some class by list, just inherit from list.
-  
-Make sure SOAP::WSDL::XSD::Typelib::Builtin::list is before the type 
+
+Make sure SOAP::WSDL::XSD::Typelib::Builtin::list is before the type
 to derive from in the @ISA list.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+Copyright (c) 2007 Martin Kutter. All rights reserved.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

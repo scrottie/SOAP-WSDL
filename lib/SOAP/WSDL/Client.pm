@@ -33,15 +33,15 @@ sub BUILD {
         $self->set_proxy( $attrs_of_ref->{ proxy } );
         delete $attrs_of_ref->{ proxy };
     }
-       
+    return;
 }
 
-sub get_proxy {
+sub get_proxy {                         ## no critic RequireArgUnpacking
     return $_[0]->get_transport();
 }
 
 sub set_proxy {
-    my ($self, @args_from) = @_; 
+    my ($self, @args_from) = @_;
     my $ident = ident $self;
 
     # remember old value to return it later - Class::Std does so, too
@@ -49,7 +49,7 @@ sub set_proxy {
 
     # accept both list and list ref args
     @args_from =  @{ $args_from[0] } if ref $args_from[0];
-    
+
     # remember endpoint
     $endpoint_of{ $ident } = $args_from[0];
 
@@ -66,22 +66,22 @@ sub set_soap_version {
     # remember old value to return it later - Class::Std does so, too
     my $soap_version = $soap_version_of{ $ident };
 
-    # re-setting the soap version invalidates the 
+    # re-setting the soap version invalidates the
     # serializer object
     delete $serializer_of{ $ident };
     delete $deserializer_of{ $ident };
-    
-    $soap_version_of{ $ident } = shift;   
-    
+
+    $soap_version_of{ $ident } = shift;
+
     return $soap_version;
 }
 
 # Mimic SOAP::Lite's behaviour for getter/setter routines
 SUBFACTORY: {
-    no strict qw(refs);
     for (qw(class_resolver no_dispatch outputxml proxy)) {
         my $setter = "set_$_";
         my $getter = "get_$_";
+        no strict qw(refs);     ## no critic ProhibitNoStrict
         *{ $_ } = sub { my $self = shift;
             if (@_) {
                 $self->$setter(@_);
@@ -96,33 +96,32 @@ sub call {
     my ($self, $method, @data_from) = @_;
     my $ident = ident $self;
 
-    # the only valid idiom for calling a method with both a header and a body 
+    # the only valid idiom for calling a method with both a header and a body
     # is
     # ->call($method, $body_ref, $header_ref);
     #
     # These other idioms all assume an empty header:
     # ->call($method, %body_of);    # %body_of is a hash
     # ->call($method, $body);       # $body is a scalar
-    my ($data, $header) = ref $data_from[0] 
-      ? ($data_from[0], $data_from[1] ) 
-      : (@data_from>1) 
+    my ($data, $header) = ref $data_from[0]
+      ? ($data_from[0], $data_from[1] )
+      : (@data_from>1)
           ? ( { @data_from }, undef )
           : ( $data_from[0], undef );
 
     # get operation name and soap_action
-    my ($operation, $soap_action) = (ref $method eq 'HASH') 
+    my ($operation, $soap_action) = (ref $method eq 'HASH')
         ? ( $method->{ operation }, $method->{ soap_action } )
-        : (blessed $data 
+        : (blessed $data
             && $data->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType'))
-            ? ( $method , (join '/', $data->get_xmlns(), $method) )
+            ? ( $method , (join q{/}, $data->get_xmlns(), $method) )
             : ( $method, q{} );
-    
     $serializer_of{ $ident } ||= SOAP::WSDL::Factory::Serializer->get_serializer({
         soap_version => $self->get_soap_version(),
     });
 
     my $envelope = $serializer_of{ $ident }->serialize({
-        method => $operation, 
+        method => $operation,
         body => $data,
         header => $header,
     });
@@ -131,7 +130,7 @@ sub call {
 
     # always quote SOAPAction header.
     # WS-I BP 1.0 R1109
-    if ($soap_action) { 
+    if ($soap_action) {
         $soap_action =~s{\A(:?"|')?}{"}xms;
         $soap_action =~s{(:?"|')?\Z}{"}xms;
     }
@@ -140,9 +139,9 @@ sub call {
     }
 
     # get response via transport layer.
-    # Normally, SOAP::Lite's transport layer is used, though users 
+    # Normally, SOAP::Lite's transport layer is used, though users
     # may provide their own.
-    my $transport = $self->get_transport(); 
+    my $transport = $self->get_transport();
     my $response = $transport->send_receive(
        endpoint => $self->get_endpoint(),
        content_type => $content_type_of{ $ident },
@@ -165,14 +164,14 @@ sub call {
     # Try deserializing response - there may be some,
     # even if transport did not succeed (got a 500 response)
     if ( $response ) {
-        my ($result_body, $result_header) = eval { 
-            $deserializer_of{ $ident }->deserialize( $response ); 
+        my ($result_body, $result_header) = eval {
+            $deserializer_of{ $ident }->deserialize( $response );
         };
         if (not $@) {
-            return wantarray 
+            return wantarray
                 ? ($result_body, $result_header)
                 : $result_body;
-        }       
+        }
         return $deserializer_of{ $ident }->generate_fault({
             code => 'soap:Server',
             role => 'urn:localhost',
@@ -206,12 +205,20 @@ __END__
 
 SOAP::WSDL::Client - SOAP::WSDL's SOAP Client
 
+=head1 SYNOPSIS
+
+ use SOAP::WSDL::Client;
+ my $soap = SOAP::WSDL::Client->new({
+     proxy => 'http://www.example.org/webservice/test'
+ });
+ $soap->call( \%method, $body, $header);
+
 =head1 METHODS
 
 =head2 call
 
  $soap->call( \%method, \@parts );
- 
+
 %method is a hash with the following keys:
 
  Name           Description
@@ -219,7 +226,7 @@ SOAP::WSDL::Client - SOAP::WSDL's SOAP Client
  operation      operation name
  soap_action    SOAPAction HTTP header to use
  style          Operation style. One of (document|rpc)
- use            SOAP body encoding. One of (literal|encoded) 
+ use            SOAP body encoding. One of (literal|encoded)
 
 The style and use keys have no influence yet.
 
@@ -229,11 +236,10 @@ For backward compatibility, call may also be called as below:
 
  $soap->call( $method, \@parts );
 
-In this case, $method is the SOAP operation name, and the SOAPAction header 
-is guessed from the first part's namespace and the operation name (which is 
-mostly correct, but may fail). Operation style and body encoding are assumed to 
+In this case, $method is the SOAP operation name, and the SOAPAction header
+is guessed from the first part's namespace and the operation name (which is
+mostly correct, but may fail). Operation style and body encoding are assumed to
 be document/literal
-
 
 =head2 Configuration methods
 
@@ -243,17 +249,17 @@ be document/literal
 
 When set, call() returns the raw XML of the SOAP Envelope.
 
-=head3 set_content_type 
+=head3 set_content_type
 
  $soap->set_content_type('application/xml; charset: utf8');
 
-Sets the content type and character encoding. 
+Sets the content type and character encoding.
 
-You probably should not use a character encoding different from utf8: 
-SOAP::WSDL::Client will not convert the request into a different encoding 
+You probably should not use a character encoding different from utf8:
+SOAP::WSDL::Client will not convert the request into a different encoding
 (yet).
 
-To leave out the encoding, just set the content type without appendet charset 
+To leave out the encoding, just set the content type without appendet charset
 like in
 
  text/xml
@@ -269,8 +275,8 @@ Default:
 
 When set to a true value, tracing (via warn) is enabled.
 
-When set to a code reference, this function will be called on every 
-trace call, making it really easy for you to set up log4perl logging 
+When set to a code reference, this function will be called on every
+trace call, making it really easy for you to set up log4perl logging
 or whatever you need.
 
 =head2 Features different from SOAP::Lite
@@ -336,28 +342,28 @@ SOAP::WSDL::Client and implementing something like
      $soap_wsdl_client->call( mySoapMethod, @_);
  }
 
-You may even do this in a class factory - see L<wsdl2perl.pl> for creating 
+You may even do this in a class factory - see L<wsdl2perl.pl> for creating
 such interfaces.
 
-=head1 Troubleshooting
+=head1 TROUBLESHOOTING
 
 =head2 Accessing protected web services
 
-Accessing protected web services is very specific for the transport 
+Accessing protected web services is very specific for the transport
 backend used.
 
-In general, you may pass additional arguments to the set_proxy method (or 
-a list ref of the web service address and any additional arguments to the 
+In general, you may pass additional arguments to the set_proxy method (or
+a list ref of the web service address and any additional arguments to the
 new method's I<proxy> argument).
 
 Refer to the appropriate transport module for documentation.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
+This file is part of SOAP-WSDL. You may distribute/modify it under the same
+terms as perl itself
 
 =head1 AUTHOR
 
@@ -365,10 +371,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 303 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 303 2007-10-01 18:51:50Z kutterma $
+ $Id: Client.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
- 
+
 =cut
 

@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_23
+Release notes for SOAP::WSDL 2.00_24
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -20,7 +20,8 @@ Features:
           the module's internals
     * Thorough test suite
           o SOAP::WSDL is heavily regression tested, with a test coverage of 
-          over 95%.
+          over 95% (excluding documentation - you wouldn't want to read 
+          through it all).
     * SOAP::Lite like look and feel
           o Where possible, SOAP::WSDL mimics SOAP::Lite's API to allow easy migrations
     * XML schema based class library for creating data objects
@@ -32,6 +33,28 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_24
+---
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1832998 ] Make interface methods complain when called as class method
+   * [ 1826833 ] listify all XSD type objects when called as @{}
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+   * #30685: Error in MessageParser when using __SKIP__ in typemap
+   * [ 1831398 ] Badd class names for atomic typed elements
+   * [ 1828240 ] POD Defects
+   * [ 1792348 ] 006_client.t requires SOAP::Lite (again)
+
+The following uncategorized improvements have been made:   
+
+   * The test suite has been improved
+   * Documentation has been improved
 
 2.00_23
 ---

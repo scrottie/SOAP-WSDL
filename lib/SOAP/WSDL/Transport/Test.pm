@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Storable;
 use SOAP::WSDL::Factory::Transport;
 
-our $VERSION = '2.00_14'; 
+our $VERSION = '2.00_14';
 
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );
@@ -32,27 +32,27 @@ sub send_receive {
     $filename =~s{ \A(:?'|") }{}xms;
     $filename =~s{ (:?'|")\z }{}xms;
     $filename =~s{ \A [^:]+ : (:? /{2})? }{}xms;
-    
+
     $filename = join '/', $base_dir_of{ ident $self }, "$filename.xml";
 
-    if (not -r $filename) { 
+    if (not -r $filename) {
         warn "cannot access $filename";
         $self->set_code( 500 );
         $self->set_message( "Failed" );
         $self->set_is_success(0);
         $self->set_status("500 Failed");
-        return;    
+        return;
     }
-    
+
     open my $fh, '<', $filename or die "cannot open $filename: $!";
     binmode $fh;
     my $response = <$fh>;
-    close $fh or die "cannot close $filename: $!"; 
-    
+    close $fh or die "cannot close $filename: $!";
+
     $self->set_code( 200 );
     $self->set_message( "OK" );
     $self->set_is_success(1);
-    $self->set_status("200 OK");    
+    $self->set_status("200 OK");
     return $response;
 }
 
@@ -73,21 +73,21 @@ SOAP::WSDL::Transport::Test - Test transport class for SOAP::WSDL
 
 =head1 DESCRIPTION
 
-SOAP::WSDL::Transport::Test is a file-based test transport backend for 
-SOAP::WSDL. 
+SOAP::WSDL::Transport::Test is a file-based test transport backend for
+SOAP::WSDL.
 
-When SOAP::WSDL::Transport::Test is used as transport backend, the reponse is 
-read from a XML file and the request message is discarded. This is particularly 
-useful for testing SOAP::WSDL plugins.
+When SOAP::WSDL::Transport::Test is used as transport backend, the reponse is
+read from a XML file and the request message is discarded. This is
+particularly useful for testing SOAP::WSDL plugins.
 
 =head2 Filename resolution
 
-SOAP::WSDL::Transport makes up the response XML file name from the SOAPAction 
+SOAP::WSDL::Transport makes up the response XML file name from the SOAPAction
 of the request. The following filename is used:
 
  base_dir / soap_action .xml
 
-The protocol scheme (e.g. http:) and two heading slashes (//) are stripped from 
+The protocol scheme (e.g. http:) and two heading slashes (//) are stripped from
 the soap_action.
 
 base_dir defaults to '.'
@@ -105,14 +105,14 @@ Examples:
 
 =head2 set_base_dir
 
-Sets the base directory SOAP::WSDL::Transport::Test should look for response 
+Sets the base directory SOAP::WSDL::Transport::Test should look for response
 files.
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright (c) 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

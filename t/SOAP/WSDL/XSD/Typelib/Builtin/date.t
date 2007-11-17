@@ -53,6 +53,12 @@ my %localized_date_of = (
 
 );
 
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::date->new();
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::date->new({});
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::date->new({
+    value => '2007-12-31'
+});
+
 while (my ($date, $converted) = each %localized_date_of ) {
 
     $obj = SOAP::WSDL::XSD::Typelib::Builtin::date->new();

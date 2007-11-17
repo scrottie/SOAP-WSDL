@@ -44,8 +44,8 @@ ok ($xml = $soap->call('testRef',
 	testElementRef => 'Test'
 ), 'Serialized (simple) element' );
 
-is $xml 
-    , q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ><SOAP-ENV:Body><testElementRef  xmlns="urn:Test">Test</testElementRef></SOAP-ENV:Body></SOAP-ENV:Envelope>}
+like $xml 
+    , qr{<testElementRef\s\sxmlns="urn:Test">Test</testElementRef></SOAP-ENV:Body></SOAP-ENV:Envelope>}
     , 'element ref serialization result'
 ;
 

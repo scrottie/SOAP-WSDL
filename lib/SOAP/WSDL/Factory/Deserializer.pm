@@ -2,6 +2,8 @@ package SOAP::WSDL::Factory::Deserializer;
 use strict;
 use warnings;
 
+our $VERSION = '2.00_24';
+
 my %DESERIALIZER = (
     '1.1' => 'SOAP::WSDL::Deserializer::XSD',
 );
@@ -20,7 +22,7 @@ sub get_deserializer {
         if not exists ($DESERIALIZER{ $args_of_ref->{ soap_version } });
 
     # load module
-    eval "require $DESERIALIZER{ $args_of_ref->{ soap_version } }" 
+    eval "require $DESERIALIZER{ $args_of_ref->{ soap_version } }"
         or die "Cannot load serializer $DESERIALIZER{ $args_of_ref->{ soap_version } }", $@;
 
     return $DESERIALIZER{ $args_of_ref->{ soap_version } }->new($args_of_ref);
@@ -51,7 +53,7 @@ SOAP::WSDL::Factory::Deserializer - Factory for retrieving Deserializer objects
  
 =head1 DESCRIPTION
 
-SOAP::WSDL::Factory::Deserializer serves as factory for retrieving 
+SOAP::WSDL::Factory::Deserializer serves as factory for retrieving
 deserializer objects for SOAP::WSDL.
 
 The actual work is done by specific deserializer classes.
@@ -64,7 +66,7 @@ SOAP::WSDL::Deserializer tries to load one of the following classes:
 
 =back
 
-By default, L<SOAP::WSDL::Deserializer::XSD|SOAP::WSDL::Deserializer::XSD> 
+By default, L<SOAP::WSDL::Deserializer::XSD|SOAP::WSDL::Deserializer::XSD>
 is registered for SOAP1.1 messages.
 
 =head1 METHODS
@@ -85,25 +87,25 @@ Deserializer classes may register with SOAP::WSDL::Factory::Deserializer.
 
 =head2 Registering a deserializer
 
-Registering a deserializer class with SOAP::WSDL::Factory::Deserializer 
-is done by executing the following code where $version is the SOAP version 
+Registering a deserializer class with SOAP::WSDL::Factory::Deserializer
+is done by executing the following code where $version is the SOAP version
 the class should be used for, and $class is the class name.
 
  SOAP::WSDL::Factory::Deserializer->register( $version, $class);
 
-To auto-register your transport class on loading, execute register() 
+To auto-register your transport class on loading, execute register()
 in your tranport class (see L<SYNOPSIS|SYNOPSIS> above).
 
 =head2 Deserializer package layout
 
-Deserializer modules must be named equal to the deserializer class they 
+Deserializer modules must be named equal to the deserializer class they
 contain. There can only be one deserializer class per deserializer module.
 
 =head2 Methods to implement
 
 Deserializer classes must implement the following methods:
 
-=over 
+=over
 
 =item * new
 
@@ -111,31 +113,31 @@ Constructor.
 
 =item * deserialize
 
-Deserialize data from XML to arbitrary formats. 
+Deserialize data from XML to arbitrary formats.
 
-deserialize() must return a fault indicating that deserializing failed if 
+deserialize() must return a fault indicating that deserializing failed if
 any error is encountered during the process of deserializing the XML message.
 
 The following positional parameters are passed to the deserialize method:
 
- $content   - the xml message 
+ $content   - the xml message
 
 =item * generate_fault
 
-Generate a fault in the supported format. The following named parameters are 
+Generate a fault in the supported format. The following named parameters are
 passed as a single hash ref:
 
  code       - The fault code, e.g. 'soap:Server' or the like
- role       - The fault role (actor in SOAP1.1) 
+ role       - The fault role (actor in SOAP1.1)
  message    - The fault message (faultstring in SOAP1.1)
 
 =back
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribte/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

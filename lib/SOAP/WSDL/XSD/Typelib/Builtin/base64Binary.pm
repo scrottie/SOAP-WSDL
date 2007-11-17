@@ -11,9 +11,9 @@ BEGIN {
     no warnings qw(redefine);
     no strict qw(refs);
 
-    # Yes, I know it's ugly - but this is the fastest constructor to write 
+    # Yes, I know it's ugly - but this is the fastest constructor to write
     # for Class::Std-Style inside out objects..
-    *{ __PACKAGE__ . '::new' } = sub {   
+    *{ __PACKAGE__ . '::new' } = sub {
         my $self = bless \do { my $foo } , shift;
         if (@_) {
             $self->set_value( $_[0]->{ value } )
@@ -24,8 +24,8 @@ BEGIN {
 
 }
 
-# XML Schema facets. We don't know how to implement them yet, but they're 
-# her, just in case you wanted to know.
+# XML Schema facets. We don't know how to implement them yet, but they're
+# here, just in case you wanted to know.
 #my %length_of           :ATTR(:name<length> :default<()>);
 #my %minLength_of        :ATTR(:name<minLength> :default<()>);
 #my %maxLength_of        :ATTR(:name<maxLength> :default<()>);

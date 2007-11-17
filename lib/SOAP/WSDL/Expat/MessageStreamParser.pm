@@ -6,6 +6,8 @@ use XML::Parser::Expat;
 use SOAP::WSDL::Expat::MessageParser;
 use base qw(SOAP::WSDL::Expat::MessageParser);
 
+our $VERSION = '2.00_24';
+
 sub parse_start {
     my $self = shift;
     $self->{ parser } = $_[0]->_initialize( XML::Parser::ExpatNB->new( Namespaces => 1 ) );
@@ -35,7 +37,7 @@ SOAP::WSDL::Expat::MessageStreamParser - Convert SOAP messages to custom object 
  my $lwp = LWP::UserAgent->new();
 
  my $parser = SOAP::WSDL::Expat::MessageParser->new({
-    class_resolver => 'My::Resolver'   
+    class_resolver => 'My::Resolver'
  });
  my $chunk_parser = $parser->init();
  # process response while it comes in, trying to read 32k chunks.
@@ -54,23 +56,22 @@ See L<SOAP::WSDL::Manual::Parser> for details.
 
 See SOAP::WSDL::Expat::MessageParser
 
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2007 Martin Kutter. All rights reserved.
+
+This file is part of SOAP-WSDL. You may distribte/modify it under
+the same terms as perl itself
+
 =head1 AUTHOR
 
-Replace the whitespace by @ for E-Mail Address.
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
- Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+=head1 REPOSITORY INFORMATION
 
-=head1 COPYING
-
-This module may be used under the same terms as perl itself.
-
-=head1 Repository information
-
- $ID: $
-
- $LastChangedDate: 2007-10-07 19:27:58 +0200 (Son, 07 Okt 2007) $
- $LastChangedRevision: 313 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
-
+ $Id: MessageStreamParser.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
-
+ 
+=cut

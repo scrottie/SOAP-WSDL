@@ -1,7 +1,8 @@
 ---
 name: SOAP-WSDL
-version: 2.00_23
-author: []
+version: 2.00_24
+author:
+  - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
 license: artistic
 resources:
@@ -35,35 +36,40 @@ provides:
     version: 2.00_17
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
-    version: 2.00_17
+    version: 2.00_24
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
     version: 2.00_17
   SOAP::WSDL::Deserializer::Hash:
     file: lib/SOAP/WSDL/Deserializer/Hash.pm
-    version: 2.00_17
+    version: 2.00_24
   SOAP::WSDL::Deserializer::SOM:
     file: lib/SOAP/WSDL/Deserializer/SOM.pm
-    version: 2.00_15
+    version: 2.00_24
   SOAP::WSDL::Deserializer::XSD:
     file: lib/SOAP/WSDL/Deserializer/XSD.pm
-    version: 2.00_21
+    version: 2.00_24
   SOAP::WSDL::Expat::Base:
     file: lib/SOAP/WSDL/Expat/Base.pm
+    version: 2.00_24
   SOAP::WSDL::Expat::Message2Hash:
     file: lib/SOAP/WSDL/Expat/Message2Hash.pm
+    version: 2.00_24
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
+    version: 2.00_24
   SOAP::WSDL::Expat::MessageStreamParser:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
+    version: 2.00_24
   SOAP::WSDL::Factory::Deserializer:
     file: lib/SOAP/WSDL/Factory/Deserializer.pm
+    version: 2.00_24
   SOAP::WSDL::Factory::Generator:
     file: lib/SOAP/WSDL/Factory/Generator.pm
-    version: 2.00_18
+    version: 2.00_24
   SOAP::WSDL::Factory::Serializer:
     file: lib/SOAP/WSDL/Factory/Serializer.pm
-    version: 2.00_17
+    version: 2.00_24
   SOAP::WSDL::Factory::Transport:
     file: lib/SOAP/WSDL/Factory/Transport.pm
     version: 2.00_17
@@ -107,7 +113,7 @@ provides:
     version: 2.00_17
   SOAP::WSDL::Serializer::XSD:
     file: lib/SOAP/WSDL/Serializer/XSD.pm
-    version: 2.00_21
+    version: 2.00_24
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::Transport::HTTP:
@@ -236,10 +242,10 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_23
+    version: 2.00_24
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
-    version: 2.00_23
+    version: 2.00_24
   SOAP::WSDL::XSD::Typelib::SimpleType:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:

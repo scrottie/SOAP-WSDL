@@ -11,9 +11,9 @@ my %element_prefix_of :ATTR(:name<element_prefix> :default<()>);
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
-    $type_prefix_of{ $ident } = 'MyType' if not exists 
+    $type_prefix_of{ $ident } = 'MyType' if not exists
         $arg_ref->{ 'type_prefix' };
-    $element_prefix_of{ $ident } = 'MyElement' if not exists 
+    $element_prefix_of{ $ident } = 'MyElement' if not exists
         $arg_ref->{ 'element_prefix' };
 
 }
@@ -48,53 +48,53 @@ SOAP::WSDL::Generator::Visitor - SOAP::WSDL's Visitor-based Code Generator
 
 =head1 DESCRIPTION
 
-SOAP::WSDL featores a code generating facility. This code generation facility 
-(in fact there are several of them) is implemented as Visitor to 
+SOAP::WSDL featores a code generating facility. This code generation facility
+(in fact there are several of them) is implemented as Visitor to
 SOAP::WSDL::Base-derived objects.
 
 =head2 The Visitor Pattern
 
-The Visitor design pattern is one of the object oriented design pattern 
+The Visitor design pattern is one of the object oriented design pattern
 described by [GHJV1995].
 
-A Visitor is an object implementing some behaviour for a fixed set of classes, 
-whose implementation would otherwise need to be scattered accross those 
+A Visitor is an object implementing some behaviour for a fixed set of classes,
+whose implementation would otherwise need to be scattered accross those
 classes' implementations.
 
-Visitors are usually combined with Iterators for traversing either a list or 
+Visitors are usually combined with Iterators for traversing either a list or
 tree of objects.
 
-A Visitor's methods are called using the so-called double dispatch technique. 
-To allow double dispatching, the Visitor implements one method for every class 
-ro be handled, whereas every class implements just one method (commonly named 
-"access"), which does nothing more than calling a method on the reference 
+A Visitor's methods are called using the so-called double dispatch technique.
+To allow double dispatching, the Visitor implements one method for every class
+ro be handled, whereas every class implements just one method (commonly named
+"access"), which does nothing more than calling a method on the reference
 given, with the self object as parameter.
 
-If all this sounds strange, maybe an example helps. Imagine you had a list of 
-person objects and wanted to print out a list of their names (or address 
-stamps or everything elseyou like). This can easily be implemented with a 
-Visitor: 
+If all this sounds strange, maybe an example helps. Imagine you had a list of
+person objects and wanted to print out a list of their names (or address
+stamps or everything elseyou like). This can easily be implemented with a
+Visitor:
 
     package PersonVisitor;
     use Class::Std;    # handles all basic stuff like constructors etc.
-    
+ 
     sub visit_Person {
         my ( $self, $object ) = @_;
         print "Person name is ", $object->get_name(), "\n";
     }
-    
+ 
     package Person;
     use Class::Std;
     my %name : ATTR(:name<name> :default<anonymous>);
-    
+ 
     sub accept { $_[1]->visit_Person( $_[0] ) }
-    
+ 
     package main;
     my @person_from = ();
     for (qw(Gamma Helm Johnson Vlissides)) {
         push @person_from, Person->new( { name => $_ } );
     }
-    
+ 
     my $visitor = PersonVisitor->new();
     for (@person_from) {
         $_->accept($visitor);
@@ -106,8 +106,8 @@ Visitor:
     Person name is Johnson
     Person name is Vlissides
 
-While using this pattern for just printing a list may look a bit over-sized, 
-but it may become handy if you need multiple output formats and different 
+While using this pattern for just printing a list may look a bit over-sized,
+but it may become handy if you need multiple output formats and different
 classes to operate on.
 
 The main benefits using visitors are:
@@ -116,19 +116,19 @@ The main benefits using visitors are:
 
 =item * Grouping related behaviour in one class
 
-Related behaviour for several classes can be grouped together in the Visitor 
-class. The behaviour can easily be changed by changing the code in one class, 
+Related behaviour for several classes can be grouped together in the Visitor
+class. The behaviour can easily be changed by changing the code in one class,
 instead of having to change all the visited classes.
 
 =item * Cleaning up the data classes' implementations
 
-If classes holding data also implement several different output formats or 
+If classes holding data also implement several different output formats or
 other (otherwise unrelated) behaviour, they tend to get bloated.
 
-=item * Adding behaviour is easy 
+=item * Adding behaviour is easy
 
-Swapping out the visitor class allows easy alterations of behaviour. So on a 
-list of Persons, one Visitor may print address stamps, while another one prints 
+Swapping out the visitor class allows easy alterations of behaviour. So on a
+list of Persons, one Visitor may print address stamps, while another one prints
 out a phone number list.
 
 =back
@@ -139,19 +139,19 @@ Of course, there are also drawbacks in the visitor pattern:
 
 =item * Changes in the visited classes are expensive
 
-If one of the visited classes changes (or is added), all visitors must be 
-updated to reflect this change. This may be rather expensive if classes change 
+If one of the visited classes changes (or is added), all visitors must be
+updated to reflect this change. This may be rather expensive if classes change
 often.
 
 =item * The visited classes must expose all data required
 
-Visitors may need to use the internals of a class. This may result in fidelling 
+Visitors may need to use the internals of a class. This may result in fidelling
 with a object's internals, or a bloated interface in the visited class.
 
 =back
 
-Visitors are usually accompanied by a Iterator. The Iterator may be implemented 
-in the visited classes, in the Visitor, or somewhere else (in the example it 
+Visitors are usually accompanied by a Iterator. The Iterator may be implemented
+in the visited classes, in the Visitor, or somewhere else (in the example it
 was somewhere else).
 
 The Iterator decides which object to visit next.
@@ -164,47 +164,47 @@ Code generation in SOAP::WSDL means generating various artefacts:
 
 =item * Typemaps
 
-For every WSDL definition, a Typemap is created. The Typemap is used later as 
+For every WSDL definition, a Typemap is created. The Typemap is used later as
 an aid in parsing the SOAP XML messages.
 
 =item * Type Classes
 
-For every type defined in the WSDL's schema, a Type Class is generated. 
+For every type defined in the WSDL's schema, a Type Class is generated.
 
 These classes are instantiated later as a result of parsing SOAP XML messages.
 
 =item * Interface Classes
 
-For every service, a interface class is generated. This class is later used by 
+For every service, a interface class is generated. This class is later used by
 programmers accessing the service
 
 =item * Documentation
 
-Both Type Classes and Interface Classes include documentation. Additional 
-documentation may be generated as a hint for programmers, or later for 
+Both Type Classes and Interface Classes include documentation. Additional
+documentation may be generated as a hint for programmers, or later for
 mimicing .NET's .asmx example pages.
 
 =back
 
-All these behaviours could well (and has historically been) implemented in the 
-classes holding the WSDL data. This made these classes rather bloated, and 
-made it hard to change behaviour (like, supporting SOAP Headers, 
-supporting atomic types and other features which were missing from early 
+All these behaviours could well (and has historically been) implemented in the
+classes holding the WSDL data. This made these classes rather bloated, and
+made it hard to change behaviour (like, supporting SOAP Headers,
+supporting atomic types and other features which were missing from early
 versions of SOAP::WSDL).
 
-Implementing these behaviours in Visitor classes eases adding new behaviours, 
-and reducing the incompletenesses still inherent in SOAP::WSDL's WSDL and XML 
+Implementing these behaviours in Visitor classes eases adding new behaviours,
+and reducing the incompletenesses still inherent in SOAP::WSDL's WSDL and XML
 schema implementation.
 
 =head2 Implementation
 
-=head3 accept 
+=head3 accept
 
-SOAP::WSDL::Base defines an accept method which expects a Visitor as only 
+SOAP::WSDL::Base defines an accept method which expects a Visitor as only
 parameter.
 
-The method visit_Foo_Bar is called on the visitor, whith the self object as 
-parameter. 
+The method visit_Foo_Bar is called on the visitor, whith the self object as
+parameter.
 
 The actual method name is constructed this way:
 
@@ -218,18 +218,18 @@ The actual method name is constructed this way:
 
 Example:
 
-When visiting a SOAP::WSDL::XSD::ComplexType object, the method 
+When visiting a SOAP::WSDL::XSD::ComplexType object, the method
 visit_XSD_ComplexType is called on the visitor.
 
 =head2 Writing your own visitor
 
-SOAP::WSDL eases writing your own visitor. This might be required if you need 
-some special output format from a WSDL file, or want to feed your own 
-serializer/deserializer pair with custom configuration data. Or maybe you want 
+SOAP::WSDL eases writing your own visitor. This might be required if you need
+some special output format from a WSDL file, or want to feed your own
+serializer/deserializer pair with custom configuration data. Or maybe you want
 to generate C# code from it...
 
-To write your own code generating visitor, you should subclass 
-SOAP::WSDL::Generator::Visitor. It implements (empty) default methods for all 
+To write your own code generating visitor, you should subclass
+SOAP::WSDL::Generator::Visitor. It implements (empty) default methods for all
 SOAP::WSDL data classes:
 
 =over
@@ -264,16 +264,16 @@ SOAP::WSDL data classes:
 
 =item * visit_XSD_SimpleType
 
-=back 
+=back
 
-In your Visitor, you must implement visit_Foo methods for all classes you wish 
+In your Visitor, you must implement visit_Foo methods for all classes you wish
 to visit.
 
-Currently, all SOAP::WSDL::Generator::Visitor implementations include their own 
-Iterator (which means they know how to find the next objects to visit). You 
-may or may not choose to implement a separate Iterator. 
+Currently, all SOAP::WSDL::Generator::Visitor implementations include their own
+Iterator (which means they know how to find the next objects to visit). You
+may or may not choose to implement a separate Iterator.
 
-Letting a visitor implementing it's own Iterator visit a WSDL definition is as 
+Letting a visitor implementing it's own Iterator visit a WSDL definition is as
 easy as writing something like this:
 
  my $visitor = MyVisitor->new();
@@ -284,21 +284,21 @@ easy as writing something like this:
 
 =head1 REFERENCES
 
-=over 
+=over
 
-=item * [GHJV1995] 
+=item * [GHJV1995]
 
-Erich Gamma, Richard Helm, Ralph E. Johnson, John Vlissides, (1995): 
+Erich Gamma, Richard Helm, Ralph E. Johnson, John Vlissides, (1995):
 Design Patterns. Elements of Reusable Object-Oriented Software.
 Addison-Wesley Longman, Amsterdam.
 
-=back 
+=back
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

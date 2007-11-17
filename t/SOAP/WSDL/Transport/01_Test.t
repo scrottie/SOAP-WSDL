@@ -23,6 +23,7 @@ ok( $soap->get_transport->set_base_dir( join '/', $base_dir, 'acceptance' ) );
     $soap->outputxml(1);
     $response = $soap->call({ operation => 'test', soap_action => 'http://test2' }, {});
     is $response, 'test2', 'Returned file content';
+
 }
 
 SKIP: {

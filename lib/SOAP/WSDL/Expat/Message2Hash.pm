@@ -4,55 +4,57 @@ use strict;
 use warnings;
 use base qw(SOAP::WSDL::Expat::Base);
 
+our $VERSION = '2.00_24';
+
 sub _initialize {
     my ($self, $parser) = @_;
     $self->{ parser } = $parser;
-    delete $self->{ data };                     # remove potential old results
-    
+    delete $self->{ data };             # remove potential old results
+
     my $characters;
     my $current = {};
     my $list = [];                      # node list
     my $current_part = q{};             # are we in header or body ?
     $self->{ data } = $current;
-    
+
     # use "globals" for speed
-    my ($_element, $_method, 
+    my ($_element, $_method,
         $_class, $_parser, %_attrs) = ();
 
-    no strict qw(refs);     
+    no strict qw(refs);
     $parser->setHandlers(
         Start => sub {
             push @$list, $current;
- 	        #If our element exists and is a list ref, add to it
-            if ( exists $current->{ $_[1] } 
-		      && ( ref ($current->{ $_[1] }) eq 'ARRAY') 
-	        )  {
-	            push @{ $current->{ $_[1] } }, {};
-	            $current = $current->{ $_[1] }->[-1];
-        	}
-           	elsif ( exists $current->{ $_[1] } ) 
-        	{
+           #If our element exists and is a list ref, add to it
+            if ( exists $current->{ $_[1] }
+              && ( ref ($current->{ $_[1] }) eq 'ARRAY')
+            )  {
+                push @{ $current->{ $_[1] } }, {};
+                $current = $current->{ $_[1] }->[-1];
+            }
+            elsif ( exists $current->{ $_[1] } )
+            {
                 $current->{ $_[1] } = [ $current->{ $_[1] }, {} ];
-	            $current = $current->{ $_[1] }->[-1];
-        	}    
+                $current = $current->{ $_[1] }->[-1];
+            }
             else {
                 $current->{ $_[1] } = {};
                 $current = $current->{ $_[1] };
             }
             return;
         },
-        
+
         Char => sub {
             $characters .= $_[1] if $_[1] !~m{ \A \s* \z}xms;
             return;
         },
-        
-        End => sub {        
+
+        End => sub {
             $_element = $_[1];
 
             # This one easily handles ignores for us, too...
             # return if not ref $$list[-1];
-    
+
             if (length $characters) {
                 if (ref $list->[-1]->{ $_element } eq 'ARRAY') {
                     $list->[-1]->{ $_element }->[-1] = $characters ;
@@ -80,7 +82,7 @@ SOAP::WSDL::Expat::Message2Hash - Convert SOAP messages to perl hash refs
 =head1 SYNOPSIS
 
  my $parser = SOAP::WSDL::Expat::MessageParser->new({
-    class_resolver => 'My::Resolver'   
+    class_resolver => 'My::Resolver'
  });
  $parser->parse( $xml );
  my $obj = $parser->get_data();

@@ -16,10 +16,10 @@ sub set_value { $value_of{ ident $_[0] } = $_[1] }
 # use $_[n] for speed.
 # This is less readable, but notably faster.
 #
-# use postfix-if for speed. This is slightly faster, as it saves 
+# use postfix-if for speed. This is slightly faster, as it saves
 # perl from creating a pad (variable context).
 #
-# The methods below may get called zillions of times, so 
+# The methods below may get called zillions of times, so
 # every little statement matters...
 
 sub serialize {
@@ -29,7 +29,7 @@ sub serialize {
     return join q{}
         , $_[0]->start_tag($_[1], $value_of{ $ident })
         , $value_of{ $ident }
-        , $_[0]->end_tag($_[1]); 
+        , $_[0]->end_tag($_[1]);
 }
 
 sub as_bool :BOOLIFY {

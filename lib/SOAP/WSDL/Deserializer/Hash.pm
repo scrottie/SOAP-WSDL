@@ -8,11 +8,11 @@ use SOAP::WSDL::Expat::Message2Hash;
 use SOAP::WSDL::Factory::Deserializer;
 SOAP::WSDL::Factory::Deserializer->register( '1.1', __PACKAGE__ );
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_24';
 
 sub BUILD {
     my ($self, $ident, $args_of_ref) = @_;
-    
+
     # ignore all options
     for (keys %{ $args_of_ref }) {
         delete $args_of_ref->{ $_ }
@@ -21,7 +21,7 @@ sub BUILD {
 
 sub deserialize {
     my ($self, $content) = @_;
-        
+
     my $parser = SOAP::WSDL::Expat::Message2Hash->new();
     eval { $parser->parse_string( $content ) };
     if ($@) {
@@ -41,7 +41,7 @@ sub generate_fault {
             faultcode => $args_from_ref->{ code } || 'soap:Client',
             faultactor => $args_from_ref->{ role } || 'urn:localhost',
             faultstring => $args_from_ref->{ message } || "Unknown error"
-    }); 
+    });
 }
 
 1;
@@ -61,11 +61,11 @@ Deserializer for creating perl hash refs as result of a SOAP call.
 
 =head2 Output structure
 
-The XML structure is converted into a perl data structure consisting of 
+The XML structure is converted into a perl data structure consisting of
 hash and or list references. List references are used for holding array data.
 
-SOAP::WSDL::Deserializer::Hash creates list references always at the maximum 
-depth possible. 
+SOAP::WSDL::Deserializer::Hash creates list references always at the maximum
+depth possible.
 
 Examples:
 
@@ -91,16 +91,16 @@ Examples:
  Perl:
  {
      MyDataArray => {
-         MyData => [ 
-            { int => 1 }, 
+         MyData => [
+            { int => 1 },
             { int => 1 }
          ]
      }
  }
 
-List reference creation is triggered by the second occurance of an element. 
-XML Array types with one element only will not be represented as list 
-references. 
+List reference creation is triggered by the second occurance of an element.
+XML Array types with one element only will not be represented as list
+references.
 
 =head1 USAGE
 
@@ -108,15 +108,15 @@ All you need to do is to use SOAP::WSDL::Deserializer::Hash.
 
 SOAP::WSDL::Deserializer::Hash autoregisters itself for SOAP1.1 messages
 
-You may register SOAP::WSDLDeserializer::Hash for other SOAP Versions by 
+You may register SOAP::WSDLDeserializer::Hash for other SOAP Versions by
 calling
 
- SOAP::Factory::Deserializer->register('1.2', 
+ SOAP::Factory::Deserializer->register('1.2',
     SOAP::WSDL::Deserializer::Hash)
 
 =head1 Limitations
 
-=over 
+=over
 
 =item * Namespaces
 
@@ -134,17 +134,17 @@ All XML attributes are ignored.
 
 =item * generate_fault
 
-SOAP::WSDL::Deserializer::Hash will die with a SOAP::WSDL::Fault11 object when  
+SOAP::WSDL::Deserializer::Hash will die with a SOAP::WSDL::Fault11 object when
 a parse error appears
 
 =back
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself.
 
 =head1 AUTHOR
 
@@ -152,9 +152,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 176 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 176 2007-08-31 15:28:29Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
- 
+ $Id: Hash.pm 391 2007-11-17 21:56:13Z kutterma $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/Hash.pm $
+
 =cut

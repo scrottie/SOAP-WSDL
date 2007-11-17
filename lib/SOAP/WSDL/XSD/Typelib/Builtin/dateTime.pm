@@ -7,8 +7,8 @@ use Date::Parse;
 use Date::Format;
 
 
-# XML Schema facets. We don't know how to implement them yet, but they're 
-# her, just in case you wanted to know.
+# XML Schema facets. We don't know how to implement them yet, but they're
+# here, just in case you wanted to know.
 #
 #my %pattern_of          :ATTR(:name<pattern> :default<()>);
 #my %enumeration_of      :ATTR(:name<enumeration> :default<()>);
@@ -26,9 +26,9 @@ BEGIN {
     no warnings qw(redefine);
     no strict qw(refs);
 
-    # Yes, I know it's ugly - but this is the fastest constructor to write 
+    # Yes, I know it's ugly - but this is the fastest constructor to write
     # for Class::Std-Style inside out objects..
-    *{ __PACKAGE__ . '::new' } = sub {   
+    *{ __PACKAGE__ . '::new' } = sub {
         my $self = bless \do { my $foo } , shift;
         if (@_) {
             $self->set_value( $_[0]->{ value } )
@@ -43,17 +43,17 @@ sub set_value {
     #2037-12-31T00:00:00.0000000+01:00
     return if not $_[1];
     return $_[0]->SUPER::set_value($_[1]) if (
-        $_[1] =~ m{ ^\d{4} \- \d{2} \- \d{2} 
+        $_[1] =~ m{ ^\d{4} \- \d{2} \- \d{2}
             T \d{2} \: \d{2} \: \d{2} (:? \. \d{1,7} )?
             [\+\-] \d{2} \: \d{2} $
-        }xms       
+        }xms
     );
-    
+
     # strptime sets empty values to undef - and strftime doesn't like that...
     my @time_from = map { ! defined $_ ? 0 : $_ } strptime($_[1]);
     return if not (@time_from);
     undef $time_from[$#time_from];
-        
+
     my $time_str = strftime( '%Y-%m-%dT%H:%M:%S%z', @time_from );
     substr $time_str, -2, 0, ':';
     $_[0]->SUPER::set_value($time_str);

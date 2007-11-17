@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use XML::Parser::Expat;
 
+our $VERSION = '2.00_24';
+
 sub new {
     my ($class, $args) = @_;
     my $self = {};
@@ -11,21 +13,21 @@ sub new {
 }
 
 sub parse {
-    eval { 
+    eval {
         $_[0]->_initialize( XML::Parser::Expat->new( Namespaces => 1 )  )->parse( $_[1] );
         $_[0]->{ parser }->release();
     };
     $_[0]->{ parser }->xpcroak( $@ ) if $@;
-    return $_[0]->{ data };     
+    return $_[0]->{ data };
 }
 
 sub parsefile {
-    eval { 
-        $_[0]->_initialize( XML::Parser::Expat->new(Namespaces => 1) )->parsefile( $_[1] ); 
+    eval {
+        $_[0]->_initialize( XML::Parser::Expat->new(Namespaces => 1) )->parsefile( $_[1] );
         $_[0]->{ parser }->release();
     };
     $_[0]->{ parser }->xpcroak( $@ ) if $@;
-    return $_[0]->{ data };     
+    return $_[0]->{ data };
 }
 
 # SAX-like aliases

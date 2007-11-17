@@ -5,8 +5,8 @@ use warnings;
 sub get_xmlns { '[% simpleType.get_targetNamespace %]'};
 
 [% INCLUDE simpleType/contentModel.tt %]
-[%# 
-# Don't include any perl source here - there may be sub-packages... 
+[%#
+# Don't include any perl source here - there may be sub-packages...
 #-%]
 
 1;
@@ -20,12 +20,12 @@ sub get_xmlns { '[% simpleType.get_targetNamespace %]'};
 Perl data type class for the XML Schema defined simpleType
 [% simpleType.get_name %] from the namespace [% simpleType.get_targetNamespace %].
 
-[% IF (simpleType.get_variety == 'list'); 
-	INCLUDE simpleType/POD/list.tt;
-ELSIF (simpleType.get_variety == 'restriction'); 
-	INCLUDE simpleType/POD/restriction.tt;
-ELSE; 
-	THROW NOT_IMPLEMENTED "simpleType union not implemented yet in $simpleType.get_name";
+[% IF (simpleType.get_variety == 'list');
+    INCLUDE simpleType/POD/list.tt;
+ELSIF (simpleType.get_variety == 'restriction');
+    INCLUDE simpleType/POD/restriction.tt;
+ELSE;
+    THROW NOT_IMPLEMENTED "simpleType union not implemented yet in $simpleType.get_name";
 END %]
 
 =head1 METHODS

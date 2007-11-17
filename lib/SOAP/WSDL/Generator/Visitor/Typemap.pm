@@ -18,32 +18,32 @@ sub START {
 
 sub set_typemap_entry {
     my ($self, $value) = @_;
-    $typemap_of{ ident $self }->{ 
-        join( q{/}, @{ $path_of{ ident $self } } ) 
-    } = $value; 
+    $typemap_of{ ident $self }->{
+        join( q{/}, @{ $path_of{ ident $self } } )
+    } = $value;
 }
 
 sub add_element_path {
     my ($self, $element) = @_;
 
-    # Swapping out this lines against the ones below generates 
+    # Swapping out this lines against the ones below generates
     # a namespace-sensitive typemap.
-    # Well almost: Class names are not constructed in a namespace-sensitive 
+    # Well almost: Class names are not constructed in a namespace-sensitive
     # manner, yet - there should be some facility to allow binding a (perl)
     # prefix to a namespace...
     push @{ $path_of{ ident $self } }, $element->get_name();
-    
-    #    push @{ $path_of{ ident $self } }, 
-    #        "{". $element->get_targetNamespace . "}" 
+
+    #    push @{ $path_of{ ident $self } },
+    #        "{". $element->get_targetNamespace . "}"
     #        . $element->get_name();
-} 
+}
 
 sub visit_Definitions {
     my ( $self, $ident, $definitions ) = ( $_[0], ident $_[0], $_[1] );
 
-    $self->set_definitions( $definitions ); 
+    $self->set_definitions( $definitions );
 
-    for ( @{ $definitions->get_service() } ) {
+    for ( @{ $definitions->get_service() } ){
         $_->_accept($self);
     }
 }
@@ -81,7 +81,7 @@ sub visit_Binding {
         my $name = $operation->get_name();
 
         # get the equally named operation from the portType
-        my ($op) = grep { $_->get_name eq $name } 
+        my ($op) = grep { $_->get_name eq $name }
             @{ $portType->get_operation() }
             or die "operation <$name> not found";
 
@@ -122,14 +122,14 @@ sub visit_Part {
         # FIXME support RPC-style calls
         die "unsupported global type <$type_name> found in part";
     }
-    
+
     # TODO factor out iterator or replace by lookup (probably better)
     if ( my $element_name = $part->get_element() ) {
-        my $element = $types_ref->find_element( 
+        my $element = $types_ref->find_element(
           $part->expand($element_name) )
           || die "no element $element_name found for part " . $part->get_name();
         $element->_accept($self);
-        return;              
+        return;
     }
 
     warn 'neither type nor element - do not know what to do for part '
@@ -160,9 +160,9 @@ sub process_referenced_type {
 }
 
 sub process_atomic_type {
-    my ( $self, $type, $callback ) = @_;    
+    my ( $self, $type, $callback ) = @_;
     return if not $type;
-    
+
     my $ident = ident $self;
     $callback->( $self, $type ) if $callback;
     return $self;
@@ -171,40 +171,40 @@ sub process_atomic_type {
 sub visit_XSD_Element {
     my ( $self, $ident, $element ) = ( $_[0], ident $_[0], $_[1] );
 
-    # TODO: what about element ref="" ? 
+    # TODO: what about element ref="" ?
     # when we're hopping from one element to the next one...
 
     # step down in tree
     $self->add_element_path( $element );
 
     # now call all possible variants.
-    # They all just return if no argument is given, 
+    # They all just return if no argument is given,
     # and return $self on success.
     SWITCH: {
-	if ($element->get_type) { 
-	    $self->process_referenced_type( $element->expand( $element->get_type() ) )
+    if ($element->get_type) {
+        $self->process_referenced_type( $element->expand( $element->get_type() ) )
                 && last;
         }
         # for atomic simple and comples types , and ref elements
         my $typeclass = join q{::}, $element_prefix_of{$ident}, $element->get_name();
-        
+
         $self->set_typemap_entry($typeclass);
-        
+
         # kind of double-dispatch: returns true on success, but does nothing
         $self->process_atomic_type( $element->first_simpleType() )
             && last;
-        
+
         $self->process_atomic_type( $element->first_complexType()
             , sub { $_[1]->_accept($_[0]) } )
             && last;
-        
-        # TODO: add element ref handling    
+
+        # TODO: add element ref handling
     };
     # step up in hierarchy
     pop @{ $path_of{$ident} };
 }
 
-sub visit_XSD_ComplexType { 
+sub visit_XSD_ComplexType {
     my ($self, $ident, $type) = ($_[0], ident $_[0], $_[1] );
     my $content_model = $type->get_flavor();
     # TODO is this allowed ? or should we better die ?
@@ -218,9 +218,9 @@ sub visit_XSD_ComplexType {
         }
         return;
     }
-    
+
     warn "unsupported content model $content_model found in "
-        . "complex type " . $type->get_name() 
+        . "complex type " . $type->get_name()
         . " - typemap may be incomplete";
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 17;
+use Test::More tests => 22;
 use lib '../lib';
 
 eval {
@@ -155,6 +155,21 @@ my $opt = {
 };
 
 # ok $wsdl->explain($opt) =~ m/#optional/m;
+
+eval { $wsdl->expand('hallo:welt')};
+like $@, qr{unbound}, 'Die on attempt to resolve unbound prefix';
+
+my $complex = $types->find_type( 'urn:myNamespace', 'complex');
+
+ok $complex->find_element('urn:myNamespace', 'length'), 'Find element in complexType';
+ok ! $complex->find_element('urn:myNamespace', 'FOO'), 'Find element in complexType';
+
+eval { $complex->foo() };
+like $@, qr{ foo }xms;
+
+eval { SOAP::WSDL::ComplexType->foo() };
+like $@, qr{ foo }xms;
+
 
 sub skip_without_test_xml {
     skip("Test::XML not available", 1) if (not $Test::XML::VERSION);

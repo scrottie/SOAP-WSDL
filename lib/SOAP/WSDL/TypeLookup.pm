@@ -1,4 +1,6 @@
 package SOAP::WSDL::TypeLookup;
+use strict;
+use warnings;
 
 my %TYPES = (
     # wsdl:
@@ -100,7 +102,7 @@ my %TYPES = (
         },
         notation => {
             type => 'SKIP',     # not implemented yet
-        },      
+        },
         annotation => {
             type => 'SKIP',     # not implemented yet
         },
@@ -144,7 +146,7 @@ my %TYPES = (
             type => 'METHOD',
             method => 'set_list',
         },
-	    union => {
+        union => {
             type => 'METHOD',
             method => 'set_union',
         },
@@ -157,7 +159,7 @@ my %TYPES = (
             method => 'set_flavor',
             value => 'group',
         },
-	    all => {
+        all => {
             type => 'METHOD',
             method => 'set_flavor',
             value => 'all',
@@ -175,10 +177,11 @@ my %TYPES = (
     },
 );
 
-
 sub lookup {
-	my $self = shift;
-	my $namespace = shift  || 'http://schemas.xmlsoap.org/wsdl/';
-	my $name = shift;
-	return $TYPES{ $namespace }->{ $name };
+    my $self = shift;
+    my $namespace = shift  || 'http://schemas.xmlsoap.org/wsdl/';
+    my $name = shift;
+    return $TYPES{ $namespace }->{ $name };
 }
+
+1;

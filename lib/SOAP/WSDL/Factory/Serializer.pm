@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Serializer;
 use strict;
 use warnings;
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_24';
 
 my %SERIALIZER = (
     '1.1' => 'SOAP::WSDL::Serializer::XSD',
@@ -22,7 +22,7 @@ sub get_serializer {
         if not exists ($SERIALIZER{ $args_of_ref->{ soap_version } });
 
     # load module
-    eval "require $SERIALIZER{ $args_of_ref->{ soap_version } }" 
+    eval "require $SERIALIZER{ $args_of_ref->{ soap_version } }"
         or die "Cannot load serializer $SERIALIZER{ $args_of_ref->{ soap_version } }", $@;
 
     return $SERIALIZER{ $args_of_ref->{ soap_version } }->new();
@@ -52,7 +52,7 @@ SOAP::WSDL::Factory::Serializer - Factory for retrieving serializer objects
  
 =head1 DESCRIPTION
 
-SOAP::WSDL::Factory::Serializer serves as factory for retrieving 
+SOAP::WSDL::Factory::Serializer serves as factory for retrieving
 serializer objects for SOAP::WSDL.
 
 The actual work is done by specific serializer classes.
@@ -83,30 +83,30 @@ Returns an object of the serializer class for this endpoint.
 
 Serializer classes may register with SOAP::WSDL::Factory::Serializer.
 
-Serializer objects may also be passed directly to SOAP::WSDL::Client by 
-using the set_serializer method. Note that serializers objects set via 
-SOAP::WSDL::Client's set_serializer method are discarded when the SOAP 
+Serializer objects may also be passed directly to SOAP::WSDL::Client by
+using the set_serializer method. Note that serializers objects set via
+SOAP::WSDL::Client's set_serializer method are discarded when the SOAP
 version is changed via set_soap_version.
 
-Registering a serializer class with SOAP::WSDL::Factory::Serializer is done 
-by executing the following code where $version is the SOAP version the 
+Registering a serializer class with SOAP::WSDL::Factory::Serializer is done
+by executing the following code where $version is the SOAP version the
 class should be used for, and $class is the class name.
 
  SOAP::WSDL::Factory::Serializer->register( $version, $class);
 
-To auto-register your transport class on loading, execute register() in 
+To auto-register your transport class on loading, execute register() in
 your tranport class (see L</SYNOPSIS> above).
 
 =head2 Serializer package layout
 
-Serializer modules must be named equal to the serializer class they contain. 
+Serializer modules must be named equal to the serializer class they contain.
 There can only be one serializer class per serializer module.
 
 =head2 Methods to implement
 
 Serializer classes must implement the following methods:
 
-=over 
+=over
 
 =item * new
 
@@ -114,7 +114,7 @@ Constructor.
 
 =item * serialize
 
-Serializes data to XML. The following named parameters are passed to the 
+Serializes data to XML. The following named parameters are passed to the
 serialize method in a anonymous hash ref:
 
  {
@@ -125,12 +125,12 @@ serialize method in a anonymous hash ref:
 
 =back
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself.
 
 =head1 AUTHOR
 
@@ -138,9 +138,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 329 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 329 2007-10-18 19:42:09Z kutterma $
+ $Id: Serializer.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

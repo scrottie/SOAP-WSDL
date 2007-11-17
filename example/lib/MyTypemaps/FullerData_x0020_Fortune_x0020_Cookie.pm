@@ -2,48 +2,47 @@ package MyTypemaps::FullerData_x0020_Fortune_x0020_Cookie;
 use strict;
 use warnings;
 
-my %typemap = (
-'readNodeCount' => 'MyElements::readNodeCount',
-'readNodeCountResponse' => 'MyElements::readNodeCountResponse',
-# atomic complex type (sequence)
-'readNodeCountResponse/readNodeCountResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
-
-# end atomic complex type (sequence)
-'GetFortuneCookie' => 'MyElements::GetFortuneCookie',
-'GetFortuneCookieResponse' => 'MyElements::GetFortuneCookieResponse',
-# atomic complex type (sequence)
-'GetFortuneCookieResponse/GetFortuneCookieResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-
-# end atomic complex type (sequence)
-'CountCookies' => 'MyElements::CountCookies',
-'CountCookiesResponse' => 'MyElements::CountCookiesResponse',
-# atomic complex type (sequence)
-'CountCookiesResponse/CountCookiesResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
-
-# end atomic complex type (sequence)
-'GetSpecificCookie' => 'MyElements::GetSpecificCookie',
-# atomic complex type (sequence)
-'GetSpecificCookie/index' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
-
-# end atomic complex type (sequence)
-'GetSpecificCookieResponse' => 'MyElements::GetSpecificCookieResponse',
-# atomic complex type (sequence)
-'GetSpecificCookieResponse/GetSpecificCookieResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-
-# end atomic complex type (sequence)
-
-
-
-
-);
+our $typemap_1 = {
+               'GetFortuneCookie' => 'MyElements::GetFortuneCookie',
+               'CountCookiesResponse/CountCookiesResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
+               'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
+               'readNodeCountResponse/readNodeCountResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
+               'CountCookiesResponse' => 'MyElements::CountCookiesResponse',
+               'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+               'GetSpecificCookieResponse' => 'MyElements::GetSpecificCookieResponse',
+               'GetFortuneCookieResponse' => 'MyElements::GetFortuneCookieResponse',
+               'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
+               'GetSpecificCookie' => 'MyElements::GetSpecificCookie',
+               'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
+               'CountCookies' => 'MyElements::CountCookies',
+               'GetSpecificCookie/index' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
+               'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+               'GetFortuneCookieResponse/GetFortuneCookieResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+               'GetSpecificCookieResponse/GetSpecificCookieResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
+               'readNodeCount' => 'MyElements::readNodeCount',
+               'readNodeCountResponse' => 'MyElements::readNodeCountResponse'
+             };
+;
 
 sub get_class { 
   my $name = join '/', @{ $_[1] };
-  exists $typemap{ $name } or die "Cannot resolve $name via " . __PACKAGE__;
-  return $typemap{ $name };
+  exists $typemap_1->{ $name } or die "Cannot resolve $name via " . __PACKAGE__;
+  return $typemap_1->{ $name };
 }
 
 1;
 
 __END__
+
+=pod
+
+=head1 NAME
+
+MyTypemaps::FullerData_x0020_Fortune_x0020_Cookie; - typemap for ::FullerData_x0020_Fortune_x0020_Cookie;
+
+=head1 DESCRIPTION
+
+Typemap created by SOAP::WSDL for map-based SOAP message parsers.
+
+=cut
 

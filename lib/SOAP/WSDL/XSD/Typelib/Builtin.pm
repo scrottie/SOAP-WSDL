@@ -64,18 +64,20 @@ SOAP::WSDL::XSD::Typelib::Builtin - Built-in XML Schema datatypes
 
 =head1 DESCRIPTION
 
-This module implements all builtin Types from the XML schema specification.
+The SOAP::WSDL::XSD::Typelib::Builtin hierarchy implements all builtin types
+from the XML schema specification.
 
-Objects of a class may be filled with values and serialize correctly.
+All XML schema derived types inherit from
+SOAP::WSDL::XSD::Typelib::Builtin::anyType.
 
 These basic type classes are most useful when used as element or simpleType
 base classes.
 
-The datatypes classes themselves are split up into 
-SOAP::WSDL::XSD::Typelib::Builtin::* modules. 
-
-Using SOAP::WSDL::XSD::Typelib::Builtin uses all of the builtin datatype 
+Using SOAP::WSDL::XSD::Typelib::Builtin uses all of the builtin datatype
 classes.
+
+All builtin types feature common behaviour described below in
+L</OVERLOADED OPERATORS>
 
 =head1 EXAMPLES
 
@@ -88,7 +90,7 @@ classes.
  package MySimpleType;
  use SOAP::WSDL::XSD::Typelib::Builtin;
  use SOAP::WSDL::XSD::Typelib::SimpleType;
-
+ 
  use base qw(SOAP::WSDL::XSD::Typelib::SimpleType
     SOAP::WSDL::XSD::Typelib::Builtin::list
     SOAP::WSDL::XSD::Typelib::Builtin::string
@@ -177,6 +179,36 @@ The boolean class returns 0 or 1 in numeric context.
 decimal, float and double (and derived classes) return their value in
 numeric context.
 
+=item * arrayification (@{})
+
+When accessed as a list ref, objects of all classes return a list ref with
+the object itself as single element.
+
+This is most useful for writing loops without additional conversions,
+especially in mini-languages found in templating systems or the like, which
+may not natively support converting to list refs.
+
+Instead of writing something like
+
+ my $value = $complexType->get_ELEMENT;
+ $value = ref $value eq 'ARRAY' ? $value : [ $value ];
+ for (@{ $value }) { ... }
+
+you can just write
+
+ for (@{ $complexType->get_ELEMENT }) {...}
+
+Note that complexTypes with undef elements still return undef when accessing
+an undefined element, so when an element may be empty you still have to write
+something like:
+
+ my $value = $complexType->get_ELEMENT();
+ if (defined $value) {
+     for (@{ $value }) {
+         ...
+     }
+ }
+
 =back
 
 =head1 Subclasses
@@ -205,14 +237,14 @@ Returns true/false in boolean context.
 
 Returns 1 / 0 in numeric context.
 
-boolean objects have a special method for deleteing their value, because 
+boolean objects have a special method for deleteing their value, because
 calling C<setl_value(undef)> results in the value being set to false.
 
  $obj->delete_value();
 
-=head2 SOAP::WSDL::XSD::Typelib::Builtin::byte 
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::byte
 
-byte integer objects. 
+byte integer objects.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::date
 
@@ -222,12 +254,12 @@ date values are automatically converted into XML date strings during setting:
 
 The time zone is set to the local time zone if not included.
 
-All input variants supported by Date::Parse are supported. You may even pass 
-in dateTime strings - the time part will be ignored. Note that 
+All input variants supported by Date::Parse are supported. You may even pass
+in dateTime strings - the time part will be ignored. Note that
 set_value is around 100 times slower when setting non-XML-time strings
 
-When setting dates before the beginning of the epoch (negative UNIX timestamp), 
-you should use the XML date string format for setting dates. The behaviour of 
+When setting dates before the beginning of the epoch (negative UNIX timestamp),
+you should use the XML date string format for setting dates. The behaviour of
 Date::Parse for dates before the epoch is system dependent.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::dateTime
@@ -236,19 +268,19 @@ dateTime values are automatically converted into XML dateTime strings during set
 
  YYYY-MM-DDThh:mm:ss.nnnnnnn+zz:zz
 
-The fraction of seconds (nnnnnnn) part is optional. Fractions of seconds may 
+The fraction of seconds (nnnnnnn) part is optional. Fractions of seconds may
 be given with arbitrary precision
 
 The fraction of seconds part is excluded in converted values, as it would always be 0.
 
-All input variants supported by Date::Parse are supported. Note that 
+All input variants supported by Date::Parse are supported. Note that
 set_value is around 100 times slower when setting non-XML-time strings
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::decimal
 
 decimal is the base of all non-float numbers
 
-=head2 SOAP::WSDL::XSD::Typelib::Builtin::double 
+=head2 SOAP::WSDL::XSD::Typelib::Builtin::double
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::duration
 
@@ -300,8 +332,8 @@ Derived by SOAP::WSDL::XSD::Typelib::Builtin::list.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::normalizedString
 
-Tab, newline and carriage return characters are replaced by whitespace in 
-set_value. 
+Tab, newline and carriage return characters are replaced by whitespace in
+set_value.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::NOTATION
 
@@ -313,7 +345,7 @@ set_value.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::string
 
-String values are XML-escaped on serialization. 
+String values are XML-escaped on serialization.
 
 The following characters are escaped: <, >, &
 
@@ -324,12 +356,12 @@ time values are automatically converted into XML time strings during setting:
  hh:mm:ss.nnnnnnn+zz:zz
  hh:mm:ss+zz:zz
 
-The time zone is set to the local time zone if not included. The optional 
+The time zone is set to the local time zone if not included. The optional
 nanoseconds part is not included in converted values, as it would always be 0.
 
-All input variants supported by Date::Parse are supported. You may even pass 
-in dateTime strings - the date part will be ignored. Note that 
-set_value is around 100 times slower when setting non-XML-time strings
+All input variants supported by Date::Parse are supported. You may even pass
+in dateTime strings - the date part will be ignored. Note that
+set_value is around 100 times slower when setting non-XML-time strings.
 
 =head2 SOAP::WSDL::XSD::Typelib::Builtin::token
 
@@ -347,10 +379,10 @@ set_value is around 100 times slower when setting non-XML-time strings
 
 =item * set_value
 
-In contrast to Class::Std-generated mutators (setters), set_value does 
+In contrast to Class::Std-generated mutators (setters), set_value does
 not return the last value.
 
-This is for speed reasons: SOAP::WSDL never needs to know the last value 
+This is for speed reasons: SOAP::WSDL never needs to know the last value
 when calling set_calue, but calls it over and over again...
 
 =back

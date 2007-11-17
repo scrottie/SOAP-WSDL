@@ -37,5 +37,5 @@ ok ($xml = $soap->call('test',
 			}
 ), 'Serialized complexType' );
 
-is $xml, q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" ><SOAP-ENV:Body><testAll><TestRef>TestRef</TestRef><Test2>Test2</Test2></testAll></SOAP-ENV:Body></SOAP-ENV:Envelope>}
+like $xml, qr{<SOAP-ENV:Body><testAll><TestRef>TestRef</TestRef><Test2>Test2</Test2></testAll></SOAP-ENV:Body>}
     , 'element ref="" serialization';

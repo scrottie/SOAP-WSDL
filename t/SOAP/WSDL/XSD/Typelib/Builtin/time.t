@@ -17,7 +17,10 @@ my $timezone = timezone;
 use_ok('SOAP::WSDL::XSD::Typelib::Builtin::time');
 my $obj;
 
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::time->new({value => '12:23:33'});
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::time->new({});
 $obj = SOAP::WSDL::XSD::Typelib::Builtin::time->new();
+
 
 $obj->set_value( '12:23:03' );
 is $obj->get_value() , "12:23:03$timezone", 'conversion';

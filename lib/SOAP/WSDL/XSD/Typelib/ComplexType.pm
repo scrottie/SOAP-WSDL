@@ -9,7 +9,7 @@ use Class::Std::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_23';
+our $VERSION = '2.00_24';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
@@ -28,10 +28,10 @@ sub STORABLE_thaw_post {}
 # for error reporting. Eases working with data objects...
 sub AUTOMETHOD {
     my ($self, $ident, @args_from) = @_;
-    
-    my $class = ref $self || $self;
+
+    my $class = ref $self || $self or die "Cannot call AUTOMETHOD as function";
     confess "Can't locate object method \"$_\" via package \"$class\". \n"
-        . "Valid methods are: " 
+        . "Valid methods are: "
         . join(', ', map { ("get_$_" , "set_$_") } keys %{ $ATTRIBUTES_OF{ $class } })
         . "\n"
 }
@@ -45,73 +45,73 @@ sub _factory {
     $CLASSES_OF{ $class } = shift;
 
     no strict qw(refs);
-    no warnings qw(redefine); 
+    no warnings qw(redefine);
     while (my ($name, $attribute_ref) = each %{ $ATTRIBUTES_OF{ $class } } ) {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or croak "No class given for $name";
 
         # require all types here
         $type->isa('UNIVERSAL')
-            or eval "require $type" 
+            or eval "require $type"
                 or croak $@;
 
         # check now, so we don't need to do it later.
-        # $is_list is used in the methods created. Filling it now means 
-        # we don't have to check it every time the method is called, but 
-        # can just use $is_list, which will hold the value assigned to 
+        # $is_list is used in the methods created. Filling it now means
+        # we don't have to check it every time the method is called, but
+        # can just use $is_list, which will hold the value assigned to
         # it when the method was created.
         my $is_list = $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list');
-        
-        #  The set_$name method below looks rather weird, 
+
+        #  The set_$name method below looks rather weird,
         # but is optimized for performance.
         #
-        #  We could use sub calls for sure, but these are much slower. And 
+        #  We could use sub calls for sure, but these are much slower. And
         # the logic is not that easy:
         #
         #  we accept:
         #  a) objects
-        #  b) scalars            
+        #  b) scalars
         #  c) list refs
         #  d) hash refs
-        #  e) mixed stuff of all of the above, so we have to set our child to 
+        #  e) mixed stuff of all of the above, so we have to set our child to
         #    a) value if it's an object
         #    b) New object of expected class with value for simple values
         #    c 1) New object with value for list values and list type
-        #    c 2) List ref of new objects with value for list values and 
+        #    c 2) List ref of new objects with value for list values and
         #         non-list type
-        #    c + e 1) List ref of objects for list values (list of objects) 
+        #    c + e 1) List ref of objects for list values (list of objects)
         #             and non-list type
-        #    c + e 2) List ref of new objects for list values (list of hashes) 
-        #             and non-list type where the hash ref is passed to new as 
-        #             argument        
+        #    c + e 2) List ref of new objects for list values (list of hashes)
+        #             and non-list type where the hash ref is passed to new as
+        #             argument
         #    d) New object with values passed to new for HASH references
         #
         #  We throw an error on
-        #  a) list refs of list refs - don't know what to do with this (maybe 
+        #  a) list refs of list refs - don't know what to do with this (maybe
         #     use for lists of list types ?)
         #  b) wrong object types
-        #  c) non-blessed non-ARRAY/HASH references - if you can define semantics 
+        #  c) non-blessed non-ARRAY/HASH references - if you can define semantics
         #     for GLOB or SCALAR references, feel free to add them.
-        #  d) we should also die for non-blessed non-ARRAY/HASH references in 
-        #     lists but don't do yet - oh my ! 
-        
-        *{ "$class\::set_$name" } = sub  {
+        #  d) we should also die for non-blessed non-ARRAY/HASH references in
+        #     lists but don't do yet - oh my !
+
+        *{ "$class\::set_$name" } = sub {
             my $is_ref = ref $_[1];
-            $attribute_ref->{ ident $_[0] } = ($is_ref) 
-                ? ($is_ref eq 'ARRAY') 
-                    ? $is_list                             # remembered from outside closure 
+            $attribute_ref->{ ident $_[0] } = ($is_ref)
+                ? ($is_ref eq 'ARRAY')
+                    ? $is_list                             # remembered from outside closure
                         ? $type->new({ value => $_[1] })   # it's a list element - can take list ref as value
                         : [ map {                          # it's not a list element - set value to list of objects
-                            ref $_        
+                            ref $_
                               ? ref $_ eq 'HASH'
                                   ? $type->new($_)
                                   : ref $_ eq $type
                                       ? $_
                                       : croak "cannot use " . ref($_) . " reference as value for $name - $type required"
                               : $type->new({ value => $_ })
-                            } @{ $_[1] } 
+                            } @{ $_[1] }
                          ]
-                    : $is_ref eq 'HASH' 
+                    : $is_ref eq 'HASH'
                         ?  $type->new( $_[1] )
 
                         # neither ARRAY nor HASH - probably an object...
@@ -121,21 +121,21 @@ sub _factory {
 
                 # not $is_ref
                 : $type->new({ value => $_[1] });
-            return;                     
+            return;
         };
 
         *{ "$class\::add_$name" } = sub {
             my $ident = ident $_[0];
-            warn "attempting to add empty value to " . ref $_[0] 
+            warn "attempting to add empty value to " . ref $_[0]
                 if not defined $_[1];
-            
+
             # first call
             # test for existance, not for definedness
             if (not exists $attribute_ref->{ $ident }) {
                 $attribute_ref->{ $ident } = $_[1];
                 return;
             }
-                
+
             if (not ref $attribute_ref->{ $ident } eq 'ARRAY') {
                 # second call: listify previous value if it's no list and add current
                 $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident }, $_[1] ];
@@ -144,10 +144,10 @@ sub _factory {
 
             # second and following: add to list
             push @{ $attribute_ref->{ $ident } }, $_[1];
-            return;                                          
+            return;
         };
-        
-        # TODO: remove this alias - we don't use it, and it's pretty much 
+
+        # TODO: remove this alias - we don't use it, and it's pretty much
         # misleading...
         *{ "$class\::$name" } = *{ "$class\::add_$name" };
     }
@@ -161,20 +161,20 @@ sub _factory {
         # my ($self, $ident, $args_of) = @_;
         #
         # The hanging side comment show you what would be there, then.
-        
-        # iterate over keys of arguments 
+
+        # iterate over keys of arguments
         # and call set appropriate field in clase
-        map { ($ATTRIBUTES_OF{ $class }->{ $_ }) 
+        map { ($ATTRIBUTES_OF{ $class }->{ $_ })
             ? do {
                  my $method = "set_$_";
                  $self->$method( $_[1]->{ $_ } );               # ( $args_of->{ $_ } );
            }
            : $_ =~ m{ \A              # beginning of string
-                      xmlns           # xmlns 
-                }xms  
+                      xmlns           # xmlns
+                }xms
                 ? do {}
-                : do { use Data::Dumper; 
-                     croak "unknown field $_ in $class. Valid fields are:\n" 
+                : do { use Data::Dumper;
+                     croak "unknown field $_ in $class. Valid fields are:\n"
                      . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
                      . "Structure given:\n" . Dumper @_ };
         } keys %{ $_[1] };                                      # %$args_of;
@@ -191,7 +191,7 @@ sub _factory {
         # return concatenated return value of serialize call of all
         # elements retrieved from get_elements expanding list refs.
         # get_elements is inlined for performance.
-        return join q{} , map {     
+        return join q{} , map {
             my $element = $ATTRIBUTES_OF{ $class }->{ $_ }->{ $ident };
 
             # do we have some content
@@ -199,38 +199,38 @@ sub _factory {
                 $element = [ $element ]
                     if not ref $element eq 'ARRAY';
                 my $name = $_;
-            
+
                 map {
                     # serialize element elements with their own serializer
                     # but name them like they're named here.
                     if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
                             $_->serialize( { name => $name } );
                     }
-                    # serialize complextype elments (of other types) with their 
+                    # serialize complextype elments (of other types) with their
                     # serializer, but add element tags around.
                     else {
                         join q{}, $_->start_tag({ name => $name })
                             , $_->serialize()
-                            , $_->end_tag({ name => $name });       
+                            , $_->end_tag({ name => $name });
                     }
                 } @{ $element }
             }
             else {
                  q{};
-            }        
+            }
         } (@{ $ELEMENTS_FROM{ $class } });
     };
 
     *{ "$class\::serialize" } = sub {
             $_[1] ||= {};   # maybe even replace by assigning a constant var
-        
-            # do we have a empty element ? 
+
+            # do we have a empty element ?
             return $_[0]->start_tag({ %{ $_[1] }, empty => 1 })
                 if not defined $ELEMENTS_FROM{ $class } or not @{ $ELEMENTS_FROM{ $class } };
             return join q{}, $_[0]->start_tag($_[1]),
                     $_[0]->_serialize(), $_[0]->end_tag();
     }
-    
+
 }
 
 1;
@@ -252,7 +252,7 @@ To subclass, write a package like this:
  use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
  
  # we only need the :get attribute qualifier.
- # set and init_arg are automatically created by 
+ # set and init_arg are automatically created by
  # SOAP::WSDL::XSD::Typelib::ComplexType
  my %first_attr_of   :ATTR(:get<first_attr>  :default<()>);
  my %second_attr_of  :ATTR(:get<second_attr> :default<()>);
@@ -274,12 +274,12 @@ To subclass, write a package like this:
     second_attr => 'My::SecondElement',
     third_attr  => 'My::ThirdElement',
  );
- 
- # call _factory 
+
+ # call _factory
  __PACKAGE__->_factory(
     \@elements_from,
     \%attributes_of,
-    \%classes_of 
+    \%classes_of,
  );
 
  1;
@@ -288,7 +288,7 @@ When subclassing, the following methods are created in the subclass:
 
 =head2 new
 
-Constructor. For your convenience, new will accept data for the object's 
+Constructor. For your convenience, new will accept data for the object's
 properties in the following forms:
 
  hash refs
@@ -296,22 +296,22 @@ properties in the following forms:
  2) of list refs
  3) of hash refs
  4) of objects
- 5) mixed stuff of all of the above 
+ 5) mixed stuff of all of the above
 
-new() will set the data via the set_FOO methods to the object's element 
-properties. 
+new() will set the data via the set_FOO methods to the object's element
+properties.
 
-Data passed to new must comply to the object's structure or new() will 
-complain. Objects passed must be of the expected type, or new() will 
+Data passed to new must comply to the object's structure or new() will
+complain. Objects passed must be of the expected type, or new() will
 complain, too.
 
 Examples:
 
- my $obj = MyClass->new({ MyName => $value });  
+ my $obj = MyClass->new({ MyName => $value });
  
  my $obj = MyClass->new({
-     MyName => { 
-         DeepName => $value 
+     MyName => {
+         DeepName => $value,
      },
      MySecondName => $value,
  });
@@ -325,27 +325,27 @@ Examples:
      MyThirdName => [ $object1, $object2 ],
  });
 
-The new() method from Class::Std will be overridden, so you should not rely 
-on it's behaviour. 
+The new() method from Class::Std will be overridden, so you should not rely
+on it's behaviour.
 
-Your START and BUILD methods are called, but the class' inheritance tree is 
+Your START and BUILD methods are called, but the class' inheritance tree is
 not traversed.
 
 =head2 set_FOO
 
-A mutator method for every element property. 
+A mutator method for every element property.
 
-For your convenience, the set_FOO methods will accept all kind of data you 
-can think of (and all combinations of them) as input - with the exception 
+For your convenience, the set_FOO methods will accept all kind of data you
+can think of (and all combinations of them) as input - with the exception
 of GLOBS and filehandles.
 
-This means you may set element properties by passing 
+This means you may set element properties by passing
 
  a) objects
- b) scalars            
+ b) scalars
  c) list refs
  d) hash refs
- e) mixed stuff of all of the above 
+ e) mixed stuff of all of the above
 
 Examples are similar to the examples provided for new() above.
 
@@ -362,7 +362,7 @@ Variants known to work are:
  sequence
  all
  complexContent containing sequence/all definitions
- 
+
 =item * Thread safety
 
 SOAP::WSDL::XSD::Typelib::Builtin uses Class::Std::Storable which uses
@@ -375,12 +375,12 @@ No facets are implemented yet.
 
 =back
 
-=head1 LICENSE
+=head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright (c) 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under 
-the same terms as perl itself
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself.
 
 =head1 AUTHOR
 
@@ -388,10 +388,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 346 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 346 2007-11-05 21:38:56Z kutterma $
+ $Id: ComplexType.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
- 
+
 =cut
 
