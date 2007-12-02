@@ -3,7 +3,10 @@ use strict;
 use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin::base64Binary;
 my $obj = SOAP::WSDL::XSD::Typelib::Builtin::base64Binary->new();
-is "$obj", '', 'stringification';
+{
+    no warnings qw(uninitialized);
+    is "$obj", '', 'stringification';
+}
 ok defined $obj;
 ok $obj->set_value('AAAA==');
 ok $obj = SOAP::WSDL::XSD::Typelib::Builtin::base64Binary->new({ value => 'AAAA==' });

@@ -11,7 +11,8 @@ use_ok(qw/SOAP::WSDL::Transport::Test/);
 $soap = SOAP::WSDL::Client->new();
 $soap->set_proxy('http://somewhere.over.the.rainbow');
 
-ok( $soap->get_transport->set_base_dir( join '/', $base_dir, 'acceptance' ) );
+$soap->get_transport->set_base_dir( join '/', $base_dir, 'acceptance' );
+ok $soap->get_transport->get_base_dir();
 
 {
     local $SIG{__WARN__} = sub {};

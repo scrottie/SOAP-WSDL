@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 9;
 use strict;
 use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin::normalizedString;
@@ -11,12 +11,14 @@ is "$obj", 'Test', 'stringification';
 
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::string'), 'inheritance';
 
+$obj->set_value(undef);
+is $obj->get_value, undef;
 $obj->set_value( "&\t\"Aber\"\n\r<test>");
-is $obj->get_value() , '& "Aber"  <test>';
+is $obj->get_value() , '& "Aber" <test>';
     
-is $obj, '&amp; &qout;Aber&qout;  &lt;test&gt;'
+is $obj->serialize, '&amp; &quot;Aber&quot; &lt;test&gt;'
     , 'escape text on serialization';
     
 is $obj->serialize({ name => 'test'})
-    , '<test >&amp; &qout;Aber&qout;  &lt;test&gt;</test >'
+    , '<test >&amp; &quot;Aber&quot; &lt;test&gt;</test >'
     , 'Serialization with name';

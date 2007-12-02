@@ -43,7 +43,9 @@ $generator->set_output(undef);
 $generator->generate();
 #$generator->generate_typelib();
 #$generator->generate_typemap();
-#$generator->generate_interface();
+$generator->generate_interface();
+
+$generator->generate_server();
 
 eval "use lib '$path/testlib'";
 use_ok qw( MyInterfaces::testService::testPort );

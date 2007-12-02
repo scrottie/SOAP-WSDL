@@ -2,9 +2,9 @@
 package SOAP::WSDL::Serializer::XSD;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 
-our $VERSION='2.00_24';
+our $VERSION=q{2.00_25};
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 my $XML_INSTANCE_NS = 'http://www.w3.org/2001/XMLSchema-instance';
@@ -113,9 +113,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: XSD.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
  
 =cut

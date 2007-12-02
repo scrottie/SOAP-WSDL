@@ -2,7 +2,7 @@
 package SOAP::WSDL::XSD::Typelib::Element;
 use strict;
 
-our $VERSION = '2.00_24';
+our $VERSION=q{2.00_25};
 
 my %NAME;
 my %NILLABLE;
@@ -93,7 +93,7 @@ This example creates a class for this XML schema definition:
 
  package MyElement;
  use strict;
- use Class::Std::Storable;
+ use Class::Std::Fast::Storable constructor => 'none';
  use base (
     'SOAP::WSDL::XSD::Typelib::Element',
     'SOAP::WSDL::XSD::Typelib::Builtin::string',
@@ -111,7 +111,7 @@ Now we create this XML schema definition type class:
  
  package MyElement2;
  use strict;
- use Class::Std::Storable;
+ use Class::Std::Fast::Storable constructor => 'none';
  use base (
     'SOAP::WSDL::XSD::Typelib::Element',
     'MyElement'

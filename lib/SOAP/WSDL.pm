@@ -1,16 +1,20 @@
 package SOAP::WSDL;
 use strict;
 use warnings;
+
+use 5.008;  # require at least perl 5.8
+
 use vars qw($AUTOLOAD);
+
 use Carp;
 use Scalar::Util qw(blessed);
 use SOAP::WSDL::Client;
 use SOAP::WSDL::Expat::WSDLParser;
-use Class::Std;
+use Class::Std::Fast;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-our $VERSION='2.00_17';
+our $VERSION= '2.00_25';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -81,7 +85,7 @@ for my $method (keys %LOOKUP ) {
 
     sub new {
         my ($class, %args_from) = @_;
-        my  $self = \do { my $foo = undef };
+        my  $self = \do { my $foo = Class::Std::Fast::ID() };
         bless $self, $class;
         for (keys %args_from) {
             my $method = $self->can("set_$_")
@@ -116,9 +120,7 @@ sub wsdlinit {
     # sanity checks
     my $types = $wsdl_definitions->first_types()
         or croak "unable to extract schema from WSDL";
-    my $ns = $wsdl_definitions->get_xmlns()
-        or croak "unable to extract XML Namespaces" . $wsdl_definitions->to_string;
-    ( %{ $ns } ) or croak "unable to extract XML Namespaces";
+    my $ns = $wsdl_definitions->get_xmlns();
 
     # setup lookup variables
     $definitions_of{ $ident }  = $wsdl_definitions;
@@ -153,7 +155,7 @@ sub _wsdl_get_binding :PRIVATE {
     my $self = shift;
     my $ident = ident $self;
     my $wsdl = $definitions_of{ $ident };
-    my $port = $port_of{ $ident } || $self->_wsdl_get_port();
+    my $port = $self->_wsdl_get_port();
     $binding_of{ $ident } = $wsdl->find_binding( $port->expand( $port->get_binding() ) )
         or croak "no binding found for ", $port->get_binding();
     return $binding_of{ $ident };
@@ -162,7 +164,7 @@ sub _wsdl_get_portType :PRIVATE {
     my $self    = shift;
     my $ident   = ident $self;
     my $wsdl    = $definitions_of{ $ident };
-    my $binding = $binding_of{ $ident } || $self->_wsdl_get_binding();
+    my $binding = $self->_wsdl_get_binding();
     $porttype_of{ $ident } = $wsdl->find_portType( $binding->expand( $binding->get_type() ) )
         or croak "cannot find portType for " . $binding->get_type();
     return $porttype_of{ $ident };
@@ -175,13 +177,11 @@ sub _wsdl_init_methods :PRIVATE {
 
     # get bindings, portType, message, part(s) - use private methods for clear separation...
     $self->_wsdl_get_service if not ($service_of{ $ident });
-    my $binding = $binding_of{ $ident } || $self->_wsdl_get_binding()
-           || croak "Can't find binding";
-    my $portType = $porttype_of{ $ident } || $self->_wsdl_get_portType();
+    $self->_wsdl_get_portType();
 
     $method_info_of{ $ident } = {};
 
-    foreach my $binding_operation (@{ $binding->get_operation() })
+    foreach my $binding_operation (@{ $binding_of{ $ident }->get_operation() })
     {
         my $method = {};
 
@@ -193,7 +193,7 @@ sub _wsdl_init_methods :PRIVATE {
 
         # get parts
         # 1. get operation from port
-        my $operation = $portType->find_operation( $ns,
+        my $operation = $porttype_of{ $ident }->find_operation( $ns,
             $binding_operation->get_name() );
 
         # 2. get input message name
@@ -236,7 +236,7 @@ sub _wsdl_init_methods :PRIVATE {
 
 sub call {
     my ($self, $method, @data_from) = @_;
-    my $ident = ident $self;
+    my $ident = ${ $self };
 
     my ($data, $header) = ref $data_from[0]
       ? ($data_from[0], $data_from[1] )
@@ -730,9 +730,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: WSDL.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

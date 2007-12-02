@@ -1,7 +1,7 @@
 package SOAP::WSDL::XSD::Schema::Builtin;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use SOAP::WSDL::XSD::Schema;
 use SOAP::WSDL::XSD::Builtin;
 use base qw(SOAP::WSDL::XSD::Schema);
@@ -88,9 +88,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 412 $
  $LastChangedBy: kutterma $
- $Id: Builtin.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Builtin.pm 412 2007-11-27 22:57:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Schema/Builtin.pm $
  
 =cut

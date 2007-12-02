@@ -1,16 +1,16 @@
 #!/usr/bin/perl -w
 %DB::packages=(SOAP::WSDL::Expat::MessageParser => 1);
-%DB::packages=(SOAP::WSDL::Expat::MessageParser => 1);
 use strict;
 use warnings;
 use lib '../lib';
-use lib 'lib';
+use lib '../../Class-Std-Fast/lib';
 use lib '../t/lib';
 # use SOAP::WSDL::SAX::MessageHandler;
 
 use Benchmark qw(cmpthese timethese);
 use SOAP::WSDL::Expat::MessageParser;
 use SOAP::WSDL::Expat::Message2Hash;
+use SOAP::Lite;
 use XML::Simple;
 use XML::LibXML;
 use MyComplexType;
@@ -54,6 +54,8 @@ print "xml length: ${ \length $xml } bytes\n";
 my $libxml = XML::LibXML->new();
 $libxml->keep_blanks(0);
 my @data;
+
+my $deserializer = SOAP::Deserializer->new();
 
 sub libxml_test { 
         my $dom = $libxml->parse_string( $xml );
@@ -100,10 +102,8 @@ cmpthese 5000,
   'XML::Simple (Hash)' => sub { push @data, XMLin $xml },
   'XML::LibXML (DOM)' => sub { push @data,  $libxml->parse_string( $xml ) },
   'XML::LibXML (Hash)' => \&libxml_test,
+  'SOAP::Lite' => sub { push @data, $deserializer->deserialize( $xml ) },
 };
-
-
-# for (1..10000) { push @data, $parser->parse( $xml ) };
 
 # data classes reside in t/lib/Typelib/
 BEGIN {
@@ -114,6 +114,8 @@ BEGIN {
             'MyAtomicComplexTypeElement/test' => 'MyAtomicComplexTypeElement',
             'MyAtomicComplexTypeElement/test/test2' => 'MyTestElement2',
         );
+
+        sub get_typemap { return \%class_list; };
 
         sub get_map { return \%class_list };
 

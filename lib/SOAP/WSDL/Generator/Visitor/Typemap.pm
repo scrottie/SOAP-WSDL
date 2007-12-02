@@ -1,9 +1,11 @@
 package SOAP::WSDL::Generator::Visitor::Typemap;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Generator::Visitor);
+
+our $VERSION = q{2.00_25};
 
 my %path_of             :ATTR(:name<path>           :default<[]>);
 my %typemap_of          :ATTR(:name<typemap>        :default<()>);
@@ -18,6 +20,7 @@ sub START {
 
 sub set_typemap_entry {
     my ($self, $value) = @_;
+    # warn join( q{/}, @{ $path_of{ ident $self } }) . " => $value";
     $typemap_of{ ident $self }->{
         join( q{/}, @{ $path_of{ ident $self } } )
     } = $value;
@@ -145,16 +148,21 @@ sub process_referenced_type {
     # get type's class name
     # Caveat: visits type if it's a referenced type from the
     # a ? b : c operation.
-    my $typeclass =
-      ( $ns eq 'http://www.w3.org/2001/XMLSchema' )
-      ? "SOAP::WSDL::XSD::Typelib::Builtin::$localname"
-      : do {
-        my $type =
-          $self->get_definitions()->first_types()->find_type( $ns, $localname );
-        $type->_accept($self);
-        join( q{::}, $type_prefix_of{$ident}, $type->get_name() );
-      };
+    my ($type, $typeclass);
+    if ( $ns eq 'http://www.w3.org/2001/XMLSchema' ) {
+        $typeclass = "SOAP::WSDL::XSD::Typelib::Builtin::$localname";
+    }
+    else {
+        $type = $self->get_definitions()->first_types()->find_type( $ns, $localname );
+        $typeclass = join( q{::}, $type_prefix_of{$ident}, $type->get_name() );
+    }
 
+    # set before to allow it to be used from inside _accept
+    $self->set_typemap_entry($typeclass);
+
+    $type->_accept($self) if ($type);
+
+    # set afterwards again (just to be sure...)
     $self->set_typemap_entry($typeclass);
     return $self;
 }
@@ -171,8 +179,10 @@ sub process_atomic_type {
 sub visit_XSD_Element {
     my ( $self, $ident, $element ) = ( $_[0], ident $_[0], $_[1] );
 
-    # TODO: what about element ref="" ?
-    # when we're hopping from one element to the next one...
+    # warn "simpleType " . $element->get_name();
+    my @path = @{ $path_of{ ${ $self } } };
+    my $path = join '/', @path;
+    my $parent = $typemap_of{ ${ $self } }->{ $path };
 
     # step down in tree
     $self->add_element_path( $element );
@@ -181,18 +191,27 @@ sub visit_XSD_Element {
     # They all just return if no argument is given,
     # and return $self on success.
     SWITCH: {
-    if ($element->get_type) {
-        $self->process_referenced_type( $element->expand( $element->get_type() ) )
+        if ($element->get_type) {
+            $self->process_referenced_type( $element->expand( $element->get_type() ) )
                 && last;
         }
-        # for atomic simple and comples types , and ref elements
+
+        # atomic simpleType typemap rule:
+        # if we have a parent, use parent's sub-package.
+        # if not, use element package.
+        if ($element->get_simpleType()) {
+            # warn "simpleType " . $element->get_name();
+            my @path = @{ $path_of{ ${ $self } } };
+            my $typeclass = defined ($parent)
+                ? join '::_', $parent , $element->get_name()
+                : join q{::}, $element_prefix_of{$ident}, $element->get_name();
+            $self->set_typemap_entry($typeclass);
+            last SWITCH;
+        }
+
+        # for atomic and complex types , and ref elements
         my $typeclass = join q{::}, $element_prefix_of{$ident}, $element->get_name();
-
         $self->set_typemap_entry($typeclass);
-
-        # kind of double-dispatch: returns true on success, but does nothing
-        $self->process_atomic_type( $element->first_simpleType() )
-            && last;
 
         $self->process_atomic_type( $element->first_complexType()
             , sub { $_[1]->_accept($_[0]) } )
@@ -200,6 +219,15 @@ sub visit_XSD_Element {
 
         # TODO: add element ref handling
     };
+
+    # Safety measure. If someone defines a top-level element with
+    # a normal (not atomic) type, we just override it here
+    if (not defined($parent)) {
+        # for atomic and complex types , and ref elements
+        my $typeclass = join q{::}, $element_prefix_of{$ident}, $element->get_name();
+        $self->set_typemap_entry($typeclass);
+    }
+
     # step up in hierarchy
     pop @{ $path_of{$ident} };
 }

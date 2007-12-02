@@ -1,11 +1,11 @@
 package SOAP::WSDL::Base;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use Carp qw(croak carp confess);
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_25';
 
 my %id_of :ATTR(:name<id> :default<()>);
 my %name_of :ATTR(:name<name> :default<()>);
@@ -91,13 +91,8 @@ sub init {
     {
         croak @args if (not defined ($value->{ Name }));
         if ($value->{ Name } =~m{^xmlns\:}xms) {
-            croak $xmlns_of{ ident $self }
-                if ref $xmlns_of{ ident $self } ne 'HASH';
-
             # add namespaces
-            $xmlns_of{ ident $self }->{ $value->{ Value } } =
-                $value->{ LocalName };
-
+            $xmlns_of{ ident $self }->{ $value->{ LocalName } } = $value->{ Value };
             next;
         }
         elsif ($value->{ Name } =~m{^xmlns$}xms) {
@@ -116,13 +111,15 @@ sub init {
 sub expand {
     my ($self, , $qname) = @_;
     my ($prefix, $localname) = split /:/x, $qname;
-    my %ns_map = reverse %{ $self->get_xmlns() };
+    # my %ns_map = reverse %{ $self->get_xmlns() };
+    my %ns_map = %{ $self->get_xmlns() };
     return ($ns_map{ $prefix }, $localname) if ($ns_map{ $prefix });
 
     if (my $parent = $self->get_parent()) {
         return $parent->expand($qname);
     }
-    confess "unbound prefix $prefix found for $prefix:$localname";
+    confess "unbound prefix $prefix found for $prefix:$localname. Bound prefixes are"
+        . join(', ', keys %ns_map);
 }
 sub _expand;
 *_expand = \&expand;

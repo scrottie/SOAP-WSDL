@@ -1,4 +1,4 @@
-use Test::More tests => 4;
+use Test::More tests => 7;
 use strict;
 use warnings;
 use lib '../lib';
@@ -34,3 +34,9 @@ while (my ($date, $converted) = each %dates ) {
     is $obj->get_value() , $converted . timezone($date), 'conversion with timezone';
 }
 $obj->set_value('2007-12-31T00:00:00.0000000+01:00');
+is $obj->get_value(), '2007-12-31T00:00:00.0000000+01:00';
+
+$obj->set_value(undef);
+is $obj->get_value(), undef;
+eval { $obj->set_value(1) };
+ok $@, 'Die on illegal datetime';

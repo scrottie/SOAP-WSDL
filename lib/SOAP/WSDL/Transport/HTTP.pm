@@ -20,9 +20,10 @@ sub send_receive {
         @parameters{qw(envelope action endpoint encoding content_type)};
 
     $encoding = defined($encoding)
-        ? 'utf8'
-        : lc($encoding);
+        ? lc($encoding)
+        : 'utf8';
 
+    $content_type = 'text/xml' if not defined($content_type);
     # what's this all about?
     # unfortunately combination of LWP and Perl 5.6.1 and later has bug
     # in sending multibyte characters. LWP uses length() to calculate
@@ -87,9 +88,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 399 $
  $LastChangedBy: kutterma $
- $Id: HTTP.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: HTTP.pm 399 2007-11-19 19:20:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
  
 =cut

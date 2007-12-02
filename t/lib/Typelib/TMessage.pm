@@ -1,6 +1,7 @@
 package Typelib::TMessage;
 use strict;
 use base qw(Typelib::Base);
+use Class::Std::Fast constructor => 'basic';
 
 my %MRecipientURI_of   :ATTR(:name<MRecipientURI> :default<()>);
 my %MMessageContent_of :ATTR(:name<MMessageContent> :default<()>);
@@ -23,4 +24,5 @@ my %attributes_of       :ATTR();
 # make a add_BLA method for every attribute
 __PACKAGE__->mk_add_mutators( \%attributes_of );
 
+Class::Std::Fast::initialize();
 1;

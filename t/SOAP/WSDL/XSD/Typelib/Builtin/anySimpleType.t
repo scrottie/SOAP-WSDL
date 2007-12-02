@@ -1,11 +1,18 @@
 use strict;
 use warnings;
-use Test::More tests => 20;
+use Test::More tests => 23;
 use Scalar::Util qw(blessed);
 use lib '../../../../../../lib';
 use_ok qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
 my $obj = SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new();
+
+my $id = ${ $obj };
+undef $obj;
+
+$obj = SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new();
+
+is ${ $obj }, $id;
 
 ok blessed $obj, 'constructor returned blessed reference';
 
@@ -23,7 +30,8 @@ is $obj->end_tag({ name => 'test' }), '</test >', 'end_tag';
 ok $obj->set_value('test'), 'set_value';
 is $obj->get_value(), 'test', 'get_value';
 
-is "$obj", q{test}, 'serialize overloading';
+is "$obj", q{test}, 'stringification overloading';
+is $obj->serialize, q{test}, 'stringification overloading';
 
 ok ($obj)
     ? pass 'boolean overloading'
@@ -32,7 +40,11 @@ ok ($obj)
 ok ! $obj->set_value(undef), 'set_value with explicit undef';
 is $obj->get_value(), undef, 'get_value';
 
-is "$obj", q{}, 'stringification overloading';
+{
+    no warnings qw(uninitialized);
+    is "$obj", q{}, 'stringification overloading';
+}
+is $obj->serialize, q{}, 'stringification overloading';
 
 ok $obj = SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new({
     value => 'test2',

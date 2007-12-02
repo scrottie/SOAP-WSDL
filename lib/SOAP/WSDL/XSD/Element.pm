@@ -1,10 +1,10 @@
 package SOAP::WSDL::XSD::Element;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION='2.00_22';
+our $VERSION=q{2.00_25};
 
 my %annotation_of   :ATTR(:name<annotation> :default<()>);
 my %simpleType_of   :ATTR(:name<simpleType> :default<()>);
@@ -42,7 +42,7 @@ sub serialize {
     my ($self, $name, $value, $opt) = @_;
     my $type;
     my $typelib = $opt->{ typelib };
-    my %ns_map = reverse %{ $opt->{ namespace } };
+    my %ns_map = %{ $opt->{ namespace } };
     my $ident = ident $self;
 
     # abstract elements may only be serialized via ref - and then we have a

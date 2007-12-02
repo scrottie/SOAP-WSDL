@@ -26,14 +26,10 @@ my $definitions = $parser->get_data();
 
 $definitions->_accept( $visitor );
 
-#use Data::Dumper;
-#print Dumper $visitor->get_typemap();
-
 my $typemap = $visitor->get_typemap();
 is $typemap->{'EnqueueMessage/MMessage/MKeepalive'}, 'MyTypes::TKeepalive', 'content';
-is $typemap->{'EnqueueMessageResponse'}, 'MyTypes::TMessageID', 'content';
-is $typemap->{'KeepaliveMessageResponse'}, 'MyTypes::TMessageID', 'content';
-
+is $typemap->{'EnqueueMessageResponse'}, 'MyElements::EnqueueMessageResponse', 'content';
+is $typemap->{'KeepaliveMessageResponse'}, 'MyElements::KeepaliveMessageResponse', 'content';
 
 sub wsdl {
 q{<?xml version="1.0" encoding="UTF-8"?>

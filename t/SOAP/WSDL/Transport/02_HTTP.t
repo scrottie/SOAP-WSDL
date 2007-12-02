@@ -11,10 +11,10 @@ ok $transport->code(200);
 ok $transport->status('200 OK');
 ok $transport->message('OK');
 
-$transport->send_receive(envelope => 'Test', action => 'foo');
+my $result = $transport->send_receive(envelope => 'Test', action => 'foo');
 
 ok ! $transport->is_success();
 
-$transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ', 
+$result = $transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ', 
     action => 'foo');
 ok ! $transport->is_success();

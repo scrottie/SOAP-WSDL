@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 package MyComplexType;
 use strict;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 use lib '../../lib';
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use base ('SOAP::WSDL::XSD::Typelib::ComplexType');

@@ -19,7 +19,7 @@ ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
     , 'inherited class';
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::list')
     , 'inherited class';
-is $obj, 'test test2', 'stringification';
+is $obj->serialize(), 'test test2', 'stringification';
 
 # simple type derived from atomic simple type (restriction)
 $obj = MyAtomicSimpleType->new({ value => 'test' });
@@ -33,4 +33,4 @@ $obj = MyAtomicSimpleListType->new({ value => [ 'test', 'test2' ] });
 ok $obj->isa('MySimpleListType') , 'inherited class';
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::SimpleType::restriction')
     , 'inherited class';
-is $obj, 'test test2', 'stringification';
+is $obj->serialize(), 'test test2', 'stringification';

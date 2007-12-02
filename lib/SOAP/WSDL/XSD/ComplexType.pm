@@ -2,11 +2,11 @@ package SOAP::WSDL::XSD::ComplexType;
 use strict;
 use warnings;
 use Carp;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw/SOAP::WSDL::Base/;
 
-our $VERSION='2.00_17';
+our $VERSION=q{2.00_25};
 
 my %annotation_of   :ATTR(:name<annotation> :default<()>);
 my %element_of      :ATTR(:name<element>    :default<()>);
@@ -78,7 +78,9 @@ sub serialize {
 
     if ( $opt->{ autotype }) {
       my $ns = $self->get_targetNamespace();
-      my $prefix = $opt->{ namespace }->{ $ns }
+      # reverse namespace by prefix hash
+      my %prefix_of = reverse %{ $opt->{ namespace } };
+      my $prefix = $prefix_of{ $ns }
         || die 'No prefix found for namespace '. $ns;
       $xml .= join q{}, " type=\"$prefix:", $self->get_name(), '" '
         if ($self->get_name() );

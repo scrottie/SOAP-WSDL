@@ -18,6 +18,7 @@ my %opt = (
   base_path => 'lib/',
   proxy => undef,
   generator => 'XSD',
+  server => 0,
 );
 
 {   # a block just to scope "no warnings"
@@ -59,6 +60,7 @@ GetOptions(\%opt,
     user=s
     password=s
     generator=s
+    server
   )
 );
 
@@ -114,7 +116,8 @@ $generator->set_wsdl($xml) if $generator->can('set_wsdl');
 
 # start with typelib, as errors will most likely occur here...
 $generator->generate();
-
+$generator->generate_interface() if ! $opt{server};
+$generator->generate_server() if $opt{server};
 __END__
 
 =pod
@@ -153,6 +156,8 @@ wsdl2perl.pl - create perl bindings for SOAP webservices.
  password              Password. wsdl2perl will prompt if not given.
  generator         g   Generator to use. 
                        Default: XSD 
+ server            s   Generate a server interface (currently only CGI
+                       supported)
  help              h   Show help content
 
 =head1 DESCRIPTION
@@ -168,6 +173,13 @@ The following classes are created:
 
 Interface classes are what you will mainly deal with: They provide a method 
 for accessing every web service method.
+
+If you chose to generate Server interfaces, a class for every SOAP port in
+every Web service.
+
+You'll have to implement a method for each of the implemented methods. You
+may implement these methods in the CGI script / handler, or in any class
+to dispatch calls to.
 
 =item * A typemap for every service
 

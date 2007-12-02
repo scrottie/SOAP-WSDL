@@ -1,8 +1,10 @@
 package SOAP::WSDL::XSD::Schema;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
+
+our $VERSION=q{2.00_25};
 
 # child elements
 my %type_of :ATTR(:name<type> :default<[]>);

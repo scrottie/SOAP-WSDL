@@ -34,6 +34,53 @@ Features:
 
 The following changes have been made:
 
+2.00_25
+---
+WARNING: INCOMPATIBLE CHANGE:
+
+   SOAP::WSDL now uses Class::Std::Fast. Read the MIGRATING guide for 
+   upgrading from previous versions.
+   You probably need to re-generate all your interfaces.
+
+WARNING: INCOMPATIBLE CHANGE:
+
+   SOAP::WSDL::XSD::Typelib::anySimpleType based objects no longer serialize 
+   to their XML value on stringification.
+   This means that strings are no longer XML-escaped when the simpleType 
+   containing the string is printed or used like this:
+
+    my $value = "$simpleType";
+
+   Note that ComplexType objects still serialize to their XML on 
+   stringification. This Change is due to the demands of applications 
+   embedding SOAP::WSDL::XSD::Typelib objects in templates - it would mean 
+   a nasty ->get_value for every (simple) value.
+
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1837347 ] Use Class::Std::Fast
+   Class::Std::Fast allows optimizations which almost double SOAP::WSDL's
+   performance and reduce code size. Class::Std::Fast also opens the door
+   for even faster XS implementations.
+   * [ 1842436 ] Add SOAP Server
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+   * [ 1842418 ] Message parser eats up whitespaces between entities
+   * [ 1839820 ] encoding parameter of Content-Type header set incorrectly
+   * [ 1839851 ] token in UPPERCASE in default typemap
+   * [ 1839690 ] Can't use two prefixes for namespace in WSDL
+   * [ 1839833 ] incorrect encoding/decoding of double-quote
+
+The following uncategorized improvements have been made:
+
+   * Errors in typemap generation have been fixed
+   * XML parser speedups
+   * The test suite has been improved
+
 2.00_24
 ---
 The following features were added (the numbers in square brackets are the 
@@ -83,7 +130,6 @@ The following uncategorized improvements have been made:
 
    * Code cleanup. The XSD library has been cleaned up a bit. Should result 
    in a minor speedup in serializing and deserializing XML messages,
-
 
 2.00_21 - not released
 ----

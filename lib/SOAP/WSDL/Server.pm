@@ -1,0 +1,181 @@
+package SOAP::WSDL::Server;
+use strict;
+use warnings;
+use Class::Std::Fast::Storable;
+use Scalar::Util qw(blessed);
+use SOAP::WSDL::Factory::Deserializer;
+use SOAP::WSDL::Factory::Serializer;
+
+our $VERSION = q{2.00_25};
+
+my %dispatch_to_of      :ATTR(:name<dispatch_to> :default<()>);
+my %action_map_ref_of   :ATTR(:name<action_map_ref> :default<{}>);
+my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
+my %deserializer_of     :ATTR(:name<deserializer>   :default<()>);
+my %serializer_of       :ATTR(:name<serializer>   :default<()>);
+
+sub handle {
+    my $self = shift;
+    my $ident = ident $self;
+    # this involves copying the request...
+    my $request = shift;                                                # once
+
+    # we only support 1.1 now...
+    $deserializer_of{ $ident } ||= SOAP::WSDL::Factory::Deserializer->get_deserializer({
+        soap_version => '1.1'
+    });
+    $serializer_of{ $ident } ||= SOAP::WSDL::Factory::Serializer->get_serializer({
+        soap_version => '1.1'
+    });
+
+# TODO: factor out dispatcher logic into dispatcher factory + dispatcher 
+# classes
+#    $dispatcher_of{ $ident } ||= SOAP::WSDL::Factory::Dispatcher->get_dispatcher({});
+
+    # set class resolver if deserializer supports it
+    $deserializer_of{ $ident }->set_class_resolver( $class_resolver_of{ $ident } )
+        if ( $deserializer_of{ $ident }->can('set_class_resolver') );
+
+    # Try deserializing response
+    my ($body, $header) = eval {
+       $deserializer_of{ $ident }->deserialize( $request->content() );
+    };
+    if ($@) {
+        die $deserializer_of{ $ident }->generate_fault({
+                code => 'soap:Server',
+                role => 'urn:localhost',
+                message => "Error deserializing message: $@. \n"
+            });
+    };
+    if (blessed($body) && $body->isa('SOAP::WSDL::SOAP::Typelib::Fault11')) {
+        die $body;
+    }
+
+    # lookup method name by SOAPAction
+    my $soap_action = $request->header('SOAPAction');
+    $soap_action = '' if not defined $soap_action;
+    $soap_action =~s{ \A(?:"|')(.+)(?:"|') \z }{$1}xms;
+    my $method_name = $action_map_ref_of{ $ident }->{ $soap_action };
+
+#    $dispatcher_of{ $ident }->dispatch({
+#        soap_action => $soap_action,
+#        request_body => $body,
+#        request_header => $header,
+#    });
+
+    if (!$dispatch_to_of{ $ident }) {
+        die $deserializer_of{ $ident }->generate_fault({
+                code => 'soap:Server',
+                role => 'urn:localhost',
+                message => "No handler registered",
+            });
+    };
+
+    if (! defined $request->header('SOAPAction') ) {
+        die $deserializer_of{ $ident }->generate_fault({
+                code => 'soap:Server',
+                role => 'urn:localhost',
+                message => "Not found: No SOAPAction given",
+            });
+    };
+
+    if (! defined $method_name) {
+        die $deserializer_of{ $ident }->generate_fault({
+                code => 'soap:Server',
+                role => 'urn:localhost',
+                message => "Not found: No method found for the SOAPAction '$soap_action'",
+            });
+    };
+
+    # find method in handling class/object
+    my $method_ref = $dispatch_to_of{ $ident }->can($method_name);
+
+    if (!$method_ref) {
+        die $deserializer_of{ $ident }->generate_fault({
+                code => 'soap:Server',
+                role => 'urn:localhost',
+                message => "Not implemented: The handler does not implement the method $method_name",
+            });
+    };
+
+    my ($response_body, $response_header) = $method_ref->($dispatch_to_of{ $ident }, $body, $header );
+
+    return $serializer_of{ $ident }->serialize({
+        body => $response_body,
+        header => $response_header,
+    });
+}
+
+1;
+
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Server - WSDL based SOAP server base class
+
+=head1 SYNOPSIS
+
+Don't use directly, use the SOAP::WSDL::Server::* subclasses
+instead.
+
+=head1 DESCRIPTION
+
+SOAP::WSDL::Server basically follows the architecture sketched below
+(though dispatcher classes are not implemented yet)
+
+ SOAP Request           SOAP Response
+       |                     ^
+       V                     |
+  ------------------------------------------
+ |       SOAP::WSDL::Server                 |
+ |  --------------------------------------  |
+ | | Transport Class                      | |
+ | |--------------------------------------| |
+ | | Deserializer       | Serializer      | |
+ | |--------------------------------------| |
+ | | Dispatcher                           | |
+ |  --------------------------------------  |
+  ------------------------------------------
+      | calls                 ^
+      v                       | returns
+   -------------------------------------
+  |   Handler                           |
+   -------------------------------------
+
+All of the components (Transport class, deserializer, dispatcher and 
+serializer) are implemented as plugins.
+
+The architecture is not implemented as planned yet, but the dispatcher is 
+currently part of SOAP::WSDL::Server, which aggregates serializer and
+deserializer, and is subclassed by transport classes (of which 
+SOAP::WSDL::Server::CGI is the only implemented one yet).
+
+The dispatcher is currently based on the SOAPAction header. This does not
+comply to the WS-I basic profile, which declares the SOAPAction as optional.
+
+The final dispatcher will be based on wire signatures (i.e. the classes
+of the deserialized messages).
+
+A hash-based dispatcher could be implemented by examining the top level
+hash keys.
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2004-2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under the same
+terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 391 $
+ $LastChangedBy: kutterma $
+ $Id: Client.pm 391 2007-11-17 21:56:13Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
+
+=cut

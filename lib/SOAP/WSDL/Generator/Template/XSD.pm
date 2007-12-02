@@ -1,9 +1,11 @@
 package SOAP::WSDL::Generator::Template::XSD;
 use strict;
 use Template;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use File::Basename;
 use File::Spec;
+
+our $VERSION = q{2.00_25};
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Visitor::Typelib;
@@ -32,7 +34,7 @@ sub BUILD {
             );
             $dir = File::Spec->catdir($dir, $file, 'XSD');
             # return path put together...
-            my $path = File::Spec->catpath( $volume, $dir );
+            my $path = File::Spec->catpath( $volume, $dir , q{});
 
             # Fixup path for windows - / works fine, \ does
             # not...
@@ -48,7 +50,7 @@ sub generate {
     my $self = shift;
     my $opt = shift;
     $self->generate_typelib( $opt );
-    $self->generate_interface( $opt );
+#    $self->generate_interface( $opt );
     $self->generate_typemap( $opt );
 }
 
@@ -63,11 +65,42 @@ sub generate_typelib {
     return;
 }
 
+sub generate_server {
+    my $self = shift;
+    my $ident = ident $self;
+    my $arg_ref = shift;
+    for my $service (@{ $self->get_definitions->get_service }) {
+        for my $port (@{ $service->get_port() }) {
+            # Skip ports without (known) address
+            next if not $port->first_address;
+            next if not $port->first_address->isa('SOAP::WSDL::SOAP::Address');
+
+            my $port_name = $port->get_name;
+            $port_name =~s{ \A .+\. }{}xms;
+            my $output = $arg_ref->{ output }
+                ? $arg_ref->{ output }
+                : $self->_generate_filename(
+                    $self->get_server_prefix(),
+                    $service->get_name(),
+                    $port_name,
+            );
+            print "Creating interface class $output\n";
+
+            $self->_process('Server.tt',
+            {
+                service => $service,
+                port => $port,
+                NO_POD => $arg_ref->{ NO_POD } ? 1 : 0 ,
+             },
+            $output, binmode => ':utf8');
+        }
+    }
+}
+
 sub generate_interface {
     my $self = shift;
     my $ident = ident $self;
     my $arg_ref = shift;
-    my $tt = $self->get_tt();
     for my $service (@{ $self->get_definitions->get_service }) {
         for my $port (@{ $service->get_port() }) {
             # Skip ports without (known) address
@@ -105,7 +138,7 @@ sub generate_typemap {
         typemap => {
             'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
             'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
-            'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
+            'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::token',
             'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             %{ $typemap_of{ident $self }},

@@ -2,10 +2,19 @@
 package SOAP::WSDL::Expat::MessageParser;
 use strict;
 use warnings;
+use Carp qw(croak confess);
+
+our $VERSION = q{2.00_25};
+
 use SOAP::WSDL::XSD::Typelib::Builtin;
+use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
+
 use base qw(SOAP::WSDL::Expat::Base);
 
-our $VERSION = '2.00_24';
+require Class::Std::Fast;
+my $OBJECT_CACHE_REF = Class::Std::Fast::OBJECT_CACHE_REF();
+
+my %LOADED_OF = ();
 
 sub new {
     my ($class, $args) = @_;
@@ -13,14 +22,39 @@ sub new {
         class_resolver => $args->{ class_resolver },
         strict => exists $args->{ strict } ? $args->{ strict } : 1,
     };
+
     bless $self, $class;
+    $self->load_classes() if ($args->{ class_resolver });
     return $self;
 }
 
 sub class_resolver {
     my $self = shift;
-    $self->{ class_resolver } = shift if @_;
+    if (@_) {
+        $self->{ class_resolver } = shift;
+        $self->load_classes();
+    }
     return $self->{ class_resolver };
+}
+
+sub load_classes {
+    my $self = shift;
+
+    return if $LOADED_OF{ $self->{ class_resolver } };
+
+    for (values %{ $self->{ class_resolver }->get_typemap }) {
+        no strict qw(refs);
+        my $class = $_;
+
+        # a bad test - do you know a better one?
+        next if $class eq '__SKIP__';
+        next if defined @{ "$class\::ISA"}; # check if namespace exists
+
+        $class =~s{ :: }{/}xmsg;
+        $class .= '.pm';
+        require $class;
+    }
+    $LOADED_OF{ $self->{ class_resolver } } = 1;
 }
 
 sub _initialize {
@@ -31,13 +65,15 @@ sub _initialize {
     delete $self->{ header };
 
     my $characters;
-    #my @characters_from = ();
+
+    # Note: $current MUST be undef - it is used as sentinel
+    # on the object stack via if (! defined $list->[-1])
+    # DON'T set it to anything else !
     my $current = undef;
-    my $list = [];                      # node list
+    my $list = [];                      # node list (object stack)
+
     my $path = [];                      # current path
     my $skip = 0;                       # skip elements
-    my $current_part = q{};             # are we in header or body ?
-
     my $depth = 0;
 
     my %content_check = $self->{strict}
@@ -65,28 +101,32 @@ sub _initialize {
         )
         : ();
 
+    # use "globals" for speed
+    my ($_prefix, $_method,
+        $_class, $_leaf) = ();
+
     my $char_handler = sub {
-            # push @characters_from, $_[1] if $_[1] =~m{ [^s] }xms;
-            $characters .= $_[1] if $_[1] =~m{ [^\s] }xms;
+            return if (!$_leaf);    # we only want characters in leaf nodes
+
+            $characters .= $_[1];
+#                if $_[1] =~m{ [^\s] }xms;
 
             return;
     };
-
-    # use "globals" for speed
-    my ($_prefix, $_method,
-        $_class) = ();
 
     no strict qw(refs);
     $parser->setHandlers(
         Start => sub {
             # my ($parser, $element, %_attrs) = @_;
-            # $depth = $parser->depth();
+
+            $_leaf = 1;  # believe we're a leaf node until we see an end
 
             # call methods without using their parameter stack
             # That's slightly faster than $content_check{ $depth }->()
             # and we don't have to pass $_[1] to the method.
             # Yup, that's dirty.
-            return &{$content_check{ $depth }} if exists $content_check{ $depth };
+            return &{$content_check{ $depth }}
+                if exists $content_check{ $depth };
 
             push @{ $path }, $_[1];       # step down in path
             return if $skip;               # skip inside __SKIP__
@@ -102,31 +142,35 @@ sub _initialize {
                 return;
             }
 
-            push @$list, $current;   # step down in tree (remember current)
+            # step down in tree (remember current)
+            #
+            # on the first object (after skipping Envelope/Body), $current
+            # is undef.
+            # We put it on the stack, anyway, and use it as sentinel when
+            # going through the closing tags in the End handler
+            #
+            push @$list, $current;
 
-            $characters = q();      # empty characters
+            # cleanup. Mainly here to help profilers find the real hot spots
+            undef $current;
 
-            # Check whether we have a builtin - we implement them as classes
-            # We could replace this with UNIVERSAL->isa() - but it's slow...
-            # match is a bit faster if the string does not match, but WAY slower
-            # if $class matches. We hope to match often...
-            if (index $_class, 'SOAP::WSDL::XSD::Typelib::Builtin', 0 < 0) {
-                # check wheter there is a non-empty ARRAY reference for $_class::ISA
-                # or a "new" method
-                # If not, require it - all classes required here MUST
-                # define new()
-                # This is not exactly the same as $class->can('new'), but it's way faster
-                defined *{ "$_class\::new" }{ CODE }
-                  or scalar @{ *{ "$_class\::ISA" }{ ARRAY } }
-                    or eval "require $_class"   ## no critic qw(ProhibitStringyEval)
-                      or die $@;
+            # cleanup
+            $characters = q{};
+
+            # Create and set new objects using Class::Std::Fast's object cache
+            # if possible, or blessing directly into the class in question
+            # (circumventing constructor) here.
+            # That's dirty, but fast.
+            #
+            # The alternative would read:
+            # $current = $_class->new({ @_[2..$#_] });
+            #
+            $current = pop @{ $OBJECT_CACHE_REF->{ $_class } };
+            if (not defined $current) {
+                my $o = Class::Std::Fast::ID();
+                $current = bless \$o, $_class;
             }
 
-            $current = $_class->new({ @_[2..$#_] });   # set new current object
-
-            # remember top level element
-            exists $self->{ data }
-                or ($self->{ data } = $current);
             $depth++;
             return;
         },
@@ -134,8 +178,10 @@ sub _initialize {
         Char => $char_handler,
 
         End => sub {
+
             pop @{ $path };                     # step up in path
 
+            # check __SKIP__
             if ($skip) {
                 return if $skip ne join '/', @{ $path }, $_[1];
                 $skip = 0;
@@ -145,30 +191,38 @@ sub _initialize {
 
             $depth--;
 
-            # This one easily handles ignores for us, too...
-            return if not ref $list->[-1];
+            # return if there's only one elment - can't set it in parent ;-)
+            # but set as root element if we don't have one already.
+            if (not defined $list->[-1]) {
+                $self->{ data } = $current if (not exists $self->{ data });
+                return;
+            };
 
-            # set characters in current if we are a simple type
-            # we may have characters in complexTypes with simpleContent,
-            # too - maybe we should rely on the presence of characters ?
-            # may get a speedup by defining a ident method in anySimpleType
-            # and looking it up via exists &$class::ident;
-#            if ( $current->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType') ) {
-#                $current->set_value( $characters );
-#            }
-            # currently doesn't work, as anyType does not implement value -
-            # maybe change ?
-            $current->set_value( $characters ) if (length $characters);
-            #$current->set_value( join @characters_from ) if (@characters_from);
+            # we only set character values in leaf nodes
+            if ($_leaf) {
+                # Use dirty but fast access via global variables.
+                #
+                # The normal way (via method) would be this:
+                #
+                # $current->set_value( $characters ) if (length($characters));
+                #
+                $SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType::___value
+                    ->{ $$current } = $characters if $characters =~m{ [^\s] }xms;
+            }
+
+            # empty characters
             $characters = q{};
-#            undef @characters_from;
+
             # set appropriate attribute in last element
             # multiple values must be implemented in base class
-            #$_method = "add_$_localname";
+            # $_method = "add_$_localname";
             $_method = "add_$_[1]";
             $list->[-1]->$_method( $current );
 
-            $current = pop @$list;           # step up in object hierarchy...
+            $current = pop @$list;          # step up in object hierarchy
+
+            $_leaf = 0;                     # stop believing we're a leaf node
+
             return;
         }
     );
@@ -206,7 +260,8 @@ See L<SOAP::WSDL::Manual::Parser> for details.
 Sometimes there's unneccessary information transported in SOAP messages.
 
 To skip XML nodes (including all child nodes), just edit the type map for
-the message and set the type map entry to '__SKIP__'.
+the message, set the type map entry to '__SKIP__', and comment out all 
+child elements you want to skip.
 
 =head1 Bugs and Limitations
 
@@ -220,22 +275,23 @@ the message and set the type map entry to '__SKIP__'.
 
 =back
 
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2004-2007 Martin Kutter.
-
-This file is part of SOAP-WSDL. You may distribute/modify it under
-the same terms as perl itself.
-
 =head1 AUTHOR
 
-Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+Replace the whitespace by @ for E-Mail Address.
 
-=head1 REPOSITORY INFORMATION
+ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
- $Rev: 391 $
+=head1 COPYING
+
+This module may be used under the same terms as perl itself.
+
+=head1 Repository information
+
+ $ID: $
+
+ $LastChangedDate: 2007-12-02 23:20:24 +0100 (So, 02 Dez 2007) $
+ $LastChangedRevision: 427 $
  $LastChangedBy: kutterma $
- $Id: MessageParser.pm 391 2007-11-17 21:56:13Z kutterma $
+
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $
 
-=cut

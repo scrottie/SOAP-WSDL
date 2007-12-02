@@ -1,7 +1,7 @@
 package SOAP::WSDL::Binding;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use base qw(SOAP::WSDL::Base);
 

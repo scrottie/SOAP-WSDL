@@ -1,7 +1,7 @@
 package SOAP::WSDL::OpMessage;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
 my %body_of         :ATTR(:name<body> :default<[]>);

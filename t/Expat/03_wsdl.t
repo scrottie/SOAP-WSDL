@@ -39,16 +39,16 @@ my $element = $schema->find_element(
 );
 
 ok $element, 'find element';
-is $element->get_xmlns()->{ 'http://www.example.org/MessageGateway2/' }, 'tns', 'Namespace definition';
+is $element->get_xmlns()->{ 'tns' }, 'http://www.example.org/MessageGateway2/', 'Namespace definition';
 
 
 my $opt = {
 	typelib => $wsdl->first_types,
 	readable => 1,
 	autotype => 0,
-	namespace => { 'http://www.example.org/MessageGateway2/' => 'tns',
-		'http://www.w3.org/2001/XMLSchema' => 'xsd',
-		'http://schemas.xmlsoap.org/wsdl/' => 'wsdl',
+	namespace => { 'tns' => 'http://www.example.org/MessageGateway2/',
+		xsd => 'http://www.w3.org/2001/XMLSchema',
+		'wsdl' => 'http://schemas.xmlsoap.org/wsdl/',
 	},
 	indent => "",
 };

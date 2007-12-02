@@ -1,9 +1,9 @@
 package SOAP::WSDL::XSD::Typelib::Builtin;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 
-our $VERSION="2.00_17";
+our $VERSION=q{2.00_25};
 
 use SOAP::WSDL::XSD::Typelib::Builtin::anyType;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
@@ -393,7 +393,7 @@ when calling set_calue, but calls it over and over again...
 
 =item * Thread safety
 
-SOAP::WSDL::XSD::Typelib::Builtin uses Class::Std::Storable which uses
+SOAP::WSDL::XSD::Typelib::Builtin uses Class::Std::Fast::Storable which uses
 Class::Std. Class::Std is not thread safe, so
 SOAP::WSDL::XSD::Typelib::Builtin is neither.
 

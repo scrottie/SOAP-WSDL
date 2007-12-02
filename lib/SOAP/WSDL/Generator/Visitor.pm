@@ -1,9 +1,9 @@
 package SOAP::WSDL::Generator::Visitor;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 
-our $VERSION = '2.00_17';
+our $VERSION = q{2.00_25};
 
 my %definitions_of :ATTR(:name<definitions> :default<()>);
 my %type_prefix_of :ATTR(:name<type_prefix> :default<()>);

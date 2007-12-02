@@ -1,5 +1,5 @@
 package Typelib::Base;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 
 sub mk_add_mutators {
     my $class = shift;
@@ -7,7 +7,7 @@ sub mk_add_mutators {
     for my $method ( keys %{$ attributes }) {
        *{ "$class\::add_$method" } = sub {
            my ($self, $value) = @_;
-           my $ident = ident $self;
+           my $ident = ${ $self };
            
            # we're the first value
            return $attributes->{ $method }->{ $ident } = $value

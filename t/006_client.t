@@ -108,4 +108,9 @@ eval {
     $client->set_proxy([ 'http://example.org', keep_alive => 1  ]);
     $client->set_proxy('http://example.org', keep_alive => 1 );
 };
-ok ! $@;
+if (! $@) {
+    pass 'set_proxy';
+}
+else {
+    fail $@
+};

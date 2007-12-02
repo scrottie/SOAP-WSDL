@@ -1,7 +1,7 @@
 package SOAP::WSDL::Operation;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
 my %operation_of :ATTR(:name<operation> :default<()>);

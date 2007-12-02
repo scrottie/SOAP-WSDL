@@ -7,7 +7,7 @@ is $IDREFS->get_value(), undef;
 $IDREFS = SOAP::WSDL::XSD::Typelib::Builtin::IDREFS->new({});
 is $IDREFS->get_value(), undef;
 ok $IDREFS = SOAP::WSDL::XSD::Typelib::Builtin::IDREFS->new({ value => [ 127 , 'Test' ] });
-is "$IDREFS", "127 Test", 'stringification';
+is $IDREFS->serialize(), "127 Test", 'stringification';
 
 ok $IDREFS = SOAP::WSDL::XSD::Typelib::Builtin::IDREFS->new({ value => 'Test' });
 is "$IDREFS", "Test", 'stringification';

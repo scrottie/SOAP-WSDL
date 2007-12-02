@@ -1,14 +1,14 @@
 package SOAP::WSDL::Deserializer::Hash;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::Message2Hash;
 
 use SOAP::WSDL::Factory::Deserializer;
 SOAP::WSDL::Factory::Deserializer->register( '1.1', __PACKAGE__ );
 
-our $VERSION='2.00_24';
+our $VERSION='2.00_25';
 
 sub BUILD {
     my ($self, $ident, $args_of_ref) = @_;
@@ -152,9 +152,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: Hash.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Hash.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/Hash.pm $
 
 =cut

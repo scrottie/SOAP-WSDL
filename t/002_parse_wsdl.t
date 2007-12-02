@@ -27,8 +27,8 @@ is $types->get_parent(), $wsdl , 'types parent';
 my $serializer_options = {
     readable => 1,
     autotype => 1,
-    namespace => { 'urn:myNamespace' => 'tns',
-        "http://www.w3.org/2001/XMLSchema" => 'xsd' },
+    namespace => { 'tns' => 'urn:myNamespace',
+        'xsd' => "http://www.w3.org/2001/XMLSchema" },
     typelib => $wsdl->first_types(),
     indent => "\t",
 };

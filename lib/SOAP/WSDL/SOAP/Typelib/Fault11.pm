@@ -1,9 +1,9 @@
 package SOAP::WSDL::SOAP::Typelib::Fault11;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 
-our $VERSION='2.00_17';
+our $VERSION=q{2.00_25};
 
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use SOAP::WSDL::XSD::Typelib::Element;
@@ -45,7 +45,7 @@ __PACKAGE__->__set_ref('');
 # always return false in boolean context - a fault is never true...
 sub as_bool : BOOLIFY { return; }
 
-
+Class::Std::initialize();
 1;
 
 =pod
@@ -101,9 +101,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: Fault11.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Fault11.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
 
 =cut

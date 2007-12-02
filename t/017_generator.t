@@ -59,16 +59,13 @@ my $message_parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => 'Test::Typemap::MessageGateway',
     strict => 0,
 });
-
-eval { $message_parser->parse_string( xml_message2() ) };
+my $msg;
+eval { $msg = $message_parser->parse_string( xml_message2() ) };
 ok ( !$@, 'parse XML message: ' . $@);
 
 
-TODO: {
-  local $TODO = 'support embedded atomic simpleType/complexType definitions';
-  eval { $message_parser->parse_string( xml_message() ) };
-  ok ( !$@, 'parse XML message using atomic type definitions');
-};
+eval { $message_parser->parse_string( xml_message() ) };
+ok ( !$@, 'parse XML message using atomic type definitions');
 
 SKIP: {
     eval "require Test::Pod; ";

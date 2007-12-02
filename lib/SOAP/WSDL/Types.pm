@@ -2,9 +2,8 @@ package SOAP::WSDL::Types;
 use strict;
 use warnings;
 use SOAP::WSDL::XSD::Schema::Builtin;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
-
 
 my %schema_of :ATTR(:name<schema> :default<[]>);
 

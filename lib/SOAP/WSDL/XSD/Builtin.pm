@@ -1,7 +1,7 @@
 package SOAP::WSDL::XSD::Builtin;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
 sub serialize {
@@ -14,7 +14,8 @@ sub serialize {
     $xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
     if ( $opt->{ autotype }) {
         my $ns = $self->get_targetNamespace();
-        my $prefix = $opt->{ namespace }->{ $ns }
+        my %prefix_of = reverse %{ $opt->{ namespace } };
+        my $prefix = $prefix_of{ $ns }
             || die 'No prefix found for namespace '. $ns;
         $xml .= ' type="' . $prefix . ':'
           . $self->get_name() . '"' if ($self->get_name() );

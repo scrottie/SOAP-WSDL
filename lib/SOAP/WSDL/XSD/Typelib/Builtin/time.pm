@@ -3,28 +3,10 @@ use strict;
 use warnings;
 use Date::Parse;
 use Date::Format;
+use Class::Std::Fast::Storable constructor => 'none', cache => 1;
+use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
-our $VERSION='2.00_18';
-
-# Speed up. Class::Std::new is slow - and we don't need it's functionality...
-BEGIN {
-    use Class::Std::Storable;
-    use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-    no warnings qw(redefine);
-    no strict qw(refs);
-
-    # Yes, I know it's ugly - but this is the fastest constructor to write
-    # for Class::Std-Style inside out objects..
-    *{ __PACKAGE__ . '::new' } = sub {
-        my $self = bless \do { my $foo } , shift;
-        if (@_) {
-            $self->set_value( $_[0]->{ value } )
-                if exists $_[0]->{ value }
-        }
-        return $self;
-    };
-}
+our $VERSION='2.00_25';
 
 sub set_value {
     # use set_value from base class if we have a XML-Time format
@@ -58,6 +40,5 @@ sub set_value {
 
     }
 }
-
 
 1;

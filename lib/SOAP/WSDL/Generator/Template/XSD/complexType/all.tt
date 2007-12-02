@@ -1,5 +1,7 @@
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+
+Class::Std::initialize();
 
 { # BLOCK to scope variables
 [%

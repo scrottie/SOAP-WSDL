@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 package MySimpleType;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use SOAP::WSDL::XSD::Typelib::SimpleType;
 # restriction base implemented via inheritance
@@ -18,7 +18,7 @@ use base qw(
 #    <list itemTipe="xsd:string">
 # </simpleType>
 package MySimpleListType;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 # restriction base implemented via inheritance
 use SOAP::WSDL::XSD::Typelib::Builtin;
 # derive by list
@@ -30,7 +30,7 @@ use base qw(
 );
 
 package MyAtomicSimpleType;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 # restriction base implemented via inheritance
 use SOAP::WSDL::XSD::Typelib::Builtin;
 # derive by restriction
@@ -41,7 +41,7 @@ use base qw(
 );
 
 package MyAtomicSimpleListType;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 # restriction base implemented via inheritance
 use SOAP::WSDL::XSD::Typelib::Builtin;
 # derive by restriction

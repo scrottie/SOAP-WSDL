@@ -1,58 +1,43 @@
 package SOAP::WSDL::XSD::Typelib::Builtin::boolean;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none', cache => 1;
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_23';
 
-my %value_of            :ATTR(:get<value> :init_attr<value> :default<()>);
-
-# Speed up. Class::Std::new is slow - and we don't need it's functionality...
-BEGIN {
-#    use Class::Std::Storable;
-    use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
-
-    no warnings qw(redefine);
-    no strict qw(refs);
-
-    # Yes, I know it's ugly - but this is the fastest constructor to write
-    # for Class::Std-Style inside out objects..
-    *{ __PACKAGE__ . '::new' } = sub {
-        my $self = bless \do { my $foo } , shift;
-        if (@_) {
-            $self->set_value( $_[0]->{ value } )
-                if exists $_[0]->{ value }
-        }
-        return $self;
-    };
-}
+use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
 sub serialize {
-    my ($self, $opt) = @_;
-    my $ident = ident $self;
-    $opt ||= {};
-    return $self->start_tag({ %$opt, nil => 1})
-            if not defined $value_of{ $ident };
+    $_[1] ||= {};
+    my $value =$_[0]->get_value();
+    return $_[0]->start_tag({ %{$_[1]}, nil => 1})
+            if not defined $value;
     return join q{}
-        , $self->start_tag($opt)
-        , $value_of{ $ident } ? 'true' : 'false'
-        , $self->end_tag($opt);
+        , $_[0]->start_tag($_[1])
+        , $value && $value ne 'false' ? 'true' : 'false'
+        , $_[0]->end_tag($_[1]);
+}
+
+sub as_string :STRINGIFY {
+    my $value = $_[0]->get_value();
+    return q{} if not defined $value;
+    return ($value && $value ne 'false') ? 1 : 0;
 }
 
 sub as_num :NUMERIFY :BOOLIFY {
-    return $_[0]->get_value();
+    my $value = $_[0]->get_value();
+    return ($value && $value ne 'false') ? 1 : 0;
 }
 
 sub set_value {
-    my ($self, $value) = @_;
-    $value_of{ ident $self } = defined $value
-        ? ($value ne 'false' && ($value) )
+    $_[0]->SUPER::set_value( defined $_[1]
+        ? ($_[1] ne 'false' && ($_[1]) )
             ? 1 : 0
-        : 0;
+        : 0);
 }
 
-sub delete_value { undef $value_of{ ident $_[0] }; return }
+sub delete_value { $_[0]->SUPER::set_value(undef) }
 
-Class::Std::initialize();   # make :BOOLIFY overloading serializable
+Class::Std::Fast::initialize();   # make :BOOLIFY overloading serializable
 
 1;

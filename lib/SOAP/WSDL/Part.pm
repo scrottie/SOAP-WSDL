@@ -2,7 +2,7 @@ package SOAP::WSDL::Part;
 use strict;
 use warnings;
 use Carp qw(croak);
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Base);
 
@@ -16,7 +16,7 @@ sub serialize
     my $data = shift;
     my $opt = shift;
     my $typelib = $opt->{ typelib } || die "No typelib";
-    my %ns_map = reverse %{ $opt->{ namespace } };
+    my %ns_map = %{ $opt->{ namespace } };
 
     my $item_name;
     if ($item_name = $self->get_type() ) {

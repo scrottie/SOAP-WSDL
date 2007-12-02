@@ -1,13 +1,15 @@
 package SOAP::WSDL::Deserializer::XSD;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::MessageParser;
 
-our $VERSION='2.00_24';
+our $VERSION='2.00_25';
 
 my %class_resolver_of :ATTR(:name<class_resolver> :default<()>);
+
+my %parser_of :ATTR();
 
 sub BUILD {
     my ($self, $ident, $args_of_ref) = @_;
@@ -16,16 +18,14 @@ sub BUILD {
     for (keys %{ $args_of_ref }) {
         delete $args_of_ref->{ $_ } if $_ ne 'class_resolver';
     }
-
 }
 
 sub deserialize {
     my ($self, $content) = @_;
 
-    my $parser = SOAP::WSDL::Expat::MessageParser->new({
-        class_resolver => $class_resolver_of{ ident $self },
-    });
-    eval { $parser->parse_string( $content ) };
+    $parser_of{ ${ $self } } ||= SOAP::WSDL::Expat::MessageParser->new();
+    $parser_of{ ${ $self } }->class_resolver( $class_resolver_of{ ident $self } );
+    eval { $parser_of{ ${ $self } }->parse_string( $content ) };
     if ($@) {
         return $self->generate_fault({
             code => 'soap:Server',
@@ -34,7 +34,7 @@ sub deserialize {
                 . "Message was: \n$content"
         });
     }
-    return ( $parser->get_data(), $parser->get_header() );
+    return ( $parser_of{ ${ $self } }->get_data(), $parser_of{ ${ $self } }->get_header() );
 }
 
 sub generate_fault {
@@ -98,9 +98,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: XSD.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
 
 =cut

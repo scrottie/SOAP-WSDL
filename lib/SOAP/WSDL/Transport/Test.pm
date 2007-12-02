@@ -1,10 +1,10 @@
 package SOAP::WSDL::Transport::Test;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use SOAP::WSDL::Factory::Transport;
 
-our $VERSION = '2.00_14';
+our $VERSION=q{2.00_25};
 
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );

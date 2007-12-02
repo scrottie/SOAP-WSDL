@@ -61,7 +61,7 @@ The following guidelines apply:
 - Testing
     * SOAP::WSDL has a test coverage of >95% and aims at 100%. Please write
     a test first.
-    * Use uthor tests are for testing guidelines. Disable author tests for
+    * Use author tests for testing guidelines. Disable author tests for
     users - it's time consuming and of no use to have users run author tests.
 
 - Indentation and formatting
@@ -69,9 +69,9 @@ The following guidelines apply:
     * indent 4 characters per level
     * use \n (LF) for newlines, not CRLF
     * use blank lines to separate paragraphs
-    * Coding style is similar to K&R (opening brace on last line, closing 
+    * Coding style is similar to K&R (opening brace on last line, closing
     brace on new line. No cuddled else)
-    * No trailing spaces allowed (except to indicate a blank line in a POD 
+    * No trailing spaces allowed (except to indicate a blank line in a POD
     source block)
 
 - Flow control
@@ -88,7 +88,7 @@ The following guidelines apply:
     perlcritic fool you: no strict qw(refs); is often required.
 
 - Naming
-    * variable names are lower case with _ separating words, except when 
+    * variable names are lower case with _ separating words, except when
     a XML Schema, SOAP, or WSDL name is name-giving (don't force portType to
     become port_type)
     * hashes should be named FOO_of, lists FOO_from, references FOO_ref.
@@ -121,7 +121,7 @@ The following guidelines apply:
         $_[0]->foo($_[2..$#]);  # read as $self->foo(%args_of);
         return;
     }
-    * POD is located at end of file, preferably after 
+    * POD is located at end of file, preferably after __END__
     * Complete POD coverage is essential. However, if the package in question
     is used internally only, it's better to omit the POD completely - too many
     PODs to look at confuse the average CPAN user.

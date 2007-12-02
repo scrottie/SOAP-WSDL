@@ -10,6 +10,10 @@ sub get_class {
   return $typemap_1->{ $name };
 }
 
+sub get_typemap {
+    return $typemap_1;
+}
+
 1;
 
 __END__

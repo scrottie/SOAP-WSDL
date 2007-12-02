@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Transport;
 
@@ -14,3 +14,7 @@ SOAP::WSDL::Factory::Transport->register('zumsl', 'Hope_You_Have_No_Such_Package
 
 eval { SOAP::WSDL::Factory::Transport->get_transport('zumsl') };
 like $@, qr{^Cannot load};
+
+eval { SOAP::WSDL::Factory::Transport->register( \'zumsl', 'Foo') };
+like $@, qr{^Cannot use reference};
+

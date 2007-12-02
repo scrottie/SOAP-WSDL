@@ -1,7 +1,7 @@
 package SOAP::WSDL::Port;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
 my %binding_of :ATTR(:name<binding> :default<()>);

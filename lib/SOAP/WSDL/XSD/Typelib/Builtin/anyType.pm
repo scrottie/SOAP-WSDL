@@ -1,7 +1,7 @@
 package SOAP::WSDL::XSD::Typelib::Builtin::anyType;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 
 sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' };
 

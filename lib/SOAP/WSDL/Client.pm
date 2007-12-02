@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Carp;
 
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 
 use SOAP::WSDL::Factory::Deserializer;
@@ -11,7 +11,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-our $VERSION = '2.00_17';
+our $VERSION = '2.00_25';
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
@@ -42,7 +42,7 @@ sub get_proxy {                         ## no critic RequireArgUnpacking
 
 sub set_proxy {
     my ($self, @args_from) = @_;
-    my $ident = ident $self;
+    my $ident = ${ $self };
 
     # remember old value to return it later - Class::Std does so, too
     my $old_value = $transport_of{ $ident };
@@ -371,9 +371,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Client.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

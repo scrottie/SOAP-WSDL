@@ -4,7 +4,7 @@ use warnings;
 use base 'SOAP::WSDL::Client';
 use Scalar::Util qw(blessed);
 
-our $VERSION = '2.00_24';
+our $VERSION = '2.00_25';
 
 sub call {
     my ($self, $method, $body, $header) = @_;
@@ -26,38 +26,38 @@ sub call {
     return $self->SUPER::call($method, $body, $header);
 }
 
-sub __create_methods {
-    my ($package, %info_of) = @_;
-
-    no strict qw(refs);
-    no warnings qw(redefine);
-    for my $method (keys %info_of){
-    my ($soap_action, @parts);
-
-    # up to 2.00_10 we had list refs...
-    if (ref $info_of{ $method }eq 'HASH') {
-        @parts = @{ $info_of{ $method }->{ parts } };
-        $soap_action = $info_of{ $method }->{ soap_action };
-    }
-    else {
-        die "Pre-v2.00_10 Interfaces are no longer supported. Please re-generate your interface.";
-    }
-
-    *{ "$package\::$method" } = sub {
-        my $self = shift;
-        my @param = map {
-            my $data = shift || {};
-            eval "require $_";
-            $_->new( $data );
-        } @parts;
-
-        return $self->SUPER::call( {
-            operation => $method,
-            soap_action => $soap_action,
-        }, @param );
-      }
-  }
-}
+#sub __create_methods {
+#    my ($package, %info_of) = @_;
+#
+#    no strict qw(refs);
+#    no warnings qw(redefine);
+#    for my $method (keys %info_of){
+#    my ($soap_action, @parts);
+#
+#    # up to 2.00_10 we had list refs...
+#    if (ref $info_of{ $method }eq 'HASH') {
+#        @parts = @{ $info_of{ $method }->{ parts } };
+#        $soap_action = $info_of{ $method }->{ soap_action };
+#    }
+#    else {
+#        die "Pre-v2.00_10 Interfaces are no longer supported. Please re-generate your interface.";
+#    }
+#
+#    *{ "$package\::$method" } = sub {
+#        my $self = shift;
+#        my @param = map {
+#            my $data = shift || {};
+#            eval "require $_";
+#            $_->new( $data );
+#        } @parts;
+#
+#        return $self->SUPER::call( {
+#            operation => $method,
+#            soap_action => $soap_action,
+#        }, @param );
+#      }
+#  }
+#}
 
 1;
 
@@ -94,9 +94,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Base.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

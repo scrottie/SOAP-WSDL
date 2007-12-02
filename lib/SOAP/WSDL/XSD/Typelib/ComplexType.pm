@@ -5,17 +5,20 @@ use warnings;
 use Carp;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use Scalar::Util qw(blessed refaddr);
-use Class::Std::Storable;
+require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_24';
+our $VERSION = '2.00_25';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
 my %CLASSES_OF;
 
-# STORABLE_ methods for supporting Class::Std::Storable.
+# don't you ever dare to use this !
+our $___attributes_of_ref = \%ATTRIBUTES_OF;
+
+# STORABLE_ methods for supporting Class::Std::Fast::Storable.
 # We could also handle them via AUTOMETHOD,
 # but AUTOMETHOD should always croak...
 # Do we really need this ?
@@ -46,6 +49,7 @@ sub _factory {
 
     no strict qw(refs);
     no warnings qw(redefine);
+
     while (my ($name, $attribute_ref) = each %{ $ATTRIBUTES_OF{ $class } } ) {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or croak "No class given for $name";
@@ -97,7 +101,7 @@ sub _factory {
 
         *{ "$class\::set_$name" } = sub {
             my $is_ref = ref $_[1];
-            $attribute_ref->{ ident $_[0] } = ($is_ref)
+            $attribute_ref->{ ${ $_[0] } } = ($is_ref)
                 ? ($is_ref eq 'ARRAY')
                     ? $is_list                             # remembered from outside closure
                         ? $type->new({ value => $_[1] })   # it's a list element - can take list ref as value
@@ -125,25 +129,24 @@ sub _factory {
         };
 
         *{ "$class\::add_$name" } = sub {
-            my $ident = ident $_[0];
             warn "attempting to add empty value to " . ref $_[0]
                 if not defined $_[1];
 
             # first call
             # test for existance, not for definedness
-            if (not exists $attribute_ref->{ $ident }) {
-                $attribute_ref->{ $ident } = $_[1];
+            if (not exists $attribute_ref->{ ${ $_[0]} }) {
+                $attribute_ref->{ ${ $_[0]} } = $_[1];
                 return;
             }
 
-            if (not ref $attribute_ref->{ $ident } eq 'ARRAY') {
+            if (not ref $attribute_ref->{ ${ $_[0]} } eq 'ARRAY') {
                 # second call: listify previous value if it's no list and add current
-                $attribute_ref->{ $ident } = [  $attribute_ref->{ $ident }, $_[1] ];
+                $attribute_ref->{ ${ $_[0]} } = [  $attribute_ref->{ ${ $_[0]} }, $_[1] ];
                 return;
             }
 
             # second and following: add to list
-            push @{ $attribute_ref->{ $ident } }, $_[1];
+            push @{ $attribute_ref->{ ${ $_[0]} } }, $_[1];
             return;
         };
 
@@ -155,7 +158,7 @@ sub _factory {
     # TODO Could be moved as normal method into base class, e.g. here.
     # Hmm. let's see...
     *{ "$class\::new" } = sub {
-        my $self = bless \my ($o), $_[0];
+        my $self = bless \(my $o = Class::Std::Fast::ID()), $_[0];
         # We're working on @_ for speed.
         # Normally, the first line would look like this:
         # my ($self, $ident, $args_of) = @_;
@@ -187,7 +190,7 @@ sub _factory {
     # <restriction><sequence>.
     # But what about choice, extension ?
     *{ "$class\::_serialize" } = sub {
-        my $ident = ident $_[0];
+        my $ident = ${ $_[0]};
         # return concatenated return value of serialize call of all
         # elements retrieved from get_elements expanding list refs.
         # get_elements is inlined for performance.
@@ -248,7 +251,7 @@ SOAP::WSDL::XSD::Typelib::ComplexType - Base class for complexType node classes
 To subclass, write a package like this:
 
  package MyComplexType;
- use Class::Std::Storable
+ use Class::Std::Fast::Storable constructor => 'none';
  use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
  
  # we only need the :get attribute qualifier.
@@ -365,9 +368,9 @@ Variants known to work are:
 
 =item * Thread safety
 
-SOAP::WSDL::XSD::Typelib::Builtin uses Class::Std::Storable which uses
+SOAP::WSDL::XSD::Typelib::Builtin::ComplexType uses Class::Std::Fast::Storable which uses
 Class::Std. Class::Std is not thread safe, so
-SOAP::WSDL::XSD::Typelib::Builtin is neither.
+SOAP::WSDL::XSD::Typelib::Builtin::ComplexType is neither.
 
 =item * XML Schema facets
 
@@ -388,9 +391,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 412 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: ComplexType.pm 412 2007-11-27 22:57:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

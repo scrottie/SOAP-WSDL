@@ -18,12 +18,12 @@ ok($parser = SOAP::WSDL::Expat::WSDLParser->new(), "Object creation");
 eval { $parser->parse_string( xml() ) };
 if ($@)
 {
-	fail("parsing WSDL");
-	die "Can't test without parsed WSDL: $@";
+    fail("parsing WSDL");
+    die "Can't test without parsed WSDL: $@";
 }
 else
 {
-	pass("parsing XML");
+    pass("parsing XML");
 }
 
 my $wsdl;
@@ -32,28 +32,28 @@ ok( $wsdl = $parser->get_data() , "get object tree");
 my $schema = $wsdl->get_types()->[0]->get_schema()->[0] || die "No schema !";
 
 my $opt = {
-	typelib => $wsdl->first_types,
-	readable => 1,
-	autotype => 0,
-	namespace => { 'http://www.example.org/MessageGateway2/' => 'tns',
-		'http://www.w3.org/2001/XMLSchema' => 'xsd',
-		'http://schemas.xmlsoap.org/wsdl/' => 'wsdl',
-	},
-	indent => "",
+    typelib => $wsdl->first_types,
+    readable => 1,
+    autotype => 0,
+    namespace => { 'tns' => 'http://www.example.org/MessageGateway2/',
+        'xsd' => 'http://www.w3.org/2001/XMLSchema',
+        'wsdl' => 'http://schemas.xmlsoap.org/wsdl/',
+    },
+    indent => "",
 };
 
 my $data = { EnqueueMessage => {
-	MMessage => {
-		MRecipientURI => 'anyURI',
-		MSenderAddress => 'a string',
-		MMessageContent => 'a string',
-		MSubject => 'a string',
-		MDeliveryReportRecipientURI => 'anyURI',
-		MKeepalive => {
-			MKeepaliveTimeout => 1234567,
-			MKeepaliveErrorPolicy => ' ( suppress | report ) ',
-		}
-	}
+    MMessage => {
+        MRecipientURI => 'anyURI',
+        MSenderAddress => 'a string',
+        MMessageContent => 'a string',
+        MSubject => 'a string',
+        MDeliveryReportRecipientURI => 'anyURI',
+        MKeepalive => {
+            MKeepaliveTimeout => 1234567,
+            MKeepaliveErrorPolicy => ' ( suppress | report ) ',
+        }
+    }
 }
 
 };

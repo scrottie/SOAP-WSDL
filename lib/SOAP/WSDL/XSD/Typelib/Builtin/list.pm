@@ -1,10 +1,10 @@
 package SOAP::WSDL::XSD::Typelib::Builtin::list;
 use strict;
 use warnings;
-use Class::Std::Storable;
 
 sub serialize {
     my ($self, $opt) = @_;
+    $opt = {} if not $opt;
     my $value = $self->get_value();
     return $self->start_tag({ %$opt, nil => 1 }) if not defined $value;
     $value = [ $value ] if not ref $value;

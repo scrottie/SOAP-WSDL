@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Transport;
 use strict;
 use warnings;
 
-our $VERSION='2.00_17';
+our $VERSION='2.00_25';
 
 # class data
 my %registered_transport_of = ();
@@ -27,7 +27,7 @@ my %SOAP_WSDL_TRANSPORT_OF = (
 # class methods only
 sub register {
     my ($class, $scheme, $package) = @_;
-    die "cannot use reference as scheme" if ref $scheme;
+    die "Cannot use reference as scheme" if ref $scheme;
     $registered_transport_of{ $scheme } = $package;
 }
 
@@ -236,9 +236,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 427 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Transport.pm 427 2007-12-02 22:20:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
  
 =cut

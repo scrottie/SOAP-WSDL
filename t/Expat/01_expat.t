@@ -39,11 +39,13 @@ BEGIN {
             'MyAtomicComplexTypeElement/test' => 'MyTestElement',
             'MyAtomicComplexTypeElement/test2' => 'MyTestElement2',
             'MyAtomicComplexTypeElement/foo' => '__SKIP__',
-            'MyAtomicComplexTypeElement/foo/bar' => 'MyFooElement',
-            'MyAtomicComplexTypeElement/foo/baz' => 'MyFooElement',
+#            'MyAtomicComplexTypeElement/foo/bar' => 'MyFooElement',
+#            'MyAtomicComplexTypeElement/foo/baz' => 'MyFooElement',
         );
 
         sub new { return bless {}, 'FakeResolver' };
+
+        sub get_typemap { return \%class_list };
 
         sub get_class {
             my $name = join('/', @{ $_[1] });

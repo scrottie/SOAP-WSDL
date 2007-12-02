@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_24
+version: 2.00_25
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -8,8 +8,13 @@ license: artistic
 resources:
   license: http://opensource.org/licenses/artistic-license.php
 requires:
-  Class::Std: v0.0.8
-  Class::Std::Storable: 0
+  Class::Std::Fast: !!perl/hash:version
+    original: v0.0.5
+    qv: 1
+    version:
+      - 0
+      - 0
+      - 5
   Data::Dumper: 0
   Date::Format: 0
   Date::Parse: 0
@@ -25,30 +30,30 @@ requires:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Binding:
     file: lib/SOAP/WSDL/Binding.pm
   SOAP::WSDL::Client:
     file: lib/SOAP/WSDL/Client.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
-    version: 2.00_24
+    version: 2.00_25
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Deserializer::Hash:
     file: lib/SOAP/WSDL/Deserializer/Hash.pm
-    version: 2.00_24
+    version: 2.00_25
   SOAP::WSDL::Deserializer::SOM:
     file: lib/SOAP/WSDL/Deserializer/SOM.pm
     version: 2.00_24
   SOAP::WSDL::Deserializer::XSD:
     file: lib/SOAP/WSDL/Deserializer/XSD.pm
-    version: 2.00_24
+    version: 2.00_25
   SOAP::WSDL::Expat::Base:
     file: lib/SOAP/WSDL/Expat/Base.pm
     version: 2.00_24
@@ -57,7 +62,7 @@ provides:
     version: 2.00_24
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
-    version: 2.00_24
+    version: 2.00_25
   SOAP::WSDL::Expat::MessageStreamParser:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
     version: 2.00_24
@@ -72,19 +77,21 @@ provides:
     version: 2.00_24
   SOAP::WSDL::Factory::Transport:
     file: lib/SOAP/WSDL/Factory/Transport.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Generator::Template:
     file: lib/SOAP/WSDL/Generator/Template.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Generator::Template::XSD:
     file: lib/SOAP/WSDL/Generator/Template/XSD.pm
+    version: 2.00_25
   SOAP::WSDL::Generator::Visitor:
     file: lib/SOAP/WSDL/Generator/Visitor.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Generator::Visitor::Typelib:
     file: lib/SOAP/WSDL/Generator/Visitor/Typelib.pm
   SOAP::WSDL::Generator::Visitor::Typemap:
     file: lib/SOAP/WSDL/Generator/Visitor/Typemap.pm
+    version: 2.00_25
   SOAP::WSDL::Message:
     file: lib/SOAP/WSDL/Message.pm
   SOAP::WSDL::OpMessage:
@@ -107,23 +114,29 @@ provides:
     file: lib/SOAP/WSDL/SOAP/HeaderFault.pm
   SOAP::WSDL::SOAP::Operation:
     file: lib/SOAP/WSDL/SOAP/Operation.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::SOAP::Typelib::Fault11:
     file: lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Serializer::XSD:
     file: lib/SOAP/WSDL/Serializer/XSD.pm
-    version: 2.00_24
+    version: 2.00_25
+  SOAP::WSDL::Server:
+    file: lib/SOAP/WSDL/Server.pm
+    version: 2.00_25
+  SOAP::WSDL::Server::CGI:
+    file: lib/SOAP/WSDL/Server/CGI.pm
+    version: 2.00_25
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::Transport::HTTP:
     file: lib/SOAP/WSDL/Transport/HTTP.pm
   SOAP::WSDL::Transport::Loopback:
     file: lib/SOAP/WSDL/Transport/Loopback.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::Transport::Test:
     file: lib/SOAP/WSDL/Transport/Test.pm
-    version: 2.00_14
+    version: 2.00_25
   SOAP::WSDL::TypeLookup:
     file: lib/SOAP/WSDL/TypeLookup.pm
   SOAP::WSDL::Types:
@@ -132,20 +145,21 @@ provides:
     file: lib/SOAP/WSDL/XSD/Builtin.pm
   SOAP::WSDL::XSD::ComplexType:
     file: lib/SOAP/WSDL/XSD/ComplexType.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::XSD::Element:
     file: lib/SOAP/WSDL/XSD/Element.pm
-    version: 2.00_22
+    version: 2.00_25
   SOAP::WSDL::XSD::Schema:
     file: lib/SOAP/WSDL/XSD/Schema.pm
+    version: 2.00_25
   SOAP::WSDL::XSD::Schema::Builtin:
     file: lib/SOAP/WSDL/XSD/Schema/Builtin.pm
   SOAP::WSDL::XSD::SimpleType:
     file: lib/SOAP/WSDL/XSD/SimpleType.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::XSD::Typelib::Builtin:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
-    version: 2.00_17
+    version: 2.00_25
   SOAP::WSDL::XSD::Typelib::Builtin::ENTITY:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/ENTITY.pm
   SOAP::WSDL::XSD::Typelib::Builtin::ID:
@@ -176,7 +190,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/base64Binary.pm
   SOAP::WSDL::XSD::Typelib::Builtin::boolean:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/boolean.pm
-    version: 2.00_17
+    version: 2.00_23
   SOAP::WSDL::XSD::Typelib::Builtin::byte:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/byte.pm
   SOAP::WSDL::XSD::Typelib::Builtin::date:
@@ -229,7 +243,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/string.pm
   SOAP::WSDL::XSD::Typelib::Builtin::time:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/time.pm
-    version: 2.00_18
+    version: 2.00_25
   SOAP::WSDL::XSD::Typelib::Builtin::token:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/token.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte:
@@ -242,10 +256,10 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_24
+    version: 2.00_25
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
-    version: 2.00_24
+    version: 2.00_25
   SOAP::WSDL::XSD::Typelib::SimpleType:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:

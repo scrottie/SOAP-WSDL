@@ -1,10 +1,10 @@
 package SOAP::WSDL::XSD::SimpleType;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION='2.00_17';
+our $VERSION=q{2.00_25};
 
 my %annotation_of   :ATTR(:name<annotation>     :default<()>);
 my %base_of         :ATTR(:name<base>           :default<()>);
@@ -84,8 +84,10 @@ sub _serialize_single {
     $xml .= $opt->{ indent } if ($opt->{ readable });       # add indentation
     $xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
     if ( $opt->{ autotype }) {
+        # reverse namespace by prefix hash
+        my %prefix_of = reverse %{ $opt->{ namespace } };
         my $ns = $self->get_targetNamespace();
-        my $prefix = $opt->{ namespace }->{ $ns }
+        my $prefix = $prefix_of{ $ns }
            || die 'No prefix found for namespace '. $ns;
         $xml .= ' type="' . $prefix . ':' . $self->get_name() .'"';
     }

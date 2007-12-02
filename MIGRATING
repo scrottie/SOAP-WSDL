@@ -1,0 +1,50 @@
+MIGRATING
+---------
+
+This document describes how to migrate from 2.00_24 and before versions to 
+2.00_25.
+
+Migrating from 2.00_xx
+----------------------
+
+Background
+
+SOAP::WSDL 2.00_xx has used Class::Std as base for its inside out objects 
+up to 2.00_24. For performance reasons, now Class::Std::Fast is used.
+As Class::Std::Fast is a drop-in replacement for Class::Std, there should be 
+no need to change anything in your (handwritten) code.
+
+Generated interfaces
+
+SOAP::WSDL's internal structure has changed, and this change needs to
+be reflected in all generated classes.
+
+This means you have to re-generate your interfaces (in case you use generated
+interfaces)
+
+Typemaps
+
+SOAP::WSDL now tries to load all typemap classes at once from 2.00_25 on.
+
+If you use __SKIP__ in your typemaps, you'll have to comment out all 
+path deeper than the path marked with __SKIP__ - if you don't, SOAP::WSDL 
+will try to load all correspondent classes.
+
+Migrating from 1.xx
+-------------------
+
+Background
+
+SOAP::WSDL uses a custom WSDL parser and serializer. It does not rely on XPath
+for on the fly WSDL processing, nor does it use SOAP::Data objects for
+encoding any more.
+
+You should be able to use your wxisting code under most circumstances.
+SOAP::WSDL is the compatibility module for old interfaces.
+
+Overloading
+
+Message overloading (as introduced in 1.23) is not supported any more.
+
+Message overloading is prohibited by the WS-I basic profile, therefore
+SOAP::WSDL does not implement it any more.

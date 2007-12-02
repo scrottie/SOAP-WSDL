@@ -5,6 +5,8 @@ use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
+our $VERSION = q{2.00_25};
+
 sub _initialize {
     my ($self, $parser) = @_;
 

@@ -9,12 +9,10 @@ use lib 'lib';
 use SOAP::WSDL::Expat::MessageParser;
 use Cwd;
 
-
 use SOAP::WSDL;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 my $path = cwd;
 $path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
-
 
 my $parser; 
 
@@ -77,7 +75,7 @@ BEGIN {
         );
 
         sub new { return bless {}, 'FakeResolver' };
-
+        sub get_typemap { return \%class_list };
         sub get_class {
             my $name = join('/', @{ $_[1] });
             return ($class_list{ $name }) ? $class_list{ $name }

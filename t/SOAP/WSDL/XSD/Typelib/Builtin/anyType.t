@@ -1,9 +1,18 @@
+
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 3;
 use Scalar::Util qw(blessed);
-use lib '../../../../../../lib';
 use_ok qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
+
+is SOAP::WSDL::XSD::Typelib::Builtin::anyType->get_xmlns(), 'http://www.w3.org/2001/XMLSchema', 'get_xmlns';
+is SOAP::WSDL::XSD::Typelib::Builtin::anyType->serialize(), q{}, 'serialize to empty';
+
+exit 0;
+
+__END__
+
+# cannot instantiate abstract type...
 
 my $obj = SOAP::WSDL::XSD::Typelib::Builtin::anyType->new();
 

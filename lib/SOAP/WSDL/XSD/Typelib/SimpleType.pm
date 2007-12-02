@@ -1,12 +1,10 @@
 #!/usr/bin/perl
 package SOAP::WSDL::XSD::Typelib::SimpleType;
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 
 package SOAP::WSDL::XSD::Typelib::SimpleType::restriction;
 use strict;
-use Class::Std::Storable;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use base qw(SOAP::WSDL::XSD::Typelib::SimpleType);
 
@@ -32,7 +30,7 @@ modelling XML Schema simpleType definitions.
     #    <restriction base="xsd:string" />
     # </simpleType>
     package MySimpleType;
-    use Class::Std::Storable;
+    use Class::Std::Fast::Storable constructor => 'none';
     # restriction base implemented via inheritance
     use SOAP::WSDL::XSD::Typelib::Builtin;
     use SOAP::WSDL::XSD::Typelib::SimpleType;
@@ -49,7 +47,7 @@ modelling XML Schema simpleType definitions.
     #    <list itemTipe="xsd:string" />
     # </simpleType>
     package MySimpleListType;
-    use Class::Std::Storable;
+    use Class::Std::Fast::Storable constructor => 'none';
     # restriction base implemented via inheritance
     use SOAP::WSDL::XSD::Typelib::Builtin;
     use base ('SOAP::WSDL::XSD::Typelib::SimpleType',
@@ -104,7 +102,7 @@ complexType definitions.
 
 =item * Thread safety
 
-SOAP::WSDL::XSD::Typelib::SimpleType uses Class::Std::Storable which uses
+SOAP::WSDL::XSD::Typelib::SimpleType uses Class::Std::Fast::Storable which uses
 Class::Std. Class::Std is not thread safe, so
 SOAP::WSDL::XSD::Typelib::SimpleType is neither.
 

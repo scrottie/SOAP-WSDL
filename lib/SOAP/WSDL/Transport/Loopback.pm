@@ -1,10 +1,10 @@
 package SOAP::WSDL::Transport::Loopback;
 use strict;
 use warnings;
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'basic';
 use SOAP::WSDL::Factory::Transport;
 
-our $VERSION = '2.00_17';
+our $VERSION=q{2.00_25};
 
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );
@@ -13,15 +13,6 @@ my %code_of         :ATTR(:name<code>           :default<()>);
 my %status_of       :ATTR(:name<status>         :default<()>);
 my %message_of      :ATTR(:name<message>        :default<()>);
 my %is_success_of   :ATTR(:name<is_success>     :default<()>);
-
-{
-    no warnings qw(redefine);
-
-    sub new {
-        my $class = shift;
-        return bless \my ($o), $class;
-    }
-}
 
 # create methods normally inherited from SOAP::Client
 SUBFACTORY: {
@@ -35,6 +26,9 @@ sub send_receive {
     my ($self, %parameters) = @_;
     return $parameters{envelope};
 }
+
+Class::Std::initialize();
+
 
 1;
 

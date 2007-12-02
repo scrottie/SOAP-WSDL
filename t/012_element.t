@@ -12,7 +12,7 @@ use_ok qw( MyElement );
 my $obj = MyElement->new({ value => 'test'});
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
     , 'inherited class';
-is $obj, '<MyElementName xmlns="urn:Test" >test</MyElementName>', 'stringification';
+is $obj->serialize_qualified(), '<MyElementName xmlns="urn:Test" >test</MyElementName>', 'stringification';
 
 $obj = MyAtomicComplexTypeElement->new({ test=> 'Test', test2 => 'Test2'});
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
@@ -21,7 +21,7 @@ ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
 ok $obj->get_test->isa('SOAP::WSDL::XSD::Typelib::Builtin::string')
     , 'element isa';
 
-is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><test >Test</test>'
+is $obj->serialize_qualified, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><test >Test</test>'
     . '<test2 >Test2</test2></MyAtomicComplexTypeElement>'
     , 'stringification';
 
@@ -41,7 +41,7 @@ is $obj, '<MyAtomicComplexTypeElement xmlns="urn:Test" ><test >Test</test>'
     , 'multi value stringification';
 
 ok $obj = MyComplexTypeElement->new({ MyTestName => 'test' });
-is $obj, '<MyComplexTypeElement xmlns="urn:Test" ><MyTestName >test</MyTestName ></MyComplexTypeElement>';
+is $obj->serialize_qualified(), '<MyComplexTypeElement xmlns="urn:Test" ><MyTestName >test</MyTestName ></MyComplexTypeElement>';
 
 __END__
 

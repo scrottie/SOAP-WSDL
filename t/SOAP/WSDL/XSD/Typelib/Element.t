@@ -25,7 +25,7 @@ isa_ok $obj, 'MyElement';
 is $obj->get_value(), 'Test';
 
 $obj->set_value(undef);
-is $obj, '<MyElement xsi:nil="true" xmlns="http://www.w3.org/2001/XMLSchema" />';
+is $obj->serialize_qualified, '<MyElement xsi:nil="true" xmlns="http://www.w3.org/2001/XMLSchema" />';
 
 $obj->__set_nillable(0);
 is $obj->__get_nillable(), 0;
