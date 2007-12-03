@@ -1,5 +1,7 @@
 benchmark/01_expat.t
 benchmark/hello.pl
+benchmark/person.pl
+benchmark/person.xml
 benchmark/XSD/01_anyType.t
 benchmark/XSD/02_anySimpleType.t
 benchmark/XSD/03_string.t
@@ -7,6 +9,7 @@ bin/wsdl2perl.pl
 Build.PL
 Changes
 example/cgi-bin/helloworld.pl
+example/cgi-bin/person.pl
 example/fortune.pl
 example/genericbarcode.pl
 example/hello.pl
@@ -25,6 +28,8 @@ example/lib/MyElements/GetSpecificCookieResponse.pm
 example/lib/MyElements/GetWeather.pm
 example/lib/MyElements/GetWeatherResponse.pm
 example/lib/MyElements/int.pm
+example/lib/MyElements/ListPerson.pm
+example/lib/MyElements/ListPersonResponse.pm
 example/lib/MyElements/readNodeCount.pm
 example/lib/MyElements/readNodeCountResponse.pm
 example/lib/MyElements/sayHello.pm
@@ -34,13 +39,25 @@ example/lib/MyInterfaces/BarCode/BarCodeSoap.pm
 example/lib/MyInterfaces/FullerData_x0020_Fortune_x0020_Cookie/FullerData_x0020_Fortune_x0020_CookieSoap.pm
 example/lib/MyInterfaces/GlobalWeather/GlobalWeatherSoap.pm
 example/lib/MyInterfaces/HelloWorld/HelloWorldSoap.pm
+example/lib/MyInterfaces/TestService/TestPort.pm
 example/lib/MyServer/HelloWorld/HelloWorldSoap.pm
+example/lib/MyServer/TestService/TestPort.pm
 example/lib/MyTypemaps/BarCode.pm
 example/lib/MyTypemaps/FullerData_x0020_Fortune_x0020_Cookie.pm
 example/lib/MyTypemaps/GlobalWeather.pm
 example/lib/MyTypemaps/HelloWorld.pm
+example/lib/MyTypemaps/TestService.pm
+example/lib/MyTypes/Address.pm
+example/lib/MyTypes/ArrayOfContract.pm
+example/lib/MyTypes/ArrayOfPerson.pm
+example/lib/MyTypes/Contract.pm
+example/lib/MyTypes/Person.pm
+example/lib/MyTypes/PersonID.pm
+example/lib/MyTypes/PhoneNumber.pm
 example/lib/MyTypes/test2.pm
 example/lib/MyTypes/testExtended.pm
+example/person.pl
+example/person_compile.pl
 example/visitor/visitor.pl
 example/weather.pl
 example/weather_wsdl.pl
@@ -48,6 +65,7 @@ example/wsdl/11_helloworld.wsdl
 example/wsdl/FortuneCookie.xml
 example/wsdl/genericbarcode.xml
 example/wsdl/globalweather.xml
+example/wsdl/Person.wsdl
 HACKING
 lib/SOAP/WSDL.pm
 lib/SOAP/WSDL/Base.pm
@@ -250,6 +268,7 @@ t/acceptance/wsdl/email_account.wsdl
 t/acceptance/wsdl/generator_test.wsdl
 t/acceptance/wsdl/generator_unsupported_test.wsdl
 t/acceptance/wsdl/message_gateway.wsdl
+t/contributed.wsdl
 t/Expat/01_expat.t
 t/Expat/03_wsdl.t
 t/lib/MyComplexType.pm

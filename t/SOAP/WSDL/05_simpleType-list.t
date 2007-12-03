@@ -2,19 +2,22 @@ use Test::More tests => 8;
 use strict;
 use lib '../lib';
 use lib 't/lib';
-use File::Spec;
 use File::Basename;
+use File::Spec;
+
+my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 use_ok(qw/SOAP::WSDL/);
 
 my ($soap, $xml, $xml2);
 
-# chdir to my location
-my $path = File::Spec->rel2abs( dirname __FILE__ );
-
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file:///' . $path . '/../../acceptance/wsdl/05_simpleType-list.wsdl'
+    wsdl => 'file://' . $url . '/../../acceptance/wsdl/05_simpleType-list.wsdl'
 ), 'Instantiated object' );
 
 # won't work without - would require SOAP::WSDL::Deserializer::SOM,

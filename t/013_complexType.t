@@ -23,7 +23,7 @@ is $obj, '<MyTestName >test</MyTestName ><MyTestName >test2</MyTestName >',
 # try on the fly factory
 @MyComplexType2::ISA = ('SOAP::WSDL::XSD::Typelib::ComplexType');
 {
-    use Class::Std::Storable;
+    use Class::Std::Fast::Storable;
     my %MyTestName_of;
 
     MyComplexType2->_factory(

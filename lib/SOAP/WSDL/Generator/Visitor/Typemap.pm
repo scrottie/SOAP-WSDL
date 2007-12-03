@@ -123,7 +123,7 @@ sub visit_Part {
     # TODO: auto-generate element for RPC bindings
     if ( my $type_name = $part->get_type ) {
         # FIXME support RPC-style calls
-        die "unsupported global type <$type_name> found in part";
+        die "unsupported global type <$type_name> found in part ". $part->get_name();
     }
 
     # TODO factor out iterator or replace by lookup (probably better)

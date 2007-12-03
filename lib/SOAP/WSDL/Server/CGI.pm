@@ -9,11 +9,10 @@ use HTTP::Headers;
 use Scalar::Util qw(blessed);
 
 use Class::Std::Fast::Storable;
-# use Class::Std::Storable;
 
 use base qw(SOAP::WSDL::Server);
 
-our $VERSION=q{2.00_25};
+our $VERSION=q{2.00_26};
 
 # mostly copied from SOAP::Lite. Unfortunately we can't use SOAP::Lite's CGI
 # server directly - we would have to swap out it's base class...
@@ -80,6 +79,10 @@ sub handle {
             'Content-type' => 'text/xml; charset="utf-8"'
         );
         $response->content( $response_message );
+        {
+            use bytes;
+            $response->header('Content-length', length $response_message);
+        }
     }
 
     $self->_output($response);

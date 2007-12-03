@@ -3,16 +3,19 @@ use strict;
 use warnings;
 use Test::More qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
+use File::Basename;
+use File::Spec;
 
-use Cwd;
-
-my $path = cwd;
-$path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
+my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 use_ok(qw/SOAP::WSDL/);
 
 my $soap = SOAP::WSDL->new(
-    wsdl => 'file:///' . $path .'/t/acceptance/wsdl/008_complexType.wsdl'
+    wsdl => 'file://' . $url .'/acceptance/wsdl/008_complexType.wsdl'
 )->wsdlinit();
 
 my $wsdl = $soap->get_definitions;

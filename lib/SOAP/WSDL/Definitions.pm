@@ -18,7 +18,7 @@ my %binding_of  :ATTR(:name<binding>    :default<()>);
 my %service_of  :ATTR(:name<service>    :default<()>);
 my %namespace_of  :ATTR(:name<namespace> :default<()>);
 
-# must be attr for Class::Std::Storable
+# must be attr for Class::Std::Fast::Storable
 my %attributes_of :ATTR();
 %attributes_of = (
     binding => \%binding_of,
@@ -118,9 +118,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 431 $
  $LastChangedBy: kutterma $
- $Id: Definitions.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: Definitions.pm 431 2007-12-03 19:39:11Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut

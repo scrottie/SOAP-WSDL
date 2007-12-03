@@ -2,19 +2,23 @@ use Test::More tests => 6;
 use strict;
 use warnings;
 use diagnostics;
-use Cwd;
+use lib '../lib';
 use File::Basename;
 use File::Spec;
-use lib '../lib';
+
+my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 use_ok(qw/SOAP::WSDL/);
 
-my $path = File::Spec->rel2abs( dirname __FILE__ );
 my $soap;
 #2
 ok( $soap = SOAP::WSDL->new(
-	wsdl => 'file:///' . $path . '/../../acceptance/wsdl/02_port.wsdl',
-	keep_alive => 1,
+    wsdl => 'file://' . $url . '/../../acceptance/wsdl/02_port.wsdl',
+    keep_alive => 1,
 ), 'Instantiated object' );
 
 ok( ($soap->servicename('testService')  ), 'set service' );

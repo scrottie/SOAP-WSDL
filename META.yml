@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_25
+version: 2.00_26
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -126,7 +126,7 @@ provides:
     version: 2.00_25
   SOAP::WSDL::Server::CGI:
     file: lib/SOAP/WSDL/Server/CGI.pm
-    version: 2.00_25
+    version: 2.00_26
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::Transport::HTTP:

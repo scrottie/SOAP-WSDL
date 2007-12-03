@@ -11,8 +11,14 @@ use Cwd;
 
 use SOAP::WSDL;
 use SOAP::WSDL::XSD::Typelib::Builtin;
-my $path = cwd;
-$path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
+use File::Basename;
+use File::Spec;
+
+my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 my $parser; 
 
@@ -37,7 +43,7 @@ else
 # TODO factor out into different test
 
 my $soap = SOAP::WSDL->new(
-    wsdl => 'file:///' . $path .'/t/acceptance/wsdl/006_sax_client.wsdl',
+    wsdl => 'file://' . $url .'/acceptance/wsdl/006_sax_client.wsdl',
 )->wsdlinit();
 
 $soap->servicename('MessageGateway');

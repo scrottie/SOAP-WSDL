@@ -4,7 +4,7 @@
     port_op = type.find_operation( definitions.get_targetNamespace, operation.get_name );
 port_op.get_documentation %]
 
- sub [% operation.get_name %](
+ sub [% operation.get_name %] {
     my ($self, $body, $header) = @_;
     # body is a ??? object - sorry, POD not implemented yet
     # header is a ??? object - sorry, POD not implemented yet
