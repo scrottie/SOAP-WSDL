@@ -12,8 +12,8 @@ __PACKAGE__->__set_minOccurs();
 __PACKAGE__->__set_maxOccurs();
 __PACKAGE__->__set_ref();
 use base qw(
-	SOAP::WSDL::XSD::Typelib::Element
-	SOAP::WSDL::XSD::Typelib::Builtin::string
+    SOAP::WSDL::XSD::Typelib::Element
+    SOAP::WSDL::XSD::Typelib::Builtin::string
 
 );
 

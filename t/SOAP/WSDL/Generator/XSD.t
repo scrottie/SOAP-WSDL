@@ -1,4 +1,4 @@
-use Test::More tests => 37;
+use Test::More tests => 38;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -11,6 +11,7 @@ use_ok qw(SOAP::WSDL::Generator::Template::XSD);
 use SOAP::WSDL::Expat::WSDLParser;
 
 my $parser = SOAP::WSDL::Expat::WSDLParser->new();
+
 my $definitions = $parser->parse_file( 
      "$path/../../../acceptance/wsdl/generator_test.wsdl"
     #"$path/../../../acceptance/wsdl/elementAtomicComplexType.xml"
@@ -34,6 +35,7 @@ $generator->generate_typelib();
 }
 # print $code;
 
+
 $generator->set_type_prefix('MyTypes');
 $generator->set_element_prefix('MyElements');
 $generator->set_typemap_prefix('MyTypemaps');
@@ -43,7 +45,15 @@ $generator->set_output(undef);
 $generator->generate();
 #$generator->generate_typelib();
 #$generator->generate_typemap();
-$generator->generate_interface();
+
+if (eval { require Test::Warn; }) {
+   Test::Warn::warning_like( sub { $generator->generate_interface() }, 
+    qr{\A Multiple \s parts \s detected \s in \s message \s testMultiPartWarning}xms);
+} 
+else {
+    $generator->generate_interface();
+    SKIP: { skip 'Cannot test warnings without Test::Warn', 1 };
+}
 
 $generator->generate_server();
 

@@ -10,13 +10,13 @@ our $typemap_1 = {
                'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
                'GenerateBarCode' => 'MyElements::GenerateBarCode',
                'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
-               'GenerateBarCode/BarCodeParam/Width' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
                'GenerateBarCode/BarCodeParam/Angle' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
+               'GenerateBarCode/BarCodeParam/Width' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
                'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
                'GenerateBarCode/BarCodeParam/BarCodeImageFormat' => 'MyTypes::ImageFormats',
                'GenerateBarCode/BarCodeParam/BGColor' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
                'GenerateBarCode/BarCodeParam/Ratio' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
-               'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
+               'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::token',
                'GenerateBarCode/BarCodeParam/Height' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
                'GenerateBarCode/BarCodeParam/CheckSum' => 'SOAP::WSDL::XSD::Typelib::Builtin::boolean',
                'GenerateBarCode/BarCodeParam/checkSumMethod' => 'MyTypes::CheckSumMethod',
@@ -27,16 +27,20 @@ our $typemap_1 = {
                'GenerateBarCodeResponse/GenerateBarCodeResult' => 'SOAP::WSDL::XSD::Typelib::Builtin::base64Binary',
                'GenerateBarCodeResponse' => 'MyElements::GenerateBarCodeResponse',
                'GenerateBarCode/BarCodeParam/Module' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
-               'GenerateBarCode/BarCodeParam' => 'MyTypes::BarCodeData',
                'GenerateBarCode/BarCodeParam/showTextPosition' => 'MyTypes::ShowTextPosition',
+               'GenerateBarCode/BarCodeParam' => 'MyTypes::BarCodeData',
                'GenerateBarCode/BarCodeParam/FontName' => 'SOAP::WSDL::XSD::Typelib::Builtin::string'
              };
 ;
 
-sub get_class { 
+sub get_class {
   my $name = join '/', @{ $_[1] };
   exists $typemap_1->{ $name } or die "Cannot resolve $name via " . __PACKAGE__;
   return $typemap_1->{ $name };
+}
+
+sub get_typemap {
+    return $typemap_1;
 }
 
 1;

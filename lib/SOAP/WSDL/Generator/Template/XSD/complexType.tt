@@ -1,4 +1,4 @@
-package [% type_prefix %]::[% complexType.get_name %];
+package [% type_prefix %]::[% complexType.get_name.replace('\.','::').replace('-','_') %];
 use strict;
 use warnings;
 [% INCLUDE complexType/contentModel.tt %]
@@ -12,7 +12,7 @@ use warnings;
 
 =head1 NAME
 
-[% type_prefix %]::[% complexType.get_name %]
+[% type_prefix %]::[% complexType.get_name.replace('\.','::').replace('-','_') %]
 
 =head1 DESCRIPTION
 

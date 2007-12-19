@@ -55,6 +55,11 @@
                     : die "input must have either type or element";
         } @{ $part_from };
     }
+
+    warn "Multiple parts detected in message " . $stash->{ message }->get_name() . ".\n",
+        "WS-I BP demands 0 to 1 parts in message body\n"
+        if (@parts > 1);
+
     $stash->{ parts } = \@parts;
 
 [% END %]

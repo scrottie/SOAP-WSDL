@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use lib 'lib';
+use lib 'lib';	# just needed because interface lies here
 
 # I have to generate the interface using wsdl2perl.pl before
 use MyInterfaces::HelloWorld::HelloWorldSoap;
 
+# I instantiate a interface class.
 my $soap = MyInterfaces::HelloWorld::HelloWorldSoap->new();
 
 # I have to lookup the method and synopsis from the interface's pod
@@ -14,8 +15,9 @@ my $result = $soap->sayHello({
     givenName => $ARGV[0] || '"Your given name"',
 });
 
+# SOAP::WSDL::SOAP::Typelib::Fault11 objects are false, but serialize to XML
 die $result if not $result;
 
 # I have to lookup the output parameter from the interface's POD - or try:
-# Bad method names will die with a list of available methods
+# Will die on bad method names with a list of available methods
 print $result->get_sayHelloResult(), "\n";

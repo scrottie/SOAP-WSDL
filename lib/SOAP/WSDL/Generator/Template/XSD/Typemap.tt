@@ -22,7 +22,7 @@ __END__
 
 =head1 NAME
 
-[% typemap_prefix %]::[% service.get_name.replace('\.','::') %]; - typemap for ::[% service.get_name %];
+[% typemap_prefix %]::[% service.get_name.replace('\.','::').replace('-', '_') %]; - typemap for ::[% service.get_name %];
 
 =head1 DESCRIPTION
 

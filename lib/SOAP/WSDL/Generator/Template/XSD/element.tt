@@ -1,4 +1,4 @@
-package [% element_prefix %]::[% element.get_name %];
+package [% element_prefix %]::[% element.get_name.replace('\.','::') %];
 use strict;
 use warnings;
 

@@ -5,7 +5,7 @@ use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
-our $VERSION = q{2.00_25};
+our $VERSION = q{2.00_27};
 
 sub _initialize {
     my ($self, $parser) = @_;
@@ -36,7 +36,9 @@ sub _initialize {
                 eval "require $action->{ class }";
                 croak $@ if ($@);
 
-                my $obj = $action->{ class }->new({ parent => $current })
+                my $obj = $action->{ class }->new({ parent => $current,
+                    xmlns => { '#default' => $parser->namespace($localname) }
+                    })
                   ->init( _fixup_attrs( $parser, %attrs ) );
 
                 if ($current) {

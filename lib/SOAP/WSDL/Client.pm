@@ -11,7 +11,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-our $VERSION = '2.00_25';
+our $VERSION = '2.00_27';
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
@@ -268,17 +268,6 @@ Default:
 
  text/xml; charset: utf8
 
-=head3 set_trace
-
- $soap->set_trace(1);
- $soap->set_trace( sub { Log::Log4perl::get_logger()->debug( @_ ) } );
-
-When set to a true value, tracing (via warn) is enabled.
-
-When set to a code reference, this function will be called on every
-trace call, making it really easy for you to set up log4perl logging
-or whatever you need.
-
 =head2 Features different from SOAP::Lite
 
 SOAP::WSDL does not aim to be a complete replacement for SOAP::Lite - the
@@ -371,9 +360,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 455 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: Client.pm 455 2007-12-14 15:50:16Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

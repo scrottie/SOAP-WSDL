@@ -7,9 +7,12 @@ sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' };
 
 # use $_[1] for performance
 sub start_tag {
-    my $opt = $_[1] ||= {};
-    return '<' . $opt->{name} . ' >' if $opt->{ name };
-    return q{}
+    return q{} if not $#_;          # return if no second argument ($opt)
+    if ($_[1]->{ name }) {
+        return "<$_[1]->{name} />" if $_[1]->{ empty };
+        return "<$_[1]->{name} >";
+    }
+    return q{};
 }
 
 # use $_[1] for performance

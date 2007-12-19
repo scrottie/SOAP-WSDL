@@ -211,6 +211,8 @@ sub visit_XSD_Element {
 
         # for atomic and complex types , and ref elements
         my $typeclass = join q{::}, $element_prefix_of{$ident}, $element->get_name();
+        $typeclass =~s{\.}{::}g;
+        $typeclass =~s{\-}{_}g;
         $self->set_typemap_entry($typeclass);
 
         $self->process_atomic_type( $element->first_complexType()
@@ -225,6 +227,8 @@ sub visit_XSD_Element {
     if (not defined($parent)) {
         # for atomic and complex types , and ref elements
         my $typeclass = join q{::}, $element_prefix_of{$ident}, $element->get_name();
+        $typeclass =~s{\.}{::}g;
+        $typeclass =~s{\-}{_}g;
         $self->set_typemap_entry($typeclass);
     }
 

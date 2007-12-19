@@ -13,7 +13,7 @@ our $typemap_1 = {
                'GetFortuneCookieResponse' => 'MyElements::GetFortuneCookieResponse',
                'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
                'GetSpecificCookie' => 'MyElements::GetSpecificCookie',
-               'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::TOKEN',
+               'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::token',
                'CountCookies' => 'MyElements::CountCookies',
                'GetSpecificCookie/index' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
                'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
@@ -24,10 +24,14 @@ our $typemap_1 = {
              };
 ;
 
-sub get_class { 
+sub get_class {
   my $name = join '/', @{ $_[1] };
   exists $typemap_1->{ $name } or die "Cannot resolve $name via " . __PACKAGE__;
   return $typemap_1->{ $name };
+}
+
+sub get_typemap {
+    return $typemap_1;
 }
 
 1;

@@ -39,6 +39,34 @@ sub AUTOMETHOD {
         . "\n"
 }
 
+sub as_hash_ref {
+    my $self = shift;
+    my $attributes_ref = $ATTRIBUTES_OF{ ref $self };
+    my $ident = ident $self;
+
+    my $hash_of_ref = {};
+    foreach my $attribute (keys %{ $attributes_ref }) {
+        next if not defined $attributes_ref->{ $attribute }->{ $ident };
+        my $value = $attributes_ref->{ $attribute }->{ $ident };
+
+        $hash_of_ref->{ $attribute } = blessed $value
+            ? $value->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
+                ? $value
+                : $value->as_hash_ref()
+            : ref $value eq 'ARRAY'
+                ? [
+                    map {
+                        $_->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
+                            ? $_
+                            : $_->as_hash_ref()
+                    } @{ $value }
+                ]
+                : die "Neither blessed obj nor list ref";
+    };
+
+    return $hash_of_ref;
+}
+
 # we store per-class elements.
 # call as __PACKAGE__->_factory
 sub _factory {
@@ -352,6 +380,10 @@ This means you may set element properties by passing
 
 Examples are similar to the examples provided for new() above.
 
+=head2 as_hash_ref
+
+Returns a hash ref representation of the complexType object
+
 =head1 Bugs and limitations
 
 =over
@@ -391,9 +423,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 412 $
+ $Rev: 452 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 412 2007-11-27 22:57:52Z kutterma $
+ $Id: ComplexType.pm 452 2007-12-12 14:46:54Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

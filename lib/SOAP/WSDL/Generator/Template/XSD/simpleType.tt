@@ -1,4 +1,4 @@
-package [% type_prefix %]::[% simpleType.get_name %];
+package [% type_prefix %]::[% simpleType.get_name.replace('\.','::').replace('-','_') %];
 use strict;
 use warnings;
 
@@ -13,7 +13,7 @@ sub get_xmlns { '[% simpleType.get_targetNamespace %]'};
 
 =pod
 
-=head1 [% type_prefix %]::[% simpleType.get_name %]
+=head1 [% type_prefix %]::[% simpleType.get_name.replace('\.','::').replace('-','_') %]
 
 =head1 DESCRIPTION
 

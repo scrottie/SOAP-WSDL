@@ -10,9 +10,16 @@ sub call {
     my ($self, $method, $body, $header) = @_;
     if (not blessed $body) {
         $body = {} if not defined $body;
-        my $class = $method->{ body }->{ parts }->[0];
-        eval "require $class" || die $@;
-        $body = $class->new($body);
+        $body = ref $body eq 'ARRAY' ? $body : [ $body ];
+        my $index = 0;
+        my @part_from;
+        foreach my $part (@{ $body }) {
+            my $class = $method->{ body }->{ parts }->[$index];
+            eval "require $class" || die $@;
+            push @part_from, $class->new($part);
+            $index++;
+        }
+        $body = $#part_from ? \@part_from : $part_from[0];
     }
 
     # if we have a header
@@ -94,9 +101,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 440 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: Base.pm 440 2007-12-04 22:24:33Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

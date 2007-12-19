@@ -50,10 +50,16 @@ example/lib/MyTypemaps/TestService.pm
 example/lib/MyTypes/Address.pm
 example/lib/MyTypes/ArrayOfContract.pm
 example/lib/MyTypes/ArrayOfPerson.pm
+example/lib/MyTypes/BarCodeData.pm
+example/lib/MyTypes/BarcodeOption.pm
+example/lib/MyTypes/BarcodeType.pm
+example/lib/MyTypes/CheckSumMethod.pm
 example/lib/MyTypes/Contract.pm
+example/lib/MyTypes/ImageFormats.pm
 example/lib/MyTypes/Person.pm
 example/lib/MyTypes/PersonID.pm
 example/lib/MyTypes/PhoneNumber.pm
+example/lib/MyTypes/ShowTextPosition.pm
 example/lib/MyTypes/test2.pm
 example/lib/MyTypes/testExtended.pm
 example/person.pl
@@ -311,6 +317,8 @@ t/SOAP/WSDL/Generator/Visitor/Typemap.t
 t/SOAP/WSDL/Generator/XCS.t
 t/SOAP/WSDL/Generator/XSD.t
 t/SOAP/WSDL/Generator/XSD_unsupported.t
+t/SOAP/WSDL/Part.t
+t/SOAP/WSDL/Serializer/XSD.t
 t/SOAP/WSDL/Server.t
 t/SOAP/WSDL/Server/CGI.t
 t/SOAP/WSDL/Transport/01_Test.t
@@ -318,6 +326,9 @@ t/SOAP/WSDL/Transport/02_HTTP.t
 t/SOAP/WSDL/Transport/acceptance/test2.xml
 t/SOAP/WSDL/Transport/acceptance/test3.xml
 t/SOAP/WSDL/Typelib/Fault11.t
+t/SOAP/WSDL/XSD/ComplexType.t
+t/SOAP/WSDL/XSD/Element.t
+t/SOAP/WSDL/XSD/SimpleType.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/01_constructors.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/anySimpleType.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/anyType.t

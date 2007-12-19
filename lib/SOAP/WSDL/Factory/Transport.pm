@@ -38,7 +38,7 @@ sub get_transport {
 
     if ($registered_transport_of{ $scheme }) {
         no strict qw(refs);
-        *{ $registered_transport_of{ $scheme } . '::' }{ CODE }
+        defined %{ "$registered_transport_of{ $scheme }::" }
             or eval "require $registered_transport_of{ $scheme }"
                 or die "Cannot load transport class $registered_transport_of{ $scheme } : $@";
 
@@ -71,7 +71,7 @@ sub get_transport {
 
     if (exists $SOAP_WSDL_TRANSPORT_OF{ $scheme }) {
         no strict qw(refs);
-        *{ $SOAP_WSDL_TRANSPORT_OF{ $scheme } . '::' }{ CODE } 
+        defined %{ "$SOAP_WSDL_TRANSPORT_OF{ $scheme }::" }
             or eval "require $SOAP_WSDL_TRANSPORT_OF{ $scheme }"
                 or die "Cannot load transport class $SOAP_WSDL_TRANSPORT_OF{ $scheme } : $@";
         return $SOAP_WSDL_TRANSPORT_OF{ $scheme }->new( %attrs );
@@ -240,9 +240,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 435 $
+ $Rev: 459 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 435 2007-12-03 22:31:00Z kutterma $
+ $Id: Transport.pm 459 2007-12-16 16:00:14Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
  
 =cut

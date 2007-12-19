@@ -48,7 +48,7 @@ sub load_classes {
 
         # a bad test - do you know a better one?
         next if $class eq '__SKIP__';
-        next if defined @{ "$class\::ISA"}; # check if namespace exists
+        next if defined *{ "$class\::" }; # check if namespace exists
 
         $class =~s{ :: }{/}xmsg;
         $class .= '.pm';
@@ -289,8 +289,8 @@ This module may be used under the same terms as perl itself.
 
  $ID: $
 
- $LastChangedDate: 2007-12-02 23:20:24 +0100 (So, 02 Dez 2007) $
- $LastChangedRevision: 427 $
+ $LastChangedDate: 2007-12-07 21:04:06 +0100 (Fr, 07 Dez 2007) $
+ $LastChangedRevision: 444 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

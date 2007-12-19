@@ -161,7 +161,7 @@
                         (Inclusive constraints) </xsd:documentation>
                 </xsd:annotation>
                 <xsd:all>
-                    <xsd:element name="test1" type="xsd:int"/>
+                    <xsd:element name="test1" type="int"/>
                     <xsd:element name="test2" type="xsd:string"/>
                 </xsd:all>
             </xsd:complexType>
@@ -204,6 +204,10 @@
     <message name="testResponse">
         <part name="testAll" element="tns:testElementString"/>        
     </message>
+    <message name="testMultiPartWarning">
+        <part name="testAll" element="tns:testElementString"/>
+        <part name="parameters" element="tns:testChoice"/>
+    </message>
     <message name="testHeaderRequest">
         <part name="testBody" element="tns:testHeader"/>
         <part name="testHeader" element="tns:Header"/>
@@ -233,6 +237,14 @@
 			<input message="tns:testChoice"/>
 			<output message="tns:testChoice"/>
 		</operation>
+        <operation name="testMultiPartWarning">
+            <documentation>
+                Test-Methode
+            </documentation>
+            <input message="tns:testMultiPartWarning"/>
+            <output message="tns:testMultiPartWarning"/>
+        </operation>
+
 	</portType>
 
 	<binding type="tns:testPort" name="testBinding">
@@ -257,15 +269,25 @@
 					</output>
 		    </operation>
             <operation name="testHeader">
-        		<soap:operation soapAction="testHeader"/>
+                <soap:operation soapAction="testHeader"/>
 				<input>
 					<soap:body use="literal" parts="tns:testBody"/>
 					<soap:header use="literal" part="tns:testHeader" message="tns:testHeaderRequest"/>
-				</input>
-				<output>
-					<soap:body use="literal"/>
-		        </output>
-         </operation>
+                </input>
+                <output>
+                    <soap:body use="literal"/>
+                </output>
+            </operation>
+            <operation name="testMultiPartWarning">
+                <soap:operation soapAction="testHeader"/>
+                <input>
+                    <soap:body use="literal"/>
+                </input>
+                <output>
+                    <soap:body use="literal"/>
+                </output>
+            </operation>
+
     </binding>
     <service name="testService">
 		<port name="testPort" binding="tns:testBinding">

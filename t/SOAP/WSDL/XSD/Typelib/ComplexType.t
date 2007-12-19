@@ -1,6 +1,14 @@
 use strict;
 use warnings;
 
+package MyEmptyType;
+use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+__PACKAGE__->_factory([],{},{});
+
+package MyEmptyType2;
+use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+__PACKAGE__->_factory();
+
 package MyType;
 
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
@@ -34,14 +42,33 @@ __PACKAGE__->_factory(
 );
 
 package main;
-use Test::More tests => 89;
-use Data::Dumper;
+use Test::More tests => 100;
 use Storable;
+
+my $have_warn = eval { use Test::Warn; 1; };
+
 my $obj;
+
+$obj = MyEmptyType->new();
+is $obj->serialize, '';
+is $obj->serialize({ name => 'test'}), '<test />';
+
+$obj = MyEmptyType2->new();
+is $obj->serialize, '';
+is $obj->serialize({ name => 'test'}), '<test />';
+
 
 $obj = MyType->new({});
 isa_ok $obj, 'MyType';
 is $obj->get_test, undef, 'undefined element content';
+
+my $hash_of_ref = $obj->as_hash_ref();
+is scalar keys %{ $hash_of_ref }, 0;
+
+SKIP: {
+    skip 'Cannot test warnings without Test::Warn', 1 if not $have_warn;
+    warning_is { $obj->add_test() } 'attempting to add empty value to MyType';
+}
 
 $obj = MyType->new({ test => 'Test1'});
 isa_ok $obj, 'MyType';
@@ -64,6 +91,9 @@ isa_ok $obj, 'MyType';
 isa_ok $obj->get_test, 'SOAP::WSDL::XSD::Typelib::Builtin::string';
 is $obj->get_test, 'Test2', 'element content';
 
+$hash_of_ref = $obj->as_hash_ref();
+is $hash_of_ref->{ test }, 'Test2';
+
 $obj = MyType->new({ 
     test => [
         SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
@@ -79,6 +109,10 @@ isa_ok $obj, 'MyType';
 isa_ok $obj->get_test, 'ARRAY';
 is $obj->get_test()->[0], 'Test', 'element content (list content [0])';
 is $obj->get_test()->[1], 'Test2', 'element content (list content [1])';
+
+$hash_of_ref = $obj->as_hash_ref();
+is $hash_of_ref->{ test }->[0], 'Test';
+is $hash_of_ref->{ test }->[1], 'Test2';
 
 my $nested = MyType2->new({
     test => $obj,
@@ -104,6 +138,10 @@ $nested = MyType2->new({
         ],
     },    
 });
+
+
+$hash_of_ref = $nested->as_hash_ref();
+is $hash_of_ref->{ test }->{ test }->[1], 'Test2';
 
 
 # isnt $nested->get_test->[0], $obj, 'element identity';
@@ -201,6 +239,14 @@ eval {
     });
 };
 like $@, qr{cannot \s use \s CODE}xms;
+
+
+eval {
+    $obj = MyType->new({ 
+        foobar => 'fubar'
+    });
+};
+like $@, qr{unknown \s field \s foobar \s in \s MyType }xms;
 
 
 eval { $obj->set_FOO(42) };

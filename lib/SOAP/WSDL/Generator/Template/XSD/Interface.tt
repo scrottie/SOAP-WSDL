@@ -1,4 +1,4 @@
-package [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('^.+\.','') %];
+package [% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('^.+\.','').replace('-', '_') %];
 use strict;
 use warnings;
 use Class::Std::Fast::Storable;
@@ -6,12 +6,12 @@ use Scalar::Util qw(blessed);
 use base qw(SOAP::WSDL::Client::Base);
 
 # only load if it hasn't been loaded before
-require [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]
-    if not [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]->can('get_class');
+require [% typemap_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]
+    if not [% typemap_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]->can('get_class');
 
 sub START {
     $_[0]->set_proxy('[% port.first_address.get_location %]') if not $_[2]->{proxy};
-    $_[0]->set_class_resolver('[% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]')
+    $_[0]->set_class_resolver('[% typemap_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]')
         if not $_[2]->{class_resolver};
 }
 
@@ -34,12 +34,12 @@ __END__
 =head1 NAME
 
 
-[% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %] - SOAP Interface for the [% service.get_name %] Web Service
+[% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('\.', '::').replace('-', '_') %] - SOAP Interface for the [% service.get_name %] Web Service
 
 =head1 SYNOPSIS
 
- use [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %];
- my $interface = [% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %]->new();
+ use [% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('\.', '::').replace('-', '_') %];
+ my $interface = [% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('\.', '::').replace('-', '_') %]->new();
  
  my $response;
 [%      FOREACH operation = binding.get_operation;

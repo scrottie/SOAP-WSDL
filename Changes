@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_26
+Release notes for SOAP::WSDL 2.00_27
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -33,6 +33,30 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_27
+
+The following features were added (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1850793 ] Add a to_hash_ref method
+   * [ 1844427 ] Support multiple parts in body
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+   * [ 1850795 ] attributes referencing types in default namespace throw
+   * [ 1844458 ] Add warning when generating Interface with multiple parts
+   * [ 1843841 ] Grammar/typos in Manual.pod
+   * [ 1843799 ] ./Build test fails due to testcount mismatch not IO::Scalar
+   * [ 1845077 ] Top level simpleType elements don't serialize correctly
+
+The following uncategorized improvements have been made:
+
+   * Fixed serializing complexType elements with no elements to empty element
+   * Enhanced test suite
+   * Documentation improvements
 
 2.00_26
 

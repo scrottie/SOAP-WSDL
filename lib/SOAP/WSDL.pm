@@ -669,16 +669,16 @@ The following facets have no influence yet:
 
 =item * L<SOAP::Lite|SOAP::Lite>
 
-Full featured SOAP-library, little WSDL support. Supports rpc-encoded style only. Many protocols supported.
+Full featured SOAP-library, little WSDL support. Supports rpc-encoded style 
+only. Many protocols supported.
 
 =item * L<XML::Compile::WSDL|XML::Compile::WSDL> / L<XML::Compile::SOAP|XML::Compile::SOAP>
 
-A promising-looking approach derived from a cool functional DOM-based XML schema parser.
+Creates parser/generator functions for SOAP messages. Includes SOAP Client 
+and Server implementatios.
 
-Will support encoding/decoding of SOAP messages based on WSDL definitions.
-
-Not yet finished at the time of writing - but you may wish to give it a try, especially
-if you need to adhere very closely to the XML Schema / WSDL specs.
+You might want to give it a try, especially if you need to adhere very
+closely to the XML Schema / WSDL specs.
 
 =back
 
@@ -730,9 +730,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 457 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: WSDL.pm 457 2007-12-16 08:02:06Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

@@ -13,8 +13,8 @@ __PACKAGE__->__set_maxOccurs();
 __PACKAGE__->__set_ref();
 
 use base qw(
-	SOAP::WSDL::XSD::Typelib::Element
-	SOAP::WSDL::XSD::Typelib::ComplexType
+    SOAP::WSDL::XSD::Typelib::Element
+    SOAP::WSDL::XSD::Typelib::ComplexType
 );
 
 
@@ -44,7 +44,7 @@ readNodeCount from the namespace http://www.fullerdata.com/FortuneCookie/Fortune
 
 Constructor. The following data structure may be passed to new():
 
-
+,
 
 =head1 AUTHOR
 

@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use Carp qw(croak carp confess);
 
-our $VERSION='2.00_25';
+our $VERSION='2.00_27';
 
 my %id_of :ATTR(:name<id> :default<()>);
 my %name_of :ATTR(:name<name> :default<()>);
@@ -13,6 +13,11 @@ my %documentation_of :ATTR(:name<documentation> :default<()>);
 my %targetNamespace_of :ATTR(:name<targetNamespace> :default<()>);
 my %xmlns_of :ATTR(:name<xmlns> :default<{}>);
 my %parent_of :ATTR(:name<parent> :default<()>);
+
+sub START {
+    my ($self, $ident, $arg_ref) = @_;
+    $xmlns_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
+}
 
 sub DEMOLISH {
   my $self = shift;
@@ -82,7 +87,7 @@ sub AUTOMETHOD {
             return $result_ref->[0];
         };
     }
-    confess "$subname not found in class " . (ref $self || $self) ;
+    confess "$subname not found in class " . ref $self;
 }
 
 sub init {
@@ -95,11 +100,6 @@ sub init {
             $xmlns_of{ ident $self }->{ $value->{ LocalName } } = $value->{ Value };
             next;
         }
-        elsif ($value->{ Name } =~m{^xmlns$}xms) {
-            # just ignore xmlns = for now
-            # TODO handle xmlns correctly - maybe via setting a prefix ?
-            next;
-        }
 
         my $name = $value->{ LocalName };
         my $method = "set_$name";
@@ -110,16 +110,23 @@ sub init {
 
 sub expand {
     my ($self, , $qname) = @_;
+    my $ns_of = $self->get_xmlns();
+    if (not $qname=~m{:}xm) {
+        die "un-prefixed element name <$qname> found, but no default namespace set\n"
+            if not defined $ns_of->{ '#default' };
+        return $ns_of->{ '#default' }, $qname;
+    }
+
     my ($prefix, $localname) = split /:/x, $qname;
-    # my %ns_map = reverse %{ $self->get_xmlns() };
-    my %ns_map = %{ $self->get_xmlns() };
-    return ($ns_map{ $prefix }, $localname) if ($ns_map{ $prefix });
+
+
+    return ($ns_of->{ $prefix }, $localname) if ($ns_of->{ $prefix });
 
     if (my $parent = $self->get_parent()) {
         return $parent->expand($qname);
     }
     confess "unbound prefix $prefix found for $prefix:$localname. Bound prefixes are"
-        . join(', ', keys %ns_map);
+        . join(', ', keys %{ $ns_of });
 }
 sub _expand;
 *_expand = \&expand;

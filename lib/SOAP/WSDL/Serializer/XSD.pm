@@ -3,7 +3,7 @@ package SOAP::WSDL::Serializer::XSD;
 use strict;
 use warnings;
 use Class::Std::Fast::Storable;
-
+use Scalar::Util qw(blessed);
 our $VERSION=q{2.00_25};
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
@@ -49,7 +49,7 @@ sub serialize_header {
     return q{} if not $data;
     return join ( q{},
         "<$opt->{ namespace }->{ $SOAP_NS }\:Header>",
-        "$data",
+        blessed $data ? $data->serialize_qualified : (),
         "</$opt->{ namespace }->{ $SOAP_NS }\:Header>",
     );
 }
@@ -61,7 +61,13 @@ sub serialize_body {
     # if we have no data.
     return join ( q{},
         "<$opt->{ namespace }->{ $SOAP_NS }\:Body>",
-        defined $data ? "$data" : (),
+        defined $data
+            ? ref $data eq 'ARRAY' 
+                ? join q{}, map { blessed $_ ? $_->serialize_qualified() : () } @{ $data }
+                : blessed $data 
+                    ? $data->serialize_qualified 
+                    : ()
+            : (),
         "</$opt->{ namespace }->{ $SOAP_NS }\:Body>",
     );
 }
@@ -113,9 +119,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 444 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: XSD.pm 444 2007-12-07 20:04:06Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
  
 =cut

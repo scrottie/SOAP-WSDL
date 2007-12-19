@@ -38,11 +38,7 @@ sub sayHello {
     }, $body, $header);
 }
 
-
-
 1;
-
-
 
 __END__
 

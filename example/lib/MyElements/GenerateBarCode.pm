@@ -13,11 +13,13 @@ __PACKAGE__->__set_maxOccurs();
 __PACKAGE__->__set_ref();
 
 use base qw(
-	SOAP::WSDL::XSD::Typelib::Element
-	SOAP::WSDL::XSD::Typelib::ComplexType
+    SOAP::WSDL::XSD::Typelib::Element
+    SOAP::WSDL::XSD::Typelib::ComplexType
 );
-use Class::Std::Storable;
+use Class::Std::Fast::Storable constructor => 'none';
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+
+Class::Std::initialize();
 
 { # BLOCK to scope variables
 
@@ -29,9 +31,9 @@ __PACKAGE__->_factory(
         BarCodeParam
         BarCodeText
     ) ],
-    { 
-		BarCodeParam => \%BarCodeParam_of, 
-		BarCodeText => \%BarCodeText_of, 
+    {
+        BarCodeParam => \%BarCodeParam_of,
+        BarCodeText => \%BarCodeText_of,
     },
     {
         BarCodeParam => 'MyTypes::BarCodeData',

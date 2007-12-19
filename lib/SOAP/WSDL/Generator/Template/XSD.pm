@@ -55,9 +55,11 @@ sub generate {
 }
 
 sub generate_typelib {
-    my ($self) = @_;
+    my ($self, $arg_ref) = @_;
     # $output_of{ ident $self } = "";
-    my @schema = @{ $self->get_definitions()->first_types()->get_schema() };
+    my @schema = exists $arg_ref->{ schema } 
+        ? @{ $arg_ref->{schema} } 
+        : @{ $self->get_definitions()->first_types()->get_schema() };
     for my $type (map { @{ $_->get_type() } , @{ $_->get_element() } } @schema[1..$#schema] ) {
         $type->_accept( $self );
     }
@@ -164,6 +166,7 @@ sub _generate_filename :PRIVATE {
     my ($self, @parts) = @_;
     my $name = join '::', @parts;
     $name =~s{ \. }{::}xmsg;
+    $name =~s{ \- }{_}xmsg;
     $name =~s{ :: }{/}xmsg;
     return "$name.pm";
 }
