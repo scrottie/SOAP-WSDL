@@ -84,7 +84,7 @@ SOAP::WSDL::Expat::MessageParser allows the use of XML Declarations.
  the soap:Body element.
 
 SOAP::WSDL::Serializer::SOAP11 does not emit children of soap:Envelope following
-the soap:Body element. Other serializers may behave differentls.
+the soap:Body element. Other serializers may behave different.
 
 =head2 R1012
 
@@ -302,6 +302,73 @@ SOAP::WSDL::Expat::MessageParser checks the namespace of the SOAP envelope.
 SOAP::WSDL::Expat::MessageParser does not check that Envelope is the root
 element, yet.
 
+=head2 R1110
+
+ An INSTANCE MAY accept connections on TCP port 80 (HTTP)
+
+SOAP::WSDL::Server::CGI may be used in a web server listening at port 80.
+
+=head2 R1124
+
+ An INSTANCE MUST use a 2xx HTTP status code for responses that
+ indicate a successful outcome of a request.
+
+SOAP::WSDL::Server::CGI sends a 2xx HTTP status code for successful requests.
+
+=head2 R1111
+
+ An INSTANCE SHOULD use a "200 OK" HTTP status code for responses
+ that contain a SOAP message that is not a SOAP fault.
+
+SOAP::WSDL::Server::CGI does this.
+
+=head2 R1112
+
+ An INSTANCE SHOULD use either a "200 OK" or "202 Accepted" HTTP
+ status code for a response that does do not contain a SOAP message
+ but indicates successful HTTP outcome of a request.
+
+SOAP::WSDL::Server::CGI does this.
+
+=head2 R1130
+
+ An INSTANCE MUST use HTTP status code "307 Temporary Redirect"
+ when redirecting a request to a different endpoint.
+
+SOAP::WSDL::Server::CGI has no means of redirecting. The web server running
+a SOAP::WSDL::Server::CGI script is responsible for redirecting with a 307
+HTTP status code.
+
+=head2 R1125
+
+ An INSTANCE MUST use a 4xx HTTP status code for responses that indicate
+ a problem with the format of the request.
+
+SOAP::WSDL does this.
+
+=head2 R1113
+
+ An INSTANCE SHOULD use a "400 Bad Request "HTTP status code, if the
+ request message is a malformed HTTP request, or not well-formed XML.
+
+SOAP::WSDL does this.
+
+=head2 R1114
+
+ An INSTANCE SHOULD use a "405 Method not Allowed" HTTP status code if the
+ request method was not "POST".
+
+SOAP::WSDL does this.
+
+=head2 R1115
+
+ An INSTANCE SHOULD use a "415 Unsupported Media Type" HTTP status code if
+ the Content-Type HTTP request header did not have a value consistent with
+ the value specified for the corresponding binding of the input message.
+
+SOAP::WSDL::Server::CGI does not support any content type other than text/xml
+and application/xml yet.
+
 
 =head1 RULES NOT CONFIRMED
 
@@ -310,7 +377,7 @@ element, yet.
  A RECEIVER MUST accept messages that include the Unicode Byte Order Mark
  (BOM).
 
-May automatically work with XML::Parser::Expat, but is not testet yet.
+May automatically work with XML::Parser::Expat, but is not tested yet.
 
 TODO write test. If not confirmed, add encoding support.
 
@@ -338,6 +405,8 @@ TODO add processing of arbitrary attributes to SOAP::WSDL::SOAP::Typelib::Fault1
 
  A RECEIVER MUST accept fault messages that carry an xml:lang attribute on
  the faultstring element.
+
+SOAP::WSDL::Expat::MessageParser currently ignores all attributes.
 
 TODO add processing of the xml:lang attribute to SOAP::WSDL::SOAP::Typelib::Fault11
 
@@ -555,94 +624,37 @@ SOAP::WSDL does not check mandatory header blocks yet.
 
 SOAP::WSDL does not check mandatory header blocks yet.
 
-=head2 R1110
-
- An INSTANCE MAY accept connections on TCP port 80 (HTTP)
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1124
-
- An INSTANCE MUST use a 2xx HTTP status code for responses that
- indicate a successful outcome of a request.
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1111
-
- An INSTANCE SHOULD use a "200 OK" HTTP status code for responses
- that contain a SOAP message that is not a SOAP fault.
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1112
-
- An INSTANCE SHOULD use either a "200 OK" or "202 Accepted" HTTP
- status code for a response that does do not contain a SOAP message
- but indicates successful HTTP outcome of a request.
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1130
-
- An INSTANCE MUST use HTTP status code "307 Temporary Redirect"
- when redirecting a request to a different endpoint.
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1125
-
- An INSTANCE MUST use a 4xx HTTP status code for responses that indicate
- a problem with the format of the request.
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1113
-
- An INSTANCE SHOULD use a "400 Bad Request "HTTP status code, if the
- request message is a malformed HTTP request, or not well-formed XML.
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1114
-
- An INSTANCE SHOULD use a "405 Method not Allowed" HTTP status code if the
- request method was not "POST".
-
-SOAP::WSDL does not act as server yet.
-
-=head2 R1115
-
- An INSTANCE SHOULD use a "415 Unsupported Media Type" HTTP status code if
- the Content-Type HTTP request header did not have a value consistent with
- the value specified for the corresponding binding of the input message.
-
-SOAP::WSDL does not act as server yet.
-
 =head2 R1120
 
  An INSTANCE MAY use the HTTP state mechanism ("Cookies").
 
-SOAP::WSDL does not act as server yet.
+SOAP::WSDL::Server::CGI does not use cookies. A web server running a
+SOAP::WSDL::Server::CGI script may use cookies..
 
 =head2 R1122
 
  An INSTANCE using Cookies SHOULD conform to RFC2965.
 
-SOAP::WSDL does not act as server yet.
+
+SOAP::WSDL::Server::CGI does not use cookies. A web server running a
+SOAP::WSDL::Server::CGI script may use cookies..
 
 =head2 R1121
 
  An INSTANCE SHOULD NOT require consumer support for Cookies in order to
  function correctly
 
-SOAP::WSDL does not act as server yet.
+
+SOAP::WSDL::Server::CGI does not use cookies. A web server running a
+SOAP::WSDL::Server::CGI script may use cookies.
 
 =head2 R1123
 
  The value of the cookie MUST be considered to be opaque by the CONSUMER.
 
-SOAP::WSDL does not act as server yet.
+
+SOAP::WSDL::Server::CGI does not use cookies. A web server running a
+SOAP::WSDL::Server::CGI script may use cookies.
 
 =head2 R2028
 
@@ -1237,9 +1249,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 478 $
  $LastChangedBy: kutterma $
- $Id: WS_I.pod 391 2007-11-17 21:56:13Z kutterma $
+ $Id: WS_I.pod 478 2007-12-27 14:15:01Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/WS_I.pod $
 
 =cut

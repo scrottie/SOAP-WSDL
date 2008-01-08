@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use File::Basename;
 use File::Spec;
 
-our $VERSION = q{2.00_25};
+our $VERSION = q{2.00_27};
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Visitor::Typelib;
@@ -57,8 +57,8 @@ sub generate {
 sub generate_typelib {
     my ($self, $arg_ref) = @_;
     # $output_of{ ident $self } = "";
-    my @schema = exists $arg_ref->{ schema } 
-        ? @{ $arg_ref->{schema} } 
+    my @schema = exists $arg_ref->{ schema }
+        ? @{ $arg_ref->{schema} }
         : @{ $self->get_definitions()->first_types()->get_schema() };
     for my $type (map { @{ $_->get_type() } , @{ $_->get_element() } } @schema[1..$#schema] ) {
         $type->_accept( $self );

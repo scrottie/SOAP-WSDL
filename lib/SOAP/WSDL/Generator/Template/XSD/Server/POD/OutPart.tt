@@ -3,7 +3,7 @@
     #element;
     #STOP;
 -%]
- [% element_prefix %]::[% element.get_name.replace('\.', '::') %]->new([% 
+ [% element_prefix %]::[% element.get_name.replace('\.', '::') %]->new([%
     type = element.first_complexType || element.first_simpleType || definitions.first_types.find_type(
         element.expand( element.get_type ) );
     INCLUDE Interface/POD/Type.tt; %]

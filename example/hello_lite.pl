@@ -13,11 +13,12 @@ $soap->on_action( sub { "urn:HelloWorld#sayHello" });
 $soap->autotype(0);
 
 # I have to lookup the top level element's namespace from the WSDL
+$soap->default_ns('urn:HelloWorld');
+
 # I have to encode all parameters as SOAP::Data objects
 # I have to know the order of parameters
 my $som = $soap->call(
-    SOAP::Data->name("sayHello")
-        ->attr({ xmlns => 'urn:HelloWorld' }),
+    "sayHello",
     SOAP::Data->name('name')->value( $ARGV[1] || '"Your name"'),
     SOAP::Data->name('givenName')->value( $ARGV[0] || '"Your given name"'),
 );

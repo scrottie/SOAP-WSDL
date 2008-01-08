@@ -145,3 +145,43 @@ sub _fixup_attrs {
 
 1;
 
+
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Expat::WSDLParser - Parse WSDL files into object trees
+
+=head1 SYNOPSIS
+
+ my $parser = SOAP::WSDL::Expat::WSDLParser->new();
+ $parser->parse( $xml );
+ my $obj = $parser->get_data();
+
+=head1 DESCRIPTION
+
+WSDL parser used by SOAP::WSDL.
+
+=head1 AUTHOR
+
+Replace the whitespace by @ for E-Mail Address.
+
+ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2004-2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
+
+=head1 Repository information
+
+ $Id: $
+
+ $LastChangedDate: 2007-12-24 11:23:52 +0100 (Mo, 24 Dez 2007) $
+ $LastChangedRevision: 477 $
+ $LastChangedBy: kutterma $
+
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
+

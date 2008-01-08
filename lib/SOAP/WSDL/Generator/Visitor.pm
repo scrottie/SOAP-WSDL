@@ -48,7 +48,7 @@ SOAP::WSDL::Generator::Visitor - SOAP::WSDL's Visitor-based Code Generator
 
 =head1 DESCRIPTION
 
-SOAP::WSDL featores a code generating facility. This code generation facility
+SOAP::WSDL features a code generating facility. This code generation facility
 (in fact there are several of them) is implemented as Visitor to
 SOAP::WSDL::Base-derived objects.
 
@@ -186,8 +186,8 @@ mimicing .NET's .asmx example pages.
 
 =back
 
-All these behaviours could well (and has historically been) implemented in the
-classes holding the WSDL data. This made these classes rather bloated, and
+All these behaviours could well be (and have historically been) implemented in
+the classes holding the WSDL data. This made these classes rather bloated, and
 made it hard to change behaviour (like, supporting SOAP Headers,
 supporting atomic types and other features which were missing from early
 versions of SOAP::WSDL).

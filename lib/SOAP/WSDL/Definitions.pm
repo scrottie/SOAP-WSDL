@@ -9,7 +9,7 @@ use List::Util qw(first);
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION='2.00_25';
+our $VERSION='2.00_27';
 
 my %types_of    :ATTR(:name<types>      :default<[]>);
 my %message_of  :ATTR(:name<message>    :default<()>);
@@ -105,7 +105,7 @@ Returns the message matching the namespace/localname pair passed as arguments.
 Accessors/Mutators for accessing / setting the E<gt>typesE<lt> child
 element(s).
 
-=head1 LICENSE and COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
 
@@ -118,9 +118,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 431 $
+ $Rev: 477 $
  $LastChangedBy: kutterma $
- $Id: Definitions.pm 431 2007-12-03 19:39:11Z kutterma $
+ $Id: Definitions.pm 477 2007-12-24 10:23:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut

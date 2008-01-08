@@ -45,7 +45,7 @@ package main;
 use Test::More tests => 100;
 use Storable;
 
-my $have_warn = eval { use Test::Warn; 1; };
+my $have_warn = eval { require Test::Warn; import Test::Warn; 1; };
 
 my $obj;
 
@@ -67,7 +67,7 @@ is scalar keys %{ $hash_of_ref }, 0;
 
 SKIP: {
     skip 'Cannot test warnings without Test::Warn', 1 if not $have_warn;
-    warning_is { $obj->add_test() } 'attempting to add empty value to MyType';
+    warning_is( sub { $obj->add_test() }, 'attempting to add empty value to MyType' );
 }
 
 $obj = MyType->new({ test => 'Test1'});

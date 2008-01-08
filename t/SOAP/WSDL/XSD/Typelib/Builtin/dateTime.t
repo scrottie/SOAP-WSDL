@@ -1,7 +1,7 @@
-use Test::More tests => 7;
 use strict;
 use warnings;
 use lib '../lib';
+use Test::More tests => 7;
 use Date::Parse;
 use Date::Format;
 

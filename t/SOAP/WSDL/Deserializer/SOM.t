@@ -19,7 +19,7 @@ my $data = $som->match('/a')->valueof;
 is $data->{ c } , 3;
 
 SKIP: {
-    skip "SOAP::Lite > 0.69 required" , 2 if ($SOAP::Lite::VERSION < 0.69);
+    skip "SOAP::Lite > 0.69 required" , 2 if ($SOAP::Lite::VERSION lt '0.69');
     is $data->{ b }->[0] , 1, "array values - SOAP::Lite $SOAP::Lite::VERSION";;
     is $data->{ b }->[1] , 2, "array values - SOAP::Lite $SOAP::Lite::VERSION";;
 }

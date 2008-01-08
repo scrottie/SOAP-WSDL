@@ -9,7 +9,7 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_25';
+our $VERSION = '2.00_27';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
@@ -412,10 +412,10 @@ No facets are implemented yet.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2007 Martin Kutter. All rights reserved.
+Copyright 2007 Martin Kutter.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under
-the same terms as perl itself.
+This file is part of SOAP-WSDL. You may distribute/modify it under the same
+terms as perl itself
 
 =head1 AUTHOR
 
@@ -423,9 +423,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 452 $
+ $Rev: 477 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 452 2007-12-12 14:46:54Z kutterma $
+ $Id: ComplexType.pm 477 2007-12-24 10:23:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

@@ -12,13 +12,13 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Server);
 
-our $VERSION=q{2.00_26};
+our $VERSION=q{2.00_27};
 
 # mostly copied from SOAP::Lite. Unfortunately we can't use SOAP::Lite's CGI
 # server directly - we would have to swap out it's base class...
 #
 # This should be a warning for us: We should not handle methods via inheritance,
-# but via some plugin mechanism, to allow alternative handlers to be plugge 
+# but via some plugin mechanism, to allow alternative handlers to be plugged
 # in.
 
 sub handle {
@@ -26,7 +26,7 @@ sub handle {
     my $response;
     my $length = $ENV{'CONTENT_LENGTH'} || 0;
 
-    if (!$length) {     
+    if (!$length) {
         $response = HTTP::Response->new(411); # LENGTH REQUIRED
         $self->_output($response);
         return;
@@ -37,7 +37,7 @@ sub handle {
     }
 
     my $content = q{};
-    my $buffer; 
+    my $buffer;
     binmode(STDIN);
     while (read(STDIN,$buffer,$length - length($content))) {
         $content .= $buffer;
@@ -47,10 +47,10 @@ sub handle {
         $ENV{'REQUEST_METHOD'} || '' => $ENV{'SCRIPT_NAME'},
         HTTP::Headers->new(
             map {
-                    (/^HTTP_(.+)/i 
-                        ? ($1=~m/SOAPACTION/) 
+                    (/^HTTP_(.+)/i
+                        ? ($1=~m/SOAPACTION/)
                             ?('SOAPAction')
-                            :($1) 
+                            :($1)
                         : $_
                      ) => $ENV{$_}
             } keys %ENV),
@@ -93,15 +93,14 @@ sub _output :PRIVATE {
     my ($self, $response) = @_;
     # imitate nph- cgi for IIS (pointed by Murray Nesbitt)
     my $status = defined($ENV{'SERVER_SOFTWARE'}) && $ENV{'SERVER_SOFTWARE'}=~/IIS/
-        ? $ENV{SERVER_PROTOCOL} || 'HTTP/1.0' 
+        ? $ENV{SERVER_PROTOCOL} || 'HTTP/1.0'
         : 'Status:';
 
     my $code = $response->code;
-    binmode(STDOUT); 
+    binmode(STDOUT);
     print STDOUT "$status $code ", HTTP::Status::status_message($code)
         , "\015\012", $response->headers_as_string("\015\012")
         , "\015\012", $response->content;
-    
 }
 
 1;

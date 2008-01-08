@@ -1,4 +1,8 @@
-package [% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('^.+\.','').replace('-', '_') %];
+[% interface_name = interface_prefix _ '::'
+    _ service.get_name.replace('\.', '::') _ '::'
+    _ port.get_name.replace('^.+\.','');
+interface_name = interface_name.replace('-','_'); -%]
+package [% interface_name %];
 use strict;
 use warnings;
 use Class::Std::Fast::Storable;
@@ -33,13 +37,12 @@ __END__
 
 =head1 NAME
 
-
-[% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('\.', '::').replace('-', '_') %] - SOAP Interface for the [% service.get_name %] Web Service
+[% interface_name %] - SOAP Interface for the [% service.get_name %] Web Service
 
 =head1 SYNOPSIS
 
- use [% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('\.', '::').replace('-', '_') %];
- my $interface = [% interface_prefix %]::[% service.get_name.replace('\.', '::').replace('-', '_') %]::[% port.get_name.replace('\.', '::').replace('-', '_') %]->new();
+ use [% interface_name %];
+ my $interface = [% interface_name %]->new();
  
  my $response;
 [%      FOREACH operation = binding.get_operation;

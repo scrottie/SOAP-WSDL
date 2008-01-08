@@ -137,7 +137,7 @@ passed as a single hash ref:
 
 Copyright 2007 Martin Kutter. All rights reserved.
 
-This file is part of SOAP-WSDL. You may distribte/modify it under
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

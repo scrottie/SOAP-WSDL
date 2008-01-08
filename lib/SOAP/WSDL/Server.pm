@@ -6,7 +6,7 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Deserializer;
 use SOAP::WSDL::Factory::Serializer;
 
-our $VERSION = q{2.00_25};
+our $VERSION = q{2.00_27};
 
 my %dispatch_to_of      :ATTR(:name<dispatch_to> :default<()>);
 my %action_map_ref_of   :ATTR(:name<action_map_ref> :default<{}>);
@@ -28,7 +28,7 @@ sub handle {
         soap_version => '1.1'
     });
 
-# TODO: factor out dispatcher logic into dispatcher factory + dispatcher 
+# TODO: factor out dispatcher logic into dispatcher factory + dispatcher
 # classes
 #    $dispatcher_of{ $ident } ||= SOAP::WSDL::Factory::Dispatcher->get_dispatcher({});
 
@@ -143,12 +143,12 @@ SOAP::WSDL::Server basically follows the architecture sketched below
   |   Handler                           |
    -------------------------------------
 
-All of the components (Transport class, deserializer, dispatcher and 
+All of the components (Transport class, deserializer, dispatcher and
 serializer) are implemented as plugins.
 
-The architecture is not implemented as planned yet, but the dispatcher is 
+The architecture is not implemented as planned yet, but the dispatcher is
 currently part of SOAP::WSDL::Server, which aggregates serializer and
-deserializer, and is subclassed by transport classes (of which 
+deserializer, and is subclassed by transport classes (of which
 SOAP::WSDL::Server::CGI is the only implemented one yet).
 
 The dispatcher is currently based on the SOAPAction header. This does not

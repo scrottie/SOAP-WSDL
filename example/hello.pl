@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use lib 'lib';	# just needed because interface lies here
+use lib 'lib';  # just needed because interface lies here
 
 # I have to generate the interface using wsdl2perl.pl before
 use MyInterfaces::HelloWorld::HelloWorldSoap;

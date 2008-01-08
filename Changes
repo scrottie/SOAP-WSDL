@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_27
+Release notes for SOAP::WSDL 2.00_28
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -33,6 +33,20 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Serializer
 
 The following changes have been made:
+
+2.00_28
+
+The following bugs have been fixed (the numbers in square brackets are the 
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+   * #32062: minor doc fixes
+   * [ 1852988 ] Generated Interface POD is invalid
+   * [ 1855583 ] t/SOAP/WSDL/XSD/Typelib/ComplexType.t requires Test::Warn 
+
+The following uncategorized improvements have been made:
+
+   * Updated SOAP::WSDL::Manual::WS_I to reflect new Server modules
 
 2.00_27
 

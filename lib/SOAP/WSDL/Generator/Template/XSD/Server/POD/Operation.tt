@@ -8,8 +8,8 @@ port_op.get_documentation %]
     my ($self, $body, $header) = @_;
     # body is a ??? object - sorry, POD not implemented yet
     # header is a ??? object - sorry, POD not implemented yet
-    
+
     # do something with body and header...
-    
+
     return [% INCLUDE Server/POD/Message.tt %]
  }

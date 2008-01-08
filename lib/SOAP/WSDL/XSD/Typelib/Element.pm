@@ -2,7 +2,7 @@
 package SOAP::WSDL::XSD::Typelib::Element;
 use strict;
 
-our $VERSION=q{2.00_25};
+our $VERSION=q{2.00_27};
 
 my %NAME;
 my %NILLABLE;
@@ -159,4 +159,24 @@ namespace combination (Default for SOAP::WSDL::Envelope).
 
 =back
 
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2004-2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under the same
+terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 477 $
+ $LastChangedBy: kutterma $
+ $Id: Element.pm 477 2007-12-24 10:23:52Z kutterma $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/Element.pm $
+
 =cut
+
+

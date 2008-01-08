@@ -669,12 +669,12 @@ The following facets have no influence yet:
 
 =item * L<SOAP::Lite|SOAP::Lite>
 
-Full featured SOAP-library, little WSDL support. Supports rpc-encoded style 
+Full featured SOAP-library, little WSDL support. Supports rpc-encoded style
 only. Many protocols supported.
 
 =item * L<XML::Compile::WSDL|XML::Compile::WSDL> / L<XML::Compile::SOAP|XML::Compile::SOAP>
 
-Creates parser/generator functions for SOAP messages. Includes SOAP Client 
+Creates parser/generator functions for SOAP messages. Includes SOAP Client
 and Server implementatios.
 
 You might want to give it a try, especially if you need to adhere very
@@ -730,9 +730,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 457 $
+ $Rev: 477 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 457 2007-12-16 08:02:06Z kutterma $
+ $Id: WSDL.pm 477 2007-12-24 10:23:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

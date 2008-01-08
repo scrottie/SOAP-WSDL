@@ -1,9 +1,10 @@
 use Test::More tests => 30;
 use strict;
-use Carp qw(cluck);
-
-$SIG{__WARN__} = sub { cluck @_ };
 use warnings;
+#use Carp qw(cluck);
+#
+#$SIG{__WARN__} = sub { cluck @_ };
+#use warnings;
 use lib '../lib';
 use Date::Format;
 use Date::Parse;

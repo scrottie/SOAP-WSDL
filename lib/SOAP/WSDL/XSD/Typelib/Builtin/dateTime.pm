@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Date::Parse;
 use Date::Format;
+use Time::Zone;
 use Class::Std::Fast::Storable constructor => 'none', cache => 1;
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
@@ -16,13 +17,17 @@ sub set_value {
             [\+\-] \d{2} \: \d{2} $
         }xms
     );
-
+    no warnings qw(uninitialized);
     # strptime sets empty values to undef - and strftime doesn't like that...
     my @time_from = map { ! defined $_ ? 0 : $_ } strptime($_[1]);
 
     undef $time_from[$#time_from];
 
-    my $time_str = strftime( '%Y-%m-%dT%H:%M:%S%z', @time_from );
+    my $time_str = do { # no warnings;
+        strftime( '%Y-%m-%dT%H:%M:%S%z', @time_from );
+    };
+
+    # insert : in timezone info
     substr $time_str, -2, 0, ':';
     $_[0]->SUPER::set_value($time_str);
 }

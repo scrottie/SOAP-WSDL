@@ -1,10 +1,12 @@
+use strict;
+use warnings;
 use lib 'lib';
 use MyInterfaces::TestService::TestPort;
 
 my $soap = MyInterfaces::TestService::TestPort->new();
-$soap->outputxml(1);
-my $result = $soap->ListPerson({});
 
-# print "Found " . scalar @{ $result->get_out->get_NewElement } . " persons\n";
+my $result = $soap->ListPerson({})
+    or die "error calling SOAP method";
 
-print $result;
+print "Found " . @{ $result->get_out()->get_NewElement } . " persons\n";
+

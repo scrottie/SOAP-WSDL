@@ -111,7 +111,7 @@ included perldoc will be, too - if not, blame the web service author.
  print $result;
 
 The above handling of errors ("die $result if not $result") may look a bit
-strange - it is due to the nature of the 
+strange - it is due to the nature of the
 L<SOAP::WSDL::SOAP::Typelib::Fault11|SOAP::WSDL::SOAP::Typelib::Fault11>
 objects SOAP::WSDL uses for signalling failure.
 
@@ -232,7 +232,7 @@ L<SOAP::WSDL::Manual::Parser> will tell you how to create a typemap class.
 
 =head1 Creating a SOAP Server
 
-Creating a SOAP server works just like creating a client - just add the 
+Creating a SOAP server works just like creating a client - just add the
 C<--server> or C<-s> option to the call to C<wsdl2perl.pl>.
 
  perl wsdl2perl.pl -s -b BASE_DIR URL

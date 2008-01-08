@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(SOAP::WSDL::Expat::Base);
 
-our $VERSION = '2.00_24';
+our $VERSION = '2.00_27';
 
 sub _initialize {
     my ($self, $parser) = @_;
@@ -113,13 +113,16 @@ Replace the whitespace by @ for E-Mail Address.
 
  Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
-=head1 COPYING
+=head1 LICENSE AND COPYRIGHT
 
-This module may be used under the same terms as perl itself.
+Copyright 2004-2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
 
 =head1 Repository information
 
- $ID: $
+ $Id: $
 
  $LastChangedDate: 2007-09-10 18:19:23 +0200 (Mo, 10 Sep 2007) $
  $LastChangedRevision: 218 $

@@ -1,4 +1,8 @@
-package [% server_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('^.+\.','') %];
+[% server_name = server_prefix _ '::'
+    _ service.get_name.replace('\.', '::') _ '::'
+    _ port.get_name.replace('^.+\.','');
+server_name = server_name.replace('-','_'); -%]
+package [% server_name %];
 use strict;
 use warnings;
 use Class::Std::Fast::Storable;
@@ -23,7 +27,7 @@ my $action_map_ref = {
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
-    eval "require $transport_class_of{ $ident }" 
+    eval "require $transport_class_of{ $ident }"
         or die "Cannot load transport class $transport_class_of{ $ident }: $@";
     $transport_of{ $ident } = $transport_class_of{ $ident }->new({
         action_map_ref => $action_map_ref,
@@ -46,12 +50,12 @@ __END__
 
 =head1 NAME
 
-[% interface_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %] - SOAP Server Class for the [% service.get_name %] Web Service
+[% server_name %] - SOAP Server Class for the [% service.get_name %] Web Service
 
 =head1 SYNOPSIS
 
- use [% server_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %];
- my $server = [% server_prefix %]::[% service.get_name.replace('\.', '::') %]::[% port.get_name.replace('\.', '::') %]->new({
+ use [% server_name %];
+ my $server = [% server_name %]->new({
     dispatch_to => 'My::Handler::Class',
     transport_class => 'SOAP::WSDL::Server::CGI',   # optional, default
  });
@@ -79,7 +83,7 @@ located at [% port.first_address.get_location %].
 
 Constructor.
 
-The C<dispatch_to> argument is mandatory. It must be a class or object 
+The C<dispatch_to> argument is mandatory. It must be a class or object
 implementing the SOAP Service methods listed below.
 
 =head2 SOAP Service methods

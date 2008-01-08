@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp qw(croak confess);
 
-our $VERSION = q{2.00_25};
+our $VERSION = q{2.00_27};
 
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
@@ -260,7 +260,7 @@ See L<SOAP::WSDL::Manual::Parser> for details.
 Sometimes there's unneccessary information transported in SOAP messages.
 
 To skip XML nodes (including all child nodes), just edit the type map for
-the message, set the type map entry to '__SKIP__', and comment out all 
+the message, set the type map entry to '__SKIP__', and comment out all
 child elements you want to skip.
 
 =head1 Bugs and Limitations
@@ -281,16 +281,19 @@ Replace the whitespace by @ for E-Mail Address.
 
  Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
-=head1 COPYING
+=head1 LICENSE AND COPYRIGHT
 
-This module may be used under the same terms as perl itself.
+Copyright 2004-2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
 
 =head1 Repository information
 
- $ID: $
+ $Id: $
 
- $LastChangedDate: 2007-12-07 21:04:06 +0100 (Fr, 07 Dez 2007) $
- $LastChangedRevision: 444 $
+ $LastChangedDate: 2007-12-24 11:23:52 +0100 (Mo, 24 Dez 2007) $
+ $LastChangedRevision: 477 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

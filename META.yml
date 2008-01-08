@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_27
+version: 2.00_28
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -44,7 +44,7 @@ provides:
     version: 2.00_25
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::Deserializer::Hash:
     file: lib/SOAP/WSDL/Deserializer/Hash.pm
     version: 2.00_25
@@ -56,13 +56,13 @@ provides:
     version: 2.00_25
   SOAP::WSDL::Expat::Base:
     file: lib/SOAP/WSDL/Expat/Base.pm
-    version: 2.00_24
+    version: 2.00_27
   SOAP::WSDL::Expat::Message2Hash:
     file: lib/SOAP/WSDL/Expat/Message2Hash.pm
-    version: 2.00_24
+    version: 2.00_27
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::Expat::MessageStreamParser:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
     version: 2.00_24
@@ -83,7 +83,7 @@ provides:
     version: 2.00_25
   SOAP::WSDL::Generator::Template::XSD:
     file: lib/SOAP/WSDL/Generator/Template/XSD.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::Generator::Visitor:
     file: lib/SOAP/WSDL/Generator/Visitor.pm
     version: 2.00_25
@@ -120,13 +120,13 @@ provides:
     version: 2.00_25
   SOAP::WSDL::Serializer::XSD:
     file: lib/SOAP/WSDL/Serializer/XSD.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::Server:
     file: lib/SOAP/WSDL/Server.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::Server::CGI:
     file: lib/SOAP/WSDL/Server/CGI.pm
-    version: 2.00_26
+    version: 2.00_27
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::Transport::HTTP:
@@ -256,10 +256,10 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
-    version: 2.00_25
+    version: 2.00_27
   SOAP::WSDL::XSD::Typelib::SimpleType:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:

@@ -56,22 +56,22 @@ See L<SOAP::WSDL::Manual::Parser> for details.
 
 See SOAP::WSDL::Expat::MessageParser
 
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2007 Martin Kutter. All rights reserved.
-
-This file is part of SOAP-WSDL. You may distribte/modify it under
-the same terms as perl itself
-
 =head1 AUTHOR
 
 Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2007 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
+
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 477 $
  $LastChangedBy: kutterma $
- $Id: MessageStreamParser.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: MessageStreamParser.pm 477 2007-12-24 10:23:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
  
 =cut

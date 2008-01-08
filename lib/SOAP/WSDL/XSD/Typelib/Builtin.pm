@@ -409,11 +409,11 @@ Replace whitespace by @ in e-mail address.
 
  Martin Kutter E<gt>martin.kutter fen-net.deE<lt>
 
-=head1 Licenxe
+=head1 LICENSE AND COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
 
-This library is free software, you may distribute/modify it under the
+This file is part of SOAP-WSDL. You may distribute/modify it under the
 same terms as perl itself
 
 =cut

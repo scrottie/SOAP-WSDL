@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
-our $VERSION=q{2.00_25};
+our $VERSION=q{2.00_27};
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 my $XML_INSTANCE_NS = 'http://www.w3.org/2001/XMLSchema-instance';
@@ -62,10 +62,10 @@ sub serialize_body {
     return join ( q{},
         "<$opt->{ namespace }->{ $SOAP_NS }\:Body>",
         defined $data
-            ? ref $data eq 'ARRAY' 
+            ? ref $data eq 'ARRAY'
                 ? join q{}, map { blessed $_ ? $_->serialize_qualified() : () } @{ $data }
-                : blessed $data 
-                    ? $data->serialize_qualified 
+                : blessed $data
+                    ? $data->serialize_qualified()
                     : ()
             : (),
         "</$opt->{ namespace }->{ $SOAP_NS }\:Body>",
@@ -119,9 +119,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 444 $
+ $Rev: 477 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 444 2007-12-07 20:04:06Z kutterma $
+ $Id: XSD.pm 477 2007-12-24 10:23:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
  
 =cut
