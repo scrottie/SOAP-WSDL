@@ -1,9 +1,0 @@
-# derivation by restriction
-[% IF (base = simpleType.get_base) -%]
-use base qw(
-    [% INCLUDE _type_class.tt(type = base, node=simpleType) %]);
-[% ELSIF (type = simpleType.first_simpleType() );
-    INCLUDE simpleType/atomicType.tt(type = type);
-ELSE;
-    THROW "neither base nor atomic type - don't know what to do" %]
-[% END %]

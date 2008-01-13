@@ -1,0 +1,170 @@
+* v.1.27
+- fixed issue reported by Cominic Caffrey: SOAP::WSDL does not find XML
+elements with multiple prefixes assigned to the schema's targetNamespace
+* v1.26 2007/10/05 - bugfix
+- fixed issue reported by T Alex Beamish: tests fail when unwrapped into /tmp
+* v1.25 2007/09/24 - maintenance
+- added Makefile.PL to ease installation
+
+* v1.24 2007/09/22 - bugfix
+- fixes issue reported by David Bussenschutt: wsdlinit always uses new SOAP::Schema instance.
+
+* v1.23 2007/06/05 - bugfixes and optimizations
+- fixes #27426: missing prereq XML::XPath
+- fixed build_requires
+- some doc fixes
+- now performs some initializations on calling portname()
+
+* v1.22 2007/05/30 - auto-discover service and port again
+- re-introduces auto-detecting of servicename and portname
+- fixes #27325: Test fails with Test::Pod::Coverage v 1.06.
+- Now build requires Test::More
+- documentation update
+- cosmetics
+
+2007/05/28 private methods made private and pod update
+  - added pod tests
+  - made encodeComplexType and method generators private
+  - updated pod
+  - fixed test scripts to work again from within/without t/
+  - moved development repository to
+  https://svn.sourceforge.net/svnroot/soap-wsdl/ (finally !)
+
+2007/05/21 updated base version to customized version from Giovanni S Fois
+  - merged in doc changes, so that they don't refer to "customized version"
+  - changed build process to Build.PL
+  - changed repository layout to support new build process
+
+2006/11/06 only in the customized version
+  Added the support for default values in the wsdl file
+
+2006/11/04 only in the customized version
+  Changed the calling interface. Now it's driven by the by the service
+  and port names.
+
+2006/11/03 only in the customized version
+  Corrected the Check for the correct number of elements in complex types
+
+  If a complex type is marked optional in a WSDL file, but sub-parts are marked as
+  required, SOAP::WSDL used to die if the complex type was found in the data.
+  Now, if a complex type has not data associated and is not strictly required, it
+  will not be encoded.
+
+A quick-and-dirty workaround is to turn off the check with
+
+ $soap->wsdl_checkoccurs(0);
+
+2006/11/02 only in the customized version
+  - small changes for .Net compatibility when encoding complex types
+  - added some test cases to the test suite try perl t/3_varous.t for more details
+
+
+2006/10/28 only in the customized version
+  - added a small support for the complexType restrictions of Arrays
+
+2006/10/02 only in the customized version
+           (Thanks to Dan Horne for having spotted so many bugs in a row)
+- the xml prefix was used as the default wsdl namespace when looking for the complextype restrictions
+- the module crashed when the operation had no part declaration
+- the port name stated in the service definition was used as the portType
+- the test suited failed when the module was unzipped in a t.* named directory
+
+
+
+2006/09/15 only in the customized version
+           (Thanks to Terje Kristensen for his support and twisted wsdl files :)
+- cleaned up the code for readability
+- cleaned up the code for "use warnings" and "use strict"
+- added support for wsdl files with multiple schema declarations
+- added supporto for some restriction on complexTypes
+
+
+
+
+2006/07/10 only in the customized version
+   - added the support for SOAP::header calls
+
+2006/06/10 only in the customized version
+
+  - removed the overload based on the type of the call's parameters
+
+  - added an overloading support based on the unique name of the input message of the call. The input message must be provided by the calling script (sorry, the module has no mean to find this).
+
+  - added a light support to the sympletypes.
+
+  - added a light support to the imported namespaces in the types section.
+
+  - added the support for the multiple SOAP bindings. The correct binding must be provided by the calling script (sorry, the module has no mean to find this).
+
+  - the method will use his own soapAction if defined
+
+  - the method will use his own namespace if defined
+
+  - some other code cleaning
+
+2006/04/23 only in the customized version
+
+  - corrected a bug related to the presence of the same method name on multiple
+    webservices
+
+  - added an overloading support based on the type of the call's parameters
+
+  - multiple extensions support added: a complextype can be an extension of a complextype which is an extension and so on
+
+
+
+Revision 1.7  2004/07/27 13:00:03  lsc
+- added missing test file
+
+Revision 1.18  2004/07/16 07:43:05  lsc
+fixed test scripts for windows
+
+Revision 1.17  2004/07/05 08:19:49  lsc
+- added wsdl_checkoccurs
+
+Revision 1.16  2004/07/04 09:01:14  lsc
+- change <definitions> element lookup from find('/definitions') and find('wsdl:definitions') to find('/*[1]') to process arbitrary default (wsdl) namespaces correctly
+- fixed test output in test 06
+
+Revision 1.15  2004/07/02 12:28:31  lsc
+- documentation update
+- cosmetics
+
+Revision 1.14  2004/07/02 10:53:36  lsc
+- API change:
+    - call now behaves (almost)  like SOAP::Lite::call
+    - call() takes a list (hash) as second argument
+    - call does no longer support the "dispatch" option
+    - dispatching calls can be suppressed by passing
+         "no_dispatch => 1" to new()
+    - dispatching calls can be suppressed by calling
+           $soap->no_dispatch(1);
+       and re-enabled by calling
+           $soap->no_dispatch(0);
+- Updated test skripts to reflect API change.
+
+Revision 1.13  2004/06/30 12:08:40  lsc
+- added IServiceInstance (ecmed) to acceptance tests
+- refined documentation
+
+Revision 1.12  2004/06/26 14:13:29  lsc
+- refined file caching
+- added descriptive output to test scripts
+
+Revision 1.11  2004/06/26 07:55:40  lsc
+- fixed "freeze" caching bug
+- improved test scripts to test file system caching (and show the difference)
+
+Revision 1.10  2004/06/26 06:30:33  lsc
+- added filesystem caching using Cache::FileCache
+
+Revision 1.9  2004/06/24 12:27:23  lsc
+Cleanup
+
+Revision 1.8  2004/06/11 19:49:15  lsc
+- moved .t files to more self-describing names
+- changed WSDL.pm to accept AXIS wsdl files
+- implemented XPath query result caching on all absolute queries
+
+Revision 1.7  2004/06/07 13:01:16  lsc
+added changelog to pod
