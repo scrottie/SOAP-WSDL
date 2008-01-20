@@ -1,0 +1,6 @@
+[% type_name = node.expand( type );
+    IF (type_name.0 == 'http://www.w3.org/2001/XMLSchema'); -%]
+SOAP::WSDL::XSD::Typelib::Builtin::[% type_name.1 %]
+[% ELSE -%]
+[% type_prefix %]::[% type_name.1 %]
+[% END -%]

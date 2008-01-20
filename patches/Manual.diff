@@ -1,0 +1,44 @@
+--- Manual.pod-orig	2007-12-04 00:45:33.000000000 -0500
++++ Manual.pod	2007-12-04 00:53:12.000000000 -0500
+@@ -37,7 +37,7 @@
+ objects based on SOAP::WSDL's XML schema implementation.
+ 
+ To access the object's properties use get_NAME / set_NAME getter/setter
+-methods whith NAME corresponding to the XML tag name / the hash structure as
++methods with NAME corresponding to the XML tag name / the hash structure as
+ showed in the generated pod.
+ 
+ =item  * Run script
+@@ -91,7 +91,7 @@
+ 
+ There should be a bunch of classes for types (in the MyTypes:: namespace by
+ default), elements (in MyElements::), and at least one typemap (in
+-MyTypemaps::) and one ore more interface classes (in MyInterfaces::).
++MyTypemaps::) and one or more interface classes (in MyInterfaces::).
+ 
+ If you don't already know the details of the web service you're going to
+ instrument, it's now time to read the perldoc of the generated interface
+@@ -111,7 +111,7 @@
+  print $result;
+ 
+ The above handling of errors ("die $result if not $result") may look a bit
+-strange - it is due to the nature of
++strange - it is due to the nature of the 
+ L<SOAP::WSDL::SOAP::Typelib::Fault11|SOAP::WSDL::SOAP::Typelib::Fault11>
+ objects SOAP::WSDL uses for signalling failure.
+ 
+@@ -144,12 +144,12 @@
+ only implement a few by hand. These (precious) few classes may get lost in
+ the mass of (cheap) generated ones. Just imagine one of your co-workers (or
+ even yourself) deleting the whole bunch and re-generating everything - oops
+-- almost everything. You got the point.
++- almost everything. You get the point.
+ 
+ For simplicity, you probably just want to use builtin types wherever possible
+ - you are probably not interested in whether a fault detail's error code is
+ presented to you as a simpleType ranging from 1 to 10 (which you have to
+-write) or as a int (which is a builtin type ready to use).
++write) or as an int (which is a builtin type ready to use).
+ 
+ Using builtin types for simpleType definitions may greatly reduce the number
+ of additional classes you need to implement.

@@ -1,0 +1,49 @@
+use Class::Std::Fast::Storable constructor => 'none';
+use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+
+Class::Std::initialize();
+
+{ # BLOCK to scope variables
+[%
+atomic_types = {};
+
+FOREACH element = complexType.get_element %]
+my %[% element.get_name %]_of :ATTR(:get<[% element.get_name %]>);
+[%- END %]
+
+__PACKAGE__->_factory(
+    [ qw([% FOREACH element = complexType.get_element %]
+        [% element.get_name -%]
+[% END %]
+    ) ],
+    {
+[% FOREACH element = complexType.get_element -%]
+        [% element.get_name %] => \%[% element.get_name %]_of,
+[% END -%]
+    },
+    {
+[% FOREACH element = complexType.get_element;
+    IF (type = element.get_type);
+        element_type = complexType.expand( type );
+        IF (element_type.0 == 'http://www.w3.org/2001/XMLSchema'); -%]
+        [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% element_type.1 %]',
+[%      ELSE -%]
+        [% element.get_name %] => '[% type_prefix %]::[% element_type.1 %]',
+[%      END;
+    ELSE;
+        IF (element.first_simpleType);
+            atomic_types.${ element.get_name } = element.first_simpleType;
+        ELSIF (element.first_complexType);
+            atomic_types.${ element.get_name } = element.first_complexType;
+        ELSE;
+            THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type - don't know what to do with it";
+        END; %]
+    [% element.get_name %] => '[% type_prefix %]::[% complexType.get_name %]::_[% element.get_name %]',
+[%  END;
+END -%]
+    }
+);
+
+} # end BLOCK
+
+[% INCLUDE complexType/atomicTypes.tt(atomic_types = atomic_types) %]

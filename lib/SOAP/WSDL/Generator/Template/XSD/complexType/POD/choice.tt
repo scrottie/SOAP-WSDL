@@ -1,0 +1,9 @@
+[% indent %]{
+[%- IF complexType.get_name %] # [% type_prefix %]::[% complexType.get_name %][% END %]
+[%- indent = indent _ '  ' %]
+[% indent %]# One of the following elements.
+[% indent %]# No occurance checks yet, so be sure to pass just one...
+[%- FOREACH element = complexType.get_element %]
+[% indent %][% element.get_name %] => [% INCLUDE element/POD/structure.tt -%]
+[% END %]
+[% indent.replace('\s{2}$', ''); %]}
