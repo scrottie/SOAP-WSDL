@@ -1,8 +1,12 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Transport;
+
+eval { SOAP::WSDL::Factory::Transport->get_transport('') };
+like $@, qr{^no transport};
+
 
 eval { SOAP::WSDL::Factory::Transport->get_transport('zumsl') };
 like $@, qr{^no transport};
@@ -12,7 +16,7 @@ ok blessed $obj;
 
 SOAP::WSDL::Factory::Transport->register('zumsl', 'Hope_You_Have_No_Such_Package_Installed');
 
-eval { SOAP::WSDL::Factory::Transport->get_transport('zumsl') };
+eval { SOAP::WSDL::Factory::Transport->get_transport('zumsl:foo') };
 like $@, qr{^Cannot load};
 
 eval { SOAP::WSDL::Factory::Transport->register( \'zumsl', 'Foo') };

@@ -53,7 +53,7 @@ sub serialize {
     # TODO: implement final and substitutionGroup - maybe never implement
     # substitutionGroup ?
 
-    $name ||= $self->get_name();
+    $name = $self->get_name() if not ($name);
 
     if ( $opt->{ qualify } ) {
         $opt->{ attributes } = [ ' xmlns="' . $self->get_targetNamespace .'"' ];

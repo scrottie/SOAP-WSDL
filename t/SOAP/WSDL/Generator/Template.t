@@ -44,7 +44,7 @@ print $@ if $@;
 # print $output;
 __END__
 
-my $tt = Template->new( 
+my $tt = Template->new(
     DEBUG => 1,
     EVAL_PERL => 1,
     RECURSION => 1,
@@ -53,7 +53,7 @@ my $tt = Template->new(
 
 foreach my $service (@{ $definitions->get_service }) {
     my $output;
-    $tt->process( 'Interface.tt', { 
+    $tt->process( 'Interface.tt', {
         definitions => $definitions,
         service => $service,
         interface_prefix => 'MyInterface',
@@ -62,8 +62,8 @@ foreach my $service (@{ $definitions->get_service }) {
         element_prefix => 'MyElement',
     }, \$output);
     die $tt->error if $tt->error();
-    
+
     ok eval $output, 'eval output';
-    
+
     print $output;
 };

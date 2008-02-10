@@ -23,7 +23,8 @@ sub BUILD {
 sub deserialize {
     my ($self, $content) = @_;
 
-    $parser_of{ ${ $self } } ||= SOAP::WSDL::Expat::MessageParser->new();
+    $parser_of{ ${ $self } } = SOAP::WSDL::Expat::MessageParser->new()
+        if not $parser_of{ ${ $self } };
     $parser_of{ ${ $self } }->class_resolver( $class_resolver_of{ ident $self } );
     eval { $parser_of{ ${ $self } }->parse_string( $content ) };
     if ($@) {
@@ -98,9 +99,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 501 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: XSD.pm 501 2008-01-26 20:23:32Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
 
 =cut

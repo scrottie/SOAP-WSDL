@@ -1,7 +1,23 @@
 MIGRATING
 ---------
 
-This document describes how to migrate from 2.00_24 and before versions to 
+MIGRATING FROM PRE-2.00_29
+--------------------------
+SOAP::WSDL 2.00_29 added experimental XML attribute support. The attribute
+support changed the code of the generated classes, which may now
+require the class SOAP::WSDL::XSD::Typelib::Attribute introduced in the same
+pre-release.
+
+While interfaces generated with pre-releases back to 2.00_25 work without
+change, this does not hold true vice versa: Interfaces generated with 
+2.00_29 and above won't work with older pre-releases.
+
+You'll have to update SOAP::WSDL on all your machines.
+
+MIGRATING FROM PRE-2.00_24
+--------------------------
+
+This section describes how to migrate from 2.00_24 and before versions to 
 2.00_25.
 
 Migrating from 2.00_xx

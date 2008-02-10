@@ -2,11 +2,15 @@ package SOAP::WSDL::TypeLookup;
 use strict;
 use warnings;
 
-our $VERSION=q{2.00_29};
+our $VERSION=q{2.00_31};
 
 my %TYPES = (
     # wsdl:
     'http://schemas.xmlsoap.org/wsdl/' => {
+        'import' => {
+            type => 'HANDLER',
+            method => 'wsdl_import',
+        },
         binding => {
             type => 'CLASS',
             class => 'SOAP::WSDL::Binding',
@@ -83,6 +87,10 @@ my %TYPES = (
         }
     },
     'http://www.w3.org/2001/XMLSchema' => {
+        'import' => {
+            type => 'HANDLER',
+            method => 'xml_schema_import',
+        },
         schema => {
             type => 'CLASS',
             class => 'SOAP::WSDL::XSD::Schema',

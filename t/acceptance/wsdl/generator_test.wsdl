@@ -201,6 +201,15 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <xsd:complexType name="emptyComplexType">
             <xsd:sequence></xsd:sequence>
         </xsd:complexType>
+
+        <xsd:element name="testElementCompletelyEmptyComplex">
+            <xsd:complexType>
+            </xsd:complexType>
+        </xsd:element>
+        
+        <xsd:complexType name="completelyEmptyComplexType">
+        </xsd:complexType>
+
         </xsd:schema>
     </types>
     <message name="testChoice">

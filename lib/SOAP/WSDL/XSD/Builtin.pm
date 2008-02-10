@@ -18,7 +18,7 @@ sub serialize {
         my $prefix = $prefix_of{ $ns }
             || die 'No prefix found for namespace '. $ns;
         $xml .= ' type="' . $prefix . ':'
-          . $self->get_name() . '"' if ($self->get_name() );
+          . $self->get_name() . '"';
     }
 
     if (defined $value) {

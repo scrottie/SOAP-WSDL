@@ -2,6 +2,7 @@ benchmark/01_expat.t
 benchmark/hello.pl
 benchmark/person.pl
 benchmark/person.xml
+benchmark/person_profile.pl
 benchmark/XSD/01_anyType.t
 benchmark/XSD/02_anySimpleType.t
 benchmark/XSD/03_string.t
@@ -229,7 +230,6 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 MIGRATING
-patches/Manual.diff
 README
 t/001_use.t
 t/002_parse_wsdl.t
@@ -281,7 +281,10 @@ t/acceptance/wsdl/email_account.wsdl
 t/acceptance/wsdl/generator_test.wsdl
 t/acceptance/wsdl/generator_test_dot_names.wsdl
 t/acceptance/wsdl/generator_unsupported_test.wsdl
+t/acceptance/wsdl/import.xsd
 t/acceptance/wsdl/message_gateway.wsdl
+t/acceptance/wsdl/WSDLParser-import.wsdl
+t/acceptance/wsdl/WSDLParser-imported.wsdl
 t/acceptance/wsdl/WSDLParser.wsdl
 t/contributed.wsdl
 t/Expat/03_wsdl.t
@@ -313,6 +316,7 @@ t/SOAP/WSDL/11_helloworld.NET.t
 t/SOAP/WSDL/12_binding.t
 t/SOAP/WSDL/Client.t
 t/SOAP/WSDL/Client/Base.t
+t/SOAP/WSDL/Definitions.t
 t/SOAP/WSDL/Deserializer/Hash.t
 t/SOAP/WSDL/Deserializer/SOM.t
 t/SOAP/WSDL/Deserializer/XSD.t
@@ -330,6 +334,7 @@ t/SOAP/WSDL/Generator/XSD.t
 t/SOAP/WSDL/Generator/XSD_dot_names.t
 t/SOAP/WSDL/Generator/XSD_unsupported.t
 t/SOAP/WSDL/Part.t
+t/SOAP/WSDL/PortType.t
 t/SOAP/WSDL/Serializer/XSD.t
 t/SOAP/WSDL/Server.t
 t/SOAP/WSDL/Server/CGI.t
@@ -338,8 +343,10 @@ t/SOAP/WSDL/Transport/02_HTTP.t
 t/SOAP/WSDL/Transport/acceptance/test2.xml
 t/SOAP/WSDL/Transport/acceptance/test3.xml
 t/SOAP/WSDL/Typelib/Fault11.t
+t/SOAP/WSDL/XSD/Attribute.t
 t/SOAP/WSDL/XSD/ComplexType.t
 t/SOAP/WSDL/XSD/Element.t
+t/SOAP/WSDL/XSD/Schema.t
 t/SOAP/WSDL/XSD/SimpleType.t
 t/SOAP/WSDL/XSD/Typelib/Attribute.t
 t/SOAP/WSDL/XSD/Typelib/Builtin/01_constructors.t

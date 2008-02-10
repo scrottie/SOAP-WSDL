@@ -14,7 +14,7 @@ use Class::Std::Fast;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-our $VERSION= '2.00_25';
+our $VERSION= '2.00_31';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -176,7 +176,7 @@ sub _wsdl_init_methods :PRIVATE {
     my $ns   = $wsdl->get_targetNamespace();
 
     # get bindings, portType, message, part(s) - use private methods for clear separation...
-    $self->_wsdl_get_service if not ($service_of{ $ident });
+    $self->_wsdl_get_service();
     $self->_wsdl_get_portType();
 
     $method_info_of{ $ident } = {};
@@ -187,9 +187,10 @@ sub _wsdl_init_methods :PRIVATE {
 
         # get SOAP Action
         # SOAP-Action is a required HTTP Header, so we need to look it up...
+        # There must be a soapAction uri - or the WSDL is invalid (and
+        # it's not us to prove that...)
         my $soap_binding_operation = $binding_operation->get_operation()->[0];
-        $method->{ soap_action } = $soap_binding_operation ?
-            $soap_binding_operation->get_soapAction() : $method;
+        $method->{ soap_action } = $soap_binding_operation->get_soapAction();
 
         # get parts
         # 1. get operation from port
@@ -204,7 +205,10 @@ sub _wsdl_init_methods :PRIVATE {
         my $message = $wsdl->find_message( $ns, $localname )
           or croak "Message {$ns}$localname not found in WSDL definition";
 
-        if (my $body=$binding_operation->first_input()->first_body()) {
+        # Is body not required? So there must be one? Do we need the "if"?
+        # if (
+        my $body=$binding_operation->first_input()->first_body();
+        # {
             if ($body->get_parts()) {
                 $method->{ parts } = [];        # make sure it's empty
                 my $message_part_ref = $message->get_part();
@@ -216,7 +220,9 @@ sub _wsdl_init_methods :PRIVATE {
                         grep { $_->get_name() eq $name } @{ $message_part_ref };
                 }
             }
-        }
+        # }
+        # A body does not need to specify the parts of a messages.
+        # Use all of the message's parts if it does not.
         $method->{ parts } ||= $message->get_part();
 
         # rpc / encoded methods may have a namespace specified.
@@ -329,7 +335,7 @@ SOAP client, which mimics L<SOAP::Lite|SOAP::Lite>'s API, read on.
  my $soap = SOAP::WSDL->new(
     wsdl => 'file://bla.wsdl',
  );
- 
+
  my $result = $soap->call('MyMethod', %data);
 
 =head1 DESCRIPTION
@@ -436,7 +442,7 @@ Class resolver
     'Person/Name' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
     'Person/FirstName' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
  );
- 
+
  sub get_class { return $typemap{ $_[1] } };
  1;
 
@@ -730,9 +736,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 477 $
+ $Rev: 524 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 477 2007-12-24 10:23:52Z kutterma $
+ $Id: WSDL.pm 524 2008-02-10 23:24:43Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

@@ -2,11 +2,11 @@ use strict;
 use warnings;
 use Test::More tests => 12;
 use File::Spec;
-use File::Basename;
+use File::Basename qw(dirname);
 use_ok qw(SOAP::WSDL);
 
 my $path = File::Spec->rel2abs(dirname( __FILE__ ) );
-
+$path =~s{\\}{/}xmsg;   # fix for windows
 my $soap = SOAP::WSDL->new();
 $soap->wsdl("file://$path/WSDL_NOT_FOUND.wsdl");
 

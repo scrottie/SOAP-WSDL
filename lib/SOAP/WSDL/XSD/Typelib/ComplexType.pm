@@ -9,7 +9,7 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_29';
+our $VERSION = '2.00_31';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
@@ -45,6 +45,10 @@ my %xml_attr_of :ATTR();
 sub attr {
     my $self = shift;
     my $class = ref $self;
+
+    # disable strictness - in perl 5.10 %{ "$foo\::_bar" } triggers a
+    # symbolic reference error with strictness enabled
+    no strict qw(refs);
     die "$class has no attributes" if not defined %{ "$class\::_ATTR::"};
     if (@_) {
         # setter
@@ -176,7 +180,7 @@ sub _factory {
                             : die croak "cannot use $is_ref reference as value for $name - $type required"
 
                 # not $is_ref
-                : $type->new({ value => $_[1] });
+                : defined $_[1] ? $type->new({ value => $_[1] }) : () ;
             return;
         };
 
@@ -223,7 +227,7 @@ sub _factory {
            : $_ =~ m{ \A              # beginning of string
                       xmlns           # xmlns
                 }xms        # get_elements is inlined for performance.
-                ? do {}
+                ? ()
                 : do { use Data::Dumper;
                      croak "unknown field $_ in $class. Valid fields are:\n"
                      . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
@@ -455,9 +459,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 497 $
+ $Rev: 524 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 497 2008-01-19 12:57:57Z kutterma $
+ $Id: ComplexType.pm 524 2008-02-10 23:24:43Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

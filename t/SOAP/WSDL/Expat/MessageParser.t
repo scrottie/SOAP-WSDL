@@ -36,20 +36,20 @@ my $xml_attr = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body><MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2">
     <test>Test</test>
-    <test2 >Test2</test2>
+    <test2 >    </test2>
     </MyElementAttrs></SOAP-ENV:Body></SOAP-ENV:Envelope>};
 
 $parser->parse($xml_attr);
 
 is $parser->get_data(),
-    q{<MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2"><test>Test</test><test2>Test2</test2></MyElementAttrs>},
+    q{<MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2"><test>Test</test></MyElementAttrs>},
     'Content with attributes';
 
 my $xml_error = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body><MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2">
     <test>Test</test>
-    <test2 >Test2</test2>
+    <test2 ></test2>
     <foo>Bar</foo>
     </MyElementAttrs></SOAP-ENV:Body></SOAP-ENV:Envelope>};
 

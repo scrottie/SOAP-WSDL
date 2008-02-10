@@ -6,7 +6,7 @@ use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw/SOAP::WSDL::Base/;
 
-our $VERSION=q{2.00_25};
+our $VERSION=q{2.00_29};
 
 my %annotation_of   :ATTR(:name<annotation> :default<()>);
 my %attribute_of    :ATTR(:name<attribute>    :default<()>);

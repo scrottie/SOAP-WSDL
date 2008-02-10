@@ -1,15 +1,45 @@
 package SOAP::WSDL::Expat::Base;
 use strict;
 use warnings;
+use URI;
 use XML::Parser::Expat;
+
+# TODO: convert to Class::Std::Fast based class - hash based classes suck.
 
 our $VERSION = '2.00_27';
 
 sub new {
-    my ($class, $args) = @_;
+    my ($class, $arg_ref) = @_;
     my $self = {};
     bless $self, $class;
+
+    $self->set_user_agent($arg_ref->{ user_agent })
+        if $arg_ref->{ user_agent };
+
     return $self;
+}
+
+sub set_uri { $_[0]->{ uri } = $_[1]; }
+sub get_uri { return $_[0]->{ uri }; }
+
+sub set_user_agent { $_[0]->{ user_agent } = $_[1]; }
+sub get_user_agent { return $_[0]->{ user_agent }; }
+
+
+sub parse_uri {
+    my $self = shift;
+    my $uri = shift;
+    $self->set_uri( $uri );
+
+    if (not $self->{ user_agent }) {
+        require LWP::UserAgent;
+        $self->{ user_agent } = LWP::UserAgent->new();
+    }
+
+    my $response = $self->{ user_agent }->get($uri);
+
+    die $response->message() if $response->code() ne '200';
+    return $self->parse( $response->content() );
 }
 
 sub parse {

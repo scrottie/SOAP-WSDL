@@ -16,7 +16,7 @@ sub register {
 
 sub get_serializer {
     my ($self, $args_of_ref) = @_;
-
+    $args_of_ref->{ soap_version } ||= '1.1';
     # sanity check
     die "no serializer registered for SOAP version $args_of_ref->{ soap_version }"
         if not exists ($SERIALIZER{ $args_of_ref->{ soap_version } });
@@ -138,9 +138,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 510 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: Serializer.pm 510 2008-01-29 08:03:46Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
  
 =cut

@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 10;
 use strict;
 use warnings;
 use diagnostics;
@@ -29,3 +29,12 @@ ok( $soap->wsdlinit(), 'parsed WSDL' );
 ok( $soap->wsdlinit( servicename => 'testService', portname => 'testPort'), 'parsed WSDL' );
 
 ok( ($soap->portname() eq 'testPort' ), 'found port passed to wsdlinit');
+
+ok( $soap = SOAP::WSDL->new(
+    wsdl => 'file://' . $url . '/../../acceptance/wsdl/02_port.wsdl'
+), 'Instantiated object' );
+
+ok( $soap->wsdlinit() );
+$soap->outputxml(1);
+eval { $soap->call('test') };
+like $@, qr{type \s tns:testSimpleType1 \s , \s urn:simpleType \s not \s found}xms;

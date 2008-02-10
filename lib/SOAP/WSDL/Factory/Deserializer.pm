@@ -16,7 +16,7 @@ sub register {
 
 sub get_deserializer {
     my ($self, $args_of_ref) = @_;
-
+    $args_of_ref->{ soap_version } ||= '1.1';
     # sanity check
     die "no deserializer registered for SOAP version $args_of_ref->{ soap_version }"
         if not exists ($DESERIALIZER{ $args_of_ref->{ soap_version } });

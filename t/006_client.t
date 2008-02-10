@@ -4,23 +4,26 @@ use warnings;
 use diagnostics;
 use Test::More tests => 17; # qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
-
+use File::Spec;
+use File::Basename qw(dirname);
 eval {
     require Test::XML;
     import Test::XML
 };
 
-use Cwd;
 
-my $path = cwd;
-$path =~s|\/t\/?$||;      # allow running from t/ and above (Build test)
+my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 use_ok(qw/SOAP::WSDL/);
 
-my $soap = SOAP::WSDL->new(
-    wsdl => 'file:///' . $path .'/t/acceptance/wsdl/006_sax_client.wsdl',
-    outputxml => 1, # required, if not set ::SOM serializer will be loaded on 
-                    # call
+my $soap;
+$soap = SOAP::WSDL->new(
+    wsdl => 'file:///' . $url .'/acceptance/wsdl/006_sax_client.wsdl',
+    outputxml => 1, # required, if not set ::SOM serializer will be loaded
 )->wsdlinit();
 
 $soap->servicename('MessageGateway');
@@ -96,7 +99,7 @@ SKIP: {
                      'MMessageContent' => 'TestContent for Message' ,
             }
         }
-    );    
+    );
     ok $result->isa('SOAP::SOM');
     is $result->result()->{MMessageContent}, 'TestContent for Message';
     is $result->result()->{MRecipientURI}, 'mailto:test@example.com';

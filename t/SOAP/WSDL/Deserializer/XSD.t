@@ -4,7 +4,7 @@ package TestResolver;
 sub get_typemap { {} };
 
 package main;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use SOAP::WSDL::Deserializer::XSD;
 
@@ -25,3 +25,6 @@ is $fault->get_faultcode(), 'soap:Client';
 isa_ok $obj->deserialize('rubbeldiekatz'), 'SOAP::WSDL::SOAP::Typelib::Fault11';
 isa_ok $obj->deserialize('<zumsel></zumsel>'), 'SOAP::WSDL::SOAP::Typelib::Fault11';
 isa_ok $obj->deserialize('<Envelope xmlns="huchmampf"></Envelope>'), 'SOAP::WSDL::SOAP::Typelib::Fault11';
+is $obj->deserialize('<SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
+    <SOAP-ENV:Body ></SOAP-ENV:Body></SOAP-ENV:Envelope>'), undef, 'Deserialize empty envelope';

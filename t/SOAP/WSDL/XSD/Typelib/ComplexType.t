@@ -18,7 +18,7 @@ package MyType;
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
 {
     my %test_of :ATTR(:get<test>);
-    
+
     __PACKAGE__->_factory(
         [ 'test' ],
         { test => \%test_of, },
@@ -41,11 +41,11 @@ use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
     my %test2_of    :ATTR(:get<test2>);
     __PACKAGE__->_factory(
         [ 'test', 'test2' ],
-        { 
+        {
             test => \%test_of,
             test2 => \%test2_of,
         },
-        { 
+        {
             test => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             test2 => 'MyAttribute',
         }
@@ -68,21 +68,18 @@ __PACKAGE__->_factory(
 );
 
 package main;
-use Test::More tests => 106;
+use Test::More tests => 109;
 use Storable;
 
 my $have_warn = eval { require Test::Warn; import Test::Warn; 1; };
 
 my $obj;
 
-$obj = MyEmptyType->new();
-is $obj->serialize, '';
-is $obj->serialize({ name => 'test'}), '<test/>';
-
-$obj = MyEmptyType2->new();
-is $obj->serialize, '';
-is $obj->serialize({ name => 'test'}), '<test/>';
-
+for my $class (qw{MyEmptyType MyEmptyType2}) {
+    $obj = $class->new();
+    is $obj->serialize, '', "$class object serializes to q{}";
+    is $obj->serialize({ name => 'test'}), '<test/>', "$class object serializes to <test/> with name=test";
+}
 
 $obj = MyType->new({});
 isa_ok $obj, 'MyType';
@@ -101,16 +98,17 @@ isa_ok $obj, 'MyType';
 isa_ok $obj->get_test, 'SOAP::WSDL::XSD::Typelib::Builtin::string';
 is $obj->get_test, 'Test1', 'element content';
 
-$obj = MyType->new({ 
-    test => SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
+$obj = MyType->new({
+    test => SOAP::WSDL::XSD::Typelib::Builtin::string->new({
         value => 'Test2'
     })
 });
+
 isa_ok $obj, 'MyType';
 isa_ok $obj->get_test, 'SOAP::WSDL::XSD::Typelib::Builtin::string';
 is $obj->get_test, 'Test2', 'element content';
 
-$obj = MyType->new({ 
+$obj = MyType->new({
     test => { value => 'Test2' } # just a trick - pass it unaltered to new...
 });
 isa_ok $obj, 'MyType';
@@ -120,17 +118,18 @@ is $obj->get_test, 'Test2', 'element content';
 $hash_of_ref = $obj->as_hash_ref();
 is $hash_of_ref->{ test }, 'Test2';
 
-$obj = MyType->new({ 
+$obj = MyType->new({
     test => [
-        SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
+        SOAP::WSDL::XSD::Typelib::Builtin::string->new({
             value => 'Test'
         }),
 
-        SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
+        SOAP::WSDL::XSD::Typelib::Builtin::string->new({
             value => 'Test2'
         })
     ],
 });
+
 isa_ok $obj, 'MyType';
 isa_ok $obj->get_test, 'ARRAY';
 is $obj->get_test()->[0], 'Test', 'element content (list content [0])';
@@ -154,23 +153,20 @@ is $nested->get_test->[0], $obj;
 $nested = MyType2->new({
     test => {
         test => [
-            SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
+            SOAP::WSDL::XSD::Typelib::Builtin::string->new({
                 value => 'Test'
             }),
-    
-            SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
+
+            SOAP::WSDL::XSD::Typelib::Builtin::string->new({
                 value => 'Test2'
             })
         ],
-    },    
+    },
 });
-
 
 $hash_of_ref = $nested->as_hash_ref();
 is $hash_of_ref->{ test }->{ test }->[1], 'Test2';
 
-
-# isnt $nested->get_test->[0], $obj, 'element identity';
 
 $obj = MyType->new();
 isa_ok $obj, 'MyType';
@@ -197,6 +193,11 @@ for my $count (1..5) {
 $obj->set_test();
 is $obj->get_test, (), 'removed element content';
 
+$obj = MyEmptyType->new();
+eval {
+    isa_ok $obj->attr() , 'SOAP::WSDL::XSD::Typelib::AttributeSet';
+};
+like $@, qr{\s has \s no \s attributes}x;
 
 $obj = MyElement->new();
 isa_ok $obj->attr() , 'SOAP::WSDL::XSD::Typelib::AttributeSet';
@@ -212,7 +213,7 @@ is $obj->serialize(),
     'Serialization with attributes';
 
 $obj->attr()->set_test2('test');
-is $obj->serialize(), 
+is $obj->serialize(),
     q{<MyElement test="TestAttribute" test2="test"/>},
     'Serialization with attributes';
 
@@ -227,7 +228,7 @@ is $obj->get_test, undef;
     eval { $foo = @{ $obj->get_test() } };
     if (! $@) {
         is $foo, undef;
-    } 
+    }
     else {
         like $@ , qr{Can't \s use \s an \s undefined}x, 'get_ELEMENT still undef on ARRAYIFY';
     }
@@ -260,13 +261,18 @@ for my $count (1..5) {
         is $obj->get_test->[$index], "TestString$index";
     }
     is $obj->serialize(), $serialized[$count -1];
-    
+
 }
 
+my $clone = Storable::thaw( Storable::freeze( $obj ));
+is $clone->get_test()->[0], 'TestString0';
+
+## failure tests
+
 eval {
-    $obj = MyType->new({ 
+    $obj = MyType->new({
     test => [
-            SOAP::WSDL::XSD::Typelib::Builtin::string->new({ 
+            SOAP::WSDL::XSD::Typelib::Builtin::string->new({
                 value => 'Test'
             }),
 
@@ -277,14 +283,22 @@ eval {
 like $@, qr{cannot \s use \s CODE}xms;
 
 eval {
-    $obj = MyType->new({ 
+    $obj = MyType->new({
     test => \&CORE::die,
     });
 };
 like $@, qr{cannot \s use \s CODE}xms;
 
+# TODO ignore XMLNS (for now)
+$obj = MyType->new({ xmlns => 'fubar'});
+ok defined $obj;
+TODO: {
+    local $TODO = "Support XML namespaces";
+    is $obj->get_xmlns(), 'fubar';
+}
+
 eval {
-    $obj = MyType->new({ 
+    $obj = MyType->new({
         foobar => 'fubar'
     });
 };
@@ -300,12 +314,8 @@ like $@, qr{Can't \s locate \s object \s method}x;
 eval { MyType->new({ FOO => 42 }) };
 like $@, qr{unknown \s field \s}xm;
 
-my $clone = Storable::thaw( Storable::freeze( $obj ));
-is $clone->get_test()->[0], 'TestString0';
-
 eval { SOAP::WSDL::XSD::Typelib::ComplexType::AUTOMETHOD() };
 like $@, qr{Cannot \s call}xm;
-
 
 eval { SOAP::WSDL::XSD::Typelib::ComplexType->_factory([], { test => {} }, {}) };
 like $@, qr{ No \s class \s given \s for \s }xms;
@@ -313,3 +323,4 @@ like $@, qr{ No \s class \s given \s for \s }xms;
 eval { SOAP::WSDL::XSD::Typelib::ComplexType->_factory([], { test => {} }, { test => 'HopeItDoesntExistOnYourSystem'}) };
 like $@, qr{ Can't \s locate \s HopeItDoesntExistOnYourSystem.pm }xms;
 
+# print Dumper

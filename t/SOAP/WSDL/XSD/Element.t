@@ -1,11 +1,11 @@
 package Foo;
 sub serialize {
-    return "serialized $_[1] $_[2]";
+    return "serialized $_[1] $_[2]" . join ' ', @{$_[3]->{ attributes } || [] } if $_[3];
 }
 package main;
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 16;
 
 use_ok qw(SOAP::WSDL::XSD::Element);
 
@@ -15,6 +15,9 @@ is $element->first_simpleType(), undef;
 
 $element->set_simpleType('Foo');
 is $element->first_simpleType(), 'Foo';
+
+is $element->serialize('Foobar', 'Bar', { namespace => {} } ), 'serialized Foobar Bar';
+is $element->serialize('Foobar', undef, { namespace => {} } ), 'serialized Foobar ';
 
 $element->set_simpleType( [ 'Foo', 'Bar' ]);
 is $element->first_simpleType(), 'Foo';
@@ -29,6 +32,13 @@ is $element->first_complexType(), 'Foo';
 
 $element->set_default('Foo');
 is $element->serialize('Foobar', undef, { namespace => {} } ), 'serialized Foobar Foo';
+
+$element->set_targetNamespace('urn:foobar');
+is $element->serialize('Foobar', undef, { namespace => {}, qualify => 1 } ), 'serialized Foobar Foo xmlns="urn:foobar"';
+
+$element->set_targetNamespace('urn:foobar');
+is $element->serialize('Foobar', 'Bar', { namespace => {}, qualify => 1 } ), 'serialized Foobar Bar xmlns="urn:foobar"';
+
 
 $element->set_name('Bar');
 is $element->serialize(undef, undef, { namespace => {} } ), 'serialized Bar Foo';

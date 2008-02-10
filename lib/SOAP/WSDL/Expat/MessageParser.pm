@@ -128,7 +128,7 @@ sub _initialize {
             return &{$content_check{ $depth }}
                 if exists $content_check{ $depth };
 
-            push @{ $path }, $_[1];       # step down in path
+            push @{ $path }, $_[1];        # step down in path
             return if $skip;               # skip inside __SKIP__
 
             # resolve class of this element
@@ -171,6 +171,7 @@ sub _initialize {
                 $current = bless \$o, $_class;
             }
 
+            # set attributes if there are any
             $current->attr({ @_[2..$#_] }) if (@_ > 2);
 
             $depth++;
@@ -294,8 +295,8 @@ the same terms as perl itself
 
  $Id: $
 
- $LastChangedDate: 2008-01-19 13:57:57 +0100 (Sa, 19 Jan 2008) $
- $LastChangedRevision: 497 $
+ $LastChangedDate: 2008-02-02 10:19:45 +0100 (Sa, 02 Feb 2008) $
+ $LastChangedRevision: 516 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

@@ -34,11 +34,11 @@ considered as bugs.
 =item * RULES NOT APPLICABLE
 
 WS-I Basic Profile contains rules for web services as a whole. SOAP::WSDL only
-plays the part of one layer in a Web Service CONSUMER, thus does not implement
-some parts the WS-I Basic Profile references.
+plays the part of one layer in a Web Service CONSUMER / RECEIVER, thus does
+not implement some parts the WS-I Basic Profile references.
 
 This section contains rules not applicable for SOAP::WSDL, because they refer
-parts to web service SOAP::WSDL does not implement.
+to parts SOAP::WSDL does not implement.
 
 =back
 
@@ -427,9 +427,10 @@ TODO support rpc-literal bindings.
  In a DESCRIPTION the value of the location attribute of a wsdl:import element
  SHOULD be treated as a hint.
 
-SOAP::WSDL's schema parser does not handle import elements yet.
+The wsdl:import element imports the referenced WSDL definition.
 
-TODO implement support for wsdl:import in SOAP::WSDL::Expat::WSDLParser.
+This is rather hard-wired and does not allow to specify a wsdl:import without
+a resolvable location.
 
 =head2 R4002
 
@@ -448,9 +449,7 @@ TODO Test whether UTF-16 works.
  The wsdl:documentation element MAY occur as a child of the wsdl:import
  element in a DESCRIPTION.
 
-SOAP::WSDL's schema parser does not handle import elements yet.
-
-TODO implement support for wsdl:import in SOAP::WSDL::Expat::WSDLParser.
+Not tested yet.
 
 =head2 R2024
 
@@ -681,7 +680,11 @@ is Schema valid.
  A DESCRIPTION MUST only use the WSDL "import" statement to import another
  WSDL description.
 
-SOAP::WSDL has no means of generating WSDL definitions
+SOAP::WSDL (partially) supports the wsdl:import statement. The wsdl:include
+statement is not supported (yet).
+
+It's the responsibility of the WSDL author to use only the wsdl:import
+statement for importing WSDL descriptions.
 
 =head2 R2002
 
@@ -1249,9 +1252,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 478 $
+ $Rev: 514 $
  $LastChangedBy: kutterma $
- $Id: WS_I.pod 478 2007-12-27 14:15:01Z kutterma $
+ $Id: WS_I.pod 514 2008-01-31 19:57:52Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/WS_I.pod $
 
 =cut

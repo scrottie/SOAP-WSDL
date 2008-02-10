@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_29
+version: 2.00_31
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -25,12 +25,13 @@ requires:
   List::Util: 0
   Template: 0
   Term::ReadKey: 0
+  URI: 0
   XML::Parser::Expat: 0
   perl: 5.8.0
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00_25
+    version: 2.00_31
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
     version: 2.00_27
@@ -77,7 +78,7 @@ provides:
     version: 2.00_24
   SOAP::WSDL::Factory::Transport:
     file: lib/SOAP/WSDL/Factory/Transport.pm
-    version: 2.00_25
+    version: 2.00_31
   SOAP::WSDL::Generator::Template:
     file: lib/SOAP/WSDL/Generator/Template.pm
     version: 2.00_25
@@ -139,7 +140,7 @@ provides:
     version: 2.00_25
   SOAP::WSDL::TypeLookup:
     file: lib/SOAP/WSDL/TypeLookup.pm
-    version: 2.00_29
+    version: 2.00_31
   SOAP::WSDL::Types:
     file: lib/SOAP/WSDL/Types.pm
   SOAP::WSDL::XSD::Attribute:
@@ -149,7 +150,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Builtin.pm
   SOAP::WSDL::XSD::ComplexType:
     file: lib/SOAP/WSDL/XSD/ComplexType.pm
-    version: 2.00_25
+    version: 2.00_29
   SOAP::WSDL::XSD::Element:
     file: lib/SOAP/WSDL/XSD/Element.pm
     version: 2.00_25
@@ -163,8 +164,10 @@ provides:
     version: 2.00_25
   SOAP::WSDL::XSD::Typelib::Attribute:
     file: lib/SOAP/WSDL/XSD/Typelib/Attribute.pm
+    version: 2.00_29
   SOAP::WSDL::XSD::Typelib::AttributeSet:
     file: lib/SOAP/WSDL/XSD/Typelib/AttributeSet.pm
+    version: 2.00_29
   SOAP::WSDL::XSD::Typelib::Builtin:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
     version: 2.00_25
@@ -265,7 +268,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_29
+    version: 2.00_31
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
     version: 2.00_29

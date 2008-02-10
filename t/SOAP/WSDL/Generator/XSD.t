@@ -1,4 +1,4 @@
-use Test::More tests => 38;
+use Test::More tests => 41;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -149,5 +149,12 @@ is $ct_east->get_testAtomicSimpleTypeElement2->get_value(), 23;
 isa_ok($ct_east->get_testAtomicSimpleTypeElement2, 
     'MyTypes::testComplexTypeElementAtomicSimpleType::_testAtomicSimpleTypeElement2');
 
+ok eval { require MyElements::testElementCompletelyEmptyComplex; }
+    , 'load MyElements::testElementCompletelyEmptyComplex';
+ok my $empty = MyElements::testElementCompletelyEmptyComplex->new();
+
+is $empty->serialize_qualified(), '<testElementCompletelyEmptyComplex xmlns="urn:Test"/>'
+    , 'serialize empty';
+    
 
 rmtree "$path/testlib";

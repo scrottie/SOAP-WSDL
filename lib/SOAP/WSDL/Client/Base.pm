@@ -8,22 +8,32 @@ our $VERSION = '2.00_25';
 
 sub call {
     my ($self, $method, $body, $header) = @_;
+
+    # Treat non-objects special
     if (not blessed $body) {
+        
+        # make sure there's something sensible in our body data
         $body = {} if not defined $body;
         $body = ref $body eq 'ARRAY' ? $body : [ $body ];
-        my $index = 0;
-        my @part_from;
-        foreach my $part (@{ $body }) {
-            my $class = $method->{ body }->{ parts }->[$index];
+
+        my @body_from = @{ $body }; # make a copy
+
+        # build list of parts as objects initialized with 
+        # parameters given
+        my @part_from = ();
+        foreach my $class (@{ $method->{ body }->{ parts } }) {
             eval "require $class" || die $@;
-            push @part_from, $class->new($part);
-            $index++;
+            push @part_from, $class->new(shift(@body_from) || {});
         }
+
+        # it's either the first part or a list ref with all parts...
         $body = $#part_from ? \@part_from : $part_from[0];
     }
 
     # if we have a header
     if (%{ $method->{ header } }) {
+
+        # trat non object special - as above, but only for one
         if (not blessed $header) {
             my $class = $method->{ header }->{ parts }->[0];
             eval "require $class" || die $@;
@@ -32,39 +42,6 @@ sub call {
     }
     return $self->SUPER::call($method, $body, $header);
 }
-
-#sub __create_methods {
-#    my ($package, %info_of) = @_;
-#
-#    no strict qw(refs);
-#    no warnings qw(redefine);
-#    for my $method (keys %info_of){
-#    my ($soap_action, @parts);
-#
-#    # up to 2.00_10 we had list refs...
-#    if (ref $info_of{ $method }eq 'HASH') {
-#        @parts = @{ $info_of{ $method }->{ parts } };
-#        $soap_action = $info_of{ $method }->{ soap_action };
-#    }
-#    else {
-#        die "Pre-v2.00_10 Interfaces are no longer supported. Please re-generate your interface.";
-#    }
-#
-#    *{ "$package\::$method" } = sub {
-#        my $self = shift;
-#        my @param = map {
-#            my $data = shift || {};
-#            eval "require $_";
-#            $_->new( $data );
-#        } @parts;
-#
-#        return $self->SUPER::call( {
-#            operation => $method,
-#            soap_action => $soap_action,
-#        }, @param );
-#      }
-#  }
-#}
 
 1;
 
@@ -101,9 +78,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 440 $
+ $Rev: 501 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 440 2007-12-04 22:24:33Z kutterma $
+ $Id: Base.pm 501 2008-01-26 20:23:32Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

@@ -5,7 +5,57 @@ use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
-our $VERSION = q{2.00_29};
+our $VERSION = q{2.00_31};
+
+sub _import_children {
+    my ($self, $name, $imported, $importer, $import_namespace) = @_;
+    my $targetNamespace = $importer->get_targetNamespace();
+    my $push_method = "push_$name";
+    my $get_method = "get_$name";
+    no strict qw(refs);
+    my $value_ref = $imported->$get_method();
+    if ($value_ref) {
+        $value_ref = [ $value_ref ] if (not ref $value_ref eq 'ARRAY');
+        # set xmlns - can be different from parent
+        for (@{ $value_ref }) {
+            # fixup targetNamespace, but don't override
+            $_->set_targetNamespace( $import_namespace )
+                if ( ($import_namespace ne $targetNamespace) && !  $_->get_targetNamespace);
+            # update parent...
+            $_->set_parent( $importer );
+        }
+        # push elements into importing WSDL
+        $importer->$push_method(@{ $value_ref });
+    }
+}
+
+sub xml_schema_import {
+    my $self = shift;
+    my $schema = shift;
+    my $parser = ref($self)->new();
+    my %attr_of = @_;
+    my $import_namespace = $attr_of{ namespace };
+    my $uri = URI->new_abs($attr_of{schemaLocation}, $self->get_uri() );
+    my $import = $parser->parse_uri($uri);
+
+    for my $name ( qw(type element group) ) {
+        $self->_import_children( $name, $import, $schema, $import_namespace);
+    }
+}
+
+sub wsdl_import {
+    my $self = shift;
+    my $definitions = shift;
+    my $parser = ref($self)->new();
+    my %attr_of = @_;
+    my $import_namespace = $attr_of{ namespace };
+    my $uri = URI->new_abs($attr_of{location}, $self->get_uri() );
+
+    my $import = $parser->parse_uri($uri);
+    for my $name ( qw(types message binding portType service) ) {
+        $self->_import_children( $name, $import, $definitions, $import_namespace);
+    }
+}
 
 sub _initialize {
     my ($self, $parser) = @_;
@@ -80,6 +130,20 @@ sub _initialize {
                         : ($action->{ value })
                     : _fixup_attrs($parser, %attrs)
                 );
+            }
+            elsif ($action->{type} eq 'HANDLER') {
+                my $method = $self->can($action->{method});
+                $method->($self, $current, %attrs);
+            }
+            else {
+                # TODO replace by hash lookup of known namespaces.
+                my $namespace = $parser->namespace($localname) || q{};
+                my $part = $namespace eq 'http://schemas.xmlsoap.org/wsdl/'
+                    ? 'WSDL 1.1'
+                    : 'XML Schema';
+
+                warn "$part element <$localname> is not implemented yet"
+                    if ($localname !~m{ \A (:? annotation | documentation ) \z }xms );
             }
 
             return;
@@ -179,8 +243,8 @@ the same terms as perl itself
 
  $Id: $
 
- $LastChangedDate: 2007-12-24 11:23:52 +0100 (Mo, 24 Dez 2007) $
- $LastChangedRevision: 477 $
+ $LastChangedDate: 2008-02-11 00:14:27 +0100 (Mo, 11 Feb 2008) $
+ $LastChangedRevision: 522 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $

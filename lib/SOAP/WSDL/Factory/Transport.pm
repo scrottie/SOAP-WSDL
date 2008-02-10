@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Transport;
 use strict;
 use warnings;
 
-our $VERSION='2.00_25';
+our $VERSION='2.00_31';
 
 # class data
 my %registered_transport_of = ();
@@ -34,7 +34,7 @@ sub register {
 sub get_transport {
     my ($class, $scheme, %attrs) = @_;
 
-    $scheme =~s{ \A ([^\:]+) \: .+ }{$1}smx;
+    $scheme =~s{ \A ([^\:]+) \: .+ }{$1}x;
 
     if ($registered_transport_of{ $scheme }) {
         no strict qw(refs);
@@ -96,12 +96,12 @@ SOAP::WSDL::Factory::Transport - Factory for retrieving transport objects
  # in transport class:
  package MyWickedTransport;
  use SOAP::WSDL::Factory::Transport;
- 
+
  # register class as transport module for httpr and https
  # (httpr is "reliable http", a protocol developed by IBM).
  SOAP::WSDL::Factory::Transport->register( 'httpr' , __PACKAGE__ );
  SOAP::WSDL::Factory::Transport->register( 'https' , __PACKAGE__ );
- 
+
 =head1 DESCRIPTION
 
 SOAP::WSDL::Transport serves as factory for retrieving transport objects for
@@ -207,10 +207,10 @@ classes in one file, and to follow this naming scheme:
 
  Module name:
    "SOAP::Transport::" . uc($scheme)
- 
+
  Client class (additional package in module):
    "SOAP::Transport::" . uc($scheme) . "::Client"
- 
+
  Server class (additional package in module):
    "SOAP::Transport::" . uc($scheme) . "::Client"
 
@@ -240,9 +240,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 459 $
+ $Rev: 524 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 459 2007-12-16 16:00:14Z kutterma $
+ $Id: Transport.pm 524 2008-02-10 23:24:43Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
- 
+
 =cut

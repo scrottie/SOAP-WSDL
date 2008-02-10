@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 9;
 use strict;
 use warnings;
 use lib '../lib';
@@ -28,7 +28,11 @@ ok( $soap = SOAP::WSDL->new(
 ), 'Instantiated object' );
 
 #3
-$soap->readable(1);
+SKIP: {
+    skip 'Cannot test warning without Test::Warn', 1 if not (eval "require Test::Warn");
+    Test::Warn::warning_like( sub { $soap->readable(1) },
+        qr{\A 'readable' \s has \s no \s effect \s any \s more}xms);
+}
 $soap->outputxml(1);
 
 ok( $soap->wsdlinit(
@@ -36,15 +40,15 @@ ok( $soap->wsdlinit(
 ), 'parsed WSDL' );
 $soap->no_dispatch(1);
 
-ok ($xml = $soap->call('test', 
+ok ($xml = $soap->call('test',
 	testElement1 => 'Test'
 ), 'Serialized (simple) element' );
 
-ok ($xml = $soap->call('testRef', 
+ok ($xml = $soap->call('testRef',
 	testElementRef => 'Test'
 ), 'Serialized (simple) element' );
 
-like $xml 
+like $xml
     , qr{<testElementRef\s\sxmlns="urn:Test">Test</testElementRef></SOAP-ENV:Body></SOAP-ENV:Envelope>}
     , 'element ref serialization result'
 ;
@@ -52,10 +56,10 @@ like $xml
 TODO: {
     local $TODO="implement min/maxOccurs checks";
 
-    eval { 
-	$xml = 	$soap->call('test', 
+    eval {
+	$xml = 	$soap->call('test',
 			testAll => [ 'Test 2', 'Test 3' ]
-		); 
+		);
     };
 
     ok( ($@ =~m/illegal\snumber\sof\selements/),
@@ -63,7 +67,7 @@ TODO: {
     );
 
     eval {
-	$xml = $soap->call('test', testAll => undef ); 
+	$xml = $soap->call('test', testAll => undef );
     };
     ok($@, 'Died on illegal number of elements (not enough)');
 }

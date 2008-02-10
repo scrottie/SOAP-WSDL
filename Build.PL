@@ -5,11 +5,11 @@ $build = Module::Build->new(
     create_makefile_pl => 'passthrough',
     dist_abstract      => 'SOAP with WSDL support',
     dist_name          => 'SOAP-WSDL',
-    dist_version       => '2.00_29',
+    dist_version       => '2.00_31',
     module_name        => 'SOAP::WSDL',
     license            => 'artistic',
     requires           => {
-        # 5.6.x is way too buggy and has no unicode support 
+        # 5.6.x is way too buggy and has no unicode support
         # for us. SOAP-WSDL relies on unicode (WS-I demands it)
         # and triggers several 5.6 bugs...
         'perl'                    => q(5.8.0),
@@ -24,6 +24,7 @@ $build = Module::Build->new(
         'LWP::UserAgent'          => 0,
         'Template'                => 0,
         'Term::ReadKey'           => 0,
+        'URI'                     => 0,
         'XML::Parser::Expat'      => 0,
     },
     buildrequires => {
@@ -39,7 +40,7 @@ $build = Module::Build->new(
         'File::Spec'              => 0,
         'Storable'                => 0,
         'Test::More'              => 0,
-        'Template'                => 0,	
+        'Template'                => 0,
         'XML::Parser::Expat'      => 0,
     },
     recursive_test_files => 1,

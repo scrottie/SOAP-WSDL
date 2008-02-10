@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use Test::More tests => 9;
+use Test::More tests => 10;
 use strict;
 use lib 'lib/';
 use lib '../lib/';
@@ -48,16 +48,23 @@ ok $result->isa('SOAP::WSDL::SOAP::Typelib::Fault11'),
     'return fault on impossible call';
 ok ! $result, 'fault is false in boolean context';
 
-package FakeResolver;
 
-sub get_class {
-    my %class_list = (
+# $soap->no_dispatch(1);
+ok ! $soap->call('Test'), 'second call';
+
+package FakeResolver;
+my %class_list = (
         'Fault' => 'SOAP::WSDL::SOAP::Typelib::Fault11',
         'Fault/faultactor' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
         'Fault/faultcode' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyURI',
         'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
         'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::anyType',
     );
+sub get_class {
+    
     return $class_list{ $_[1] };
 }
 
+sub get_typemap {
+    return \%class_list;
+}
