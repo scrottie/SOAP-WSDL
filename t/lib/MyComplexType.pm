@@ -3,10 +3,11 @@ package MyComplexType;
 use strict;
 use Class::Std::Fast::Storable constructor => 'none';
 use lib '../../lib';
-use SOAP::WSDL::XSD::Typelib::ComplexType;
 use base ('SOAP::WSDL::XSD::Typelib::ComplexType');
 
-my %MyTestName_of :ATTR(:get<MyTestName>); 
+Class::Std::initialize();
+
+my %MyTestName_of :ATTR(:get<MyTestName>);
 
 __PACKAGE__->_factory(
     [ qw(MyTestName) ],                # order

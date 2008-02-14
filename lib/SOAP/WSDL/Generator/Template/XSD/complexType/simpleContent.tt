@@ -1,0 +1,8 @@
+[% IF (complexType.get_variety == 'restriction');
+    INCLUDE complexType/restriction.tt(complexType = complexType);
+ELSIF (complexType.get_variety == 'extension');
+    THROW NOT_IMPLEMENTED, "${ complexType.get_name } - complexType simpleContent extension not implemented yet";
+ELSE;
+    THROW UNKNOWN, "unknown variety ${ complexType.get_variety }";
+END;
+%]

@@ -167,22 +167,22 @@ my %TYPES = (
         },
         group => {
             type => 'METHOD',
-            method => 'set_flavor',
+            method => 'set_variety',
             value => 'group',
         },
         all => {
             type => 'METHOD',
-            method => 'set_flavor',
+            method => 'set_variety',
             value => 'all',
         },
         choice => {
             type => 'METHOD',
-            method => 'set_flavor',
+            method => 'set_variety',
             value => 'choice',
         },
         sequence => {
             type => 'METHOD',
-            method => 'set_flavor',
+            method => 'set_variety',
             value => 'sequence',
         },
     },

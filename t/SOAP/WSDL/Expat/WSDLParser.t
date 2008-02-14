@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 10; #qw(no_plan);
+use Test::More tests => 11; #qw(no_plan);
 use File::Spec;
 use File::Basename;
 
@@ -51,6 +51,16 @@ ok my $schema_from_ref = $definitions->first_types()->get_schema();
 is @{ $schema_from_ref }, 2, 'got builtin and imported schema';
 ok @{ $schema_from_ref->[1]->get_element } > 0;
 is $schema_from_ref->[1]->get_element->[0]->get_name(), 'sayHello';
+
+$SIG{ALRM} = sub { die 'looped'};
+alarm 1;
+
+$definitions = $parser->parse_file(
+     "$path/../../../acceptance/wsdl/WSDLParser_import_loop.wsdl"
+);
+
+alarm 0;
+pass 'import loop';
 
 __END__
 

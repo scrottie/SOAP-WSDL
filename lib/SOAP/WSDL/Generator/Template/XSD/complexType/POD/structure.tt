@@ -7,7 +7,7 @@ ELSIF (complexType.get_variety == 'group');
 ELSIF (complexType.get_variety == 'choice');
     INCLUDE complexType/POD/choice.tt(complexType = complexType);
 ELSIF (complexType.get_contentModel == 'simpleContent');
-    THROW NOT_IMPLEMENTED, "${ element.get_name } - complexType simpleContent not implemented yet";
+    INCLUDE complexType/POD/simpleContent.tt(complexType = complexType);
 ELSIF (complexType.get_contentModel == 'complexContent');
     INCLUDE complexType/POD/complexContent.tt(complexType = complexType);
 END %],

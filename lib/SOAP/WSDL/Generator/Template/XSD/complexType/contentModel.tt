@@ -1,5 +1,5 @@
 [% IF (complexType.get_contentModel == 'simpleContent');
-    THROW NOT_IMPLEMENTED, "${ element.get_name } - complexType simpleContent not implemented yet";
+    INCLUDE complexType/simpleContent.tt(complexType = complexType);
 ELSIF (complexType.get_contentModel == 'complexContent');
     INCLUDE complexType/complexContent.tt(complexType = complexType);
 ELSE;

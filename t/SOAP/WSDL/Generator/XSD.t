@@ -1,8 +1,8 @@
-use Test::More tests => 41;
+use Test::More tests => 42;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
-
+use diagnostics;
 my $path = File::Spec->rel2abs( dirname __FILE__ );
 
 use_ok qw(SOAP::WSDL::Generator::Visitor::Typelib);
@@ -12,7 +12,7 @@ use SOAP::WSDL::Expat::WSDLParser;
 
 my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
-my $definitions = $parser->parse_file( 
+my $definitions = $parser->parse_file(
      "$path/../../../acceptance/wsdl/generator_test.wsdl"
     #"$path/../../../acceptance/wsdl/elementAtomicComplexType.xml"
 );
@@ -26,7 +26,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
 });
 
 my $code = "";
-$generator->set_output(\$code);  
+$generator->set_output(\$code);
 $generator->generate_typelib();
 {
     eval $code;
@@ -47,9 +47,9 @@ $generator->generate();
 #$generator->generate_typemap();
 
 if (eval { require Test::Warn; }) {
-   Test::Warn::warning_like( sub { $generator->generate_interface() }, 
+   Test::Warn::warning_like( sub { $generator->generate_interface() },
     qr{\A Multiple \s parts \s detected \s in \s message \s testMultiPartWarning}xms);
-} 
+}
 else {
     $generator->generate_interface();
     SKIP: { skip 'Cannot test warnings without Test::Warn', 1 };
@@ -67,7 +67,7 @@ $interface->set_no_dispatch(1);
 
 my $message;
 
-ok $message = $interface->testHeader( { Test1 => 'Test1', Test2 => 'Test2'} 
+ok $message = $interface->testHeader( { Test1 => 'Test1', Test2 => 'Test2'}
     , { Test1 => 'Header1', Test2 => 'Header2'}), 'call soap method (no_dispatch)';
 
 use_ok qw(SOAP::WSDL::Expat::MessageParser);
@@ -140,13 +140,13 @@ my $ct_east = MyTypes::testComplexTypeElementAtomicSimpleType->new({
 
 is $ct_east->get_testAtomicSimpleTypeElement, 42;
 is $ct_east->get_testAtomicSimpleTypeElement->get_value(), 42;
-isa_ok($ct_east->get_testAtomicSimpleTypeElement, 
+isa_ok($ct_east->get_testAtomicSimpleTypeElement,
     'MyTypes::testComplexTypeElementAtomicSimpleType::_testAtomicSimpleTypeElement');
 
 
 is $ct_east->get_testAtomicSimpleTypeElement2, 23;
 is $ct_east->get_testAtomicSimpleTypeElement2->get_value(), 23;
-isa_ok($ct_east->get_testAtomicSimpleTypeElement2, 
+isa_ok($ct_east->get_testAtomicSimpleTypeElement2,
     'MyTypes::testComplexTypeElementAtomicSimpleType::_testAtomicSimpleTypeElement2');
 
 ok eval { require MyElements::testElementCompletelyEmptyComplex; }
@@ -155,6 +155,10 @@ ok my $empty = MyElements::testElementCompletelyEmptyComplex->new();
 
 is $empty->serialize_qualified(), '<testElementCompletelyEmptyComplex xmlns="urn:Test"/>'
     , 'serialize empty';
-    
+
+
+ok eval { require MyTypes::testComplexTypeSimpleRestriction; }
+    , 'load MyTypes::testComplexTypeSimpleRestriction';
+
 
 rmtree "$path/testlib";

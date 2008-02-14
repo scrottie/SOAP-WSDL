@@ -14,7 +14,7 @@ use Class::Std::Fast;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-our $VERSION= '2.00_31';
+our $VERSION= '2.00_32';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -736,9 +736,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 524 $
+ $Rev: 534 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 524 2008-02-10 23:24:43Z kutterma $
+ $Id: WSDL.pm 534 2008-02-14 17:07:18Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

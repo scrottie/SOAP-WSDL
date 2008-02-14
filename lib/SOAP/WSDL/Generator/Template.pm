@@ -25,17 +25,33 @@ sub _process :PROTECTED {
     my ($self, $template, $arg_ref, $output) = @_;
     my $ident = ident $self;
 
-    $tt_of{$ident} = Template->new(
+    # always create a new Template object to
+    # force re-loading of plugins.
+    my $tt = Template->new(
         DEBUG => 1,
         EVAL_PERL => $EVAL_PERL_of{ $ident },
         RECURSION => $RECURSION_of{ $ident },
         INCLUDE_PATH => $INCLUDE_PATH_of{ $ident },
         OUTPUT_PATH => $OUTPUT_PATH_of{ $ident },
-    )
-        if (not $tt_of{ $ident });
+        PLUGIN_BASE => 'SOAP::WSDL::Generator::Template::Plugin',
+    );
 
-    $tt_of{ $ident }->process( $template,
+    $tt->process( $template,
     {
+        context => {
+            namespace_prefix_map => {
+                'http://www.w3.org/2001/XMLSchema' => 'SOAP::WSDL::XSD::Typelib::Builtin',
+            },
+            namespace_map => {
+            },
+            prefix => {
+                interface => $self->get_interface_prefix,
+                element => $self->get_element_prefix,
+                server => $self->get_server_prefix,
+                type => $self->get_type_prefix,
+                typemap => $self->get_typemap_prefix,
+            }
+        },
         definitions => $self->get_definitions,
         interface_prefix => $self->get_interface_prefix,
         server_prefix => $self->get_server_prefix,
@@ -47,7 +63,7 @@ sub _process :PROTECTED {
         %{ $arg_ref }
     },
     $output)
-        or die $INCLUDE_PATH_of{ $ident }, '\\', $template, ' ', $tt_of{ $ident }->error();
+        or die $INCLUDE_PATH_of{ $ident }, '\\', $template, ' ', $tt->error();
 }
 
 1;

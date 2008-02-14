@@ -93,6 +93,7 @@ lib/SOAP/WSDL/Factory/Generator.pm
 lib/SOAP/WSDL/Factory/Serializer.pm
 lib/SOAP/WSDL/Factory/Transport.pm
 lib/SOAP/WSDL/Generator/Template.pm
+lib/SOAP/WSDL/Generator/Template/Plugin/XSD.pm
 lib/SOAP/WSDL/Generator/Template/XSD.pm
 lib/SOAP/WSDL/Generator/Template/XSD/_type_class.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType.tt
@@ -106,8 +107,10 @@ lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/all.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/choice.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/complexContent.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/restriction.tt
+lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/simpleContent.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/POD/structure.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/restriction.tt
+lib/SOAP/WSDL/Generator/Template/XSD/complexType/simpleContent.tt
 lib/SOAP/WSDL/Generator/Template/XSD/complexType/variety.tt
 lib/SOAP/WSDL/Generator/Template/XSD/element.tt
 lib/SOAP/WSDL/Generator/Template/XSD/element/POD/structure.tt
@@ -282,10 +285,12 @@ t/acceptance/wsdl/generator_test.wsdl
 t/acceptance/wsdl/generator_test_dot_names.wsdl
 t/acceptance/wsdl/generator_unsupported_test.wsdl
 t/acceptance/wsdl/import.xsd
+t/acceptance/wsdl/import_loop.xsd
 t/acceptance/wsdl/message_gateway.wsdl
 t/acceptance/wsdl/WSDLParser-import.wsdl
 t/acceptance/wsdl/WSDLParser-imported.wsdl
 t/acceptance/wsdl/WSDLParser.wsdl
+t/acceptance/wsdl/WSDLParser_import_loop.wsdl
 t/contributed.wsdl
 t/Expat/03_wsdl.t
 t/lib/MyComplexType.pm

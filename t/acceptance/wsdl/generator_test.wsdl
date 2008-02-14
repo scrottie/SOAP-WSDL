@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<definitions name="Test" 
+<definitions name="Test"
     targetNamespace="urn:Test"
     xmlns:tns="urn:Test"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -43,7 +43,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <xsd:restriction base="xsd:int">
                 <xsd:minExclusive value="0"/>
                 <xsd:maxExclusive value="10"/>
-            </xsd:restriction> 
+            </xsd:restriction>
         </xsd:simpleType>
 
         <xsd:simpleType name="testRestrictionAtomicType">
@@ -57,7 +57,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
                     <xsd:restriction base="xsd:int">
                         <xsd:minExclusive value="0"/>
                         <xsd:maxExclusive value="10"/>
-                    </xsd:restriction> 
+                    </xsd:restriction>
                 </xsd:simpleType>
             </xsd:restriction>
         </xsd:simpleType>
@@ -78,11 +78,24 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         </xsd:annotation>
         <xsd:complexContent>
         <xsd:restriction base="tns:testComplexTypeAll">
-          <xsd:element name="Test1" type="xsd:string" minOccurs="1"/>
-          <xsd:element name="Test2" type="xsd:string" minOccurs="1" />
+            <xsd:all>
+                <xsd:element name="Test1" type="xsd:string" minOccurs="1"/>
+                <xsd:element name="Test2" type="xsd:string" minOccurs="1" />
+            </xsd:all>
         </xsd:restriction>
         </xsd:complexContent>
       </xsd:complexType>
+
+      <xsd:complexType name="testComplexTypeSimpleRestriction">
+        <xsd:annotation>
+          <xsd:documentation>ComplexType Test</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+        <xsd:restriction base="xsd:string">
+        </xsd:restriction>
+        </xsd:simpleContent>
+      </xsd:complexType>
+
 
       <xsd:complexType name="testComplexTypeExtension">
         	<xsd:annotation>
@@ -146,10 +159,10 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <xsd:element name="testElementAtomicSimpleTypeRestriction">
             <xsd:simpleType>
                 <xsd:annotation>
-                    <xsd:documentation> SimpleType: Integer between 1 and 9 
+                    <xsd:documentation> SimpleType: Integer between 1 and 9
                         (Inclusive constraints) </xsd:documentation>
                 </xsd:annotation>
-                <xsd:restriction base="xsd:int" minInclusive="1" 
+                <xsd:restriction base="xsd:int" minInclusive="1"
                     maxInclusive="9"/>
             </xsd:simpleType>
         </xsd:element>
@@ -157,7 +170,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <xsd:element name="testElementAtomicComplexTypeAll">
             <xsd:complexType>
                 <xsd:annotation>
-                    <xsd:documentation> SimpleType: Integer between 1 and 9 
+                    <xsd:documentation> SimpleType: Integer between 1 and 9
                         (Inclusive constraints) </xsd:documentation>
                 </xsd:annotation>
                 <xsd:all>
@@ -170,8 +183,8 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
 		<xsd:element name="Header" type="tns:testComplexTypeSequence"/>
 		<xsd:element name="testHeader" type="tns:testComplexTypeSequence"/>
 		<xsd:element name="testChoice" type="tns:testComplexTypeChoice"/>
-		
-		
+
+
 		<xsd:complexType name="testComplexTypeElementAtomicSimpleType">
 		  <xsd:sequence>
 		    <xsd:element name="testString" type="xsd:string" minOccurs="0"/>
@@ -191,8 +204,8 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
 		    </xsd:element>
 		  </xsd:sequence>
 		</xsd:complexType>
-		
-		
+
+
         <xsd:element name="testElementEmptyComplex">
             <xsd:complexType>
                 <xsd:sequence/>
@@ -206,7 +219,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <xsd:complexType>
             </xsd:complexType>
         </xsd:element>
-        
+
         <xsd:complexType name="completelyEmptyComplexType">
         </xsd:complexType>
 
@@ -219,7 +232,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <part name="testAll" element="tns:testElementString"/>
     </message>
     <message name="testResponse">
-        <part name="testAll" element="tns:testElementString"/>        
+        <part name="testAll" element="tns:testElementString"/>
     </message>
     <message name="testMultiPartWarning">
         <part name="testAll" element="tns:testElementString"/>
@@ -230,7 +243,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <part name="testHeader" element="tns:Header"/>
     </message>
     <message name="testHeaderResponse">
-        <part name="testAll" element="tns:testElementString"/>        
+        <part name="testAll" element="tns:testElementString"/>
     </message>
 
     <message name="testEmptyComplex">
@@ -284,7 +297,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
 						<soap:body use="literal"/>
 					</output>
 		    </operation>
-            
+
             <operation name="test">
 				<soap:operation soapAction="test" style="document"/>
 					<input>

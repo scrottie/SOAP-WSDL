@@ -1,5 +1,5 @@
 [% indent %]{
-[%- IF complexType.get_name %] # [% type_prefix %]::[% complexType.get_name %][% END %]
+[%- IF complexType.get_name %] # [% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %][% END %]
 [%- indent = indent _ '  ' %]
 [% indent %]# One of the following elements.
 [% indent %]# No occurance checks yet, so be sure to pass just one...

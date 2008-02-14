@@ -1,3 +1,7 @@
+[% IF (complexType.get_attribute.size) %]
+package [% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name.replace('\.','::').replace('-','_') %]::_ATTR;
+use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
+
 { # BLOCK to scope variables
 [%
 
@@ -19,11 +23,9 @@ __PACKAGE__->_factory(
 [% FOREACH element = complexType.get_attribute;
     IF (type = element.get_type);
         element_type = complexType.expand( type );
-        IF (element_type.0 == 'http://www.w3.org/2001/XMLSchema'); -%]
-        [% element.get_name %] => 'SOAP::WSDL::XSD::Typelib::Builtin::[% element_type.1 %]',
-[%      ELSE -%]
-        [% element.get_name %] => '[% type_prefix %]::[% element_type.1 %]',
-[%      END;
+-%]
+        [% element.get_name %] => '[% XSD.get_type_prefix(element_type.0) %]::[% element_type.1 %]',
+[%
     ELSE;
         IF (element.first_simpleType);
             THROW NOT_IMPLEMENTED , "Attributes with atomic simpleType definition are not implemented yet";
@@ -31,10 +33,12 @@ __PACKAGE__->_factory(
         ELSE;
             THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type - don't know what to do with it";
         END; %]
-        [% element.get_name %] => '[% type_prefix %]::[% complexType.get_name %]::_[% element.get_name %]',
+        [% element.get_name %] => '[% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %]::_[% element.get_name %]',
 [%  END;
 END -%]
     }
 );
 
 } # end BLOCK
+
+[% END %]

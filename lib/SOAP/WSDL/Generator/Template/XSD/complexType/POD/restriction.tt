@@ -1,5 +1,5 @@
 [% indent %]{
-[%- IF complexType.get_name %] # [% type_prefix %]::[% complexType.get_name %][% END %]
+[%- IF complexType.get_name %] # [% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %][% END %]
 [%- indent = indent _ '  ';
 FOREACH element = complexType.get_element %]
 [% indent %][% element.get_name %] => [% INCLUDE element/POD/structure.tt -%]

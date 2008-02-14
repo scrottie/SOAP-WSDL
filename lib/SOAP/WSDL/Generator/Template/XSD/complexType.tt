@@ -1,3 +1,4 @@
+[% USE XSD(context) -%]
 package [% type_prefix %]::[% complexType.get_name.replace('\.','::').replace('-','_') %];
 use strict;
 use warnings;
@@ -6,8 +7,6 @@ use warnings;
 # Don't include any perl source here - there may be sub-packages...
 #-%]
 
-package [% type_prefix %]::[% complexType.get_name.replace('\.','::').replace('-','_') %]::_ATTR;
-use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
 [% INCLUDE complexType/attributeSet.tt %]
 1;
 

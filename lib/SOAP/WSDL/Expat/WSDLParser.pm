@@ -5,10 +5,12 @@ use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
-our $VERSION = q{2.00_31};
+our $VERSION = q{2.00_32};
 
 sub _import_children {
     my ($self, $name, $imported, $importer, $import_namespace) = @_;
+    return if not $imported;
+
     my $targetNamespace = $importer->get_targetNamespace();
     my $push_method = "push_$name";
     my $get_method = "get_$name";
@@ -32,7 +34,7 @@ sub _import_children {
 sub xml_schema_import {
     my $self = shift;
     my $schema = shift;
-    my $parser = ref($self)->new();
+    my $parser = $self->clone();
     my %attr_of = @_;
     my $import_namespace = $attr_of{ namespace };
     my $uri = URI->new_abs($attr_of{schemaLocation}, $self->get_uri() );
@@ -46,7 +48,7 @@ sub xml_schema_import {
 sub wsdl_import {
     my $self = shift;
     my $definitions = shift;
-    my $parser = ref($self)->new();
+    my $parser = $self->clone();
     my %attr_of = @_;
     my $import_namespace = $attr_of{ namespace };
     my $uri = URI->new_abs($attr_of{location}, $self->get_uri() );
@@ -243,8 +245,8 @@ the same terms as perl itself
 
  $Id: $
 
- $LastChangedDate: 2008-02-11 00:14:27 +0100 (Mo, 11 Feb 2008) $
- $LastChangedRevision: 522 $
+ $LastChangedDate: 2008-02-14 18:07:18 +0100 (Do, 14 Feb 2008) $
+ $LastChangedRevision: 534 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $

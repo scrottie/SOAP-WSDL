@@ -1,7 +1,7 @@
 
 [% FOREACH type IN atomic_types; %]
 
-package [% type_prefix %]::[% complexType.get_name %]::_[% type.key %];
+package [% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %]::_[% type.key %];
 use strict;
 use warnings;
 {
