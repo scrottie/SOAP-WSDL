@@ -4,19 +4,23 @@ use strict;
 use warnings;
 use Carp;
 use SOAP::WSDL::XSD::Typelib::Builtin;
-use Scalar::Util qw(blessed refaddr);
+use Scalar::Util qw(blessed);
 require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_31';
+our $VERSION = '2.00_33';
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
 my %CLASSES_OF;
 
+# XML Attribute handling
+my %xml_attr_of :ATTR();
+
 # don't you ever dare to use this !
 our $___attributes_of_ref = \%ATTRIBUTES_OF;
+our $___xml_attribute_of_ref = \%xml_attr_of;
 
 # STORABLE_ methods for supporting Class::Std::Fast::Storable.
 # We could also handle them via AUTOMETHOD,
@@ -39,28 +43,28 @@ sub AUTOMETHOD {
         . "\n"
 }
 
-# Attribute handling
-my %xml_attr_of :ATTR();
+
 
 sub attr {
     my $self = shift;
-    my $class = ref $self;
+    my $class = $self->__get_attr_class()
+        or return;
 
     # disable strictness - in perl 5.10 %{ "$foo\::_bar" } triggers a
     # symbolic reference error with strictness enabled
     no strict qw(refs);
-    die "$class has no attributes" if not defined %{ "$class\::_ATTR::"};
+    # die "$class has no attributes" if not defined %{ "$class\::_ATTR::"};
     if (@_) {
         # setter
-        return $xml_attr_of{ $$self } = "$class\::_ATTR"->new(@_);
+        return $xml_attr_of{ $$self } = $class->new(@_);
     }
     return $xml_attr_of{ $$self } if exists $xml_attr_of{ $$self };
-    return $xml_attr_of{ $$self } = "$class\::_ATTR"->new();
+    return $xml_attr_of{ $$self } = $class->new();
 }
 
 sub serialize_attr {
     return q{} if not $xml_attr_of{ ${ $_[0] } };
-    $_[0]->attr()->serialize();
+    return $xml_attr_of{ ${ $_[0] } }->serialize();
 }
 
 sub as_hash_ref {
@@ -118,7 +122,7 @@ sub _factory {
         # it when the method was created.
         my $is_list = $type->isa('SOAP::WSDL::XSD::Typelib::Builtin::list');
 
-        #  The set_$name method below looks rather weird,
+        # The set_$name method below looks rather weird,
         # but is optimized for performance.
         #
         #  We could use sub calls for sure, but these are much slower. And
@@ -151,7 +155,11 @@ sub _factory {
         #  d) we should also die for non-blessed non-ARRAY/HASH references in
         #     lists but don't do yet - oh my !
 
-        *{ "$class\::set_$name" } = sub {
+        # keep in sync with Generator::Template::Plugin::XSD - maybe use
+        # function to allow substituting via symbol table...
+        my $method_name = $name;
+        $method_name =~s{[\.\-]}{_}xmsg;
+        *{ "$class\::set_$method_name" } = sub {
             if (not $#_) {
                 delete $attribute_ref->{ ${ $_[0] } };
                 return;
@@ -173,7 +181,6 @@ sub _factory {
                          ]
                     : $is_ref eq 'HASH'
                         ?  $type->new( $_[1] )
-
                         # neither ARRAY nor HASH - probably an object...
                         :  ($is_ref eq $type)               # of required type ? ->isa would be a better test...
                             ? $_[1]                         # use it
@@ -184,7 +191,7 @@ sub _factory {
             return;
         };
 
-        *{ "$class\::add_$name" } = sub {
+        *{ "$class\::add_$method_name" } = sub {
             warn "attempting to add empty value to " . ref $_[0]
                 if not defined $_[1];
 
@@ -221,8 +228,13 @@ sub _factory {
         # and call set appropriate field in clase
         map { ($ATTRIBUTES_OF{ $class }->{ $_ })
             ? do {
-                 my $method = "set_$_";
-                 $self->$method( $_[1]->{ $_ } );               # ( $args_of->{ $_ } );
+                my $method = "set_$_";
+
+                # keep in sync with Generator::Template::Plugin::XSD - maybe use
+                # function to allow substituting via symbol table...
+                $method =~s{[\.\-]}{_}xmsg;
+
+                $self->$method( $_[1]->{ $_ } );               # ( $args_of->{ $_ } );
            }
            : $_ =~ m{ \A              # beginning of string
                       xmlns           # xmlns
@@ -245,7 +257,7 @@ sub _factory {
     # Triggers XML attribute serialization if the options hash ref contains
     # a attr element with a true value.
     *{ "$class\::_serialize" } = sub {
-        my $ident = ${ $_[0]};
+        my $ident = ${ $_[0] };
         my $option_ref = $_[1];
         # return concatenated return value of serialize call of all
         # elements retrieved from get_elements expanding list refs.
@@ -261,13 +273,13 @@ sub _factory {
                     # serialize element elements with their own serializer
                     # but name them like they're named here.
                     if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
-                            $_->serialize( { name => $name } );
+                            $_->serialize({ name => $name });
                     }
                     # serialize complextype elments (of other types) with their
                     # serializer, but add element tags around.
                     else {
                         join q{}, $_->start_tag({ name => $name , %{ $option_ref } })
-                            , $_->serialize()
+                            , $_->serialize($option_ref)
                             , $_->end_tag({ name => $name , %{ $option_ref } });
                     }
                 } @{ $element }
@@ -277,9 +289,19 @@ sub _factory {
             }
         } (@{ $ELEMENTS_FROM{ $class } });
     };
+
+    # put hidden complex serializer into class
+    # ... but not for AttributeSet classes
+    if ( ! $class->isa('SOAP::WSDL::XSD::Typelib::AttributeSet')) {
+        *{ "$class\::serialize" } = \&__serialize_complex;
+    };
 }
 
-sub serialize {
+# just a fallback
+sub __get_attr_class {};
+
+# hidden complex serializer
+sub __serialize_complex {
     # we work on @_ for performance.
     $_[1] ||= {};                                   # $option_ref
 
@@ -459,9 +481,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 524 $
+ $Rev: 583 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 524 2008-02-10 23:24:43Z kutterma $
+ $Id: ComplexType.pm 583 2008-03-24 07:44:06Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

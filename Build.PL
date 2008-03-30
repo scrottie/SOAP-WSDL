@@ -2,10 +2,10 @@ use Module::Build;
 use version;
 $build = Module::Build->new(
     dist_author        => 'Martin Kutter <martin.kutter@fen-net.de>',
-    create_makefile_pl => 'passthrough',
+    create_makefile_pl => 'small',
     dist_abstract      => 'SOAP with WSDL support',
     dist_name          => 'SOAP-WSDL',
-    dist_version       => '2.00_32',
+    dist_version       => '2.00_33',
     module_name        => 'SOAP::WSDL',
     license            => 'artistic',
     requires           => {
@@ -13,7 +13,7 @@ $build = Module::Build->new(
         # for us. SOAP-WSDL relies on unicode (WS-I demands it)
         # and triggers several 5.6 bugs...
         'perl'                    => q(5.8.0),
-        'Class::Std::Fast'        => qv(0.0.5),
+        'Class::Std::Fast'        => q(0.0.5),
         'Data::Dumper'            => 0,
         'Date::Parse'             => 0,
         'Date::Format'            => 0,
@@ -27,14 +27,15 @@ $build = Module::Build->new(
         'URI'                     => 0,
         'XML::Parser::Expat'      => 0,
     },
-    buildrequires => {
-        'Class::Std::Fast'        => qv(0.0.5),
+    build_requires => {
+        'Class::Std::Fast'        => q(0.0.5),
         'Cwd'                     => 0,
         'Date::Parse'             => 0,
         'Date::Format'            => 0,
         'Getopt::Long'            => 0,
         'List::Util'              => 0,
         'LWP::UserAgent'          => 0,
+        'Module::Build'           => 0,
         'File::Basename'          => 0,
         'File::Path'              => 0,
         'File::Spec'              => 0,

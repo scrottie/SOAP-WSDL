@@ -7,16 +7,28 @@ use Carp qw(croak carp confess);
 
 our $VERSION='2.00_27';
 
-my %id_of :ATTR(:name<id> :default<()>);
-my %name_of :ATTR(:name<name> :default<()>);
-my %documentation_of :ATTR(:name<documentation> :default<()>);
-my %targetNamespace_of :ATTR(:name<targetNamespace> :default<()>);
-my %xmlns_of :ATTR(:name<xmlns> :default<{}>);
-my %parent_of :ATTR(:name<parent> :default<()>);
+my %id_of               :ATTR(:name<id> :default<()>);
+my %lang_of             :ATTR(:name<lang> :default<()>);
+my %name_of             :ATTR(:name<name> :default<()>);
+my %documentation_of    :ATTR(:name<documentation> :default<()>);
+my %annotation_of       :ATTR(:name<annotation> :default<()>);
+my %targetNamespace_of  :ATTR(:name<targetNamespace> :default<()>);
+my %xmlns_of            :ATTR(:name<xmlns> :default<{}>);
+my %parent_of           :ATTR(:name<parent> :default<()>);
+
+my %namespaces_of       :ATTR(:default<{}>);
+
+sub namespaces {
+    return shift->get_xmlns();
+}
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
     $xmlns_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
+    $xmlns_of{ $ident }->{ 'xml' } = 'http://www.w3.org/XML/1998/namespace';
+    $namespaces_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
+    $namespaces_of{ $ident }->{ 'xml' } = 'http://www.w3.org/XML/1998/namespace';
+
 }
 
 sub DEMOLISH {
@@ -87,7 +99,12 @@ sub AUTOMETHOD {
             return $result_ref->[0];
         };
     }
-    confess "$subname not found in class " . ref $self;
+
+    # return if called from can();
+    my @caller = caller(2);
+    return if ($caller[3] eq 'Class::Std::Fast::__ANON__');
+    # confess "$subname not found in class " . ref $self;
+    return;
 }
 
 sub init {
@@ -109,8 +126,8 @@ sub init {
 }
 
 sub expand {
-    my ($self, , $qname) = @_;
-    my $ns_of = $self->get_xmlns();
+    my ($self, $qname) = @_;
+    my $ns_of = $self->namespaces();
     if (not $qname=~m{:}xm) {
         die "un-prefixed element name <$qname> found, but no default namespace set\n"
             if not defined $ns_of->{ '#default' };

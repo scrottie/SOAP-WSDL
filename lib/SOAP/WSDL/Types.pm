@@ -23,6 +23,16 @@ sub find_type {
     return;
 }
 
+sub find_attribute {
+    my ($self, $ns, $name) = @_;
+    ($ns, $name) = @{ $ns } if ref $ns;     # allow passing list refs
+    foreach my $schema (@{ $schema_of{ ident $self } }) {
+        my $type = $schema->find_attribute($ns, $name);
+        return $type if $type;
+    }
+    return;
+}
+
 sub find_element {
     my ($self, $ns, $name) = @_;
     ($ns, $name) = @{ $ns } if ref $ns;     # allow passing list refs

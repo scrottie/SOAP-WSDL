@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Transport;
 use strict;
 use warnings;
 
-our $VERSION='2.00_31';
+our $VERSION='2.00_33';
 
 # class data
 my %registered_transport_of = ();
@@ -12,7 +12,7 @@ my %registered_transport_of = ();
 my %SOAP_LITE_TRANSPORT_OF = (
     ftp => 'SOAP::Transport::FTP',
     http => 'SOAP::Transport::HTTP',
-    https => 'SOAP::Transport::HTTPS',
+    https => 'SOAP::Transport::HTTP',
     mailto => 'SOAP::Transport::MAILTO',
     'local' => 'SOAP::Transport::LOCAL',
     jabber => 'SOAP::Transport::JABBER',
@@ -240,9 +240,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 524 $
+ $Rev: 579 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 524 2008-02-10 23:24:43Z kutterma $
+ $Id: Transport.pm 579 2008-03-09 18:39:24Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
 
 =cut

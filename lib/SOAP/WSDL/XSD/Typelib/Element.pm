@@ -51,7 +51,7 @@ sub start_tag {
         push @attr_from, q{ xsi:nil="true"};
         $ending = '/>';
     }
-    if ($_[1]->{qualified}) {
+    if (delete $_[1]->{qualified}) {
         push @attr_from, q{ xmlns="} . $_[0]->get_xmlns() . q{"};
     }
     push @attr_from, $_[0]->serialize_attr();
@@ -111,7 +111,7 @@ This example creates a class for this XML schema definition:
 Now we create this XML schema definition type class:
 
  <element name="MyElement2" ref="tns:MyElement"/>
- 
+
  package MyElement2;
  use strict;
  use Class::Std::Fast::Storable constructor => 'none';
@@ -175,9 +175,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 498 $
+ $Rev: 564 $
  $LastChangedBy: kutterma $
- $Id: Element.pm 498 2008-01-20 22:47:18Z kutterma $
+ $Id: Element.pm 564 2008-02-23 13:31:39Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/Element.pm $
 
 =cut

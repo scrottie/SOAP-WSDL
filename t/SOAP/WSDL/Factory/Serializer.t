@@ -1,21 +1,23 @@
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More tests => 4;
 
-use SOAP::WSDL::Factory::Deserializer;
+use SOAP::WSDL::Factory::Serializer;
 
-eval { SOAP::WSDL::Factory::Deserializer->get_deserializer({
-    soap_version => 'zumsl' 
+eval { SOAP::WSDL::Factory::Serializer->get_serializer({
+    soap_version => 'zumsl'
 }) };
-like $@, qr{^no deserializer};
+like $@, qr{^no serializer};
 
-ok my $serializer = SOAP::WSDL::Factory::Deserializer->get_deserializer({
-    soap_version => '1.1' 
+ok my $serializer = SOAP::WSDL::Factory::Serializer->get_serializer({
+    soap_version => '1.1'
 });
 
-SOAP::WSDL::Factory::Deserializer->register('1.1', 'Hope_You_Have_No_Such_Package_Installed');
+ok $serializer = SOAP::WSDL::Factory::Serializer->get_serializer({});
 
-eval { SOAP::WSDL::Factory::Deserializer->get_deserializer({
-    soap_version => '1.1' 
+SOAP::WSDL::Factory::Serializer->register('1.1', 'Hope_You_Have_No_Such_Package_Installed');
+
+eval { SOAP::WSDL::Factory::Serializer->get_serializer({
+    soap_version => '1.1'
 }) };
 like $@, qr{^Cannot load};

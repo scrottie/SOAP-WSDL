@@ -8,7 +8,7 @@ Class::Std::initialize();
 atomic_types = {};
 
 FOREACH element = complexType.get_element %]
-my %[% element.get_name %]_of :ATTR(:get<[% element.get_name %]>);
+my %[% XSD.perl_name(element.get_name) %]_of :ATTR(:get<[% XSD.perl_name(element.get_name) %]>);
 [%- END %]
 
 __PACKAGE__->_factory(
@@ -18,23 +18,23 @@ __PACKAGE__->_factory(
     ) ],
     {
 [% FOREACH element = complexType.get_element -%]
-        [% element.get_name %] => \%[% element.get_name %]_of,
+        '[% element.get_name %]' => \%[% XSD.perl_name(element.get_name) %]_of,
 [% END -%]
     },
     {
 [% FOREACH element = complexType.get_element;
     IF (type = element.get_type);
-        element_type = complexType.expand( type ); -%]
-        [% element.get_name %] => '[% XSD.get_type_prefix(element_type.0) %]::[% element_type.1 %]',
+        element_type = definitions.first_types.find_type(complexType.expand( type )); -%]
+        '[% element.get_name %]' => '[% XSD.create_xsd_name(element_type) %]',
 [%    ELSE;
         IF (element.first_simpleType);
             atomic_types.${ element.get_name } = element.first_simpleType;
         ELSIF (element.first_complexType);
             atomic_types.${ element.get_name } = element.first_complexType;
         ELSE;
-            THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type - don't know what to do with it";
+            THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type for element ${ element.get_name } - don't know what to do with it";
         END; %]
-    [% element.get_name %] => '[% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %]::_[% element.get_name %]',
+    '[% element.get_name %]' => '[% XSD.create_subpackage_name({ value => element }) %]',
 [%  END;
 END -%]
     }

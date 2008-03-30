@@ -22,15 +22,15 @@ service).
 
 =item * Write script
 
- use MyInterface::SERVICE_NAME::PORT_NAME;
- my $service = MyInterface::SERVICE_NAME::PORT_NAME->new();
- 
+ use MyInterfaces::SERVICE_NAME::PORT_NAME;
+ my $service = MyInterfaces::SERVICE_NAME::PORT_NAME->new();
+
  my $result = $service->SERVICE_METHOD();
  die $result if not $result;
- 
+
  print $result;
 
-C<perldoc MyInterface::SERVICE_NAME::PORT_NAME> should give you some overview
+C<perldoc MyInterfaces::SERVICE_NAME::PORT_NAME> should give you some overview
 about the service's interface structure.
 
 The results of all calls to your service object's methods (except new) are
@@ -103,9 +103,9 @@ included perldoc will be, too - if not, blame the web service author.
 
 =item * Write a perl script (or module) accessing the web service.
 
- use MyInterface::SERVICE_NAME;
- my $service = MyInterface::SERVICE_NAME->new();
- 
+ use MyInterfaces::SERVICE_NAME::PORT_NAME;
+ my $service = MyInterfaces::SERVICE_NAME::PORT_NAME->new();
+
  my $result = $service->SERVICE_METHOD();
  die $result if not $result;
  print $result;
@@ -264,7 +264,7 @@ method called "get_basic_credentials" to SOAP::WSDL::Transport::HTTP:
 When using SOAP::Transport::HTTP (SOAP::Lite is installed), do the same to
 this backend:
 
- *SOAP::Transport::HTTP::get_basic_credentials = sub {
+ *SOAP::Transport::HTTP::Client::get_basic_credentials = sub {
      return ($user, $password);
  };
 

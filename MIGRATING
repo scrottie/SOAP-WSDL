@@ -1,5 +1,18 @@
 MIGRATING
 ---------
+MIGRATING FROM PRE-2.00_33
+--------------------------
+The handling of stringification of SOAP::WSDL::XSD simpleType objects with
+undef values changed in 2.00_33.
+
+While 2.00_32 and before returned undef on stringification of a undef value,
+>=2.00_33 now returns an empty string.
+
+This is due to common usage in templates or the like, where undef is likely
+to produce a warning, and the unreliable behavior of
+ $obj eq undef
+which behaves differently in different versions of perl.
+
 
 MIGRATING FROM PRE-2.00_29
 --------------------------
@@ -9,7 +22,7 @@ require the class SOAP::WSDL::XSD::Typelib::Attribute introduced in the same
 pre-release.
 
 While interfaces generated with pre-releases back to 2.00_25 work without
-change, this does not hold true vice versa: Interfaces generated with 
+change, this does not hold true vice versa: Interfaces generated with
 2.00_29 and above won't work with older pre-releases.
 
 You'll have to update SOAP::WSDL on all your machines.
@@ -17,7 +30,7 @@ You'll have to update SOAP::WSDL on all your machines.
 MIGRATING FROM PRE-2.00_24
 --------------------------
 
-This section describes how to migrate from 2.00_24 and before versions to 
+This section describes how to migrate from 2.00_24 and before versions to
 2.00_25.
 
 Migrating from 2.00_xx
@@ -25,9 +38,9 @@ Migrating from 2.00_xx
 
 Background
 
-SOAP::WSDL 2.00_xx has used Class::Std as base for its inside out objects 
+SOAP::WSDL 2.00_xx has used Class::Std as base for its inside out objects
 up to 2.00_24. For performance reasons, now Class::Std::Fast is used.
-As Class::Std::Fast is a drop-in replacement for Class::Std, there should be 
+As Class::Std::Fast is a drop-in replacement for Class::Std, there should be
 no need to change anything in your (handwritten) code.
 
 Generated interfaces
@@ -42,8 +55,8 @@ Typemaps
 
 SOAP::WSDL now tries to load all typemap classes at once from 2.00_25 on.
 
-If you use __SKIP__ in your typemaps, you'll have to comment out all 
-path deeper than the path marked with __SKIP__ - if you don't, SOAP::WSDL 
+If you use __SKIP__ in your typemaps, you'll have to comment out all
+paths deeper than the path marked with __SKIP__ - if you don't, SOAP::WSDL
 will try to load all correspondent classes.
 
 Migrating from 1.xx
@@ -55,7 +68,7 @@ SOAP::WSDL uses a custom WSDL parser and serializer. It does not rely on XPath
 for on the fly WSDL processing, nor does it use SOAP::Data objects for
 encoding any more.
 
-You should be able to use your wxisting code under most circumstances.
+You should be able to use your existing code under most circumstances.
 SOAP::WSDL is the compatibility module for old interfaces.
 
 Overloading

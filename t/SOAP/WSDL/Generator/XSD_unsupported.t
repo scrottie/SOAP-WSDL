@@ -10,7 +10,7 @@ use_ok qw(SOAP::WSDL::Generator::Template::XSD);
 use SOAP::WSDL::Expat::WSDLParser;
 
 my $parser = SOAP::WSDL::Expat::WSDLParser->new();
-my $definitions = $parser->parse_file( 
+my $definitions = $parser->parse_file(
     "$path/../../../acceptance/wsdl/generator_unsupported_test.wsdl"
 );
 
@@ -21,4 +21,4 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
 {
     eval { $generator->generate_typelib() };
 }
-ok $@;
+ok $@, $@;

@@ -4,7 +4,7 @@ use warnings;
 
 our $VERSION=q{2.00_31};
 
-my %TYPES = (
+my %TYPE_FROM = (
     # wsdl:
     'http://schemas.xmlsoap.org/wsdl/' => {
         'import' => {
@@ -97,10 +97,11 @@ my %TYPES = (
         },
         attribute => {
             type => 'CLASS',
-            class => 'SOAP::WSDL::XSD::Attribute'      # not implemented yet
+            class => 'SOAP::WSDL::XSD::Attribute',
         },
-        attributeGroup => {
-            type => 'SKIP',     # not implemented yet
+        attributeGroup  => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::AttributeGroup',
         },
         key => {
             type => 'SKIP',     # not implemented yet
@@ -115,7 +116,12 @@ my %TYPES = (
             type => 'SKIP',     # not implemented yet
         },
         annotation => {
-            type => 'SKIP',     # not implemented yet
+            type => 'CLASS',     # not implemented yet
+            class => 'SOAP::WSDL::XSD::Annotation',
+        },
+        documentation => {
+            type => 'CONTENT',
+            method => 'set_documentation',
         },
         appinfo => {
             type => 'SKIP',     # not implemented yet
@@ -162,13 +168,12 @@ my %TYPES = (
             method => 'set_union',
         },
         enumeration => {
-            type => 'SKIP',
-            # method => 'push_enumeration',
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::Enumeration',
         },
         group => {
-            type => 'METHOD',
-            method => 'set_variety',
-            value => 'group',
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::Group',
         },
         all => {
             type => 'METHOD',
@@ -185,14 +190,51 @@ my %TYPES = (
             method => 'set_variety',
             value => 'sequence',
         },
+        value => {
+            type => 'SKIP',
+        },
+        minExclusive => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::MinExclusive',
+        },
+        maxExclusive => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::MaxExclusive',
+        },
+        minInclusive => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::MinInclusive',
+        },
+        maxInclusive => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::MaxInclusive',
+        },
+        maxLength => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::MaxLength',
+        },
+        minLength => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::MinLength',
+        },
+        totalDigits => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::TotalDigits',
+        },
+        fractionDigits => {
+            type => 'CLASS',
+            class => 'SOAP::WSDL::XSD::FractionDigits',
+        },
     },
 );
+
+$TYPE_FROM{ 'http://www.w3.org/2000/10/XMLSchema' } = $TYPE_FROM{ 'http://www.w3.org/2001/XMLSchema' };
 
 sub lookup {
     my $self = shift;
     my $namespace = shift  || 'http://schemas.xmlsoap.org/wsdl/';
     my $name = shift;
-    return $TYPES{ $namespace }->{ $name };
+    return $TYPE_FROM{ $namespace }->{ $name };
 }
 
 1;

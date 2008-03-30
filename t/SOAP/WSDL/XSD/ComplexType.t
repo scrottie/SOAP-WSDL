@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 2; #qw(no_plan);
+use Test::More tests => 3; #qw(no_plan);
 
 use_ok qw(SOAP::WSDL::XSD::ComplexType);
 
@@ -9,3 +9,13 @@ $obj->set_variety('extension');
 
 eval { $obj->serialize('foo') };
 like $@, qr{sorry, \s we \s just}xsm;
+
+$obj->set_targetNamespace('bar');
+
+eval {
+    $obj->serialize(
+        'foo', 'bar', { autotype => 1 , namespace => {} }
+    )
+};
+
+like $@, qr{^No \s prefix \s found \s for \s namespace \s bar}x;

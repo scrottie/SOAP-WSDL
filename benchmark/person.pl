@@ -39,8 +39,7 @@ $lite->on_action( sub { 'http://www.example.org/benchmark/ListPerson' } );
 SOAP::WSDL::Factory::Deserializer->register('1.1' => 'SOAP::WSDL::Deserializer::XSD_XS' );
 my $wsdl_xs = MyInterfaces::TestService::TestPort->new();
 
-# trigger loading of XML Data
-my $count = 100;
+my $count = 70;
 my @data = ();
 my $n = 0;
 print "Benchmark conducted with
@@ -54,22 +53,22 @@ Benchmark $n: Store result in private variable and destroy it
 $n++;
 cmpthese $count, {
 #    'XML::Simple' => sub { my $result = XMLin( MyData::xml() )},
-    'SOAP::WSDL' => sub { my $result = $soap->ListPerson({}) },
-    'XML::Compile' => sub { my $result = $call->() },
+#    'SOAP::WSDL' => sub { my $result = $soap->ListPerson({}) },
+#    'XML::Compile' => sub { my $result = $call->() },
     'SOAP::WSDL_XS' => sub { my $result = $wsdl_xs->ListPerson({}) },
 #    'SOAP::Lite' => sub { my $result = $deserializer->deserialize( MyData::xml() )},
-	'SOAP::Lite'	=> sub { my $som = $lite->call('ListPerson') },
+#	'SOAP::Lite'	=> sub { my $som = $lite->call('ListPerson') },
 };
 
 print "\nBenchmark $n: Push result on list\n";
 $n++;
 cmpthese $count, {
 #    'XML::Simple' => sub { push @data, XMLin( MyData::xml() )},
-    'SOAP::WSDL' => sub { push @data, $soap->ListPerson({}) },
-    'XML::Compile' => sub { push @data, $call->() },
+#    'SOAP::WSDL' => sub { push @data, $soap->ListPerson({}) },
+#    'XML::Compile' => sub { push @data, $call->() },
     'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({}) },
 #    'SOAP::Lite' => sub { push @data, $deserializer->deserialize( MyData::xml() )}
-	'SOAP::Lite'	=> sub { push @data, $lite->call('ListPerson') },
+#	'SOAP::Lite'	=> sub { push @data, $lite->call('ListPerson') },
 };
 
 @data = ();
@@ -77,10 +76,10 @@ print "\nBenchmark $n: Play it again, Sam\n";
 
 cmpthese $count, {
 #    'XML::Simple' => sub { push @data, XMLin( MyData::xml() )},
-    'SOAP::WSDL' => sub { push @data, $soap->ListPerson({}) },
+#    'SOAP::WSDL' => sub { push @data, $soap->ListPerson({}) },
     'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({}) },
-    'XML::Compile' => sub { push @data, $call->() },
+#    'XML::Compile' => sub { push @data, $call->() },
 #    'SOAP::Lite' => sub { push @data, $deserializer->deserialize( MyData::xml() )}
-	'SOAP::Lite'	=> sub { push @data, $lite->call('ListPerson') },
+#	'SOAP::Lite'	=> sub { push @data, $lite->call('ListPerson') },
 };
 

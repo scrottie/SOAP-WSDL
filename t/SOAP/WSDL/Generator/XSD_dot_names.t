@@ -1,4 +1,4 @@
-use Test::More tests => 12;
+use Test::More tests => 14;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -12,7 +12,7 @@ use SOAP::WSDL::Expat::WSDLParser;
 
 my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
-my $definitions = $parser->parse_file( 
+my $definitions = $parser->parse_file(
      "$path/../../../acceptance/wsdl/generator_test_dot_names.wsdl"
     #"$path/../../../acceptance/wsdl/elementAtomicComplexType.xml"
 );
@@ -26,7 +26,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
 });
 
 my $code = "";
-$generator->set_output(\$code);  
+$generator->set_output(\$code);
 $generator->generate_typelib();
 {
     eval $code;
@@ -47,9 +47,9 @@ $generator->generate();
 #$generator->generate_typemap();
 
 if (eval { require Test::Warn; }) {
-   Test::Warn::warning_like( sub { $generator->generate_interface() }, 
+   Test::Warn::warning_like( sub { $generator->generate_interface() },
     qr{\A Multiple \s parts \s detected \s in \s message \s testMultiPartWarning}xms);
-} 
+}
 else {
     $generator->generate_interface();
     SKIP: { skip 'Cannot test warnings without Test::Warn', 1 };
@@ -61,38 +61,40 @@ eval "use lib '$path/testlib'";
 
 use_ok qw(MyInterfaces::My::SOAP::testService::testPort);
 use_ok qw(MyServer::My::SOAP::testService::testPort);
+use_ok qw(MyTypes::testComplexTypeRestriction);
+use_ok qw(MyTypes::testComplexTypeAll);
 SKIP: {
     eval { require Test::Pod::Content; }
         or skip 'Cannot test pod content without Test::Pod::Content', 6;
     Test::Pod::Content::pod_section_like(
-        'MyInterfaces::My::SOAP::testService::testPort', 
-        'NAME', 
+        'MyInterfaces::My::SOAP::testService::testPort',
+        'NAME',
         qr{^MyInterfaces::My::SOAP::testService::testPort \s - \s}xms,
         'Pod NAME section');
     Test::Pod::Content::pod_section_like(
-        'MyInterfaces::My::SOAP::testService::testPort', 
-        'SYNOPSIS', 
+        'MyInterfaces::My::SOAP::testService::testPort',
+        'SYNOPSIS',
         qr{use \s MyInterfaces::My::SOAP::testService::testPort}xms,
         'Pod SYNOPSIS section');
     Test::Pod::Content::pod_section_like(
-        'MyInterfaces::My::SOAP::testService::testPort', 
-        'SYNOPSIS', 
+        'MyInterfaces::My::SOAP::testService::testPort',
+        'SYNOPSIS',
         qr{\s MyInterfaces::My::SOAP::testService::testPort->new\(}xms,
         'Pod SYNOPSIS section');
 
     Test::Pod::Content::pod_section_like(
-        'MyServer::My::SOAP::testService::testPort', 
-        'NAME', 
+        'MyServer::My::SOAP::testService::testPort',
+        'NAME',
         qr{^MyServer::My::SOAP::testService::testPort \s - \s}xms,
         'Pod NAME section');
     Test::Pod::Content::pod_section_like(
-        'MyServer::My::SOAP::testService::testPort', 
-        'SYNOPSIS', 
+        'MyServer::My::SOAP::testService::testPort',
+        'SYNOPSIS',
         qr{use \s MyServer::My::SOAP::testService::testPort}xms,
         'Pod SYNOPSIS section');
     Test::Pod::Content::pod_section_like(
-        'MyServer::My::SOAP::testService::testPort', 
-        'SYNOPSIS', 
+        'MyServer::My::SOAP::testService::testPort',
+        'SYNOPSIS',
         qr{\s MyServer::My::SOAP::testService::testPort->new\(}xms,
         'Pod SYNOPSIS section');
 }

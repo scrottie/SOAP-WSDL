@@ -19,6 +19,7 @@ my %opt = (
   proxy => undef,
   generator => 'XSD',
   server => 0,
+  namespace => 0,
 );
 
 {   # a block just to scope "no warnings"
@@ -34,12 +35,14 @@ my %opt = (
             ReadMode 1;
             $user =  ReadLine();
             ReadMode 0;
+            chomp $user;
         };
         if (not $password = delete $opt{password}) {
             print 'Password:';
             ReadMode 2;
-            $user = ReadLine;
+            $password = ReadLine;
             ReadMode 0;
+            chomp $password;
         };
         return ($user, $password);
     };
@@ -61,6 +64,7 @@ GetOptions(\%opt,
     password=s
     generator=s
     server
+    namespaces|n
   )
 );
 

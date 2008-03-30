@@ -2,7 +2,7 @@
 package main;
 use strict;
 use warnings;
-#use lib qw(../lib ../../lib);
+use lib qw(../lib ../../lib);
 use MyElements::ListPersonResponse;
 use MyServer::TestService::TestPort;
 my $server = MyServer::TestService::TestPort->new({

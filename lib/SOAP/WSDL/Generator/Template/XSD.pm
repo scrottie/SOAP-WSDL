@@ -9,10 +9,11 @@ our $VERSION = q{2.00_27};
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Visitor::Typelib;
+use SOAP::WSDL::Generator::Template::Plugin::XSD;
 use base qw(SOAP::WSDL::Generator::Template);
 
-my %output_of  :ATTR(:name<output> :default<()>);
-my %typemap_of :ATTR(:name<typemap> :default<({})>);
+my %output_of                   :ATTR(:name<output> :default<()>);
+my %typemap_of                  :ATTR(:name<typemap> :default<({})>);
 
 sub BUILD {
     my ($self, $ident, $arg_ref) = @_;
@@ -50,89 +51,76 @@ sub generate {
     my $self = shift;
     my $opt = shift;
     $self->generate_typelib( $opt );
-#    $self->generate_interface( $opt );
     $self->generate_typemap( $opt );
 }
 
 sub generate_typelib {
     my ($self, $arg_ref) = @_;
-    # $output_of{ ident $self } = "";
     my @schema = exists $arg_ref->{ schema }
         ? @{ $arg_ref->{schema} }
         : @{ $self->get_definitions()->first_types()->get_schema() };
-    for my $type (map { @{ $_->get_type() } , @{ $_->get_element() } } @schema[1..$#schema] ) {
+    for my $type (map {
+            @{ $_->get_type() } ,
+            @{ $_->get_element() },
+            @{ $_->get_attribute() }
+        } @schema[1..$#schema] ) {
         $type->_accept( $self );
     }
-    # return $output_of{ ident $self };
     return;
 }
 
+sub _generate_interface {
+    my $self = shift;
+    my $arg_ref = shift;
+    my $template_name = delete $arg_ref->{ template_name };
+    my $prefix_method = delete $arg_ref->{ prefix_method };
+    for my $service (@{ $self->get_definitions->get_service }) {
+        for my $port (@{ $service->get_port() }) {
+            # Skip ports without (known) address
+            next if not $port->first_address;
+            next if not $port->first_address->isa('SOAP::WSDL::SOAP::Address');
+
+            my $port_name = $port->get_name;
+            $port_name =~s{ \A .+\. }{}xms;
+            my $output = $arg_ref->{ output }
+                ? $arg_ref->{ output }
+                : $self->_generate_filename(
+                    $self->can($prefix_method)->($self),
+                    $service->get_name(),
+                    $port_name,
+            );
+            print "Creating interface class $output\n";
+
+            $self->_process($template_name,
+            {
+                service => $service,
+                port => $port,
+                NO_POD => $arg_ref->{ NO_POD } ? 1 : 0 ,
+             },
+            $output, binmode => ':utf8');
+        }
+    }
+}
+
 sub generate_server {
-    my $self = shift;
-    my $ident = ident $self;
-    my $arg_ref = shift;
-    for my $service (@{ $self->get_definitions->get_service }) {
-        for my $port (@{ $service->get_port() }) {
-            # Skip ports without (known) address
-            next if not $port->first_address;
-            next if not $port->first_address->isa('SOAP::WSDL::SOAP::Address');
-
-            my $port_name = $port->get_name;
-            $port_name =~s{ \A .+\. }{}xms;
-            my $output = $arg_ref->{ output }
-                ? $arg_ref->{ output }
-                : $self->_generate_filename(
-                    $self->get_server_prefix(),
-                    $service->get_name(),
-                    $port_name,
-            );
-            print "Creating interface class $output\n";
-
-            $self->_process('Server.tt',
-            {
-                service => $service,
-                port => $port,
-                NO_POD => $arg_ref->{ NO_POD } ? 1 : 0 ,
-             },
-            $output, binmode => ':utf8');
-        }
-    }
+    my ($self, $arg_ref) = @_;
+    $arg_ref->{ template_name } = 'Server.tt';
+    $arg_ref->{ prefix_method } = 'get_server_prefix';
+    $self->_generate_interface($arg_ref);
 }
 
-sub generate_interface {
-    my $self = shift;
-    my $ident = ident $self;
-    my $arg_ref = shift;
-    for my $service (@{ $self->get_definitions->get_service }) {
-        for my $port (@{ $service->get_port() }) {
-            # Skip ports without (known) address
-            next if not $port->first_address;
-            next if not $port->first_address->isa('SOAP::WSDL::SOAP::Address');
-
-            my $port_name = $port->get_name;
-            $port_name =~s{ \A .+\. }{}xms;
-            my $output = $arg_ref->{ output }
-                ? $arg_ref->{ output }
-                : $self->_generate_filename(
-                    $self->get_interface_prefix(),
-                    $service->get_name(),
-                    $port_name,
-            );
-            print "Creating interface class $output\n";
-
-            $self->_process('Interface.tt',
-            {
-                service => $service,
-                port => $port,
-                NO_POD => $arg_ref->{ NO_POD } ? 1 : 0 ,
-             },
-            $output, binmode => ':utf8');
-        }
-    }
+sub generate_client {
+    my ($self, $arg_ref) = @_;
+    $arg_ref->{ template_name } = 'Interface.tt';
+    $arg_ref->{ prefix_method } = 'get_interface_prefix';
+    $self->_generate_interface($arg_ref);
 }
+sub generate_interface;
+*generate_interface = \&generate_client;
 
 sub generate_typemap {
     my ($self, $arg_ref) = @_;
+
     my $visitor = SOAP::WSDL::Generator::Visitor::Typemap->new({
         type_prefix => $self->get_type_prefix(),
         element_prefix => $self->get_element_prefix(),
@@ -144,10 +132,35 @@ sub generate_typemap {
             'Fault/faultstring' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             %{ $typemap_of{ident $self }},
-        }
+        },
+        resolver => SOAP::WSDL::Generator::Template::Plugin::XSD->new({
+            prefix_resolver => $self->get_prefix_resolver_class()->new({
+                namespace_prefix_map => {
+                    'http://www.w3.org/2001/XMLSchema' => 'SOAP::WSDL::XSD::Typelib::Builtin',
+                },
+                namespace_map => {
+                },
+                prefix => {
+                    interface =>    $self->get_interface_prefix,
+                    element =>      $self->get_element_prefix,
+                    server =>       $self->get_server_prefix,
+                    type =>         $self->get_type_prefix,
+                    typemap =>      $self->get_typemap_prefix,
+                }
+            })
+        }),
     });
+
+    use SOAP::WSDL::Generator::Iterator::WSDL11;
+    my $iterator  = SOAP::WSDL::Generator::Iterator::WSDL11->new({
+        definitions => $self->get_definitions });
+
     for my $service (@{ $self->get_definitions->get_service }) {
-            $visitor->visit_Service( $service );
+            $iterator->init({ node => $service });
+            while (my $node = $iterator->get_next()) {
+                $node->_accept( $visitor );
+            }
+
             my $output = $arg_ref->{ output }
                 ? $arg_ref->{ output }
                 : $self->_generate_filename( $self->get_typemap_prefix(), $service->get_name() );
@@ -169,6 +182,14 @@ sub _generate_filename :PRIVATE {
     $name =~s{ \- }{_}xmsg;
     $name =~s{ :: }{/}xmsg;
     return "$name.pm";
+}
+
+sub visit_XSD_Attribute {
+    my ($self, $attribute) = @_;
+    my $output = defined $output_of{ ident $self }
+        ? $output_of{ ident $self }
+        : $self->_generate_filename( $self->get_attribute_prefix(), $attribute->get_name() );
+    $self->_process('attribute.tt', { attribute => $attribute } , $output);
 }
 
 sub visit_XSD_Element {

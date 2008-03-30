@@ -77,24 +77,24 @@ Visitor:
 
     package PersonVisitor;
     use Class::Std;    # handles all basic stuff like constructors etc.
- 
+
     sub visit_Person {
         my ( $self, $object ) = @_;
         print "Person name is ", $object->get_name(), "\n";
     }
- 
+
     package Person;
     use Class::Std;
     my %name : ATTR(:name<name> :default<anonymous>);
- 
+
     sub accept { $_[1]->visit_Person( $_[0] ) }
- 
+
     package main;
     my @person_from = ();
     for (qw(Gamma Helm Johnson Vlissides)) {
         push @person_from, Person->new( { name => $_ } );
     }
- 
+
     my $visitor = PersonVisitor->new();
     for (@person_from) {
         $_->accept($visitor);
@@ -269,7 +269,7 @@ SOAP::WSDL data classes:
 In your Visitor, you must implement visit_Foo methods for all classes you wish
 to visit.
 
-Currently, all SOAP::WSDL::Generator::Visitor implementations include their own
+The SOAP::WSDL::Generator::Visitor implementations include part of their own
 Iterator (which means they know how to find the next objects to visit). You
 may or may not choose to implement a separate Iterator.
 
@@ -279,8 +279,11 @@ easy as writing something like this:
  my $visitor = MyVisitor->new();
  my $parser = SOAP::WSDL::Expat::WSDLParser->new();
  my $definitions = $parser->parse_file('my.wsdl'):
- 
+
  $definitions->_accept( $visitor );
+
+If you need an iterator following the somewhat crude path of dependencies in
+a WSDL1.1 definition, you might want to look at L<SOAP::WSDL::Generator::Iterator::WSDL11>.
 
 =head1 REFERENCES
 
@@ -296,10 +299,10 @@ Addison-Wesley Longman, Amsterdam.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2008 Martin Kutter.
 
-This file is part of SOAP-WSDL. You may distribute/modify it under
-the same terms as perl itself
+This file is part of SOAP-WSDL. You may distribute/modify it under the same
+terms as perl itself
 
 =head1 AUTHOR
 
@@ -307,9 +310,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 239 $
+ $Rev: 391 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 239 2007-09-11 09:45:42Z kutterma $
+ $Id: Client.pm 391 2007-11-17 21:56:13Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

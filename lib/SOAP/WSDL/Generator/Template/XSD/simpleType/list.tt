@@ -1,17 +1,13 @@
+[% USE XSD %]
 # list derivation
 use base qw(
     SOAP::WSDL::XSD::Typelib::Builtin::list
 [%
 IF (name = simpleType.get_itemType);
-    type_name = simpleType.expand( name );
-    IF (type_name.0 == 'http://www.w3.org/2001/XMLSchema'); -%]
-    SOAP::WSDL::XSD::Typelib::Builtin::[% type_name.1 %]
+    type = definitions.get_types.0.find_type(simpleType.expand( name )); -%]
+    [% XSD.create_xsd_name(type) %]
 );
-[% ELSE -%]
-    [% type_prefix %]::[% type_name.1 %]
-);
-[% END;
-ELSIF (type = simpleType.first_simpleType); %]
+[% ELSIF (type = simpleType.first_simpleType); %]
 );
 
 [% INCLUDE simpleType/atomicType.tt(type = type);

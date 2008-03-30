@@ -89,7 +89,7 @@ ok $interface->EnqueueMessage(
             MMessageContent             => 'content',
             MSubject                    => 'subject',
             MDeliveryReportRecipientURI => 'mailto:report.recipient@example.org',
-          }       
+          }
     }),
     'interface operation call (no_dispatch set)';
 

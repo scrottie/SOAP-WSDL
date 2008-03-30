@@ -24,7 +24,8 @@ sub new {
     };
 
     bless $self, $class;
-    $self->load_classes() if ($args->{ class_resolver });
+    $self->load_classes() if ($args->{ class_resolver })
+        && ! exists $LOADED_OF{ $self->{ class_resolver } };
     return $self;
 }
 
@@ -32,15 +33,14 @@ sub class_resolver {
     my $self = shift;
     if (@_) {
         $self->{ class_resolver } = shift;
-        $self->load_classes();
+        $self->load_classes()
+            if ! exists $LOADED_OF{ $self->{ class_resolver } };
     }
     return $self->{ class_resolver };
 }
 
 sub load_classes {
     my $self = shift;
-
-    return if $LOADED_OF{ $self->{ class_resolver } };
 
     for (values %{ $self->{ class_resolver }->get_typemap }) {
         no strict qw(refs);
@@ -295,8 +295,8 @@ the same terms as perl itself
 
  $Id: $
 
- $LastChangedDate: 2008-02-02 10:19:45 +0100 (Sa, 02 Feb 2008) $
- $LastChangedRevision: 516 $
+ $LastChangedDate: 2008-03-29 22:38:55 +0100 (Sa, 29 Mrz 2008) $
+ $LastChangedRevision: 585 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

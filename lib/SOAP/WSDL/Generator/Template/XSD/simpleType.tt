@@ -1,5 +1,5 @@
 [% USE XSD(context) -%]
-package [% XSD.get_type_prefix(simpleType.get_targetNamespace) %]::[% simpleType.get_name.replace('\.','::').replace('-','_') %];
+package [% XSD.create_xsd_name(simpleType) %];
 use strict;
 use warnings;
 
@@ -21,20 +21,18 @@ __END__
 
 [% pod %]
 
-[% head1 %] [% XSD.get_type_prefix(simpleType.get_targetNamespace) %]::[% simpleType.get_name.replace('\.','::').replace('-','_') %]
+[% head1 %] NAME
+
+[% XSD.create_name(simpleType) %]
 
 [% head1 %] DESCRIPTION
 
 Perl data type class for the XML Schema defined simpleType
 [% simpleType.get_name %] from the namespace [% simpleType.get_targetNamespace %].
 
-[% IF (simpleType.get_variety == 'list');
-    INCLUDE simpleType/POD/list.tt;
-ELSIF (simpleType.get_variety == 'restriction');
-    INCLUDE simpleType/POD/restriction.tt;
-ELSE;
-    THROW NOT_IMPLEMENTED "simpleType union not implemented yet in $simpleType.get_name";
-END %]
+[% INCLUDE POD/annotation.tt(node = simpleType) %]
+
+[% INCLUDE simpleType/POD/contentModel.tt(simpleType = simpleType) %]
 
 [% head1 %] METHODS
 

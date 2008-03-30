@@ -30,15 +30,6 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     OUTPUT_PATH => "$path/testlib",
 });
 
-#my $code = "";
-#$generator->set_output(\$code);
-#$generator->generate_typelib();
-#{
-#    eval $code;
-#    ok !$@;
-#    print $@ if $@;
-#}
-
 $definitions = $parser->parse_uri(
      "file://$path/../../../acceptance/wsdl/WSDLParser-import.wsdl"
 );

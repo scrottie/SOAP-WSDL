@@ -91,7 +91,8 @@ isa_ok $result[1], 'SOAP::WSDL::XSD::Typelib::Builtin::string';
     );
 
 isa_ok $result[0], 'SOAP::WSDL::XSD::Typelib::Builtin::string';
-is $result[0], undef;
+is $result[0], q{};
+
 is $result[1], 'Header2';
 isa_ok $result[1], 'SOAP::WSDL::XSD::Typelib::Builtin::string';
 
@@ -116,7 +117,7 @@ isa_ok $result[1], 'SOAP::WSDL::XSD::Typelib::Builtin::string';
     });
 
 isa_ok $result[0], 'SOAP::WSDL::XSD::Typelib::Builtin::string';
-is $result[0], undef;
+is $result[0], q{};
 
 eval { $client->call({
         operation => 'sayHello',
@@ -139,7 +140,8 @@ eval { $client->call({
 like $@, qr{ Can't \s locate }xms;
 
 isa_ok $result[0], 'SOAP::WSDL::XSD::Typelib::Builtin::string';
-is $result[0], undef;
+
+is $result[0], q{};
 
 eval { $client->call({
         operation => 'sayHello',

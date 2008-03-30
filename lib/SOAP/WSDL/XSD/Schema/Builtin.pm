@@ -8,40 +8,48 @@ use base qw(SOAP::WSDL::XSD::Schema);
 
 # all builtin types - add validation (e.g. content restrictions) later...
 my %BUILTINS = (
-    'string' => {},
-    'boolean' => {},
-    'decimal' => {},
-    'dateTime' => {},
-    'float' => {},
-    'double' => {},
-    'duration' => {},
-    'time' => {},
-    'date' => {},
-    'gYearMonth' => {},
-    'gYear' => {},
-    'gMonthDay' => {},
-    'gDay' => {},
-    'gMonth' => {},
-    'hexBinary' => {},
-    'base64Binary' => {},
-    'anyURI' => {},
-    'QName' => {},
-    'NOTATION' => {},
-    'integer' => {},
+    'anyURI'            => {},
+    'boolean'           => {},
+    'base64Binary'      => {},
+    'byte'              => {},
+    'date'              => {},
+    'dateTime'          => {},
+    'decimal'           => {},
+    'double'            => {},
+    'duration'          => {},
+    'ENTITY'            => {},
+    'float'             => {},
+    'gDay'              => {},
+    'gMonth'            => {},
+    'gMonthDay'         => {},
+    'gYearMonth'        => {},
+    'gYear'             => {},
+    'hexBinary'         => {},
+    'ID'                => {},
+    'IDREF'             => {},
+    'IDREFS'            => {},
+    'int'               => {},
+    'integer'           => {},
+    'language'          => {},
+    'long'              => {},
+    'negativeInteger'   => {},
     'nonPositiveInteger' => {},
     'nonNegativeInteger' => {},
-    'positiveInteger' => {},
-    'negativeInteger' => {},
-    'long' => {},
-    'int' => {},
-    'unsignedInt' => {},
-    'short' => {},
-    'unsignedShort' => {},
-    'byte' => {},
-    'unsignedByte' => {},
-    'normalizedString' => {},
-    'token' => {},
-    'NMTOKEN' => {},
+    'normalizedString'  => {},
+    'Name'              => {},
+    'NCName'            => {},
+    'NMTOKEN'           => {},
+    'NOTATION'          => {},
+    'positiveInteger'   => {},
+    'QName'             => {},
+    'short'             => {},
+    'string'            => {},
+    'time'              => {},
+    'token'             => {},
+    'unsignedByte'      => {},
+    'unsignedInt'       => {},
+    'unsignedLong'      => {},
+    'unsignedShort'     => {},
 );
 
 sub START {
@@ -88,10 +96,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 412 $
+ $Rev: 583 $
  $LastChangedBy: kutterma $
- $Id: Builtin.pm 412 2007-11-27 22:57:52Z kutterma $
+ $Id: Builtin.pm 583 2008-03-24 07:44:06Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Schema/Builtin.pm $
- 
+
 =cut
 

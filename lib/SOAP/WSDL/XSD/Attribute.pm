@@ -19,14 +19,17 @@ our $VERSION=q{2.00_29};
 #  Content: (annotation?, (simpleType?))
 #</attribute>
 
+# id provided by Base
+# name provided by Base
+# annotation provided by Base
 
 my %default_of      :ATTR(:name<default>    :default<()>);
 my %fixed_of        :ATTR(:name<fixed>      :default<()>);
-my %form_of         :ATTR(:name<form>      :default<()>);
-# id provided by Base
-# name provided by Base
+my %form_of         :ATTR(:name<form>       :default<()>);
+
 my %type_of         :ATTR(:name<type>       :default<()>);
-my %use_of          :ATTR(:name<use>      :default<()>);
+my %use_of          :ATTR(:name<use>        :default<()>);
+my %ref_of          :ATTR(:name<ref>        :default<()>);
 
 # may be defined as atomic simpleType
 my %simpleType_of   :ATTR(:name<simpleType> :default<()>);

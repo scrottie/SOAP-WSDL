@@ -1,13 +1,15 @@
-[% USE XSD(context) -%]
-package [% type_prefix %]::[% complexType.get_name.replace('\.','::').replace('-','_') %];
+[% USE XSD -%]
+package [% XSD.create_xsd_name(complexType) %];
 use strict;
 use warnings;
-[% INCLUDE complexType/contentModel.tt %]
+
 [%#
-# Don't include any perl source here - there may be sub-packages...
+# Don't include any perl source for this package below this line  - there
+# may be sub-packages...
 #-%]
 
-[% INCLUDE complexType/attributeSet.tt %]
+[% INCLUDE complexType/contentModel.tt %]
+
 1;
 
 [%# work around for CPAN's indexer, which gets disturbed by pod in templates -%]
@@ -20,21 +22,34 @@ use warnings;
 
 [% head1 %] NAME
 
-[% type_prefix %]::[% complexType.get_name.replace('\.','::').replace('-','_') %]
+[% XSD.create_xsd_name(complexType) %]
 
 [% head1 %] DESCRIPTION
 
-Perl data type class for the XML Schema defined complextype
+Perl data type class for the XML Schema defined complexType
 [% complexType.get_name %] from the namespace [% complexType.get_targetNamespace %].
 
+[% INCLUDE POD/annotation.tt(node = complexType) %]
+
+[% IF (complexType.get_element); %]
 [% head2 %] PROPERTIES
 
 The following properties may be accessed using get_PROPERTY / set_PROPERTY
 methods:
 
+=over
+
 [% FOREACH element = complexType.get_element -%]
- [% element.get_name %]
+=item * [% element.get_name %]
+
+[%     IF element.get_annotation.get_documentation; %]
+[% element.get_annotation.get_documentation %]
+[%     END -%]
 [% END %]
+
+=back
+
+[% END -%]
 
 [% head1 %] METHODS
 
@@ -43,6 +58,8 @@ methods:
 Constructor. The following data structure may be passed to new():
 
 [% indent = ' '; INCLUDE complexType/POD/structure.tt %]
+
+[% INCLUDE complexType/POD/attributeSet.tt %]
 
 [% head1 %] AUTHOR
 

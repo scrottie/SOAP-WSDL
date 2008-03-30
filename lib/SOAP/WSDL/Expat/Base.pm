@@ -10,7 +10,9 @@ our $VERSION = '2.00_32';
 
 sub new {
     my ($class, $arg_ref) = @_;
-    my $self = {};
+    my $self = {
+        data => undef,
+    };
     bless $self, $class;
 
     $self->set_user_agent($arg_ref->{ user_agent })

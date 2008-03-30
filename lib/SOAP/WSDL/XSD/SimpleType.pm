@@ -6,13 +6,27 @@ use base qw(SOAP::WSDL::Base);
 
 our $VERSION=q{2.00_25};
 
-my %annotation_of   :ATTR(:name<annotation>     :default<()>);
-my %base_of         :ATTR(:name<base>           :default<()>);
-my %itemType_of     :ATTR(:name<itemType>       :default<()>);
-# is set to simpleContent/complexContent
-# my %content_model_of    :ATTR(:name<contentModel>   :default<()>);
+my %length_of           :ATTR(:name<length>         :default<[]>);
+my %minLength_of        :ATTR(:name<minLength>      :default<[]>);
+my %maxLength_of        :ATTR(:name<maxLength>      :default<[]>);
+my %pattern_of          :ATTR(:name<pattern>        :default<[]>);
+my %enumeration_of      :ATTR(:name<enumeration>    :default<[]>);
+my %whiteSpace_of       :ATTR(:name<whiteSpace>     :default<[]>);
+my %totalDigits_of      :ATTR(:name<totalDigits>    :default<[]>);
+my %fractionDigits_of   :ATTR(:name<fractionDigits>    :default<[]>);
+my %minExclusive        :ATTR(:name<minExclusive>   :default<[]>);
+my %minInclusive        :ATTR(:name<minInclusive>   :default<[]>);
+my %maxExclusive        :ATTR(:name<maxExclusive>   :default<[]>);
+my %maxInclusive        :ATTR(:name<maxInclusive>   :default<[]>);
 
-# TODO rename flavor to content_model to be consistent with the XML Schema
+my %fixed               :ATTR(:name<fixed>          :default<[]>);
+
+my %annotation_of       :ATTR(:name<annotation>     :default<()>);
+my %base_of             :ATTR(:name<base>           :default<()>);
+my %itemType_of         :ATTR(:name<itemType>       :default<()>);
+
+
+# TODO rename flavor to variety to be consistent with the XML Schema
 # specs - though flavor is the cooler name..
 # set to restriction|list|union|enumeration
 my %flavor_of       :ATTR(:name<flavor>         :default<()>);
@@ -29,6 +43,7 @@ sub set_restriction {
     my $self = shift;
     my @attributes = @_;
     $self->set_flavor( 'restriction' );
+
     for (@attributes) {
         next if (not $_->{ LocalName } eq 'base');
         $self->set_base( $_->{ Value } );

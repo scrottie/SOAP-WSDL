@@ -1,14 +1,12 @@
 [%  RETURN IF NOT item;
     type = definitions.find_portType( binding.expand( binding.get_type ) );
-    port_op = type.find_operation( definitions.get_targetNamespace, operation.get_name );
+    port_op = type.find_operation( type.get_targetNamespace, operation.get_name );
     message = definitions.find_message( port_op.first_input.expand( port_op.first_input.get_message ) );
     part_from = message.get_part;
     PERL %]
     my $item = $stash->{ item };
     my $def = $stash->{ definitions };
-    my $part_from = $stash->{ part_from };
-    my $type_prefix = $stash->{ type_prefix };
-    my $element_prefix = $stash->{ element_prefix };
+    my $part_from = $stash->{ message }->get_part();
 
     my @body_part_from = split m{\s}, $item->get_parts;
 
@@ -25,14 +23,17 @@
                 my $name;
                 ($name = $part->get_element)
                     ? do {
-                        $name =~s{ ^[^:]+: }{}xms;
-                        $element_prefix . '::' . $name;
-                        }
+                        my $element = $def->first_types->find_element($part->expand($name));
+                        my $resolver = $context->plugin('XSD');
+                        $resolver->create_xsd_name($element);
+
+                    }
                     : ($name = $part->get_type)
                         ? do {
-                            $name =~s{ ^[^:]+: }{}xms;
-                            $type_prefix . '::' . $name;
-                            }
+                            my $element = $def->first_types->find_type($part->expand($name));
+                            my $resolver = $context->plugin('XSD');
+                            $resolver->create_xsd_name($element);
+                        }
                     : die "input must have either type or element"
                 }
             : ()
@@ -44,13 +45,15 @@
             my $name;
             ($name = $part->get_element)
                ? do {
-                    $name =~s{ ^[^:]+: }{}xms;
-                    "$element_prefix\::$name"
-                    }
+                    my $element = $def->first_types->find_element($part->expand($name));
+                    my $resolver = $context->plugin('XSD');
+                    $resolver->create_xsd_name($element);
+               }
                : ($name = $part->get_type)
                     ? do {
-                        $name =~s{ ^[^:]+: }{}xms;
-                        "$type_prefix\::$name"
+                            my $element = $def->first_types->find_type($part->expand($name));
+                            my $resolver = $context->plugin('XSD');
+                            $resolver->create_xsd_name($element);
                     }
                     : die "input must have either type or element";
         } @{ $part_from };
@@ -63,7 +66,10 @@
     $stash->{ parts } = \@parts;
 
 [% END %]
-           'use' => '[% item.get_use %]',
-            namespace => '[% item.get_namespace %]',
-            encodingStyle => '[% item.get_encodingStyle %]',
-            parts => [qw( [% parts.join(' ') %] )],
+[% IF item.get_use != 'literal';
+    THROW NOT_SUPPORTED "Body: SOAP::WSDL supports literal encoding only - ${ item.get_use } found";
+END %]
+           'use'            => '[% item.get_use %]',
+            namespace       => '[% item.get_namespace %]',
+            encodingStyle   => '[% item.get_encodingStyle %]',
+            parts           =>  [qw( [% parts.join(' ') %] )],

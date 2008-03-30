@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00_32
+version: 2.00_33
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -8,13 +8,7 @@ license: artistic
 resources:
   license: http://opensource.org/licenses/artistic-license.php
 requires:
-  Class::Std::Fast: !!perl/hash:version
-    original: v0.0.5
-    qv: 1
-    version:
-      - 0
-      - 0
-      - 5
+  Class::Std::Fast: 0.0.5
   Data::Dumper: 0
   Date::Format: 0
   Date::Parse: 0
@@ -28,10 +22,26 @@ requires:
   URI: 0
   XML::Parser::Expat: 0
   perl: 5.8.0
+build_requires:
+  Class::Std::Fast: 0.0.5
+  Cwd: 0
+  Date::Format: 0
+  Date::Parse: 0
+  File::Basename: 0
+  File::Path: 0
+  File::Spec: 0
+  Getopt::Long: 0
+  LWP::UserAgent: 0
+  List::Util: 0
+  Module::Build: 0
+  Storable: 0
+  Template: 0
+  Test::More: 0
+  XML::Parser::Expat: 0
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00_32
+    version: 2.00_33
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
     version: 2.00_27
@@ -42,10 +52,10 @@ provides:
     version: 2.00_27
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
-    version: 2.00_25
+    version: 2.00_33
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
-    version: 2.00_27
+    version: 2.00_33
   SOAP::WSDL::Deserializer::Hash:
     file: lib/SOAP/WSDL/Deserializer/Hash.pm
     version: 2.00_25
@@ -78,10 +88,14 @@ provides:
     version: 2.00_24
   SOAP::WSDL::Factory::Transport:
     file: lib/SOAP/WSDL/Factory/Transport.pm
-    version: 2.00_31
+    version: 2.00_33
+  SOAP::WSDL::Generator::Iterator::WSDL11:
+    file: lib/SOAP/WSDL/Generator/Iterator/WSDL11.pm
+  SOAP::WSDL::Generator::PrefixResolver:
+    file: lib/SOAP/WSDL/Generator/PrefixResolver.pm
   SOAP::WSDL::Generator::Template:
     file: lib/SOAP/WSDL/Generator/Template.pm
-    version: 2.00_25
+    version: v2.0033
   SOAP::WSDL::Generator::Template::Plugin::XSD:
     file: lib/SOAP/WSDL/Generator/Template/Plugin/XSD.pm
   SOAP::WSDL::Generator::Template::XSD:
@@ -129,7 +143,7 @@ provides:
     version: 2.00_27
   SOAP::WSDL::Server::CGI:
     file: lib/SOAP/WSDL/Server/CGI.pm
-    version: 2.00_27
+    version: 2.00_33
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
   SOAP::WSDL::Transport::HTTP:
@@ -145,25 +159,64 @@ provides:
     version: 2.00_31
   SOAP::WSDL::Types:
     file: lib/SOAP/WSDL/Types.pm
+  SOAP::WSDL::XSD::Annotation:
+    file: lib/SOAP/WSDL/XSD/Annotation.pm
+    version: 2.00_33
   SOAP::WSDL::XSD::Attribute:
     file: lib/SOAP/WSDL/XSD/Attribute.pm
+    version: 2.00_29
+  SOAP::WSDL::XSD::AttributeGroup:
+    file: lib/SOAP/WSDL/XSD/AttributeGroup.pm
     version: 2.00_29
   SOAP::WSDL::XSD::Builtin:
     file: lib/SOAP/WSDL/XSD/Builtin.pm
   SOAP::WSDL::XSD::ComplexType:
     file: lib/SOAP/WSDL/XSD/ComplexType.pm
-    version: 2.00_29
+    version: 2.00_33
   SOAP::WSDL::XSD::Element:
     file: lib/SOAP/WSDL/XSD/Element.pm
     version: 2.00_25
+  SOAP::WSDL::XSD::Enumeration:
+    file: lib/SOAP/WSDL/XSD/Enumeration.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::Group:
+    file: lib/SOAP/WSDL/XSD/Group.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::Length:
+    file: lib/SOAP/WSDL/XSD/Length.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::MaxExclusive:
+    file: lib/SOAP/WSDL/XSD/MaxExclusive.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::MaxInclusive:
+    file: lib/SOAP/WSDL/XSD/MaxInclusive.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::MaxLength:
+    file: lib/SOAP/WSDL/XSD/MaxLength.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::MinExclusive:
+    file: lib/SOAP/WSDL/XSD/MinExclusive.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::MinInclusive:
+    file: lib/SOAP/WSDL/XSD/MinInclusive.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::MinLength:
+    file: lib/SOAP/WSDL/XSD/MinLength.pm
+    version: 2.00_33
+  SOAP::WSDL::XSD::Pattern:
+    file: lib/SOAP/WSDL/XSD/Pattern.pm
+    version: 2.00_33
   SOAP::WSDL::XSD::Schema:
     file: lib/SOAP/WSDL/XSD/Schema.pm
-    version: 2.00_25
+    version: 2.00_33
   SOAP::WSDL::XSD::Schema::Builtin:
     file: lib/SOAP/WSDL/XSD/Schema/Builtin.pm
   SOAP::WSDL::XSD::SimpleType:
     file: lib/SOAP/WSDL/XSD/SimpleType.pm
     version: 2.00_25
+  SOAP::WSDL::XSD::TotalDigits:
+    file: lib/SOAP/WSDL/XSD/TotalDigits.pm
+    version: 2.00_33
   SOAP::WSDL::XSD::Typelib::Attribute:
     file: lib/SOAP/WSDL/XSD/Typelib/Attribute.pm
     version: 2.00_29
@@ -270,7 +323,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/unsignedShort.pm
   SOAP::WSDL::XSD::Typelib::ComplexType:
     file: lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm
-    version: 2.00_31
+    version: 2.00_33
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
     version: 2.00_29
@@ -278,6 +331,9 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
+  SOAP::WSDL::XSD::WhiteSpace:
+    file: lib/SOAP/WSDL/XSD/WhiteSpace.pm
+    version: 2.00_33
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

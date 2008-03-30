@@ -19,19 +19,25 @@
         my $name;
         ($name = $part->get_element)
             ? do {
-                $name =~s{ ^[^:]+: }{}xms;
-                $element_prefix . '::' . $name;
+                    my $element = $def->first_types->find_element($part->expand($name));
+                    my $resolver = $context->plugin('XSD');
+                    $resolver->create_xsd_name($element);
                 }
             : ($name = $part->get_type)
                 ? do {
-                    $name =~s{ ^[^:]+: }{}xms;
-                    $type_prefix . '::' . $name;
-                    }
+                        my $element = $def->first_types->find_type($part->expand($name));
+                        my $resolver = $context->plugin('XSD');
+                        $resolver->create_xsd_name($element);
+                }
                 : die "input must have either type or element"
             };
     $stash->{ part_class } = $part_class;
     [% END;
- %]
+%]
+[% IF item.get_use != 'literal';
+    THROW NOT_SUPPORTED "Header: SOAP::WSDL supports literal encoding only - ${ item.get_use } found";
+END %]
+
            'use' => '[% item.get_use %]',
             namespace => '[% item.get_namespace %]',
             encodingStyle => '[% item.get_encodingStyle %]',

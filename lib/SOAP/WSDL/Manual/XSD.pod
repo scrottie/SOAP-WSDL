@@ -305,18 +305,17 @@ XML Schema facets are not implemented yet.
 They will probably implemented some day by putting constant methods into
 the correspondent classes.
 
-=head1 ATTRIBUTES
-
-XML attributes are not implemented yet. The documentation below sketches
-how XML attributes will be implemented in the future.
-
-All XML attributes are derived from SOAP::WSDL::XSD::Typelib::Attribute.
+=head2 Attributes
 
 The attribute set for a XML element (derived from anySimpleType or
 complexType) is implemented as a sub-package of the element derived from
 SOAP::WSDL::XSD::Typelib::AttributeSet.
 
-The sub-package is named as the top package, suffixed with C<_ATTR>.
+The sub-package is named as the corresponding type or element package,
+suffixed with C<XmlAttr>. The suffix "XmlAttr" has carefully been chosen to
+avoid potential naming clashes: The name XmlAttr cannot be included as
+element or type name in XML schemas - the XML standard bans the use of names
+starting with "xml" (case-insensitive).
 
 All XML attributes for a XML element are set- and retrievable via the method
 C<attr>. The name is chosen to allow mimicing SOAP::Lite's behaviour, which
@@ -335,6 +334,28 @@ get_FOO methods.
 
 The C<attr> method provides auto-vivification: An xml object's attribute set
 is instantiated when accessed.
+
+Auto-vivification is only triggered if there actually B<is> a set of
+attributes for the class/object in question, so you may want to test
+whether the result of ->attr is defined:
+
+ my $attr = $unknownObject->attr();
+ if (defined($attr)) {
+     $unknownObject->attr({
+         some => 'value',
+     });
+ }
+
+=head2 group
+
+CAVEAT: Group resolution is not implemented yet.
+
+XML Schema Group definitions are just treated as aliases that can be
+inserted in complexType definitions by referencing them. That is, there's
+no difference between a complexType with simpleContent and a sequence of
+three elements, and a complexType with simpleContent referencing a group
+containing the same sequence of elements.
+
 
 =head1 CAVEATS
 
@@ -364,70 +385,153 @@ The constructors of all SOAP::WSDL::XSD::Typelib:: classes don't !
 
 The following XML Schema declaration elements are not supported yet:
 
+=head2 XML Schema elements partially supported
+
+=head3 Type definition elements
+
 =over
 
-=item * Declaration elements
+=item * simpleContent
 
- attribute
- notation
-
-=item * Type definition elements
-
- simpleContent
- union
-
-=item * Content model definition elements
-
- any
- anyAttribute
- attributeGroup
- group
-
-=item * Identity definition elements
-
- field
- key
- keyref
- selector
- unique
-
-=item * Inclusion elements
-
- import
- include
- redefine
+simpleContent is only supported with a restriction or extension with a C<base>
+attribute. simpleContent declarations deriving from a atomic type are not
+supported (yet).
 
 =back
 
-The following XML Schema declaration elements are supported, but have no
-effect yet:
+=head3 Inclusion elements
 
 =over
 
-=item * Factes
+=item * import
 
- enumeration
- fractionDigits
- lenght
- maxExclusive
- maxInclusiove
- maxLength
- minExclusive
- minInclusive
- minLength
- pattern
- totalDigits
- whitespace
+The import includion element requires the schemaLocation attribute for
+resolving the XML schema to import. Support for the import element is
+implemented in L<SOAP::WSDL::Expat::WSDLParser|SOAP::WSDL::Expat::WSDLParser>,
+so alternative parsers may or may not support the import element.
 
-=item * Documentation elements
+L<SOAP::WSDL::Expat::WSDLParser|SOAP::WSDL::Expat::WSDLParser> keeps track of
+included schemas and prevents import loops.
 
- appinfo
+=back
+
+=head3 Facets
+
+The following XML Schema declaration elements are supported, but have no
+effect yet.
+
+=over
+
+=item * enumeration
+
+=item * fractionDigits
+
+=item * lenght
+
+=item * maxExclusive
+
+=item * maxInclusiove
+
+=item * maxLength
+
+=item * minExclusive
+
+=item * minInclusive
+
+=item * minLength
+
+=item * pattern
+
+=item * totalDigits
+
+=item * whitespace
+
+=back
+
+
+=head2 XML Schema elements not implemented
+
+=head3 Declaration elements
+
+=over
+
+=item * notation
+
+=back
+
+=head3 Content model definition elements
+
+=over
+
+=item * any
+
+The horror of each XML schema implementation: Just anything...
+
+C<any> declarations are not supported yet.
+
+=item * anyAttribute
+
+=item * attributeGroup
+
+C<attributeGroup> declarations actually just are macros for XML Schema
+writers: Including an attributeGroup in a declaration has the same effect
+as including all attributes in the group.
+
+Just not implemented yet.
+
+=item * group
+
+The group definition element is not supported yet.
+
+=back
+
+=head3 Identity definition elements
+
+These declaration elements don't declare XML elements, but apply identity
+constraints. They have no effect yet.
+
+=over
+
+=item * field
+
+=item * key
+
+=item * keyref
+
+=item * selector
+
+=item * unique
+
+=back
+
+=head3 Inclusion elements
+
+=over
+
+=item * include
+
+Use of the include inclusion element is forbidden by the WS-I basic profile.
+It is not supported (yet).
+
+=item * redefine
+
+Not supported (yet).
+
+=back
+
+=head3 * Documentation elements
+
+=over
+
+=item * appinfo
+
+The appinfo documentation element is ignored.
 
 =back
 
 =head1 LICENSE
 
-Copyright 2007 Martin Kutter.
+Copyright 2007,2008 Martin Kutter.
 
 This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself

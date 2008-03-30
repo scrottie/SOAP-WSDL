@@ -1,16 +1,15 @@
-[% IF (complexType.get_attribute.size) %]
-package [% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name.replace('\.','::').replace('-','_') %]::_ATTR;
+[% IF (complexType.get_attribute.size) -%]
+package [% XSD.create_xmlattr_name(complexType) %];
 use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
 
 { # BLOCK to scope variables
-[%
-
-FOREACH element = complexType.get_attribute %]
+[% FOREACH element = complexType.get_attribute %]
 my %[% element.get_name %]_of :ATTR(:get<[% element.get_name %]>);
 [%- END %]
 
 __PACKAGE__->_factory(
-    [ qw([% FOREACH element = complexType.get_attribute %]
+    [ qw(
+[%- FOREACH element = complexType.get_attribute %]
         [% element.get_name -%]
 [% END %]
     ) ],
@@ -22,23 +21,24 @@ __PACKAGE__->_factory(
     {
 [% FOREACH element = complexType.get_attribute;
     IF (type = element.get_type);
-        element_type = complexType.expand( type );
+        element_type = definitions.first_types.find_type(complexType.expand( type ));
 -%]
-        [% element.get_name %] => '[% XSD.get_type_prefix(element_type.0) %]::[% element_type.1 %]',
+        [% element.get_name %] => '[% XSD.create_xsd_name(element_type) %]',
 [%
-    ELSE;
-        IF (element.first_simpleType);
+    ELSIF (ref = element.get_ref);
+            attribute = definitions.first_types.find_attribute( complexType.expand(ref) );
+            # element_type = definitions.get_types.0.find_type(complexType.expand( attribute.get_type ));
+%]
+            [% attribute.get_name %] => '[% XSD.create_xsd_name(attribute) %]',
+[%  ELSIF (element.first_simpleType);
             THROW NOT_IMPLEMENTED , "Attributes with atomic simpleType definition are not implemented yet";
             atomic_types.${ element.get_name } = element.first_simpleType;
-        ELSE;
-            THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type - don't know what to do with it";
-        END; %]
-        [% element.get_name %] => '[% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %]::_[% element.get_name %]',
-[%  END;
+    ELSE;
+            THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type for attribute ${ element.get_name } in ${ complexType.get_name } - don't know what to do with it";
+    END;
 END -%]
     }
 );
 
 } # end BLOCK
-
 [% END %]

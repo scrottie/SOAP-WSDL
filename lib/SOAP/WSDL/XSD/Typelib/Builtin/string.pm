@@ -33,5 +33,5 @@ sub as_bool :BOOLIFY {
     return $_[0]->get_value();
 }
 
-Class::Std::initialize;
+Class::Std::initialize();
 1;

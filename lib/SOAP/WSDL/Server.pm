@@ -162,7 +162,7 @@ hash keys.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2008 Martin Kutter.
 
 This file is part of SOAP-WSDL. You may distribute/modify it under the same
 terms as perl itself

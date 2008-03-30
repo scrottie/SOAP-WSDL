@@ -1,12 +1,12 @@
 
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 4;
 use Scalar::Util qw(blessed);
 use_ok qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
 is SOAP::WSDL::XSD::Typelib::Builtin::anyType->get_xmlns(), 'http://www.w3.org/2001/XMLSchema', 'get_xmlns';
-is SOAP::WSDL::XSD::Typelib::Builtin::anyType->serialize(), q{}, 'serialize to empty';
+#is SOAP::WSDL::XSD::Typelib::Builtin::anyType->serialize(), q{}, 'serialize to empty';
 is SOAP::WSDL::XSD::Typelib::Builtin::anyType->start_tag(), q{}, 'serialize to empty';
 is SOAP::WSDL::XSD::Typelib::Builtin::anyType->start_tag({ name => 'foo'}), q{<foo>}, 'serialize with name';
 exit 0;

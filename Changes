@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00_32
+Release notes for SOAP::WSDL 2.00_33
 -------
 
 I'm proud to present a new pre-release version of SOAP::WSDL.
@@ -34,7 +34,41 @@ Features:
 
 The following changes have been made:
 
-2.00_32
+2.00_33 - Mar 30 2008
+
+The following features were added (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 1925336 ] Create a Prefix Resolver Plugin Interface for Code Generator
+   * [ 1898591 ] object stringify returns undef
+   * [ 1906753 ] Hypens in MyTypes/* cause runtime syntax errors
+   Hypens and dots in variable and method names are now replaced by _
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+   * #33616: Bugs in the META.yml file
+   * [ 1892895 ] Test failures on RHEL4
+   * [ 1844956 ] t/SOAP/WSDL/XSD/Typelib/Builtin/NMTOKENS fails test on OS X
+   * #33376: HTTP Authentication (not implemented or not documented)
+
+The following uncategorized improvements have been made:
+
+   * Some minor performance improvements have been made
+   * The XSD generator now asserts the soap:operation style is "document"
+   * <wsdl:import> and <xsd:import> now import namespace declarations, too
+   * The XSD generator now uses the relevant <wsdl:portType>'s
+   targetNamespace for finding operation messages, not the <wsdl:definition>
+   element's targetNamespace
+   * Attribute handling has been improved so it could possibly work.
+   Attributes from different namespaces are probably still broken.
+   * Attribute ref handling has been added (though probably broken on
+   ref cascades).
+   * <xsd:attributeGroup> elements are now parsed, but have no effect yet.
+   * <xsd:enumeration> elements are now parsed, but have no effect yet.
+
+2.00_32 - Feb 14 2008
 
 The following features were added (the numbers in square brackets are the
 tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):

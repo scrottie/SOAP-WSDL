@@ -1,4 +1,4 @@
-use Test::More tests => 42;
+use Test::More tests => 49;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -156,9 +156,40 @@ ok my $empty = MyElements::testElementCompletelyEmptyComplex->new();
 is $empty->serialize_qualified(), '<testElementCompletelyEmptyComplex xmlns="urn:Test"/>'
     , 'serialize empty';
 
-
 ok eval { require MyTypes::testComplexTypeSimpleRestriction; }
     , 'load MyTypes::testComplexTypeSimpleRestriction';
 
+ok eval { require MyTypes::testComplexTypeSequenceWithAttribute; }
+    , 'load MyTypes::testComplexTypeSequenceWithAttribute';
+
+use_ok qw(MyElements::testElementComplexTypeSequenceWithAttribute);
+
+my $obj = MyElements::testElementComplexTypeSequenceWithAttribute->new({
+    Test1 => 'foo',
+    Test2 => 'bar',
+});
+$obj->attr({ testAttr => 'foobar' });
+
+is $obj, q{<testElementComplexTypeSequenceWithAttribute xmlns="urn:Test" }
+    . q{testAttr="foobar"><Test1>foo</Test1><Test2>bar</Test2>}
+    . q{</testElementComplexTypeSequenceWithAttribute>}
+    , 'seralize complexType sequence with attribute';
+
+use_ok qw(MyTypes::testSimpleContentExtension);
+
+ok $obj = MyTypes::testSimpleContentExtension->new({ value => 'foo' });
+$obj->attr({ testAttr => 'bar' });
+
+is $obj->serialize({ name => 'baz'}), q{<baz testAttr="bar">foo</baz>};
+
+SKIP: {
+    eval { require Test::Pod::Content; }
+        or skip 'Cannot test pod content without Test::Pod::Content', 1;
+    Test::Pod::Content::pod_section_like(
+        'MyTypes::testComplexTypeSequenceWithAttribute',
+        'attr',
+        qr{Test \s Attribute \s good \s for \s nothing}x,
+        'Attribute POD');
+}
 
 rmtree "$path/testlib";

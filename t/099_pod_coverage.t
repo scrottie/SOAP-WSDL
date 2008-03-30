@@ -12,11 +12,11 @@ plan skip_all => "Test::Pod::Coverage 1.00 required for testing POD" if $@;
 my @dirs = ( 'lib' );
 if (-d '../t/') {       # we are inside t/
     @dirs = ('../lib');
-} 
+}
 else {                  # we are outside t/
-    # add ./lib to include path if blib/lib is not there (e.g. we're not 
-    # run from Build test or the like) 
-    push @INC, './lib' if not grep { $_ eq 'blib/lib' } @INC; 
+    # add ./lib to include path if blib/lib is not there (e.g. we're not
+    # run from Build test or the like)
+    push @INC, './lib' if not grep { $_ eq 'blib/lib' } @INC;
 }
 
 # Don't test Builtin XSD types - they're undocumented on purpose
@@ -34,25 +34,29 @@ else {                  # we are outside t/
     |SOAP::WSDL::Part
     |SOAP::WSDL::Operation
     |SOAP::WSDL::SOAP::[^:]+
+    |SOAP::WSDL::XSD::Attribute
     |SOAP::WSDL::XSD::SimpleType
     |SOAP::WSDL::XSD::Element
     |SOAP::WSDL::XSD::ComplexType
     |SOAP::WSDL::XSD::Builtin
     |SOAP::WSDL::XSD::Schema
-    
+    |SOAP::WSDL::XSD::Group
+    |SOAP::WSDL::XSD::Typelib::Attribute
+    |SOAP::WSDL::XSD::Typelib::AttributeSet
+
     ) \z }xms; } all_modules( @dirs );
 
 plan tests => scalar @files;
 foreach (@files) {
-    pod_coverage_ok( $_ , 
-	{ 
-	    private => [ 
-	       qr/^_/, 
-	       qr/^BUILD$/, 
-	       qr/^START$/, 
-	       qr/^STORABLE/, 
-	       qr/^AUTOMETHOD$/,
-	       qr/^DEMOLISH$/
-	       ]
-	});
+    pod_coverage_ok( $_ ,
+    {
+        private => [
+           qr/^_/,
+           qr/^BUILD$/,
+           qr/^START$/,
+           qr/^STORABLE/,
+           qr/^AUTOMETHOD$/,
+           qr/^DEMOLISH$/
+           ]
+    });
 }

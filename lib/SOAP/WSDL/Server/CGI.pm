@@ -12,7 +12,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Server);
 
-our $VERSION=q{2.00_27};
+our $VERSION=q{2.00_33};
 
 # mostly copied from SOAP::Lite. Unfortunately we can't use SOAP::Lite's CGI
 # server directly - we would have to swap out it's base class...
@@ -38,6 +38,8 @@ sub handle {
 
     my $content = q{};
     my $buffer;
+
+    # do wen need to use bytes; here ?
     binmode(STDIN);
     while (read(STDIN,$buffer,$length - length($content))) {
         $content .= $buffer;
@@ -113,11 +115,64 @@ SOAP::WSDL::Server::CGI - CGI based SOAP server
 
 =head1 SYNOPSIS
 
+ use MyServer::TestService::TestPort;
+ my $server = MyServer::TestService::TestPort->new({
+    dispatch_to => 'main',
+    transport_class => 'SOAP::WSDL::Server::CGI',   # optional, default
+ });
+ $server->handle();
+
+=head1 USAGE
+
+To use SOAP::WSDL::Server::CGI efficiently, you should first create a server
+interface using L<wsdl2perl.pl|wsdl2perl.pl>.
+
+SOAP::WSDL::Server dispatches all calls to appropriately named methods in the
+class or object set via C<dispatch_to>.
+
+See the generated server class on details.
+
 =head1 DESCRIPTION
+
+Lightweight CGI based SOAP server. SOAP::WSDL::Server::CGI does not provide
+the fancier things of CGI handling, like URL parsing, parameter extraction
+or the like, but provides a basic SOAP server using SOAP::WSDL::Server.
+
+=head1 METHODS
+
+=head1 EXCEPTION HANDLING
+
+SOAP::WSDL::CGI handles the following errors:
+
+=over
+
+=item * XML parsing error
+
+=back
+
+The proper way to throw a exception is just to die -
+SOAP::WSDL::Server::CGI catches the exception and sends a SOAP Fault
+back to the client.
+
+If you want more control over the SOAP Fault sent to the client, you can
+die with a SOAP::WSDL::SOAP::Fault11 object - or just let the
+SOAP::Server's deserializer create one for you:
+
+ my $soap = MyServer::SomeService->new();
+
+ die $soap->get_deserializer()->generate_fault({
+    code => 'soap:Server',
+    role => 'urn:localhost',
+    message => "The error message to pas back",
+    detail => "Some details on the error",
+ });
+
+You may use any other object as exception, provided it has a
+serialize() method which returns the object's XML representation.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2008 Martin Kutter.
 
 This file is part of SOAP-WSDL. You may distribute/modify it under the same
 terms as perl itself

@@ -17,6 +17,9 @@ sub _import_children {
     no strict qw(refs);
     my $value_ref = $imported->$get_method();
     if ($value_ref) {
+        #print $self->get_uri(), "\n";
+        #use Data::Dumper;
+        #print Data::Dumper::Dumper $value_ref;
         $value_ref = [ $value_ref ] if (not ref $value_ref eq 'ARRAY');
         # set xmlns - can be different from parent
         for (@{ $value_ref }) {
@@ -25,9 +28,25 @@ sub _import_children {
                 if ( ($import_namespace ne $targetNamespace) && !  $_->get_targetNamespace);
             # update parent...
             $_->set_parent( $importer );
+            $importer->$push_method($_);
         }
         # push elements into importing WSDL
-        $importer->$push_method(@{ $value_ref });
+        #$importer->$push_method(@{ $value_ref })
+        #    if @{ $value_ref };
+    }
+}
+
+sub _import_namespace_definitions {
+    my $self = shift;
+    my $arg_ref = shift;
+    my $importer = $arg_ref->{ importer };
+    my $imported = $arg_ref->{ imported };
+
+    # import namespace definitions, too
+    my $importer_ns_of = $importer->get_xmlns();
+    my %xmlns_of = %{ $imported->get_xmlns() };
+    while (my ($prefix, $url) = each %xmlns_of) {
+        $importer_ns_of->{ $prefix } = $url;
     }
 }
 
@@ -38,10 +57,18 @@ sub xml_schema_import {
     my %attr_of = @_;
     my $import_namespace = $attr_of{ namespace };
     my $uri = URI->new_abs($attr_of{schemaLocation}, $self->get_uri() );
-    my $import = $parser->parse_uri($uri);
+    my $imported = $parser->parse_uri($uri);
 
-    for my $name ( qw(type element group) ) {
-        $self->_import_children( $name, $import, $schema, $import_namespace);
+    # might already be imported - parse_uri just returns in this case
+    return if not defined $imported;
+
+    $self->_import_namespace_definitions({
+        importer => $schema,
+        imported => $imported,
+    });
+
+    for my $name ( qw(type element group attribute attributeGroup) ) {
+        $self->_import_children( $name, $imported, $schema, $import_namespace);
     }
 }
 
@@ -53,9 +80,18 @@ sub wsdl_import {
     my $import_namespace = $attr_of{ namespace };
     my $uri = URI->new_abs($attr_of{location}, $self->get_uri() );
 
-    my $import = $parser->parse_uri($uri);
+    my $imported = $parser->parse_uri($uri);
+
+    # might already be imported - parse_uri just returns in this case
+    return if not defined $imported;
+
+    $self->_import_namespace_definitions({
+        importer => $definitions,
+        imported => $imported,
+    });
+
     for my $name ( qw(types message binding portType service) ) {
-        $self->_import_children( $name, $import, $definitions, $import_namespace);
+        $self->_import_children( $name, $imported, $definitions, $import_namespace);
     }
 }
 
@@ -243,10 +279,10 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: $
+ $Id: WSDLParser.pm 549 2008-02-20 10:14:26Z kutterma $
 
- $LastChangedDate: 2008-02-14 18:07:18 +0100 (Do, 14 Feb 2008) $
- $LastChangedRevision: 534 $
+ $LastChangedDate: 2008-02-20 11:14:26 +0100 (Mi, 20 Feb 2008) $
+ $LastChangedRevision: 549 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $

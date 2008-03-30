@@ -3,7 +3,25 @@ INTRO
 
 SOAP-WSDL provides a SOAP client with WSDL support.
 
-This is a developer release - everything may (and most things will) change.
+SUBCLASSING
+-----------
+
+SOAP-WSDL is still under very active development. Please don't build
+applications using the following modules directly:
+
+ - SOAP::WSDL::Definitions
+ - SOAP::WSDL::Port
+ - SOAP::WSDL::PortType
+ - SOAP::WSDL::Binding
+ - SOAP::WSDL::Message
+ - SOAP::WSDL::Operation
+ - SOAP::WSDL::OpMessage
+ - SOAP::WSDL::Part
+ - SOAP::WSDL::Service
+ - SOAP::WSDL::Types
+ - SOAP::WSDL::XSD::Schema
+
+Those will be replaced some time in the future.
 
 INSTALLING
 ----------
@@ -15,12 +33,12 @@ Use the following mantra:
  perl Build test
  perl Build install
 
-If you don't have Module::Build installed, you may also use 
+If you don't have Module::Build installed, you may also use
 
  perl Makefile.PL
- make 
+ make
  make test
  make install
 
-Note that Module::Build is the recommended installer - make will not run 
+Note that Module::Build is the recommended installer - make will not run
 all tests provided with SOAP-WSDL.

@@ -1,7 +1,7 @@
 
 [% FOREACH type IN atomic_types; %]
-
-package [% XSD.get_type_prefix(complexType.get_targetNamespace) %]::[% complexType.get_name %]::_[% type.key %];
+[%# TODO generate name create_name method %]
+package [% XSD.create_subpackage_name(type); %];
 use strict;
 use warnings;
 {

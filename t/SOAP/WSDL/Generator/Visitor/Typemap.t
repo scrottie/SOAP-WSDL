@@ -4,11 +4,23 @@ use Test::More tests => 5;
 use File::Basename;
 use File::Spec;
 my $path = File::Spec->rel2abs( dirname __FILE__ );
-
+use SOAP::WSDL::Generator::Template::Plugin::XSD;
+use SOAP::WSDL::Generator::Iterator::WSDL11;
+use SOAP::WSDL::Generator::PrefixResolver;
 use_ok qw(SOAP::WSDL::Generator::Visitor::Typemap);
 
 my $visitor;
-ok $visitor = SOAP::WSDL::Generator::Visitor::Typemap->new(), 'constructor';
+ok $visitor = SOAP::WSDL::Generator::Visitor::Typemap->new({
+    resolver => SOAP::WSDL::Generator::Template::Plugin::XSD->new({
+		prefix_resolver=> SOAP::WSDL::Generator::PrefixResolver->new({
+             prefix => {
+                type => 'TestTypes',
+                element => 'TestElements',
+                typemap => 'TestTypemap',
+		     }
+		}),
+    })
+}), 'constructor';
 
 use SOAP::WSDL::Expat::WSDLParser;
 
@@ -24,12 +36,21 @@ $parser->parse_file(
 
 my $definitions = $parser->get_data();
 
-$definitions->_accept( $visitor );
+my $iter = SOAP::WSDL::Generator::Iterator::WSDL11->new({
+    definitions => $definitions
+});
+$visitor->set_definitions($definitions);
+$iter->init();
+while (my $node = $iter->get_next()) {
+    $node->_accept( $visitor );
+};
 
 my $typemap = $visitor->get_typemap();
-is $typemap->{'EnqueueMessage/MMessage/MKeepalive'}, 'MyTypes::TKeepalive', 'content';
-is $typemap->{'EnqueueMessageResponse'}, 'MyElements::EnqueueMessageResponse', 'content';
-is $typemap->{'KeepaliveMessageResponse'}, 'MyElements::KeepaliveMessageResponse', 'content';
+is $typemap->{'EnqueueMessage/MMessage/MKeepalive'}, 'TestTypes::TKeepalive', 'content';
+is $typemap->{'EnqueueMessageResponse'}, 'TestElements::EnqueueMessageResponse', 'content';
+is $typemap->{'KeepaliveMessageResponse'}, 'TestElements::KeepaliveMessageResponse', 'content';
+use Data::Dumper;
+print Dumper $typemap;
 
 sub wsdl {
 q{<?xml version="1.0" encoding="UTF-8"?>

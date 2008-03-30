@@ -66,8 +66,8 @@ my %test2_of :ATTR(:get<test2>);
 
 sub get_xmlns { 'urn:Test' };
 
-__PACKAGE__->_factory( 
-    [ qw(test test2) ], 
+__PACKAGE__->_factory(
+    [ qw(test test2) ],
     {
         test => \%test_of,
         test2 => \%test2_of,
@@ -99,11 +99,11 @@ use base (
 {
     my %test_of :ATTR(:get<test>);
     my %test2_of :ATTR(:get<test2>);
-    
+
     sub get_xmlns { 'urn:Test' };
-    
-    __PACKAGE__->_factory( 
-        [ qw(test test2) ], 
+
+    __PACKAGE__->_factory(
+        [ qw(test test2) ],
         {
             test => \%test_of,
             test2 => \%test2_of,
@@ -117,6 +117,8 @@ use base (
 }
 __PACKAGE__->__set_name('MyElementAttrs');
 
+sub __get_attr_class { 'MyElementAttrs::_ATTR' };
+
 package MyElementAttrs::_ATTR;
 
 use strict;
@@ -128,11 +130,11 @@ use base qw(
 {
     my %test_of :ATTR(:get<test>);
     my %test2_of :ATTR(:get<test2>);
-    
+
     sub get_xmlns { 'urn:Test' };
-    
-    __PACKAGE__->_factory( 
-        [ qw(test test2) ], 
+
+    __PACKAGE__->_factory(
+        [ qw(test test2) ],
         {
             test => \%test_of,
             test2 => \%test2_of,

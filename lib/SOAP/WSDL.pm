@@ -14,7 +14,7 @@ use Class::Std::Fast;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-our $VERSION= '2.00_32';
+our $VERSION= '2.00_33';
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -330,6 +330,17 @@ read L<SOAP::WSDL::Manual>.
 For using an interpreting (thus slow and somewhat troublesome) WSDL based
 SOAP client, which mimics L<SOAP::Lite|SOAP::Lite>'s API, read on.
 
+Creating Interface classes is the recommended usage.
+
+Did I say you should create interface classes following the steps in
+L<SOAP::WSDL::Manual>?
+
+If you're migrating from earlier versions of SOAP::WSDL, you should read the
+MIGRATING documentation.
+
+The stuff below is for users of the 1.2x SOAP::WSDL series. All others,
+please refer to L<SOAP::WSDL::Manual>
+
 =head1 SYNOPSIS
 
  my $soap = SOAP::WSDL->new(
@@ -522,6 +533,28 @@ You may pass the servicename and portname as attributes to wsdlinit, though.
 
 =back
 
+=head1 Differences to previous versions
+
+The following functionality is no longer supported:
+
+=head2 Operation overloading
+
+The SOAP standard allows operation overloading - that is, you may specify
+SOAP operations with more than one message. The client/server than can
+choose which message to send. This SOAP feature is usually used similar
+to the use of methods with different argument lists in C++.
+
+Operation overloading is no longer supported. The WS-I Basic profile does
+not operation overloading. The same functionality as operation overloading
+can be obtained by using a choice declaration in the XML Schema.
+
+=head2 readable
+
+Readable has no effect any more. If you need readable debug output, copy the
+SOAP message to your favorite XML editor and run the source format command.
+Outputting readable XML requires lots of programming for little use: The
+resulting XMl is still quite unreadable.
+
 =head1 Differences to SOAP::Lite
 
 =head2 readable
@@ -604,6 +637,18 @@ details.
 
 =over
 
+=item * $obj == undef does not work in perl 5.8.6 and perl 5.8.7
+
+Due to some strange behaviour in perl 5.8.6 and perl 5.8.7, stringification
+overloading is not triggered during comparison with undef.
+
+While this is probably harmless in most cases, it's important to know that
+you need to do
+
+ defined( $obj->get_value() )
+
+to check for undef values in simpleType objects.
+
 =item * perl 5.8.0 or higher required
 
 SOAP::WSDL needs perl 5.8.0 or higher. This is due to a bug in perls
@@ -617,14 +662,16 @@ If you want this changed, email me a copy of the specs, please.
 
 =item * Incomplete XML Schema definitions support
 
-XML Schema attribute definitions are not supported yet.
+This section describes the limitations of SOAP::WSDL, that is the interpreting
+SOAP client. For limitations of L<wsdl2perl.pl|wsdl2perl.pl> generated
+SOAP clients, see L<SOAP::WSDL::Manual::XSD>.
 
-Importing external definitions is not supported yet.
+XML Schema attribute definitions are not supported in interpreting mode.
 
-The following XML Schema definitions varieties are not supported:
+The following XML Schema definitions varieties are not supported in
+interpreting mod:
 
  group
- union
  simpleContent
 
 The following XML Schema definition content model is only partially
@@ -712,20 +759,29 @@ became v1.23)
 
 David Bussenschutt, Damian A. Martinez Gelabert, Dennis S. Hennen, Dan Horne,
 Peter Orvos, Mark Overmeer, Jon Robens, Isidro Vila Verde and Glenn Wood
-spotted bugs and/or suggested improvements in the 1.2x releases.
+(in alphabetical order) spotted bugs and/or suggested improvements in
+the 1.2x releases.
 
 Andreas 'ac0v' Specht constantly asked for better performance.
 
-JT Justman provided early feedback for the 2.xx pre-releases.
+JT Justman and Noah Robin provided early feedback and bug reports for
+the 2.xx pre-releases.
+
+Adam Kennedy checked and suggested improvements on metadata and dependencies
+in the 2.xx pre-releases.
+
+CPAN Testers have provided most valuable (automated) feedback. Thanks.
 
 Numerous people sent me their real-world WSDL files for testing. Thank you.
 
 Paul Kulchenko and Byrne Reese wrote and maintained SOAP::Lite and
 thus provided a base (and counterpart) for SOAP::WSDL.
 
+Mark Overmeer wrote XML::Compile::SOAP - competition is good for business.
+
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2008 Martin Kutter.
 
 This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
@@ -736,10 +792,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 534 $
+ $Rev: 583 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 534 2008-02-14 17:07:18Z kutterma $
+ $Id: WSDL.pm 583 2008-03-24 07:44:06Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut
-

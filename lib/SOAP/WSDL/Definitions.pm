@@ -9,22 +9,22 @@ use List::Util qw(first);
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION='2.00_27';
+our $VERSION='2.00_33';
 
-my %types_of    :ATTR(:name<types>      :default<[]>);
-my %message_of  :ATTR(:name<message>    :default<()>);
-my %portType_of :ATTR(:name<portType>   :default<()>);
-my %binding_of  :ATTR(:name<binding>    :default<()>);
-my %service_of  :ATTR(:name<service>    :default<()>);
-my %namespace_of  :ATTR(:name<namespace> :default<()>);
+my %types_of        :ATTR(:name<types>      :default<[]>);
+my %message_of      :ATTR(:name<message>    :default<[]>);
+my %portType_of     :ATTR(:name<portType>   :default<[]>);
+my %binding_of      :ATTR(:name<binding>    :default<[]>);
+my %service_of      :ATTR(:name<service>    :default<[]>);
+my %namespace_of    :ATTR(:name<namespace> :default<()>);
 
 # must be attr for Class::Std::Fast::Storable
 my %attributes_of :ATTR();
 %attributes_of = (
-    binding => \%binding_of,
-    message => \%message_of,
-    portType => \%portType_of,
-    service => \%service_of,
+    binding     => \%binding_of,
+    message     => \%message_of,
+    portType    => \%portType_of,
+    service     => \%service_of,
 );
 
 # Function factory - we could be writing this method for all %attribute
@@ -118,9 +118,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 477 $
+ $Rev: 549 $
  $LastChangedBy: kutterma $
- $Id: Definitions.pm 477 2007-12-24 10:23:52Z kutterma $
+ $Id: Definitions.pm 549 2008-02-20 10:14:26Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut

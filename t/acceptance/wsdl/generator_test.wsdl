@@ -88,35 +88,40 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
 
       <xsd:complexType name="testComplexTypeSimpleRestriction">
         <xsd:annotation>
-          <xsd:documentation>ComplexType Test</xsd:documentation>
+            <xsd:documentation>complexType with simpleContent test</xsd:documentation>
         </xsd:annotation>
         <xsd:simpleContent>
-        <xsd:restriction base="xsd:string">
-        </xsd:restriction>
+            <xsd:restriction base="xsd:long">
+                <xsd:maxExclusive value="5"/>
+                <xsd:minExclusive value="0"/>
+                <xsd:maxInclusive value="1"/>
+                <xsd:minInclusive value="4"/>
+                <xsd:enumeration value="2"/>
+                <xsd:enumeration value="4"/>
+                <xsd:totalDigits value="1"/>
+            </xsd:restriction>
         </xsd:simpleContent>
       </xsd:complexType>
 
 
       <xsd:complexType name="testComplexTypeExtension">
-        	<xsd:annotation>
-          		<xsd:documentation>complexType extension test</xsd:documentation>
-        	</xsd:annotation>
-	        <xsd:complexContent>
-		        <xsd:extension base="tns:testComplexTypeAll">
-		          	<xsd:sequence>
-						<xsd:element name="Test1" type="xsd:string" />
-          				<xsd:element name="Test2" type="xsd:string" minOccurs="1"/>
-			          	<xsd:element name="Test3" type="xsd:string" minOccurs="1"/>
-		          	</xsd:sequence>
-		        </xsd:extension>
-	        </xsd:complexContent>
-      </xsd:complexType>
-
-		<xsd:complexType name="testComplexTypeChoice">
             <xsd:annotation>
-                <xsd:documentation>
-                ComplexType Test
-                </xsd:documentation>
+                  <xsd:documentation>complexType extension test</xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexContent>
+                <xsd:extension base="tns:testComplexTypeAll">
+                    <xsd:sequence>
+                        <xsd:element name="Test1" type="xsd:string" />
+                        <xsd:element name="Test2" type="xsd:string" minOccurs="1"/>
+                        <xsd:element name="Test3" type="xsd:string" minOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+
+        <xsd:complexType name="testComplexTypeChoice">
+            <xsd:annotation>
+                <xsd:documentation>ComplexType choice test</xsd:documentation>
             </xsd:annotation>
             <xsd:choice>
                 <xsd:element name="Test1" type="xsd:string" minOccurs="1"/>
@@ -126,9 +131,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
 
         <xsd:complexType name="testComplexTypeSequence">
             <xsd:annotation>
-                <xsd:documentation>
-                ComplexType Test
-                </xsd:documentation>
+                <xsd:documentation>ComplexType Test</xsd:documentation>
             </xsd:annotation>
             <xsd:sequence>
                 <xsd:element name="Test1" type="xsd:string" minOccurs="1"/>
@@ -136,11 +139,24 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </xsd:sequence>
         </xsd:complexType>
 
+        <xsd:complexType name="testComplexTypeSequenceWithAttribute">
+            <xsd:annotation>
+                <xsd:documentation>ComplexType Test</xsd:documentation>
+            </xsd:annotation>
+            <xsd:sequence>
+                <xsd:element name="Test1" type="xsd:string" minOccurs="1"/>
+                <xsd:element name="Test2" type="xsd:string" maxOccurs="1"/>
+            </xsd:sequence>
+            <xsd:attribute name="testAttr" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>Test Attribute good for nothing</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+
         <xsd:complexType name="testComplexTypeSequence2">
             <xsd:annotation>
-                <xsd:documentation>
-                ComplexType Test
-                </xsd:documentation>
+                <xsd:documentation>ComplexType test</xsd:documentation>
             </xsd:annotation>
             <xsd:sequence>
                 <xsd:element name="Test1" type="xsd:string" minOccurs="1"/>
@@ -148,6 +164,13 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </xsd:sequence>
         </xsd:complexType>
 
+        <xsd:complexType name="testSimpleContentExtension">
+            <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                    <xsd:attribute name="testAttr" type="xsd:string" use="optional"/>
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
 
         <xsd:element name="testElementString" type="xsd:string" />
         <xsd:element name="testElementInt" type="xsd:int" />
@@ -155,7 +178,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <xsd:element name="testElementSimpleTypeList" type="tns:testSimpleTypeList"/>
         <xsd:element name="testElementComplexTypeAll" type="tns:testComplexTypeAll"/>
         <xsd:element name="testElementComplexTypeSequence" type="tns:testComplexTypeSequence"/>
-
+        <xsd:element name="testElementComplexTypeSequenceWithAttribute" type="tns:testComplexTypeSequenceWithAttribute"/>
         <xsd:element name="testElementAtomicSimpleTypeRestriction">
             <xsd:simpleType>
                 <xsd:annotation>
@@ -180,30 +203,30 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </xsd:complexType>
         </xsd:element>
 
-		<xsd:element name="Header" type="tns:testComplexTypeSequence"/>
-		<xsd:element name="testHeader" type="tns:testComplexTypeSequence"/>
-		<xsd:element name="testChoice" type="tns:testComplexTypeChoice"/>
+        <xsd:element name="Header" type="tns:testComplexTypeSequence"/>
+        <xsd:element name="testHeader" type="tns:testComplexTypeSequence"/>
+        <xsd:element name="testChoice" type="tns:testComplexTypeChoice"/>
 
 
-		<xsd:complexType name="testComplexTypeElementAtomicSimpleType">
-		  <xsd:sequence>
-		    <xsd:element name="testString" type="xsd:string" minOccurs="0"/>
-		    <xsd:element name="testAtomicSimpleTypeElement" minOccurs="0">
-		      <xsd:simpleType>
-		        <xsd:restriction base="xsd:decimal">
-		          <xsd:minInclusive value="0"/>
-		        </xsd:restriction>
-		      </xsd:simpleType>
-		    </xsd:element>
-		    <xsd:element name="testAtomicSimpleTypeElement2" minOccurs="0">
-		      <xsd:simpleType>
-		        <xsd:restriction base="xsd:decimal">
-		          <xsd:minInclusive value="0"/>
-		        </xsd:restriction>
-		      </xsd:simpleType>
-		    </xsd:element>
-		  </xsd:sequence>
-		</xsd:complexType>
+        <xsd:complexType name="testComplexTypeElementAtomicSimpleType">
+          <xsd:sequence>
+            <xsd:element name="testString" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="testAtomicSimpleTypeElement" minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="testAtomicSimpleTypeElement2" minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
 
 
         <xsd:element name="testElementEmptyComplex">
@@ -226,7 +249,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         </xsd:schema>
     </types>
     <message name="testChoice">
-    	<part name="parameters" element="tns:testChoice"/>
+        <part name="parameters" element="tns:testChoice"/>
     </message>
     <message name="testRequest">
         <part name="testAll" element="tns:testElementString"/>
@@ -259,19 +282,19 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <output message="tns:testResponse"/>
         </operation>
         <operation name="testHeader">
-			<documentation>
-				Test-Methode
-			</documentation>
-			<input message="tns:testHeaderRequest"/>
-			<output message="tns:testHeaderResponse"/>
-		</operation>
-		<operation name="testChoice">
-			<documentation>
-				Test-Methode
-			</documentation>
-			<input message="tns:testChoice"/>
-			<output message="tns:testChoice"/>
-		</operation>
+            <documentation>
+                Test-Methode
+            </documentation>
+            <input message="tns:testHeaderRequest"/>
+            <output message="tns:testHeaderResponse"/>
+        </operation>
+        <operation name="testChoice">
+            <documentation>
+                Test-Methode
+            </documentation>
+            <input message="tns:testChoice"/>
+            <output message="tns:testChoice"/>
+        </operation>
         <operation name="testMultiPartWarning">
             <documentation>
                 Test-Methode
@@ -284,34 +307,34 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <input message="tns:testEmptyComplex"/>
             <output message="tns:testEmptyComplex"/>
     </operation>
-	</portType>
+    </portType>
 
-	<binding type="tns:testPort" name="testBinding">
+    <binding type="tns:testPort" name="testBinding">
            <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
            <operation name="testChoice">
-				<soap:operation soapAction="testChoice" style="document"/>
-					<input>
-						<soap:body use="literal"/>
-					</input>
-					<output>
-						<soap:body use="literal"/>
-					</output>
-		    </operation>
+                <soap:operation soapAction="testChoice" style="document"/>
+                    <input>
+                        <soap:body use="literal"/>
+                    </input>
+                    <output>
+                        <soap:body use="literal"/>
+                    </output>
+            </operation>
 
             <operation name="test">
-				<soap:operation soapAction="test" style="document"/>
-					<input>
-						<soap:body use="literal"/>
-					</input>
-					<output>
-						<soap:body use="literal"/>
-					</output>
-		    </operation>
+                <soap:operation soapAction="test" style="document"/>
+                    <input>
+                        <soap:body use="literal"/>
+                    </input>
+                    <output>
+                        <soap:body use="literal"/>
+                    </output>
+            </operation>
             <operation name="testHeader">
                 <soap:operation soapAction="testHeader"/>
-				<input>
-					<soap:body use="literal" parts="tns:testBody"/>
-					<soap:header use="literal" part="tns:testHeader" message="tns:testHeaderRequest"/>
+                <input>
+                    <soap:body use="literal" parts="tns:testBody"/>
+                    <soap:header use="literal" part="tns:testHeader" message="tns:testHeaderRequest"/>
                 </input>
                 <output>
                     <soap:body use="literal"/>
@@ -337,60 +360,60 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </operation>
 
     </binding>
-	<wsdl:binding name="HTTPBinding" type="tns:testPort">
-	    <http:binding verb="GET" />
-	    <wsdl:operation name="test">
-	        <http:operation location="/test" />
-	        <wsdl:input>
-	            <http:urlEncoded />
-	        </wsdl:input>
-	        <wsdl:output>
-	            <mime:content type="text/xml" />
-	        </wsdl:output>
-	    </wsdl:operation>
-	    <wsdl:operation name="testHeader">
-	        <http:operation location="/testHeader" />
-	        <wsdl:input>
-	            <http:urlEncoded />
-	        </wsdl:input>
-	        <wsdl:output>
-	            <mime:content type="text/xml" />
-	        </wsdl:output>
-	    </wsdl:operation>
-	    <wsdl:operation name="testChoice">
-	        <http:operation location="/testChoice" />
-	        <wsdl:input>
-	            <http:urlEncoded />
-	        </wsdl:input>
-	        <wsdl:output>
-	            <mime:content type="text/xml" />
-	        </wsdl:output>
-	    </wsdl:operation>
-	    <wsdl:operation name="testMultiPartWarning">
-	        <http:operation location="/testMultiPartWarning" />
-	        <wsdl:input>
-	            <http:urlEncoded />
-	        </wsdl:input>
-	        <wsdl:output>
-	            <mime:content type="text/xml" />
-	        </wsdl:output>
-	    </wsdl:operation>
-	    <wsdl:operation name="testEmptyComplex">
-	        <http:operation location="/testEmptyComplex" />
-	        <wsdl:input>
-	            <http:urlEncoded />
-	        </wsdl:input>
-	        <wsdl:output>
-	            <mime:content type="text/xml" />
-	        </wsdl:output>
-	    </wsdl:operation>
-	</wsdl:binding>
-	<service name="testService">
-		<port name="testPort" binding="tns:testBinding">
-			<soap:address location="http://127.0.0.1/testPort" />
-		</port>
-		<wsdl:port name="HTTPPort" binding="tns:HTTPBinding">
-		    <http:address location="http://www.example.org/"></http:address>
-		</wsdl:port>
+    <wsdl:binding name="HTTPBinding" type="tns:testPort">
+        <http:binding verb="GET" />
+        <wsdl:operation name="test">
+            <http:operation location="/test" />
+            <wsdl:input>
+                <http:urlEncoded />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testHeader">
+            <http:operation location="/testHeader" />
+            <wsdl:input>
+                <http:urlEncoded />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testChoice">
+            <http:operation location="/testChoice" />
+            <wsdl:input>
+                <http:urlEncoded />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testMultiPartWarning">
+            <http:operation location="/testMultiPartWarning" />
+            <wsdl:input>
+                <http:urlEncoded />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testEmptyComplex">
+            <http:operation location="/testEmptyComplex" />
+            <wsdl:input>
+                <http:urlEncoded />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <service name="testService">
+        <port name="testPort" binding="tns:testBinding">
+            <soap:address location="http://127.0.0.1/testPort" />
+        </port>
+        <wsdl:port name="HTTPPort" binding="tns:HTTPBinding">
+            <http:address location="http://www.example.org/"></http:address>
+        </wsdl:port>
     </service>
 </definitions>

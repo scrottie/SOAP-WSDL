@@ -4,21 +4,21 @@ use warnings;
 use base 'SOAP::WSDL::Client';
 use Scalar::Util qw(blessed);
 
-our $VERSION = '2.00_25';
+our $VERSION = '2.00_33';
 
 sub call {
     my ($self, $method, $body, $header) = @_;
 
     # Treat non-objects special
     if (not blessed $body) {
-        
+
         # make sure there's something sensible in our body data
         $body = {} if not defined $body;
         $body = ref $body eq 'ARRAY' ? $body : [ $body ];
 
         my @body_from = @{ $body }; # make a copy
 
-        # build list of parts as objects initialized with 
+        # build list of parts as objects initialized with
         # parameters given
         my @part_from = ();
         foreach my $class (@{ $method->{ body }->{ parts } }) {
@@ -78,9 +78,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 501 $
+ $Rev: 542 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 501 2008-01-26 20:23:32Z kutterma $
+ $Id: Base.pm 542 2008-02-18 09:38:06Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

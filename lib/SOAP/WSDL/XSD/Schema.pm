@@ -4,19 +4,21 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION=q{2.00_25};
+our $VERSION=q{2.00_33};
 
 # child elements
-my %type_of :ATTR(:name<type> :default<[]>);
-my %element_of :ATTR(:name<element> :default<[]>);
-my %group_of :ATTR(:name<group> :default<[]>);
+my %attributeGroup_of   :ATTR(:name<attributeGroup>  :default<[]>);
+my %attribute_of        :ATTR(:name<attribute>       :default<[]>);
+my %element_of          :ATTR(:name<element>         :default<[]>);
+my %group_of            :ATTR(:name<group>           :default<[]>);
+my %type_of             :ATTR(:name<type>            :default<[]>);
 
 # attributes
 my %attributeFormDefault_of :ATTR(:name<attributeFormDefault> :default<()>);
-my %blockDefault_of :ATTR(:name<blockDefault> :default<()>);
-my %elementFormDefault_of :ATTR(:name<elementFormDefault> :default<()>);
-my %finalDefault_of :ATTR(:name<finalDefault> :default<()>);
-my %version_of :ATTR(:name<version> :default<()>);
+my %blockDefault_of         :ATTR(:name<blockDefault>         :default<()>);
+my %elementFormDefault_of   :ATTR(:name<elementFormDefault>   :default<()>);
+my %finalDefault_of         :ATTR(:name<finalDefault>         :default<()>);
+my %version_of              :ATTR(:name<version>              :default<()>);
 
 # id
 # name

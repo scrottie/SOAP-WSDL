@@ -34,6 +34,8 @@ use base qw(
 
 __PACKAGE__->__set_name( 'MyElement' );
 
+sub __get_attr_class { 'MyElement::_ATTR' };
+
 package MyElement::_ATTR;
 use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
 {
@@ -51,6 +53,7 @@ use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
         }
     );
 }
+
 package MyType2;
 
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
@@ -67,8 +70,19 @@ __PACKAGE__->_factory(
 }
 );
 
+package MyElementSimpleContent;
+use base qw(
+    SOAP::WSDL::XSD::Typelib::Element
+    SOAP::WSDL::XSD::Typelib::ComplexType
+    SOAP::WSDL::XSD::Typelib::Builtin::string
+);
+
+__PACKAGE__->__set_name( 'MyElementSimpleContent' );
+
+sub __get_attr_class { 'MyElement::_ATTR' };
+
 package main;
-use Test::More tests => 109;
+use Test::More tests => 111;
 use Storable;
 
 my $have_warn = eval { require Test::Warn; import Test::Warn; 1; };
@@ -150,6 +164,12 @@ $nested = MyType2->new({
 
 is $nested->get_test->[0], $obj;
 
+# use Data::Dumper;
+# print Data::Dumper::Dumper $nested->as_hash_ref();
+
+is $nested->as_hash_ref()->{ test }->[ 0 ]->{ test }->[0], 'Test'
+    , 'as_hash_ref with nested elements';
+
 $nested = MyType2->new({
     test => {
         test => [
@@ -194,10 +214,7 @@ $obj->set_test();
 is $obj->get_test, (), 'removed element content';
 
 $obj = MyEmptyType->new();
-eval {
-    isa_ok $obj->attr() , 'SOAP::WSDL::XSD::Typelib::AttributeSet';
-};
-like $@, qr{\s has \s no \s attributes}x;
+is $obj->attr(), undef;
 
 $obj = MyElement->new();
 isa_ok $obj->attr() , 'SOAP::WSDL::XSD::Typelib::AttributeSet';
@@ -324,3 +341,7 @@ eval { SOAP::WSDL::XSD::Typelib::ComplexType->_factory([], { test => {} }, { tes
 like $@, qr{ Can't \s locate \s HopeItDoesntExistOnYourSystem.pm }xms;
 
 # print Dumper
+
+$obj = MyElementSimpleContent->new({ value => 'foo' });
+$obj->attr({ test => 'foo', test2 => 'bar' });
+is $obj->serialize_qualified(), '<MyElementSimpleContent xmlns="http://www.w3.org/2001/XMLSchema" test="foo" test2="bar">foo</MyElementSimpleContent>';

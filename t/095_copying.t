@@ -48,6 +48,24 @@ sub filelist {
     return if $File::Find::name =~m{SOAP/WSDL/XSD/SimpleType\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/Element\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/Schema\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Attribute\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Typelib/Attribute\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Typelib/AttributeSet\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Group\.pm$}xms;
+	
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/TotalDigits\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Annotation\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/AttributeGroup\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Enumeration\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/FractionDigits\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Length\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/MaxExclusive\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/MaxInclusive\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/MaxLength\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/MinLength\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/MinInclusive\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/MinExclusive\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Whitespace\.pm$}xms;
 
     push @filelist, $File::Find::name;
 }

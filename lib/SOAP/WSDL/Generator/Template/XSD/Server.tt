@@ -1,7 +1,6 @@
-[% server_name = server_prefix _ '::'
-    _ service.get_name.replace('\.', '::') _ '::'
-    _ port.get_name.replace('^.+\.','');
-server_name = server_name.replace('-','_'); -%]
+[% USE XSD;
+server_name = XSD.create_server_name(service, port);
+-%]
 package [% server_name %];
 use strict;
 use warnings;
@@ -10,8 +9,8 @@ use Scalar::Util qw(blessed);
 use base qw(SOAP::WSDL::Client::Base);
 
 # only load if it hasn't been loaded before
-require [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]
-    if not [% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]->can('get_class');
+require [% XSD.create_typemap_name(service) %]
+    if not [% XSD.create_typemap_name(service) %]->can('get_class');
 
 my %transport_class_of :ATTR(:name<transport_class> :default<SOAP::WSDL::Server::CGI>);
 my %transport_of :ATTR(:name<transport> :default<()>);
@@ -31,13 +30,13 @@ sub START {
         or die "Cannot load transport class $transport_class_of{ $ident }: $@";
     $transport_of{ $ident } = $transport_class_of{ $ident }->new({
         action_map_ref => $action_map_ref,
-        class_resolver => '[% typemap_prefix %]::[% service.get_name.replace('\.', '::') %]',
+        class_resolver => '[% XSD.create_typemap_name(service) %]',
         dispatch_to => $dispatch_to{ $ident },
     });
 }
 
 sub handle {
-    $transport_of{ ${ $_[0] } }->handle();
+    $transport_of{ ${ shift @_ } }->handle(@_);
 }
 
 1;

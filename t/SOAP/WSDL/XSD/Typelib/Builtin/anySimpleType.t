@@ -54,7 +54,7 @@ is $obj->get_value(), 'test2', 'get_value on attr value';
 
 $obj->set_value(undef);
 
-is $obj->serialize({ name => 'foo' }), '<foo></foo>'
+is $obj->serialize({ name => 'foo' }), '<foo xsi:nil="true"/>'
     , 'serialize undef value with name';
 is $obj->serialize(), q{}, 'serialize undef value without name';
 

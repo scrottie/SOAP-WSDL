@@ -6,16 +6,28 @@ use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw/SOAP::WSDL::Base/;
 
-our $VERSION=q{2.00_29};
+our $VERSION=q{2.00_33};
+
+my %length_of           :ATTR(:name<length>         :default<[]>);
+my %minLength_of        :ATTR(:name<minLength>      :default<[]>);
+my %maxLength_of        :ATTR(:name<maxLength>      :default<[]>);
+my %pattern_of          :ATTR(:name<pattern>        :default<[]>);
+my %enumeration_of      :ATTR(:name<enumeration>    :default<[]>);
+my %whiteSpace_of       :ATTR(:name<whiteSpace>     :default<[]>);
+my %totalDigits_of      :ATTR(:name<totalDigits>    :default<[]>);
+my %fractionDigits_of   :ATTR(:name<fractionDigits>    :default<[]>);
+my %minExclusive        :ATTR(:name<minExclusive>   :default<[]>);
+my %minInclusive        :ATTR(:name<minInclusive>   :default<[]>);
+my %maxExclusive        :ATTR(:name<maxExclusive>   :default<[]>);
+my %maxInclusive        :ATTR(:name<maxInclusive>   :default<[]>);
 
 my %annotation_of   :ATTR(:name<annotation> :default<()>);
 my %attribute_of    :ATTR(:name<attribute>  :default<()>);
 my %element_of      :ATTR(:name<element>    :default<()>);
-#my %flavor_of       :ATTR(:name<flavor>     :default<()>);
+my %group_of        :ATTR(:name<group>      :default<()>);
 my %variety_of      :ATTR(:name<variety>    :default<()>);
 my %base_of         :ATTR(:name<base>       :default<()>);
 my %itemType_of     :ATTR(:name<itemType>   :default<()>);
-my %enumeration_of  :ATTR(:name<enumeration>   :default<()>);
 my %abstract_of     :ATTR(:name<abstract>   :default<()>);
 my %mixed_of        :ATTR(:name<mixed>      :default<()>);      # default is false
 

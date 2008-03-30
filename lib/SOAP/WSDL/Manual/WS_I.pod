@@ -430,7 +430,7 @@ TODO support rpc-literal bindings.
 The wsdl:import element imports the referenced WSDL definition.
 
 This is rather hard-wired and does not allow to specify a wsdl:import without
-a resolvable location.
+a resolvable location in SOAP::WSDL.
 
 =head2 R4002
 
@@ -681,7 +681,7 @@ is Schema valid.
  WSDL description.
 
 SOAP::WSDL (partially) supports the wsdl:import statement. The wsdl:include
-statement is not supported (yet).
+statement is not supported.
 
 It's the responsibility of the WSDL author to use only the wsdl:import
 statement for importing WSDL descriptions.
@@ -1252,9 +1252,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 514 $
+ $Rev: 562 $
  $LastChangedBy: kutterma $
- $Id: WS_I.pod 514 2008-01-31 19:57:52Z kutterma $
+ $Id: WS_I.pod 562 2008-02-22 20:32:17Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/WS_I.pod $
 
 =cut

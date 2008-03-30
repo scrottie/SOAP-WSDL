@@ -20,7 +20,7 @@ my @dir_from = File::Spec->splitdir($dir);
 unshift @dir_from, $volume if $volume;
 my $url = join '/', @dir_from;
 
-my $parser; 
+my $parser;
 
 ok $parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => FakeResolver->new(),
@@ -56,11 +56,13 @@ q{<SOAP-ENV:Envelope
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
         xmlns:tns="http://www.example.org/MessageGateway2/"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        >
     <SOAP-ENV:Body ><EnqueueMessage><MMessage>
                 <MRecipientURI>mailto:test@example.com</MRecipientURI>
                 <MMessageContent>TestContent for Message</MMessageContent>
-                <MMessageContent>TestContent for Message 2</MMessageContent>
+                <MMessageContent xsi:nil="true"></MMessageContent>
                 <MSenderAddress>martin.kutter@example.com</MSenderAddress>
                 <MDeliveryReportRecipientURI>mailto:test@example.com</MDeliveryReportRecipientURI>
     </MMessage></EnqueueMessage></SOAP-ENV:Body></SOAP-ENV:Envelope>};
