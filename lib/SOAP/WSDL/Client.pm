@@ -11,7 +11,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-our $VERSION = '2.00_27';
+use version; our $VERSION = qv('2.00.01');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
@@ -259,10 +259,10 @@ You probably should not use a character encoding different from utf8:
 SOAP::WSDL::Client will not convert the request into a different encoding
 (yet).
 
-To leave out the encoding, just set the content type without appendet charset
-like in
+To leave out the encoding, just set the content type without appending charset
+like this:
 
- text/xml
+  $soap->set_content_type('text/xml');
 
 Default:
 
@@ -271,7 +271,7 @@ Default:
 =head2 Features different from SOAP::Lite
 
 SOAP::WSDL does not aim to be a complete replacement for SOAP::Lite - the
-SOAP::Lite module has it's strengths and weaknesses and SOAP::WSDL is
+SOAP::Lite module has its strengths and weaknesses and SOAP::WSDL is
 designed as a cure for the weakness of little WSDL support - nothing more,
 nothing less.
 
@@ -283,7 +283,7 @@ A few things are quite different from SOAP::Lite, though:
 
 =head3 SOAP request data
 
-SOAP request data may either be given as message object, or as hash ref (in
+SOAP request data may either be given as message object, or as a hash ref (in
 which case it will automatically be encoded into a message object).
 
 =head3 Return values
@@ -303,7 +303,7 @@ The fault object is a SOAP1.1 fault object of the following
 C<SOAP::WSDL::SOAP::Typelib::Fault11>.
 
 SOAP::WSDL::SOAP::Typelib::Fault11 objects are false in boolean context, so
-you can just do something like
+you can just do something like:
 
  my $result = $soap->call($method, $data);
 
@@ -360,9 +360,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 455 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 455 2007-12-14 15:50:16Z kutterma $
+ $Id: Client.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

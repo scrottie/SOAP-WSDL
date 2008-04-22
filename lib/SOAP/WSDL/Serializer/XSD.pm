@@ -4,7 +4,9 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
-our $VERSION=q{2.00_27};
+
+use version; our $VERSION = qv('2.00.01');
+
 use SOAP::WSDL::Factory::Serializer;
 
 my $SOAP_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
@@ -120,10 +122,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 510 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 510 2008-01-29 08:03:46Z kutterma $
+ $Id: XSD.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
- 
+
 =cut
 

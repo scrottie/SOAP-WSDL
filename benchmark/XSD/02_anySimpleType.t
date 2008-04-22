@@ -11,7 +11,7 @@ my $obj = SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new();
 timethese 10000, {
     'new' => sub { SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new() },
     'new + params' => sub { SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType->new({
-        value => 'Teststring'
+        value => 'Teststring',
     }) },
     'set_FOO' => sub { $obj->set_value('Test') },
 };

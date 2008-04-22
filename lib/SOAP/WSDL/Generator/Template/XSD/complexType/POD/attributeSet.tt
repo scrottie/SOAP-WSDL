@@ -15,7 +15,10 @@ get_/set_ methods:
 
 =over
 
-[% FOREACH element = complexType.get_attribute -%]
+[% FOREACH element = complexType.get_attribute;
+    WHILE element.get_ref;
+        element = definitions.first_types.find_attribute(element.expand( element.get_ref ));
+    END; -%]
 =item * [% element.get_name %]
 
 [%- IF (element.get_annotation && element.get_annotation.0.get_documentation) %]

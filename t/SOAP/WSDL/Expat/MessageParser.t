@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use lib '../../../../lib';
 use lib '../../../../t/lib';
 use lib 't/lib';
@@ -14,7 +14,7 @@ use MyComplexType;
 use MyElement;
 use MySimpleType;
 
-my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body><MyAtomicComplexTypeElement xmlns="urn:Test" >
     <test>Test</test>
@@ -26,26 +26,30 @@ my $parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => 'FakeResolver'
 });
 
+test_nil($parser);
+
 $parser->parse( $xml );
+
+
 
 is $parser->get_data(), q{<MyAtomicComplexTypeElement xmlns="urn:Test">}
     . q{<test>Test</test><test2>Test2</test2></MyAtomicComplexTypeElement>}
     , 'Content comparison';
 
-my $xml_attr = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+my $xml_attr = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body><MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2">
     <test>Test</test>
-    <test2 >    </test2>
+    <test2></test2>
     </MyElementAttrs></SOAP-ENV:Body></SOAP-ENV:Envelope>};
 
 $parser->parse($xml_attr);
 
 is $parser->get_data(),
-    q{<MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2"><test>Test</test></MyElementAttrs>},
+    q{<MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2"><test>Test</test><test2></test2></MyElementAttrs>},
     'Content with attributes';
 
-my $xml_error = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+my $xml_error = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body><MyElementAttrs xmlns="urn:Test" test="Test" test2="Test2">
     <test>Test</test>
@@ -65,8 +69,6 @@ BEGIN {
             'MyAtomicComplexTypeElement/test' => 'MyTestElement',
             'MyAtomicComplexTypeElement/test2' => 'MyTestElement2',
             'MyAtomicComplexTypeElement/foo' => '__SKIP__',
-#            'MyAtomicComplexTypeElement/foo/bar' => 'MyFooElement',
-#            'MyAtomicComplexTypeElement/foo/baz' => 'MyFooElement',
             'MyElementAttrs' => 'MyElementAttrs',
             'MyElementAttrs/test' => 'MyTestElement',
             'MyElementAttrs/test2' => 'MyTestElement2',
@@ -83,3 +85,16 @@ BEGIN {
         };
     };
 };
+
+sub test_nil {
+    my $parser = shift();
+    my $xml_nil_attr = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
+    <SOAP-ENV:Body><MyElementAttrs xmlns="urn:Test">
+    <test>Test</test>
+    <test2 xsi:nil="1"/>
+    </MyElementAttrs></SOAP-ENV:Body></SOAP-ENV:Envelope>};
+
+    my $result = $parser->parse($xml_nil_attr);
+    is $result->get_test2->serialize({ name => 'test2'}), '<test2 xsi:nil="true"/>';
+}

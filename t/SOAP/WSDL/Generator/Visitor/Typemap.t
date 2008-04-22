@@ -12,13 +12,13 @@ use_ok qw(SOAP::WSDL::Generator::Visitor::Typemap);
 my $visitor;
 ok $visitor = SOAP::WSDL::Generator::Visitor::Typemap->new({
     resolver => SOAP::WSDL::Generator::Template::Plugin::XSD->new({
-		prefix_resolver=> SOAP::WSDL::Generator::PrefixResolver->new({
+        prefix_resolver=> SOAP::WSDL::Generator::PrefixResolver->new({
              prefix => {
                 type => 'TestTypes',
                 element => 'TestElements',
                 typemap => 'TestTypemap',
-		     }
-		}),
+             }
+        }),
     })
 }), 'constructor';
 

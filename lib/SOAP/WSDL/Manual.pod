@@ -237,61 +237,13 @@ C<--server> or C<-s> option to the call to C<wsdl2perl.pl>.
 
  perl wsdl2perl.pl -s -b BASE_DIR URL
 
-Note that SOAP::WSDL only includes a basic CGI based SOAP servers by now -
-while more advanced servers (like standalone or mod_perl based) are no big
-deal, no base implementation is included yet.
-
-=head1 Troubleshooting
-
-=head2 Accessing HTTPS webservices
-
-You need Crypt::SSLeay installed to access HTTPS webservices.
-
-=head2 Accessing protected web services
-
-Passing a userndame and password, or a client certificate and key, to the
-transport layer is highly dependent on the transport backend.
-
-=head3 Accessing HTTP(S) webservices with basic/digest authentication
-
-When using SOAP::WSDL::Transport::HTTP (SOAP::Lite not installed), add a
-method called "get_basic_credentials" to SOAP::WSDL::Transport::HTTP:
-
- *SOAP::WSDL::Transport::HTTP::get_basic_credentials = sub {
-    return ($user, $password);
- };
-
-When using SOAP::Transport::HTTP (SOAP::Lite is installed), do the same to
-this backend:
-
- *SOAP::Transport::HTTP::Client::get_basic_credentials = sub {
-     return ($user, $password);
- };
-
-=head3 Accessing HTTP(S) webservices protected by NTLM authentication
-
-Besides passing user credentials as when accessing a web service protected
-by basic or digest authentication, you also need to enforce connection
-keep_alive on the transport backens.
-
-To do so, pass a I<proxy> argument to the new() method of the generated
-class. This unfortunately means that you have to set the endpoint URL, too:
-
- my $interface = MyInterfaces::SERVICE_NAME::PORT_NAME->new({
-     proxy => [ $url, keep_alive => 1 ]
- });
-
-You may, of course, decide to just hack the generated class. Be advised that
-subclassing might be a more appropriate solution - re-generating overwrites
-changes in interface classes.
-
-=head3 Accessing HTTPS webservices protected by certificate authentication
-
-You need Crypt::SSLeay installed to access HTTPS webservices.
-
-See L<Crypt::SSLeay> on how to configure client certificate authentication.
+SOAP::WSDL currently includes classes for building a basic CGI and a
+mod_perl 2 based SOAP server.
 
 =head1 SEE ALSO
+
+L<SOAP::WSDL::Manual::Cookbook> cooking recipes for accessing web services,
+altering the XML Serializer and others.
 
 L<SOAP::WSDL::Manual::XSD> SOAP::WSDL's XML Schema implementation
 

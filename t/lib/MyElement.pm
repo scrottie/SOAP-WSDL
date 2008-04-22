@@ -46,6 +46,7 @@ use base (
 );
 
 __PACKAGE__->__set_name('MyTestElement2');
+__PACKAGE__->__set_nillable(1);
 
 sub get_xmlns { 'urn:Test' };
 

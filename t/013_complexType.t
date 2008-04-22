@@ -4,7 +4,6 @@ use strict;
 use lib 'lib/';
 use lib '../lib/';
 use lib 't/lib';
-use Storable;
 
 use_ok qw(SOAP::WSDL::XSD::Typelib::ComplexType);
 use_ok qw( MyComplexType );
@@ -36,7 +35,7 @@ is $obj, '<MyTestName>test</MyTestName><MyTestName>test2</MyTestName>',
 $obj = MyComplexType2->new({ MyTestName => [ 'test', 'test2' ] });
 ok $obj->isa('SOAP::WSDL::XSD::Typelib::Builtin::anyType')
     , 'inherited class (on the fly-factory object)';
-is $obj, '<MyTestName>test</MyTestName><MyTestName>test2</MyTestName>',
+is $obj, '<MyTestName xmlns="urn:Test">test</MyTestName><MyTestName xmlns="urn:Test">test2</MyTestName>',
     'stringification (on the fly-factory object)';
 
 # TODO factor out into complexType test

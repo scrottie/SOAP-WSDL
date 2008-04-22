@@ -9,6 +9,8 @@
 xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/">
     <types>
         <xsd:schema targetNamespace="urn:Test">
+        <xsd:attribute name="TestAttribute" type="xsd:string"></xsd:attribute>
+
         <xsd:simpleType name="testSimpleTypeList">
             <xsd:annotation>
                 <xsd:documentation>
@@ -203,8 +205,8 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </xsd:complexType>
         </xsd:element>
 
-        <xsd:element name="Header" type="tns:testComplexTypeSequence"/>
-        <xsd:element name="testHeader" type="tns:testComplexTypeSequence"/>
+        <xsd:element name="Header" type="tns:testComplexTypeSequence" nillable="false"/>
+        <xsd:element name="testHeader" type="tns:testComplexTypeSequence" nillable="0"/>
         <xsd:element name="testChoice" type="tns:testComplexTypeChoice"/>
 
 
@@ -229,7 +231,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         </xsd:complexType>
 
 
-        <xsd:element name="testElementEmptyComplex">
+        <xsd:element name="testElementEmptyComplex" nillable="true">
             <xsd:complexType>
                 <xsd:sequence/>
             </xsd:complexType>
@@ -238,7 +240,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <xsd:sequence></xsd:sequence>
         </xsd:complexType>
 
-        <xsd:element name="testElementCompletelyEmptyComplex">
+        <xsd:element name="testElementCompletelyEmptyComplex" nillable="1">
             <xsd:complexType>
             </xsd:complexType>
         </xsd:element>
@@ -333,8 +335,8 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <operation name="testHeader">
                 <soap:operation soapAction="testHeader"/>
                 <input>
-                    <soap:body use="literal" parts="tns:testBody"/>
-                    <soap:header use="literal" part="tns:testHeader" message="tns:testHeaderRequest"/>
+                    <soap:body use="literal" parts="testBody"/>
+                    <soap:header use="literal" part="testHeader" message="tns:testHeaderRequest"/>
                 </input>
                 <output>
                     <soap:body use="literal"/>

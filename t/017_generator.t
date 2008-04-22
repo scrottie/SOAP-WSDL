@@ -97,43 +97,41 @@ ok $interface->EnqueueMessage(
 # cleanup
 rmtree "$path/testlib";
 
-# print $wsdl->explain();
-
 sub xml_message {
-	return
+    return
 q{<EnqueueMessage xmlns="http://www.example.org/MessageGateway2/">
-	<MMessage>
-		<MRecipientURI>anyURI</MRecipientURI>
-		<MSenderAddress>a string</MSenderAddress>
-		<MMessageContent>a string</MMessageContent>
-		<MSubject>a string</MSubject>
-		<MDeliveryReportRecipientURI>anyURI</MDeliveryReportRecipientURI>
-		<MKeepalive>
-			<MKeepaliveTimeout>1234567</MKeepaliveTimeout>
-			<MKeepaliveErrorPolicy> ( suppress | report ) </MKeepaliveErrorPolicy>
-		</MKeepalive>
-	</MMessage>
+    <MMessage>
+        <MRecipientURI>anyURI</MRecipientURI>
+        <MSenderAddress>a string</MSenderAddress>
+        <MMessageContent>a string</MMessageContent>
+        <MSubject>a string</MSubject>
+        <MDeliveryReportRecipientURI>anyURI</MDeliveryReportRecipientURI>
+        <MKeepalive>
+            <MKeepaliveTimeout>1234567</MKeepaliveTimeout>
+            <MKeepaliveErrorPolicy> ( suppress | report ) </MKeepaliveErrorPolicy>
+        </MKeepalive>
+    </MMessage>
 </EnqueueMessage>
 };
 }
 
 sub xml_message2 {
-	return
+    return
 q{<EnqueueMessage xmlns="http://www.example.org/MessageGateway2/">
-	<MMessage>
-		<MRecipientURI>anyURI</MRecipientURI>
-		<MSenderAddress>a string</MSenderAddress>
-		<MMessageContent>a string</MMessageContent>
-		<MSubject>a string</MSubject>
-		<MDeliveryReportRecipientURI>anyURI</MDeliveryReportRecipientURI>
-	</MMessage>
+    <MMessage>
+        <MRecipientURI>anyURI</MRecipientURI>
+        <MSenderAddress>a string</MSenderAddress>
+        <MMessageContent>a string</MMessageContent>
+        <MSubject>a string</MSubject>
+        <MDeliveryReportRecipientURI>anyURI</MDeliveryReportRecipientURI>
+    </MMessage>
 </EnqueueMessage>
 };
 }
 
 
 sub xml {
-	return q{<?xml version="1.0" encoding="UTF-8"?>
+    return q{<?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions name="MessageGateway"
   targetNamespace="http://www.example.org/MessageGateway2/"
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"

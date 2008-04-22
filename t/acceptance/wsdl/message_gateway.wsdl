@@ -283,9 +283,9 @@
     <wsdl:operation name="EnqueueMessage">
       <soap:operation soapAction="http://www.example.org/MessageGateway2/EnqueueMessage" />
       <wsdl:input>
-        <soap:body use="literal" namespace="http://www.example.org/" parts="tns:parameters"/>
+        <soap:body use="literal" namespace="http://www.example.org/" parts="parameters"/>
         <soap:header use="literal" namespace="http://www.example.org/"
-        	message="tns:EnqueueMessageRequest" part="tns:auth"/>
+        	message="tns:EnqueueMessageRequest" part="auth"/>
       </wsdl:input>
       <wsdl:output>
         <soap:body use="literal" />
@@ -310,12 +310,12 @@
       <wsdl:documentation>HTTP(S) port for the message gateway</wsdl:documentation>
       <soap:address location="http://test.example.org/MessageGateway/" />
     </wsdl:port>
-  
+
     <wsdl:port name="HTTPSPort" binding="tns:MGWBinding">
       <wsdl:documentation>HTTP(S) port for the message gateway</wsdl:documentation>
       <soap:address location="https://test.example.org/MessageGateway/" />
     </wsdl:port>
-  
+
     <wsdl:port name="HTTP" binding="tns:MGWBinding">
       <http:address location="http://www.webservicex.net/globalweather.asmx" />
     </wsdl:port>

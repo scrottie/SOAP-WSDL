@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 use SOAP::WSDL::Expat::MessageParser;
 use base qw(SOAP::WSDL::Expat::MessageParser);
 
-our $VERSION = '2.00_24';
+use version; our $VERSION = qv('2.00.01');
 
 sub parse_start {
     my $self = shift;
@@ -43,7 +43,7 @@ SOAP::WSDL::Expat::MessageStreamParser - Convert SOAP messages to custom object 
  # process response while it comes in, trying to read 32k chunks.
  $lwp->request( $request, sub { $chunk_parser->parse_more($_[0]) } , 32468 );
  $chunk_parser->parse_done();
- 
+
  my $obj = $parser->get_data();
 
 =head1 DESCRIPTION
@@ -69,9 +69,9 @@ the same terms as perl itself
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 477 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: MessageStreamParser.pm 477 2007-12-24 10:23:52Z kutterma $
+ $Id: MessageStreamParser.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
- 
+
 =cut

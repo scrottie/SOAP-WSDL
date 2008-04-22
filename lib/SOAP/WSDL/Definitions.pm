@@ -9,7 +9,7 @@ use List::Util qw(first);
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION='2.00_33';
+use version; our $VERSION = qv('2.00.01');
 
 my %types_of        :ATTR(:name<types>      :default<[]>);
 my %message_of      :ATTR(:name<message>    :default<[]>);
@@ -118,9 +118,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 549 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Definitions.pm 549 2008-02-20 10:14:26Z kutterma $
+ $Id: Definitions.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut

@@ -1,7 +1,7 @@
-Release notes for SOAP::WSDL 2.00_33
+Release notes for SOAP::WSDL 2.00.01
 -------
 
-I'm proud to present a new pre-release version of SOAP::WSDL.
+I'm proud to present a new release of SOAP::WSDL.
 
 SOAP::WSDL is a toolkit for creating WSDL-based SOAP client interfaces in perl.
 
@@ -15,6 +15,8 @@ Features:
     * Easy-to use API
           o Automatically encodes perl data structures as message data
           o Automatically sets HTTP headers right
+          o Datatypes provide hints on method names on calls to non-existant
+          methods
     * Efficient documentation
           o SOAP::WSDL::Manual guides you at getting your work done, not at
           the module's internals
@@ -23,16 +25,57 @@ Features:
           over 95% (excluding documentation - you wouldn't want to read
           through it all).
     * SOAP::Lite like look and feel
-          o Where possible, SOAP::WSDL mimics SOAP::Lite's API to allow easy migrations
+          o Where possible, SOAP::WSDL mimics SOAP::Lite's API to allow easy migration
     * XML schema based class library for creating data objects
     * High-performance XML parser
     * Plugin support. SOAP::WSDL can be extended through plugins in various aspects.
       The following plugins are supported:
           o Transport plugins via SOAP::WSDL::Factory::Transport
           o Serializer plugins via SOAP::WSDL::Factory::Serializer
-          o Deserializer plugins via SOAP::WSDL::Factory::Serializer
+          o Deserializer plugins via SOAP::WSDL::Factory::Deserializer
 
 The following changes have been made:
+
+2.00.01
+
+The following features were added (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+    * [ 1941134 ] Server for mod_perl2. Thanks to Noah Robin for contributing.
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+    * [ 1944368 ] SOAP/WSDL/XSD/Typelib/SimpleType.pm spelling
+    * [ 1944367 ] SOAP/WSDL/XSD/Typelib/ComplexType.pm spelling
+    * [ 1944364 ] SOAP/WSDL/XSD/Typelib/Builtin.pm spelling
+    * [ 1944362 ] SOAP/WSDL/SOAP/Typelib/Fault11.pm spelling
+    * [ 1944361 ] SOAP/WSDL/Generator/Visitor.pm spelling
+    * [ 1944360 ] SOAP/WSDL/Generator/Iterator/WSDL11.pm spelling
+    * [ 1944359 ] SOAP::WSDL::Factory::Transport spelling
+    * [ 1944355 ] SOAP::WSDL::Deserializer::XSD.pm spelling
+    Thanks to "nobody" for correcting these errors.
+
+    * [ 1942576 ] SOAP/WSDL/Deserializer/SOM.pm spelling.
+    * [ 1942568 ] SOAP/WSDL/Client.pm minor spelling/grammar/style cleanup.
+    * [ 1942562 ] WSDL.pm spelling corrections.
+    Thanks to Noah Robin for providing patches for these errors.
+
+    * #34642 booleans in WSDL attributes don't get converted to perl's
+    representation (for now - not all attributes covered yet)
+    * #34714: MessageParser misses character data in elements just below SOAP-ENV:Body
+    * #34688: wsdl2perl.pl croaks when WSDL operation uses a header
+
+The following uncategorized improvements have been made:
+
+   * Storable freeze/thaw speedup in conjunction with upcoming version of
+   Class::Std::Fast
+   * improved server doc generation
+   * improved xsi:nil handling
+   * serializing an attribute from  http://www.w3.org/XML/1998/namespace now
+   serializes it with xml: prefix. This should probably be moved into the
+   generator, to avoid testing every attribute
 
 2.00_33 - Mar 30 2008
 

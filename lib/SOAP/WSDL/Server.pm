@@ -6,7 +6,7 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Deserializer;
 use SOAP::WSDL::Factory::Serializer;
 
-our $VERSION = q{2.00_27};
+use version; our $VERSION = qv('2.00.01');
 
 my %dispatch_to_of      :ATTR(:name<dispatch_to> :default<()>);
 my %action_map_ref_of   :ATTR(:name<action_map_ref> :default<{}>);
@@ -159,6 +159,45 @@ of the deserialized messages).
 
 A hash-based dispatcher could be implemented by examining the top level
 hash keys.
+
+=head1 EXCEPTION HANDLING
+
+=head2 Builtin exceptions
+
+SOAP::WSDL::Server handles the following errors itself:
+
+In case of errors, a SOAP Fault containing an appropriate error message
+is returned.
+
+=over
+
+=item * XML parsing errors
+
+=item * Configuration errors
+
+=back
+
+=head2 Throwing exceptions
+
+The proper way to throw a exception is just to die -
+SOAP::WSDL::Server::CGI catches the exception and sends a SOAP Fault
+back to the client.
+
+If you want more control over the SOAP Fault sent to the client, you can
+die with a SOAP::WSDL::SOAP::Fault11 object - or just let the
+SOAP::Server's deserializer create one for you:
+
+ my $soap = MyServer::SomeService->new();
+
+ die $soap->get_deserializer()->generate_fault({
+    code => 'soap:Server',
+    role => 'urn:localhost',
+    message => "The error message to pas back",
+    detail => "Some details on the error",
+ });
+
+You may use any other object as exception, provided it has a
+serialize() method which returns the object's XML representation.
 
 =head1 LICENSE AND COPYRIGHT
 

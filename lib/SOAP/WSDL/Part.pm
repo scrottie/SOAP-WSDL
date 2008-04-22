@@ -6,6 +6,8 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Base);
 
+use version; our $VERSION = qv('2.00.01');
+
 my %element_of  :ATTR(:name<element>    :default<()>);
 my %type_of     :ATTR(:name<type>       :default<()>);
 

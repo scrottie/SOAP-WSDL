@@ -15,12 +15,11 @@ my %dispatch_to :ATTR(:name<dispatch_to>);
 
 my $action_map_ref = {
     'urn:HelloWorld#sayHello' => 'sayHello',
-
 };
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
-    eval "require $transport_class_of{ $ident }" 
+    eval "require $transport_class_of{ $ident }"
         or die "Cannot load transport class $transport_class_of{ $ident }: $@";
     $transport_of{ $ident } = $transport_class_of{ $ident }->new({
         action_map_ref => $action_map_ref,
@@ -30,7 +29,7 @@ sub START {
 }
 
 sub handle {
-    $transport_of{ ${ $_[0] } }->handle();
+    $transport_of{ ${ $_[0] } }->handle(@_[1..$#_]);
 }
 
 1;
@@ -76,7 +75,7 @@ located at http://localhost:81/soap-wsdl-test/helloworld.pl.
 
 Constructor.
 
-The C<dispatch_to> argument is mandatory. It must be a class or object 
+The C<dispatch_to> argument is mandatory. It must be a class or object
 implementing the SOAP Service methods listed below.
 
 =head2 SOAP Service methods
@@ -94,9 +93,9 @@ class.
     my ($self, $body, $header) = @_;
     # body is a ??? object - sorry, POD not implemented yet
     # header is a ??? object - sorry, POD not implemented yet
-    
+
     # do something with body and header...
-    
+
     return  MyElements::sayHelloResponse->new(  {
     sayHelloResult =>  $some_value, # string
   },

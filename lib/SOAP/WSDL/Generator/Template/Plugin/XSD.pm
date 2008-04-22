@@ -4,6 +4,8 @@ use warnings;
 use Carp qw(confess);
 use Class::Std::Fast::Storable constructor => 'none';
 
+use version; our $VERSION = qv('2.00.01');
+
 my %namespace_prefix_map_of :ATTR(:name<namespace_prefix_map>   :default<{}>);
 my %namespace_map_of        :ATTR(:name<namespace_map>          :default<{}>);
 my %prefix_of               :ATTR(:name<prefix>                 :default<()>);
@@ -14,9 +16,6 @@ sub load {               # called as MyPlugin->load($context)
     my ($class, $context, @arg_from) = @_;
     my $stash = $context->stash();
     my $self = bless \do { my $o = Class::Std::Fast::ID() }, $class;
-#    $self->set_namespace_map( $stash->{ context }->{ namespace_map });
-#    $self->set_namespace_prefix_map( $stash->{ context }->{ namespace_prefix_map });
-#    $self->set_prefix( $stash->{ context }->{ prefix });
     $self->set_prefix_resolver( $stash->{ context }->{ prefix_resolver });
     return $self;       # returns 'MyPlugin'
 }
@@ -27,9 +26,6 @@ sub new {
     my ($class, $arg_ref) = @_;
 
     my $self = bless \do { my $o = Class::Std::Fast::ID() }, $class;
-#    $self->set_namespace_map( $arg_ref->{ namespace_map });
-#    $self->set_namespace_prefix_map( $arg_ref->{ namespace_prefix_map });
-#    $self->set_prefix( $arg_ref->{ prefix });
     $self->set_prefix_resolver( $arg_ref->{ prefix_resolver });
     return $self;       # returns 'MyPlugin'
 }
@@ -38,10 +34,10 @@ sub _get_prefix {
     my ($self, $type, $node) = @_;
     my $namespace = defined ($node)
         ? ref($node)
-            ? $node->get_targetNamespace
+            ? $node->get_targetNamespace()
             : $node
         : undef;
-    return $self->get_prefix_resolver->resolve_prefix(
+    return $self->get_prefix_resolver()->resolve_prefix(
         $type,
         $namespace,
         ref($node)
@@ -50,27 +46,16 @@ sub _get_prefix {
      );
 }
 
-#sub _get_prefix {
-#    my ($self, $type, $namespace) = @_;
-#    return $prefix_of{ $$self }->{ $type }
-#        if not defined($namespace);
-#    return $namespace_prefix_map_of{ $$self }->{ $namespace }
-#        || ( ($namespace_map_of{ $$self }->{ $namespace })
-#            ? join ('::', $prefix_of{ $$self }->{ $type }, $namespace_map_of{ $$self }->{ $namespace })
-#            : $prefix_of{ $$self }->{ $type }
-#        );
-#}
-
 sub create_xsd_name {
-    my ($self,$element) = @_;
-    my $name = $self->_resolve_prefix($element) . '::'
-        . $element->get_name();
+    my ($self,$node) = @_;
+    my $name = $self->_resolve_prefix($node) #. '::'
+        . $node->get_name();
     return $self->perl_name( $name );
 }
 
 sub create_typemap_name {
     my ($self, $node) = @_;
-    my $name = $self->_get_prefix('typemap') . '::'
+    my $name = $self->_get_prefix('typemap') #. '::'
         . $node->get_name();
     return $self->perl_name( $name );
 }
@@ -79,10 +64,9 @@ sub create_server_name {
     my ($self, $server, $port) = @_;
     my $port_name = $port->get_name();
     $port_name =~s{\A (?:.+)\. ([^\.]+) \z}{$1}x;
-    my $name = join('::',
+    my $name = join( q{},
         $self->_get_prefix('server', $server),
-        $server->get_name(),
-        $port_name
+         join( '::', $server->get_name(), $port_name)
     );
     return $self->perl_name( $name );
 }
@@ -91,10 +75,9 @@ sub create_interface_name {
     my ($self, $server, $port) = @_;
     my $port_name = $port->get_name();
     $port_name =~s{\A (?:.+)\. ([^\.]+) \z}{$1}x;
-    my $name = join('::',
+    my $name = join( q{},
         $self->_get_prefix('interface', $server),
-        $server->get_name(),
-        $port_name
+        join( '::', $server->get_name(), $port_name )
     );
     return $self->perl_name( $name );
 }
@@ -121,8 +104,8 @@ sub _resolve_prefix {
 sub perl_name {
     my $self = shift;
     my $name = shift;
-    $name =~s{[\-]}{_}xmsg;
-    $name =~s{[\.]}{::}xmsg;
+    $name =~s{\-}{_}xmsg;
+    $name =~s{\.}{::}xmsg;
     return $name;
 }
 

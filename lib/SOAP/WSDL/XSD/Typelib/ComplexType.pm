@@ -5,11 +5,12 @@ use warnings;
 use Carp;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use Scalar::Util qw(blessed);
+use Data::Dumper;
 require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = '2.00_33';
+use version; our $VERSION = qv('2.00.01');
 
 my %ELEMENTS_FROM;
 my %ATTRIBUTES_OF;
@@ -25,15 +26,27 @@ our $___xml_attribute_of_ref = \%xml_attr_of;
 # STORABLE_ methods for supporting Class::Std::Fast::Storable.
 # We could also handle them via AUTOMETHOD,
 # but AUTOMETHOD should always croak...
-# Do we really need this ?
-# ... looks like we do...
-sub STORABLE_freeze_pre {}
-sub STORABLE_freeze_post {}
-sub STORABLE_thaw_pre {}
-sub STORABLE_thaw_post {}
+# Actually, AUTOMETHOD is faster (~1%) if Class::Std::Fast is loaded
+# properly, and slower (~10%) if not.
+# Hmmm. Trade 1% for 10?
+
+#sub STORABLE_freeze_pre {}
+#sub STORABLE_freeze_post {}
+#sub STORABLE_thaw_pre {}
+#sub STORABLE_thaw_post {}
+
+my %STORABLE_METHODS = (
+    STORABLE_freeze_pre => undef,
+    STORABLE_freeze_post => undef,
+    STORABLE_thaw_pre => undef,
+    STORABLE_thaw_post => undef,
+);
 
 # for error reporting. Eases working with data objects...
 sub AUTOMETHOD {
+    # return before unpacking @_ for speed reasons
+    return if exists $STORABLE_METHODS{$_};
+
     my ($self, $ident, @args_from) = @_;
 
     my $class = ref $self || $self or die "Cannot call AUTOMETHOD as function";
@@ -240,7 +253,7 @@ sub _factory {
                       xmlns           # xmlns
                 }xms        # get_elements is inlined for performance.
                 ? ()
-                : do { use Data::Dumper;
+                : do {
                      croak "unknown field $_ in $class. Valid fields are:\n"
                      . join(', ', @{ $ELEMENTS_FROM{ $class } }) . "\n"
                      . "Structure given:\n" . Dumper @_ };
@@ -268,16 +281,22 @@ sub _factory {
             if (defined $element) {
                 $element = [ $element ] if not ref $element eq 'ARRAY';
                 my $name = $_;
-
+                my $target_namespace = $_[0]->get_xmlns();
                 map {
                     # serialize element elements with their own serializer
                     # but name them like they're named here.
                     if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
-                            $_->serialize({ name => $name });
+                            # serialize elements of different namespaces
+                            # with namespace declaration
+                            ($target_namespace ne $_->get_xmlns())
+                                ? $_->serialize({ name => $name, qualified => 1 })
+                                : $_->serialize({ name => $name });
                     }
                     # serialize complextype elments (of other types) with their
                     # serializer, but add element tags around.
                     else {
+                        # TODO: check whether we have to handle
+                        # types from different namespaces special, too
                         join q{}, $_->start_tag({ name => $name , %{ $option_ref } })
                             , $_->serialize($option_ref)
                             , $_->end_tag({ name => $name , %{ $option_ref } });
@@ -432,9 +451,9 @@ This means you may set element properties by passing
 Examples are similar to the examples provided for new() above.
 
 Note that you cannot delete a property by setting it to undef - this sets
-the property to a empty property object (with vaue undef).
+the property to an empty property object (with value undef).
 
-To delete a property, say
+To delete a property, say:
 
  $obj->set_FOO();
 
@@ -481,9 +500,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 583 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 583 2008-03-24 07:44:06Z kutterma $
+ $Id: ComplexType.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

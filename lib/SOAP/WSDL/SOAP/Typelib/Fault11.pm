@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-our $VERSION=q{2.00_25};
+use version; our $VERSION = qv('2.00.01');
 
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use SOAP::WSDL::XSD::Typelib::Element;
@@ -74,15 +74,15 @@ This means you can do something like:
 
 =head2 get_faultcode / set_faultcode
 
-Getter/setter for object's the faultcode property.
+Getter/setter for object's faultcode property.
 
 =head2 get_faultstring / set_faultstring
 
-Getter/setter for object's the faultstring property.
+Getter/setter for object's faultstring property.
 
 =head2 get_faultactor / set_faultactor
 
-Getter/setter for object's the faultactor property.
+Getter/setter for object's faultactor property.
 
 =head2 get_detail / set_detail
 
@@ -101,9 +101,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Fault11.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: Fault11.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
 
 =cut

@@ -1,15 +1,17 @@
 #!/usr/bin/perl -w
-%DB::packages=(SOAP::WSDL::Expat::MessageParser => 1);
 use strict;
 use warnings;
 use lib '../lib';
 use lib '../../Class-Std-Fast/lib';
+use lib '/home/martin/workspace/SOAP-WSDL_XS/blib/lib';
+use lib '/home/martin/workspace/SOAP-WSDL_XS/blib/arch';
 use lib '../t/lib';
 # use SOAP::WSDL::SAX::MessageHandler;
 
 use Benchmark qw(cmpthese timethese);
 use SOAP::WSDL::Expat::MessageParser;
 use SOAP::WSDL::Expat::Message2Hash;
+use SOAP::WSDL::Expat::MessageParser_XS;
 use SOAP::Lite;
 use XML::Simple;
 use XML::LibXML;
@@ -17,24 +19,50 @@ use MyComplexType;
 use MyElement;
 use MySimpleType;
 
-my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+my $xml = q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body>
     <MyAtomicComplexTypeElement xmlns="urn:Test" >
     <test>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test2</test2>
-    <test2 >Test55</test2>
+        <test2 >Test2</test2>
+        <test2 >Test3</test2>
+        <test2 >Test4</test2>
+        <test2 >Test5</test2>
+        <test2 >Test6</test2>
+        <test2 >Test7</test2>
+        <test2 >Test8</test2>
+        <test2 >Test9</test2>
+        <test2 >Test10</test2>
+        <test2 >Test11</test2>
+        <test2 >Test12</test2>
+        <test2 >Test13</test2>
+        <test2 >Test55</test2>
+        <test2 >Test14</test2>
+        <test2 >Test15</test2>
+        <test2 >Test16</test2>
+        <test2 >Test17</test2>
+        <test2 >Test18</test2>
+        <test2 >Test19</test2>
+        <test2 >Test20</test2>
+        <test2 >Test21</test2>
+        <test2 >Test22</test2>
+        <test2 >Test23</test2>
+        <test2 >Test24</test2>
+        <test2 >Test25</test2>
+        <test2 >Test565</test2>
+        <test2 >Test27</test2>
+        <test2 >Test28</test2>
+        <test2 >Test29</test2>
+        <test2 >Test30</test2>
+        <test2 >Test31</test2>
+        <test2 >Test32</test2>
+        <test2 >Test33</test2>
+        <test2 >Test34</test2>
+        <test2 >Test35</test2>
+        <test2 >Test36</test2>
+        <test2 >Test37</test2>
+        <test2 >Test38</test2>
+        <test2 >Test55</test2>
     </test>
     </MyAtomicComplexTypeElement>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>};
@@ -57,13 +85,17 @@ my @data;
 
 my $deserializer = SOAP::Deserializer->new();
 
-sub libxml_test { 
+my $parser_xs = SOAP::WSDL::Expat::MessageParser_XS->new({
+    class_resolver => 'FakeResolver'
+});
+
+sub libxml_test {
         my $dom = $libxml->parse_string( $xml );
         push @data, dom2hash( $dom->firstChild );
 };
 
 sub dom2hash {
-    for ($_[0]->childNodes) {  
+    for ($_[0]->childNodes) {
         if (exists $_[1]->{ $_->nodeName }) {
             if (ref $_[1]->{ $_->nodeName } eq 'ARRAY') {
                 if ($_->nodeName eq '#text') {
@@ -78,7 +110,7 @@ sub dom2hash {
                     $_[1] = [ $_[1], $_->textContent() ];
                 }
                 else {
-                    $_[1]->{ $_->nodeName } = [ $_[1]->{ $_->nodeName } , 
+                    $_[1]->{ $_->nodeName } = [ $_[1]->{ $_->nodeName } ,
                         dom2hash( $_, {} ) ];
                 }
             }
@@ -94,11 +126,11 @@ sub dom2hash {
     }
     return $_[1];
 }
-
-cmpthese 5000, 
+cmpthese 5000,
 {
   'SOAP::WSDL (Hash)' => sub { push @data, $hash_parser->parse( $xml ) },
   'SOAP::WSDL (XSD)' => sub { push @data, $parser->parse( $xml ) },
+  'SOAP::WSDL_XS (XSD)' => sub { push @data, $parser_xs->parse_string( $xml ) },
   'XML::Simple (Hash)' => sub { push @data, XMLin $xml },
   'XML::LibXML (DOM)' => sub { push @data,  $libxml->parse_string( $xml ) },
   'XML::LibXML (Hash)' => \&libxml_test,
@@ -128,3 +160,18 @@ BEGIN {
         };
     };
 };
+
+
+__END__
+
+Output on my machine:
+
+ xml length: 641 bytes
+                       Rate SOAP::Lite XML::Simple (Hash) SOAP::WSDL (XSD) XML::LibXML (Hash) SOAP::WSDL (Hash) SOAP::WSDL_XS (XSD) XML::LibXML (DOM)
+ SOAP::Lite            446/s         --               -54%             -72%               -73%              -80%                -95%              -96%
+ XML::Simple (Hash)    963/s       116%                 --             -39%               -41%              -57%                -89%              -91%
+ SOAP::WSDL (XSD)     1587/s       256%                65%               --                -3%              -29%                -81%              -86%
+ XML::LibXML (Hash)   1629/s       265%                69%               3%                 --              -27%                -81%              -85%
+ SOAP::WSDL (Hash)    2222/s       398%               131%              40%                36%                --                -74%              -80%
+ SOAP::WSDL_XS (XSD)  8475/s      1798%               780%             434%               420%              281%                  --              -24%
+ XML::LibXML (DOM)   11111/s      2389%              1053%             600%               582%              400%                 31%                --

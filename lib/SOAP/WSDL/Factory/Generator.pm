@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Generator;
 use strict;
 use warnings;
 
-our $VERSION='2.00_24';
+use version; our $VERSION = qv('2.00.01');
 
 my %GENERATOR = (
     'XSD' => 'SOAP::WSDL::Generator::Template::XSD',
@@ -49,10 +49,10 @@ SOAP::WSDL::Factory:Generator - Factory for retrieving generator objects
  # in generator class:
  package MyWickedGenerator;
  use SOAP::WSDL::Factory::Generator;
- 
+
  # register as generator for SOAP1.2 messages
  SOAP::WSDL::Factory::Generator->register( '1.2' , __PACKAGE__ );
- 
+
 =head1 DESCRIPTION
 
 SOAP::WSDL::Factory::Generator serves as factory for retrieving
@@ -168,5 +168,5 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $LastChangedBy: kutterma $
  $Id: Serializer.pm 176 2007-08-31 15:28:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
- 
+
 =cut

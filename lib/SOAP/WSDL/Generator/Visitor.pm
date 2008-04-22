@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable;
 
-our $VERSION = q{2.00_25};
+use version; our $VERSION = qv('2.00.01');
 
 my %definitions_of :ATTR(:name<definitions> :default<()>);
 my %type_prefix_of :ATTR(:name<type_prefix> :default<()>);
@@ -66,13 +66,13 @@ tree of objects.
 
 A Visitor's methods are called using the so-called double dispatch technique.
 To allow double dispatching, the Visitor implements one method for every class
-ro be handled, whereas every class implements just one method (commonly named
+to be handled, whereas every class implements just one method (commonly named
 "access"), which does nothing more than calling a method on the reference
 given, with the self object as parameter.
 
 If all this sounds strange, maybe an example helps. Imagine you had a list of
 person objects and wanted to print out a list of their names (or address
-stamps or everything elseyou like). This can easily be implemented with a
+stamps or everything else you like). This can easily be implemented with a
 Visitor:
 
     package PersonVisitor;
@@ -107,7 +107,7 @@ Visitor:
     Person name is Vlissides
 
 While using this pattern for just printing a list may look a bit over-sized,
-but it may become handy if you need multiple output formats and different
+it may become handy if you need multiple output formats and different
 classes to operate on.
 
 The main benefits using visitors are:
@@ -188,8 +188,8 @@ mimicing .NET's .asmx example pages.
 
 All these behaviours could well be (and have historically been) implemented in
 the classes holding the WSDL data. This made these classes rather bloated, and
-made it hard to change behaviour (like, supporting SOAP Headers,
-supporting atomic types and other features which were missing from early
+made it hard to change behaviour (like supporting SOAP Headers,
+supporting atomic types, and other features which were missing from early
 versions of SOAP::WSDL).
 
 Implementing these behaviours in Visitor classes eases adding new behaviours,
@@ -203,7 +203,7 @@ schema implementation.
 SOAP::WSDL::Base defines an accept method which expects a Visitor as only
 parameter.
 
-The method visit_Foo_Bar is called on the visitor, whith the self object as
+The method visit_Foo_Bar is called on the visitor, with the self object as
 parameter.
 
 The actual method name is constructed this way:
@@ -224,7 +224,7 @@ visit_XSD_ComplexType is called on the visitor.
 =head2 Writing your own visitor
 
 SOAP::WSDL eases writing your own visitor. This might be required if you need
-some special output format from a WSDL file, or want to feed your own
+some special output format from a WSDL file or want to feed your own
 serializer/deserializer pair with custom configuration data. Or maybe you want
 to generate C# code from it...
 
@@ -273,7 +273,7 @@ The SOAP::WSDL::Generator::Visitor implementations include part of their own
 Iterator (which means they know how to find the next objects to visit). You
 may or may not choose to implement a separate Iterator.
 
-Letting a visitor implementing it's own Iterator visit a WSDL definition is as
+Letting a visitor implementing its own Iterator visit a WSDL definition is as
 easy as writing something like this:
 
  my $visitor = MyVisitor->new();

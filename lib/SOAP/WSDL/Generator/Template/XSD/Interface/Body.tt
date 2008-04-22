@@ -15,8 +15,8 @@
         @parts = map {
             my $part = $_;
             (grep {
-                my ($ns, $lname) = $def->expand( $_ );
-                ($lname eq $part->get_name)
+                # my ($ns, $lname) = $def->expand( $_ );
+                ($_ eq $part->get_name)
                 } @body_part_from
             )
             ? do {

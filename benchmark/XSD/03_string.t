@@ -11,8 +11,9 @@ my $obj = SOAP::WSDL::XSD::Typelib::Builtin::string->new();
 timethese 20000, {
     'new' => sub { SOAP::WSDL::XSD::Typelib::Builtin::string->new() },
     'new + params' => sub { SOAP::WSDL::XSD::Typelib::Builtin::string->new({
-        value => 'Teststring'
-    }) },
+            value => 'Teststring',
+        })
+    },
 };
 
 $obj->set_value('Foobar');
@@ -36,7 +37,7 @@ new + params:  1 wallclock secs ( 0.53 usr +  0.01 sys =  0.54 CPU) @ 37037.04/s
 Benchmark: timing 1000000 iterations of get_FOO, set_FOO...
    get_FOO:  2 wallclock secs ( 1.43 usr +  0.01 sys =  1.44 CPU) @ 694444.44/s (n=1000000)
    set_FOO:  0 wallclock secs ( 1.43 usr +  0.01 sys =  1.44 CPU) @ 694444.44/s (n=1000000)
-   
+
 
 ::Fast
 ---
@@ -47,7 +48,7 @@ Benchmark: timing 1000000 iterations of get_FOO, set_FOO...
    get_FOO:  0 wallclock secs ( 0.81 usr +  0.00 sys =  0.81 CPU) @ 1234567.90/s (n=1000000)
    set_FOO:  2 wallclock secs ( 0.87 usr +  0.01 sys =  0.88 CPU) @ 1136363.64/s (n=1000000)
 
-::Fast with inlined ID 
+::Fast with inlined ID
 Benchmark: timing 20000 iterations of new, new + params...
        new:  0 wallclock secs ( 0.41 usr +  0.00 sys =  0.41 CPU) @ 48780.49/s (n=20000)
 new + params:  1 wallclock secs ( 0.52 usr +  0.00 sys =  0.52 CPU) @ 38461.54/s (n=20000)

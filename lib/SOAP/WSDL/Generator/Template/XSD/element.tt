@@ -8,7 +8,10 @@ use warnings;
 sub get_xmlns { '[% element.get_targetNamespace %]' }
 
 __PACKAGE__->__set_name('[% element.get_name %]');
-__PACKAGE__->__set_nillable([% element.get_nillable %]);
+__PACKAGE__->__set_nillable([% IF (element.get_nillable);
+        IF (element.get_nillable != 'false'); %]1[% ELSE %]0[% END;
+    END;
+ %]);
 __PACKAGE__->__set_minOccurs([% element.get_minOccurs %]);
 __PACKAGE__->__set_maxOccurs([% element.get_maxOccurs %]);
 __PACKAGE__->__set_ref([% IF element.get_ref; %]'[% element.get_ref %]'[% END %]);

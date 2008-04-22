@@ -4,9 +4,11 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION=q{2.00_25};
+use version; our $VERSION = qv('2.00.01');
 
-my %annotation_of   :ATTR(:name<annotation> :default<()>);
+# id provided by Base
+# name provided by Base
+# annotation provided by Base
 my %simpleType_of   :ATTR(:name<simpleType> :default<()>);
 my %complexType_of  :ATTR(:name<complexType> :default<()>);
 my %facet_of        :ATTR(:name<facet>      :default<()>);

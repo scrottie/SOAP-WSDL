@@ -2,7 +2,7 @@ package SOAP::WSDL::TypeLookup;
 use strict;
 use warnings;
 
-our $VERSION=q{2.00_31};
+use version; our $VERSION = qv('2.00.01');
 
 my %TYPE_FROM = (
     # wsdl:

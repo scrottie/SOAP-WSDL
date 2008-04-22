@@ -35,7 +35,6 @@ use Test::More qw(no_plan);
 use_ok qw(SOAP::WSDL::Server);
 
 my $server = SOAP::WSDL::Server->new();
-
 $server->set_deserializer('MyDeserializer');
 eval { $server->handle(HTTP::Request->new()) };
 like $@, qr{\A No \s handler}x, 'No handler fault caught';

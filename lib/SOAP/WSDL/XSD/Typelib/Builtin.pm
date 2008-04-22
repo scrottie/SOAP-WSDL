@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable;
 
-our $VERSION=q{2.00_25};
+use version; our $VERSION = qv('2.00.01');
 
 use SOAP::WSDL::XSD::Typelib::Builtin::anyType;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
@@ -90,7 +90,7 @@ L</OVERLOADED OPERATORS>
  package MySimpleType;
  use SOAP::WSDL::XSD::Typelib::Builtin;
  use SOAP::WSDL::XSD::Typelib::SimpleType;
- 
+
  use base qw(SOAP::WSDL::XSD::Typelib::SimpleType
     SOAP::WSDL::XSD::Typelib::Builtin::list
     SOAP::WSDL::XSD::Typelib::Builtin::string
@@ -237,7 +237,7 @@ Returns true/false in boolean context.
 
 Returns 1 / 0 in numeric context.
 
-boolean objects have a special method for deleteing their value, because
+boolean objects have a special method for deleting their value, because
 calling C<setl_value(undef)> results in the value being set to false.
 
  $obj->delete_value();

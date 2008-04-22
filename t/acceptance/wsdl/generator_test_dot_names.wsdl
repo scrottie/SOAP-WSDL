@@ -85,21 +85,21 @@
       </xsd:complexType>
 
       <xsd:complexType name="testComplexTypeExtension">
-        	<xsd:annotation>
-          		<xsd:documentation>complexType extension test</xsd:documentation>
-        	</xsd:annotation>
-	        <xsd:complexContent>
-		        <xsd:extension base="tns:testComplexTypeAll">
-		          	<xsd:sequence>
-						<xsd:element name="Test1" type="xsd:string" />
-          				<xsd:element name="Test2" type="xsd:string" minOccurs="1"/>
-			          	<xsd:element name="Test3" type="xsd:string" minOccurs="1"/>
-		          	</xsd:sequence>
-		        </xsd:extension>
-	        </xsd:complexContent>
+            <xsd:annotation>
+                  <xsd:documentation>complexType extension test</xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexContent>
+                <xsd:extension base="tns:testComplexTypeAll">
+                      <xsd:sequence>
+                        <xsd:element name="Test1" type="xsd:string" />
+                          <xsd:element name="Test2" type="xsd:string" minOccurs="1"/>
+                          <xsd:element name="Test3" type="xsd:string" minOccurs="1"/>
+                      </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
       </xsd:complexType>
 
-		<xsd:complexType name="testComplexTypeChoice">
+        <xsd:complexType name="testComplexTypeChoice">
             <xsd:annotation>
                 <xsd:documentation>
                 ComplexType Test
@@ -167,36 +167,36 @@
             </xsd:complexType>
         </xsd:element>
 
-		<xsd:element name="Header" type="tns:testComplexTypeSequence"/>
-		<xsd:element name="testHeader" type="tns:testComplexTypeSequence"/>
-		<xsd:element name="testChoice" type="tns:testComplexTypeChoice"/>
+        <xsd:element name="Header" type="tns:testComplexTypeSequence"/>
+        <xsd:element name="testHeader" type="tns:testComplexTypeSequence"/>
+        <xsd:element name="testChoice" type="tns:testComplexTypeChoice"/>
 
 
-		<xsd:complexType name="testComplexTypeElementAtomicSimpleType">
-		  <xsd:sequence>
-		    <xsd:element name="testString" type="xsd:string" minOccurs="0"/>
-		    <xsd:element name="testAtomicSimpleTypeElement" minOccurs="0">
-		      <xsd:simpleType>
-		        <xsd:restriction base="xsd:decimal">
-		          <xsd:minInclusive value="0"/>
-		        </xsd:restriction>
-		      </xsd:simpleType>
-		    </xsd:element>
-		    <xsd:element name="testAtomicSimpleTypeElement2" minOccurs="0">
-		      <xsd:simpleType>
-		        <xsd:restriction base="xsd:decimal">
-		          <xsd:minInclusive value="0"/>
-		        </xsd:restriction>
-		      </xsd:simpleType>
-		    </xsd:element>
-		  </xsd:sequence>
-		</xsd:complexType>
+        <xsd:complexType name="testComplexTypeElementAtomicSimpleType">
+          <xsd:sequence>
+            <xsd:element name="testString" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="testAtomicSimpleTypeElement" minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="testAtomicSimpleTypeElement2" minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
 
 
         </xsd:schema>
     </types>
     <message name="testChoice">
-    	<part name="parameters" element="tns:testChoice"/>
+        <part name="parameters" element="tns:testChoice"/>
     </message>
     <message name="testRequest">
         <part name="testAll" element="tns:testElementString"/>
@@ -224,19 +224,19 @@
             <output message="tns:testResponse"/>
         </operation>
         <operation name="testHeader">
-			<documentation>
-				Test-Methode
-			</documentation>
-			<input message="tns:testHeaderRequest"/>
-			<output message="tns:testHeaderResponse"/>
-		</operation>
-		<operation name="testChoice">
-			<documentation>
-				Test-Methode
-			</documentation>
-			<input message="tns:testChoice"/>
-			<output message="tns:testChoice"/>
-		</operation>
+            <documentation>
+                Test-Methode
+            </documentation>
+            <input message="tns:testHeaderRequest"/>
+            <output message="tns:testHeaderResponse"/>
+        </operation>
+        <operation name="testChoice">
+            <documentation>
+                Test-Methode
+            </documentation>
+            <input message="tns:testChoice"/>
+            <output message="tns:testChoice"/>
+        </operation>
         <operation name="testMultiPartWarning">
             <documentation>
                 Test-Methode
@@ -245,34 +245,34 @@
             <output message="tns:testMultiPartWarning"/>
         </operation>
 
-	</portType>
+    </portType>
 
-	<binding type="tns:testPort" name="testBinding">
+    <binding type="tns:testPort" name="testBinding">
            <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
            <operation name="testChoice">
-				<soap:operation soapAction="testChoice" style="document"/>
-					<input>
-						<soap:body use="literal"/>
-					</input>
-					<output>
-						<soap:body use="literal"/>
-					</output>
-		    </operation>
+                <soap:operation soapAction="testChoice" style="document"/>
+                    <input>
+                        <soap:body use="literal"/>
+                    </input>
+                    <output>
+                        <soap:body use="literal"/>
+                    </output>
+            </operation>
 
             <operation name="test">
-				<soap:operation soapAction="test" style="document"/>
-					<input>
-						<soap:body use="literal"/>
-					</input>
-					<output>
-						<soap:body use="literal"/>
-					</output>
-		    </operation>
+                <soap:operation soapAction="test" style="document"/>
+                    <input>
+                        <soap:body use="literal"/>
+                    </input>
+                    <output>
+                        <soap:body use="literal"/>
+                    </output>
+            </operation>
             <operation name="testHeader">
                 <soap:operation soapAction="testHeader"/>
-				<input>
-					<soap:body use="literal" parts="tns:testBody"/>
-					<soap:header use="literal" part="tns:testHeader" message="tns:testHeaderRequest"/>
+                <input>
+                    <soap:body use="literal" parts="testBody"/>
+                    <soap:header use="literal" part="testHeader" message="tns:testHeaderRequest"/>
                 </input>
                 <output>
                     <soap:body use="literal"/>
@@ -290,8 +290,8 @@
 
     </binding>
     <service name="My.SOAP.testService">
-		<port name="My.SOAP.testPort" binding="tns:testBinding">
-			<soap:address location="http://127.0.0.1/testPort" />
-		</port>
-	</service>
+        <port name="My.SOAP.testPort" binding="tns:testBinding">
+            <soap:address location="http://127.0.0.1/testPort" />
+        </port>
+    </service>
 </definitions>

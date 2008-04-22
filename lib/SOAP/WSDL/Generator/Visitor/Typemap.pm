@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Generator::Visitor);
 
-our $VERSION = q{2.00_25};
+use version; our $VERSION = qv('2.00.01');
 
 my %path_of             :ATTR(:name<path>           :default<[]>);
 my %typemap_of          :ATTR(:name<typemap>        :default<()>);
@@ -41,7 +41,7 @@ sub add_element_path {
 
 sub process_referenced_type {
     my ( $self, $ns, $localname ) = @_;
-    return if not $localname;
+
     my $ident = ident $self;
 
     # get type's class name
@@ -65,8 +65,7 @@ sub process_atomic_type {
     my ( $self, $type, $callback ) = @_;
     return if not $type;
 
-    my $ident = ident $self;
-    $callback->( $self, $type ) if $callback;
+    $callback->( $self, $type );
     return $self;
 }
 
@@ -97,9 +96,6 @@ sub visit_XSD_Element {
             # warn "simpleType " . $element->get_name();
             my @path = @{ $path_of{ ${ $self } } };
             my $typeclass = $self->get_resolver()->create_subpackage_name($element);
-#            my $typeclass = defined ($parent)
-#                ? join q{::_}, $parent , $element->get_name()
-#                : join q{::}, $self->resolver()->get_element_prefix( $element->get_targetNamespace), $element->get_name();
             $self->set_typemap_entry($typeclass);
             $typeclass =~s{\.}{::}g;
             $typeclass =~s{\-}{_}g;
@@ -108,14 +104,11 @@ sub visit_XSD_Element {
 
         # for atomic and complex types , and ref elements
         my $typeclass = $self->get_resolver()->create_subpackage_name($element);
-#        my $typeclass = join q{::}, $self->get_resolver()->get_element_prefix( $element->get_targetNamespace), $element->get_name();
-#        $typeclass =~s{\.}{::}g;
-#        $typeclass =~s{\-}{_}g;
         $self->set_typemap_entry($typeclass);
 
         $self->process_atomic_type( $element->first_complexType()
             , sub { $_[1]->_accept($_[0]) } )
-            && last;
+            && last SWITCH;
 
         # TODO: add element ref handling
     };
@@ -125,9 +118,6 @@ sub visit_XSD_Element {
     if (not defined($parent)) {
         # for atomic and complex types , and ref elements
         my $typeclass = $self->get_resolver()->create_xsd_name($element);
-#        my $typeclass = join q{::}, $self->get_resolver()->get_element_prefix($element->get_targetNamespace), $element->get_name();
-#        $typeclass =~s{\.}{::}g;
-#        $typeclass =~s{\-}{_}g;
         $self->set_typemap_entry($typeclass);
     }
 

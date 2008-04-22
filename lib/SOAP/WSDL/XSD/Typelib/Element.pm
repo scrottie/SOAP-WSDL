@@ -3,7 +3,7 @@ package SOAP::WSDL::XSD::Typelib::Element;
 use Class::Std::Fast::Storable constructor => 'none';
 use strict;
 
-our $VERSION=q{2.00_29};
+use version; our $VERSION = qv('2.00.01');
 
 my %NAME;
 my %NILLABLE;
@@ -28,6 +28,7 @@ BLOCK: {
     no strict qw(refs);
     while (my ($name, $value) = each %method_lookup ) {
         *{ "__set$name" } = sub {
+            # TODO the "or die" is bullshit - at least the error message is wrong...
             my $class = ref $_[0] || $_[0] or die "Cannot call __set$name without parameter";
             $value->{ $class } = $_[1];
         };
@@ -175,9 +176,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 564 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Element.pm 564 2008-02-23 13:31:39Z kutterma $
+ $Id: Element.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/Element.pm $
 
 =cut

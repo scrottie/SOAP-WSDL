@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(SOAP::WSDL::Expat::Base);
 
-our $VERSION = '2.00_27';
+use version; our $VERSION = qv('2.00.01');
 
 sub _initialize {
     my ($self, $parser) = @_;
@@ -21,7 +21,7 @@ sub _initialize {
     my ($_element, $_method,
         $_class, $_parser, %_attrs) = ();
 
-    no strict qw(refs);
+    # no strict qw(refs);
     $parser->setHandlers(
         Start => sub {
             push @$list, $current;

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp qw(croak confess);
 
-our $VERSION = q{2.00_27};
+use version; our $VERSION = qv('2.00.01');
 
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
@@ -24,8 +24,12 @@ sub new {
     };
 
     bless $self, $class;
-    $self->load_classes() if ($args->{ class_resolver })
-        && ! exists $LOADED_OF{ $self->{ class_resolver } };
+
+    # could be written as && - but Devel::Cover doesn't like that
+    if ($args->{ class_resolver }) {
+        $self->load_classes()
+            if ! exists $LOADED_OF{ $self->{ class_resolver } };
+    }
     return $self;
 }
 
@@ -162,6 +166,9 @@ sub _initialize {
             # (circumventing constructor) here.
             # That's dirty, but fast.
             #
+            # TODO: check whether this is faster under all perls - there's
+            # strange benchmark results...
+            #
             # The alternative would read:
             # $current = $_class->new({ @_[2..$#_] });
             #
@@ -172,8 +179,20 @@ sub _initialize {
             }
 
             # set attributes if there are any
-            $current->attr({ @_[2..$#_] }) if (@_ > 2);
-
+            ATTR: {
+                if (@_ > 2) {
+                    # die Data::Dumper::Dumper(@_[2..$#_]);
+                    my %attr = @_[2..$#_];
+                    if (my $nil = delete $attr{nil}) {
+                        # TODO: check namespace
+                        if ($nil && $nil ne 'false') {
+                            undef $characters;
+                            last ATTR if not (%attr);
+                        }
+                    }
+                    $current->attr(\%attr);
+                }
+            }
             $depth++;
             return;
         },
@@ -194,13 +213,6 @@ sub _initialize {
 
             $depth--;
 
-            # return if there's only one elment - can't set it in parent ;-)
-            # but set as root element if we don't have one already.
-            if (not defined $list->[-1]) {
-                $self->{ data } = $current if (not exists $self->{ data });
-                return;
-            };
-
             # we only set character values in leaf nodes
             if ($_leaf) {
                 # Use dirty but fast access via global variables.
@@ -210,11 +222,19 @@ sub _initialize {
                 # $current->set_value( $characters ) if (length($characters));
                 #
                 $SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType::___value
-                    ->{ $$current } = $characters if $characters =~m{ [^\s] }xms;
+                    ->{ $$current } = $characters
+                        if defined $characters && defined $current; # =~m{ [^\s] }xms;
             }
 
             # empty characters
             $characters = q{};
+
+            # return if there's only one elment - can't set it in parent ;-)
+            # but set as root element if we don't have one already.
+            if (not defined $list->[-1]) {
+                $self->{ data } = $current if (not exists $self->{ data });
+                return;
+            };
 
             # set appropriate attribute in last element
             # multiple values must be implemented in base class
@@ -295,8 +315,8 @@ the same terms as perl itself
 
  $Id: $
 
- $LastChangedDate: 2008-03-29 22:38:55 +0100 (Sa, 29 Mrz 2008) $
- $LastChangedRevision: 585 $
+ $LastChangedDate: 2008-04-22 23:51:49 +0200 (Di, 22 Apr 2008) $
+ $LastChangedRevision: 616 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

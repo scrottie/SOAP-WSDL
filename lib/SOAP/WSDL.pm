@@ -14,7 +14,7 @@ use Class::Std::Fast;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-our $VERSION= '2.00_33';
+use version; our $VERSION= qv('2.00.01');
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -512,7 +512,7 @@ it's content.
 The object tree has two main functions: It knows how to serialize data passed
 as hash ref, and how to render the WSDL elements found into perl classes.
 
-Yup your're right, there's a builting code generation facility. Read
+Yup you're right; there's a builtin code generation facility. Read
 L<SOAP::WSDL::Manual> for using it.
 
 =item * no_dispatch
@@ -595,7 +595,7 @@ See L<class_resolver|class_resolver> above.
 
 =item * Hash refs
 
-This is for convnience: A single hash ref containing the content of the
+This is for convenience: A single hash ref containing the content of the
 SOAP body.
 
 =item * xml
@@ -675,13 +675,13 @@ interpreting mod:
  simpleContent
 
 The following XML Schema definition content model is only partially
-supported:
+supported in interpreting mode:
 
  complexContent - only restriction variety supported
 
 See L<SOAP::WSDL::Manual::XSD> for details.
 
-=item * Serialization of hash refs dos not work for ambiguos values
+=item * Serialization of hash refs does not work for ambiguous values
 
 If you have list elements with multiple occurences allowed, SOAP::WSDL
 has no means of finding out which variant you meant.
@@ -691,17 +691,17 @@ Passing in item => [1,2,3] could serialize to
  <item>1 2</item><item>3</item>
  <item>1</item><item>2 3</item>
 
-Ambiguos data can be avoided by providing data as objects.
+Ambiguous data can be avoided by providing data as objects.
 
 =item * XML Schema facets
 
-Almost no XML schema facets are implemented yet. The only facets
+Almost no XML schema facets are implemented. The only facets
 currently implemented are:
 
  fixed
  default
 
-The following facets have no influence yet:
+The following facets have no influence:
 
  minLength
  maxLength
@@ -725,10 +725,10 @@ The following facets have no influence yet:
 Full featured SOAP-library, little WSDL support. Supports rpc-encoded style
 only. Many protocols supported.
 
-=item * L<XML::Compile::WSDL|XML::Compile::WSDL> / L<XML::Compile::SOAP|XML::Compile::SOAP>
+=item * L<XML::Compile::SOAP|XML::Compile::SOAP>
 
 Creates parser/generator functions for SOAP messages. Includes SOAP Client
-and Server implementatios.
+and Server implementations. Can validate XML messages.
 
 You might want to give it a try, especially if you need to adhere very
 closely to the XML Schema / WSDL specs.
@@ -762,7 +762,7 @@ Peter Orvos, Mark Overmeer, Jon Robens, Isidro Vila Verde and Glenn Wood
 (in alphabetical order) spotted bugs and/or suggested improvements in
 the 1.2x releases.
 
-Andreas 'ac0v' Specht constantly asked for better performance.
+Noah Robin contirbuted lots of documentation fixes, and the mod_perl server.
 
 JT Justman and Noah Robin provided early feedback and bug reports for
 the 2.xx pre-releases.
@@ -770,7 +770,11 @@ the 2.xx pre-releases.
 Adam Kennedy checked and suggested improvements on metadata and dependencies
 in the 2.xx pre-releases.
 
-CPAN Testers have provided most valuable (automated) feedback. Thanks.
+Andreas 'ac0v' Specht constantly asked for better performance.
+
+Matt S. Trout encouraged me "to get a non-dev-release out."
+
+CPAN Testers provided most valuable (automated) feedback. Thanks a lot.
 
 Numerous people sent me their real-world WSDL files for testing. Thank you.
 
@@ -792,9 +796,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 583 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 583 2008-03-24 07:44:06Z kutterma $
+ $Id: WSDL.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

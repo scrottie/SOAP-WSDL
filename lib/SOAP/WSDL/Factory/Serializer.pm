@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Serializer;
 use strict;
 use warnings;
 
-our $VERSION='2.00_24';
+use version; our $VERSION = qv('2.00.01');
 
 my %SERIALIZER = (
     '1.1' => 'SOAP::WSDL::Serializer::XSD',
@@ -46,10 +46,10 @@ SOAP::WSDL::Factory::Serializer - Factory for retrieving serializer objects
  # in serializer class:
  package MyWickedSerializer;
  use SOAP::WSDL::Factory::Serializer;
- 
+
  # register as serializer for SOAP1.2 messages
  SOAP::WSDL::Factory::Serializer->register( '1.2' , __PACKAGE__ );
- 
+
 =head1 DESCRIPTION
 
 SOAP::WSDL::Factory::Serializer serves as factory for retrieving
@@ -138,9 +138,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 510 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 510 2008-01-29 08:03:46Z kutterma $
+ $Id: Serializer.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
- 
+
 =cut

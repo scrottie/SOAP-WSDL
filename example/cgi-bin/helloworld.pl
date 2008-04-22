@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+package main;
 use strict;
 use warnings;
 use lib '../../lib';
@@ -33,7 +34,7 @@ in examples/wsdl/helloworld.wsdl
 Before using this script, you should secure your webserver. The easiest way
 to do so is to let it listen to 127.0.0.1 only.
 
-Then make a ScriptAlias named /soap-wsdl-test/ pointing at the directory 
+Then make a ScriptAlias named /soap-wsdl-test/ pointing at the directory
 this file lies in.
 
 For my apache, it looks like this:

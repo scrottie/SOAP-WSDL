@@ -1,29 +1,43 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
+use diagnostics;
 use lib '../example/lib';
-use lib '/home/martin/workspace/SOAP-WSDL-Fast_XS/blib/lib';
-use lib '/home/martin/workspace/SOAP-WSDL-Fast_XS/blib/arch';
+use lib '../../SOAP-Lite-0.71/lib';
+use lib '/home/martin/workspace/SOAP-WSDL_XS/blib/lib';
+use lib '/home/martin/workspace/SOAP-WSDL_XS/blib/arch';
+use Data::Dumper;
 use SOAP::Lite;
 use XML::Compile::WSDL11;
 use XML::Compile::Transport::SOAPHTTP;
 use MyInterfaces::HelloWorld::HelloWorldSoap;
 use SOAP::WSDL::Deserializer::XSD_XS;
-use Benchmark qw(cmpthese);
+use Benchmark qw(cmpthese timethese);
+
+use SOAP::WSDL::Transport::HTTP;
+use SOAP::WSDL::Factory::Transport;
+SOAP::WSDL::Factory::Transport->register('http', 'SOAP::WSDL::Transport::HTTP');
+
+#my $proxy = 'http://localhost:81/soap-wsdl-test/helloworld.pl';
+my $proxy = 'http://localhost:81/soap-wsdl-test/helloworld';
 
 my $lite = SOAP::Lite->new(
-    proxy => 'http://localhost:81/soap-wsdl-test/helloworld.pl'
+    proxy => $proxy
 );
 
 $lite->on_action( sub { "urn:HelloWorld#sayHello" });
 $lite->autotype(0);
 
-my $soap = MyInterfaces::HelloWorld::HelloWorldSoap->new();
+my $soap = MyInterfaces::HelloWorld::HelloWorldSoap->new({
+	proxy => $proxy,
+});
 
-my $soap_xs = MyInterfaces::HelloWorld::HelloWorldSoap->new();
+my $soap_xs = MyInterfaces::HelloWorld::HelloWorldSoap->new({
+	proxy => $proxy,
+});
 $soap_xs->set_deserializer( SOAP::WSDL::Deserializer::XSD_XS->new() );
 
-my @result;
+my @result = ();;
 
 sub wsdl_bench {
     push @result, $soap->sayHello({
@@ -40,7 +54,12 @@ sub wsdl_xs_bench {
 }
 
 my $wsdl = XML::Compile::WSDL11->new('../example/wsdl/11_helloworld.wsdl');
-my $call = $wsdl->compileClient('sayHello');
+my $call = $wsdl->compileClient('sayHello',
+    sloppy_integers => 1,
+    check_values    => 0,
+    check_values    => 0,
+    validation      => 0,
+);
 
 sub compile_bench {
     push @result, $call->(
@@ -58,12 +77,16 @@ sub lite_bench {
     );
 }
 
+# give all a chance to perform first-run initializations
+compile_bench();
+lite_bench();
 wsdl_bench();
 wsdl_xs_bench();
 
-cmpthese 150, {
+timethese 150, {
     'SOAP::WSDL' => \&wsdl_bench,
     'SOAP::WSDL_XS' => \&wsdl_xs_bench,
     'XML::Compile' => \&compile_bench,
-    # 'SOAP::Lite' => \&lite_bench,
-}
+    'SOAP::Lite' => \&lite_bench,
+};
+

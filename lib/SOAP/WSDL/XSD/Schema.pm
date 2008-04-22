@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION=q{2.00_33};
+use version; our $VERSION = qv('2.00.01');
 
 # child elements
 my %attributeGroup_of   :ATTR(:name<attributeGroup>  :default<[]>);

@@ -1,10 +1,8 @@
 package SOAP::WSDL::Factory::Transport;
 use strict;
 use warnings;
+use version; our $VERSION = qv('2.00.01');
 
-our $VERSION='2.00_33';
-
-# class data
 my %registered_transport_of = ();
 
 # Local constants
@@ -32,14 +30,17 @@ sub register {
 }
 
 sub get_transport {
-    my ($class, $scheme, %attrs) = @_;
+    my ($class, $url, %attrs) = @_;
 
-    $scheme =~s{ \A ([^\:]+) \: .+ }{$1}x;
 
-    if ($registered_transport_of{ $scheme }) {
+    my $scheme = $url;
+    $scheme =~s{ \:.+$ }{}xm;
+
+
+    if (defined $registered_transport_of{ $scheme }) {
         no strict qw(refs);
-        defined %{ "$registered_transport_of{ $scheme }::" }
-            or eval "require $registered_transport_of{ $scheme }"
+        defined %{ "$registered_transport_of{ $scheme }::" } or
+            eval "require $registered_transport_of{ $scheme }"
                 or die "Cannot load transport class $registered_transport_of{ $scheme } : $@";
 
         # try "foo::Client" class first - SOAP::Tranport always requires
@@ -50,28 +51,30 @@ sub get_transport {
         # sparse resource ...
         # ... but we've decided to mimic SOAP::Lite...
 
-#        my $protocol_class = $SOAP_LITE_TRANSPORT_OF{ $scheme } . '::Client';
-#        my $transport;
-#        eval {
-#            $transport = $protocol_class->new( %attrs );
-#        };
-#        return $transport if not $@;
         return $registered_transport_of{ $scheme }->new( %attrs );
     }
 
     # try SOAP::Lite's Transport module - just skip if not require'able
     SOAP_Lite: {
-      if (exists $SOAP_LITE_TRANSPORT_OF{ $scheme }) {
-          eval "require $SOAP_LITE_TRANSPORT_OF{ $scheme }"
-            or last SOAP_Lite;
-          my $protocol_class = $SOAP_LITE_TRANSPORT_OF{ $scheme } . '::Client';
-          return $protocol_class->new( %attrs );
-      }
+        if (exists $SOAP_LITE_TRANSPORT_OF{ $scheme }) {
+            no strict qw(refs);
+            # behaves interestingly different under different versions of perl
+            # maybe true even if it's not available
+            defined %{ "$SOAP_LITE_TRANSPORT_OF{ $scheme }::" }
+                or eval "require $SOAP_LITE_TRANSPORT_OF{ $scheme }"
+                    or last SOAP_Lite;
+
+            my $protocol_class = $SOAP_LITE_TRANSPORT_OF{ $scheme } . '::Client';
+            # may fail if it's not available
+            my $transport = eval { $protocol_class->new( %attrs ) }
+                or last SOAP_Lite;
+            return $transport;
+        }
     }
 
     if (exists $SOAP_WSDL_TRANSPORT_OF{ $scheme }) {
         no strict qw(refs);
-        defined %{ "$SOAP_WSDL_TRANSPORT_OF{ $scheme }::" }
+        defined %{ "$SOAP_WSDL_TRANSPORT_OF{ $scheme }::"}
             or eval "require $SOAP_WSDL_TRANSPORT_OF{ $scheme }"
                 or die "Cannot load transport class $SOAP_WSDL_TRANSPORT_OF{ $scheme } : $@";
         return $SOAP_WSDL_TRANSPORT_OF{ $scheme }->new( %attrs );
@@ -159,7 +162,7 @@ the class should be used for, and $module is the class' module name.
 To auto-register your transport class on loading, execute register() in your
 tranport class (see L<SYNOPSIS|SYNOPSIS> above).
 
-Multiple protocols ore multiple classes are registered by multiple calls to
+Multiple protocols or multiple classes are registered by multiple calls to
 register().
 
 =head2 Transport plugin package layout
@@ -240,9 +243,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 579 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 579 2008-03-09 18:39:24Z kutterma $
+ $Id: Transport.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
 
 =cut

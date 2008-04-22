@@ -7,4 +7,3 @@
 port_op.get_documentation %]
 
  $interface->[% operation.get_name %]([% INCLUDE Interface/POD/Message.tt %] );
- 

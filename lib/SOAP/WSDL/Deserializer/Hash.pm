@@ -8,7 +8,7 @@ use SOAP::WSDL::Expat::Message2Hash;
 use SOAP::WSDL::Factory::Deserializer;
 SOAP::WSDL::Factory::Deserializer->register( '1.1', __PACKAGE__ );
 
-our $VERSION='2.00_25';
+use version; our $VERSION = qv('2.00.01');
 
 sub BUILD {
     my ($self, $ident, $args_of_ref) = @_;
@@ -54,7 +54,7 @@ SOAP::WSDL::Deserializer::Hash - Deserializer SOAP messages into perl hash refs
 
  use SOAP::WSDL;
  use SOAP::WSDL::Deserializer::Hash;
- 
+
 =head1 DESCRIPTION
 
 Deserializer for creating perl hash refs as result of a SOAP call.
@@ -152,9 +152,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 427 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: Hash.pm 427 2007-12-02 22:20:24Z kutterma $
+ $Id: Hash.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/Hash.pm $
 
 =cut

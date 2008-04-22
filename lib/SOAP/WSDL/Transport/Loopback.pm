@@ -4,8 +4,9 @@ use warnings;
 use Class::Std::Fast::Storable constructor => 'basic';
 use SOAP::WSDL::Factory::Transport;
 
-our $VERSION=q{2.00_25};
+use version; our $VERSION = qv('2.00.01');
 
+# register on loading
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );
 
@@ -40,7 +41,7 @@ SOAP::WSDL::Transport::Test - Loopback transport class for SOAP::WSDL
 
  use SOAP::WSDL::Client;
  use SOAP::WSDL::Transport::Loopback;
- 
+
  my $soap = SOAP::WSDL::Client->new()
  $soap->get_transport->set_base_dir('.');
  $soap->call('method', \%body, \%header);
@@ -71,5 +72,5 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $LastChangedBy: kutterma $
  $Id: HTTP.pm 218 2007-09-10 16:19:23Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
- 
+
 =cut

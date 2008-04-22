@@ -4,6 +4,7 @@ use lib '../../SOAP-WSDL_XS/blib/lib';
 use lib '../../SOAP-WSDL_XS/blib/arch';
 use strict;
 use Benchmark;
+use Storable;
 #use SOAP::WSDL::Deserializer::XSD_XS;
 use SOAP::WSDL::Factory::Deserializer;
 # # register for SOAP 1.1
@@ -15,13 +16,21 @@ my @data = ();
 my $soap = MyInterfaces::TestService::TestPort->new();
 
 # Load all classes - XML::Compile has created everything before, too
-timethis 100, sub { $soap->ListPerson({}) };
+#timethis 100, sub { $soap->ListPerson({}) };
 #timethis 50, sub { push @data, $soap->ListPerson({}) };
 #@data = ();
 # timethis 50, sub { push @data, $soap->ListPerson({}) };
 
 # for (1..50) { push @data, $soap->ListPerson({}) };
 #print $soap->ListPerson({});
+my $result = $soap->ListPerson({});
+
+timethis 30 , sub {
+    my $frozen = Storable::freeze( $result );
+    my $thawed = Storable::thaw($frozen);
+};
+# print $thawed;
+
 
 package Transport;
 use Class::Std::Fast;

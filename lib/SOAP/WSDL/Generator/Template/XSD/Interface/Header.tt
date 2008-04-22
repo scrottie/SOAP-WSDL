@@ -11,10 +11,11 @@
     my $def = $stash->{ definitions };
     my $type_prefix = $stash->{ type_prefix };
     my $element_prefix = $stash->{ element_prefix };
-    my ($ns, $lname) = $def->expand( $item->get_part() );
+    #my ($ns, $lname) = $def->expand( $item->get_part() );
+    my $part_name = $item->get_part();
     my ($part) = grep {
-        $_->get_name eq $lname
-        && $_->get_targetNamespace eq $ns } @{ $message->get_part( ) };
+        $_->get_name eq $part_name
+        } @{ $message->get_part( ) };
     my $part_class = do {
         my $name;
         ($name = $part->get_element)

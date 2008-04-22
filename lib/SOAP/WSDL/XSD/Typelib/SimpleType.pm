@@ -3,10 +3,14 @@ package SOAP::WSDL::XSD::Typelib::SimpleType;
 use strict;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 
+use version; our $VERSION = qv('2.00.01');
+
 package SOAP::WSDL::XSD::Typelib::SimpleType::restriction;
 use strict;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use base qw(SOAP::WSDL::XSD::Typelib::SimpleType);
+
+use version; our $VERSION = qv('2.00.01');
 
 1;
 __END__
@@ -83,9 +87,9 @@ faint of heart).
 simpleType classes derived via restriction must inherit from these classes in
 exactly this order:
 
- SOAP::WSDL::XSD::Typelib::SimpleType               # you may leave out this
- SOAP::WSDL::XSD::Typelib::SimpleType::restriction  # derive by retriction
- The::Restriction::Base::Class                      # resytriction base
+ SOAP::WSDL::XSD::Typelib::SimpleType               # you may leave this out
+ SOAP::WSDL::XSD::Typelib::SimpleType::restriction  # derive by restriction
+ The::Restriction::Base::Class                      # restriction base
 
 The::Restriction::Base::Class can either be a builtin class (see
 SOAP::WSDL::XSD::Builtin) or another simpleType class.
@@ -129,9 +133,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 477 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: SimpleType.pm 477 2007-12-24 10:23:52Z kutterma $
+ $Id: SimpleType.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm $
 
 =cut

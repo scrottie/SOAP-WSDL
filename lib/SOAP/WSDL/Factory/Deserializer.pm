@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Deserializer;
 use strict;
 use warnings;
 
-our $VERSION = '2.00_24';
+use version; our $VERSION = qv('2.00.01');
 
 my %DESERIALIZER = (
     '1.1' => 'SOAP::WSDL::Deserializer::XSD',
@@ -47,10 +47,10 @@ SOAP::WSDL::Factory::Deserializer - Factory for retrieving Deserializer objects
  # in deserializer class:
  package MyWickedDeserializer;
  use SOAP::WSDL::Factory::Deserializer;
- 
+
  # register class as deserializer for SOAP1.2 messages
  SOAP::WSDL::Factory::Deserializer->register( '1.2' , __PACKAGE__ );
- 
+
 =head1 DESCRIPTION
 
 SOAP::WSDL::Factory::Deserializer serves as factory for retrieving
@@ -150,5 +150,5 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $LastChangedBy: kutterma $
  $Id: Serializer.pm 176 2007-08-31 15:28:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
- 
+
 =cut

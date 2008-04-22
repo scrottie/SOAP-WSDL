@@ -2,6 +2,8 @@ package SOAP::WSDL::Generator::Iterator::WSDL11;
 use strict; use warnings;
 use Class::Std::Fast;
 
+use version; our $VERSION = qv('2.00.01');
+
 my %definitions_of  :ATTR(:name<definitions>    :default<[]>);
 my %nodes_of        :ATTR(:name<nodes>          :default<[]>);
 
@@ -242,8 +244,8 @@ The nodes are returned in the order denoted in the following example:
     </service>
  </definitions>
 
-You should not rely too much on this order - it may change. Even though, the
-current order will probably remain, but the nodes currently skipped might
+You should not rely too much on this order - it may change. Even though the
+current order will probably remain, the nodes currently skipped might
 be returned somewhere along the path.
 
 

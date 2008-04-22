@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use Carp qw(croak carp confess);
 
-our $VERSION='2.00_27';
+use version; our $VERSION = qv('2.00.01');
 
 my %id_of               :ATTR(:name<id> :default<()>);
 my %lang_of             :ATTR(:name<lang> :default<()>);

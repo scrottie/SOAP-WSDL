@@ -1,10 +1,5 @@
 TODO list for SOAP::WSDL
 
-2.00 Pre-releases
---------
-
-* Act as SOAP Server [ 1842436 ] 
-
 2.1 release
 --------
 * Support namespaces in SOAP message payload [ 1809057 ]

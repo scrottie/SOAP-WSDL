@@ -1,4 +1,4 @@
-use Test::More tests => 49;
+use Test::More tests => 51;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -14,7 +14,6 @@ my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
 my $definitions = $parser->parse_file(
      "$path/../../../acceptance/wsdl/generator_test.wsdl"
-    #"$path/../../../acceptance/wsdl/elementAtomicComplexType.xml"
 );
 
 my $generator = SOAP::WSDL::Generator::Template::XSD->new({
@@ -33,8 +32,6 @@ $generator->generate_typelib();
     ok !$@;
     print $@ if $@;
 }
-# print $code;
-
 
 $generator->set_type_prefix('MyTypes');
 $generator->set_element_prefix('MyElements');
@@ -181,6 +178,10 @@ ok $obj = MyTypes::testSimpleContentExtension->new({ value => 'foo' });
 $obj->attr({ testAttr => 'bar' });
 
 is $obj->serialize({ name => 'baz'}), q{<baz testAttr="bar">foo</baz>};
+
+use_ok qw(MyAttributes::TestAttribute);
+ok $obj = MyAttributes::TestAttribute->new({ value => 'foo' });
+
 
 SKIP: {
     eval { require Test::Pod::Content; }

@@ -3,20 +3,26 @@ use strict; use warnings;
 
 use Class::Std::Fast::Storable;
 
+use version; our $VERSION = qv('2.00.01');
+
 my %namespace_prefix_map_of :ATTR(:name<namespace_prefix_map>   :default<{}>);
 my %namespace_map_of        :ATTR(:name<namespace_map>          :default<{}>);
 my %prefix_of               :ATTR(:name<prefix> :default<{}>);
 
 sub resolve_prefix {
     my ($self, $type, $namespace, $element) = @_;
-    return $prefix_of{ $$self }->{ $type }
-        if not defined($namespace);
-    return $namespace_prefix_map_of{ $$self }->{ $namespace }
-        || ( ($namespace_map_of{ $$self }->{ $namespace })
-            ? join ('::', $prefix_of{ $$self }->{ $type }, $namespace_map_of{ $$self }->{ $namespace })
-            : $prefix_of{ $$self }->{ $type }
-        );
-
+    my $prefix;
+    if (not defined($namespace)) {
+        $prefix = $prefix_of{ $$self }->{ $type }
+    }
+    else {
+        $prefix = $namespace_prefix_map_of{ $$self }->{ $namespace }
+            || ( ($namespace_map_of{ $$self }->{ $namespace })
+                ? join ('::', $prefix_of{ $$self }->{ $type }, $namespace_map_of{ $$self }->{ $namespace })
+                : $prefix_of{ $$self }->{ $type }
+            );
+    }
+    return "${prefix}::";
 }
 
 1;
@@ -67,7 +73,7 @@ Subclasses must implement the following methods:
     # ...
  }
 
-resolve_prefix is expected to return a (perl class) prefis. It is called with
+resolve_prefix is expected to return a (perl class) prefix. It is called with
 the following parameters:
 
  NAME       DESCRIPTION
@@ -80,7 +86,7 @@ You usually just need type and namespace for prefix resolving. node is
 provided for rather funky setups, where you have to choose different prefixes
 based on type names or whatever.
 
-Note that node may be of any of the following classes:
+Node may be of any of the following classes:
 
  SOAP::WSDL::Service
  SOAP::WSDL::XSD::Attribute
@@ -90,7 +96,33 @@ Note that node may be of any of the following classes:
 Note that both namespace and node may be undef - you should test for
 definedness before doing anything fancy with them.
 
+If you want your prefixes to represent perl class hierarchies, they should
+end with '::'.
+
+Example:
+
+Imagine you're generating interfaces for the Acme Pet Shop. Acme Corp. has
+set up their datatypes to be global across all interfaces (and products), while
+elements are local to the product (the Pet Shop in the example).
+All elements are in the urn:Acme namespace.
+
+In addition, there are types in the namespace urn:Acme:Goods, which should go
+into the same namespace as types, but be prefixed with 'Goods_'
+
+You may want prefixes (roughly) like this:
+
+ Interfaces:        Acme::Client::PetShop::
+ Server:            Acme::Server::PetShop::
+ Types:             Acme::Types::
+ Types (Goods):     Acme::Types::Goods_
+ Elements:          Acme::Elements::PetShop::
+ Typemaps:          Acme::Typemaps::PetShop::
+
 =back
+
+=head1 BUGS AND LIMITATIONS
+
+You cannot suffix your types by some rule yet...
 
 =head1 LICENSE AND COPYRIGHT
 

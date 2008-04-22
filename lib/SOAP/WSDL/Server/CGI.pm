@@ -12,7 +12,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Server);
 
-our $VERSION=q{2.00_33};
+use version; our $VERSION = qv('2.00.01');
 
 # mostly copied from SOAP::Lite. Unfortunately we can't use SOAP::Lite's CGI
 # server directly - we would have to swap out it's base class...
@@ -39,7 +39,7 @@ sub handle {
     my $content = q{};
     my $buffer;
 
-    # do wen need to use bytes; here ?
+    # do we need to use bytes; here ?
     binmode(STDIN);
     while (read(STDIN,$buffer,$length - length($content))) {
         $content .= $buffer;
@@ -64,22 +64,22 @@ sub handle {
     my $response_message = eval { $self->SUPER::handle($request) };
     # caveat: SOAP::WSDL::SOAP::Typelib::Fault11 is false in bool context...
     if ($@ || blessed $@) {
+        my $exception = $@;
         $response = HTTP::Response->new(500);
-        if (blessed $@) {
+        $response->header('Content-type' => 'text/xml; charset="utf-8"');
+        if (blessed($exception)) {
             $response->content( $self->get_serializer->serialize({
-                    body =>$@
+                    body => $exception
                 })
             );
         }
         else {
-            $response->content($@);
+            $response->content($exception);
         }
     }
     else {
         $response = HTTP::Response->new(200);
-        $response->header(
-            'Content-type' => 'text/xml; charset="utf-8"'
-        );
+        $response->header('Content-type' => 'text/xml; charset="utf-8"');
         $response->content( $response_message );
         {
             use bytes;
@@ -140,35 +140,9 @@ or the like, but provides a basic SOAP server using SOAP::WSDL::Server.
 
 =head1 METHODS
 
-=head1 EXCEPTION HANDLING
+=head2 handle
 
-SOAP::WSDL::CGI handles the following errors:
-
-=over
-
-=item * XML parsing error
-
-=back
-
-The proper way to throw a exception is just to die -
-SOAP::WSDL::Server::CGI catches the exception and sends a SOAP Fault
-back to the client.
-
-If you want more control over the SOAP Fault sent to the client, you can
-die with a SOAP::WSDL::SOAP::Fault11 object - or just let the
-SOAP::Server's deserializer create one for you:
-
- my $soap = MyServer::SomeService->new();
-
- die $soap->get_deserializer()->generate_fault({
-    code => 'soap:Server',
-    role => 'urn:localhost',
-    message => "The error message to pas back",
-    detail => "Some details on the error",
- });
-
-You may use any other object as exception, provided it has a
-serialize() method which returns the object's XML representation.
+See synopsis above.
 
 =head1 LICENSE AND COPYRIGHT
 

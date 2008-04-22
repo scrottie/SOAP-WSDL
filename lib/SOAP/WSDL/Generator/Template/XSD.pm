@@ -5,15 +5,15 @@ use Class::Std::Fast::Storable;
 use File::Basename;
 use File::Spec;
 
-our $VERSION = q{2.00_27};
+use version; our $VERSION = qv('2.00.01');
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Visitor::Typelib;
 use SOAP::WSDL::Generator::Template::Plugin::XSD;
 use base qw(SOAP::WSDL::Generator::Template);
 
-my %output_of                   :ATTR(:name<output> :default<()>);
-my %typemap_of                  :ATTR(:name<typemap> :default<({})>);
+my %output_of                   :ATTR(:name<output>         :default<()>);
+my %typemap_of                  :ATTR(:name<typemap>        :default<({})>);
 
 sub BUILD {
     my ($self, $ident, $arg_ref) = @_;
@@ -47,6 +47,29 @@ sub BUILD {
     );
 }
 
+# construct object on call to allow late binding of prefix_resolver class
+# and namespace maps (not used yet)
+sub get_name_resolver {
+    my $self = shift;
+    return SOAP::WSDL::Generator::Template::Plugin::XSD->new({
+        prefix_resolver => $self->get_prefix_resolver_class()->new({
+            namespace_prefix_map => {
+                'http://www.w3.org/2001/XMLSchema' => 'SOAP::WSDL::XSD::Typelib::Builtin',
+            },
+            namespace_map => {
+            },
+            prefix => {
+                attribute   =>  $self->get_attribute_prefix,
+                interface   =>  $self->get_interface_prefix,
+                element     =>  $self->get_element_prefix,
+                server      =>  $self->get_server_prefix,
+                type        =>  $self->get_type_prefix,
+                typemap     =>  $self->get_typemap_prefix,
+            }
+        })
+    });
+}
+
 sub generate {
     my $self = shift;
     my $opt = shift;
@@ -73,7 +96,7 @@ sub _generate_interface {
     my $self = shift;
     my $arg_ref = shift;
     my $template_name = delete $arg_ref->{ template_name };
-    my $prefix_method = delete $arg_ref->{ prefix_method };
+    my $name_method = delete $arg_ref->{ name_method };
     for my $service (@{ $self->get_definitions->get_service }) {
         for my $port (@{ $service->get_port() }) {
             # Skip ports without (known) address
@@ -85,10 +108,11 @@ sub _generate_interface {
             my $output = $arg_ref->{ output }
                 ? $arg_ref->{ output }
                 : $self->_generate_filename(
-                    $self->can($prefix_method)->($self),
-                    $service->get_name(),
-                    $port_name,
-            );
+                    $self->get_name_resolver()->can($name_method)->(
+                        $self->get_name_resolver(),
+                        $service,
+                        $port,
+                ));
             print "Creating interface class $output\n";
 
             $self->_process($template_name,
@@ -105,14 +129,14 @@ sub _generate_interface {
 sub generate_server {
     my ($self, $arg_ref) = @_;
     $arg_ref->{ template_name } = 'Server.tt';
-    $arg_ref->{ prefix_method } = 'get_server_prefix';
+    $arg_ref->{ name_method } = 'create_server_name';
     $self->_generate_interface($arg_ref);
 }
 
 sub generate_client {
     my ($self, $arg_ref) = @_;
     $arg_ref->{ template_name } = 'Interface.tt';
-    $arg_ref->{ prefix_method } = 'get_interface_prefix';
+    $arg_ref->{ name_method } = 'create_interface_name';
     $self->_generate_interface($arg_ref);
 }
 sub generate_interface;
@@ -133,22 +157,7 @@ sub generate_typemap {
             'Fault/detail' => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             %{ $typemap_of{ident $self }},
         },
-        resolver => SOAP::WSDL::Generator::Template::Plugin::XSD->new({
-            prefix_resolver => $self->get_prefix_resolver_class()->new({
-                namespace_prefix_map => {
-                    'http://www.w3.org/2001/XMLSchema' => 'SOAP::WSDL::XSD::Typelib::Builtin',
-                },
-                namespace_map => {
-                },
-                prefix => {
-                    interface =>    $self->get_interface_prefix,
-                    element =>      $self->get_element_prefix,
-                    server =>       $self->get_server_prefix,
-                    type =>         $self->get_type_prefix,
-                    typemap =>      $self->get_typemap_prefix,
-                }
-            })
-        }),
+        resolver => $self->get_name_resolver(),
     });
 
     use SOAP::WSDL::Generator::Iterator::WSDL11;
@@ -163,7 +172,7 @@ sub generate_typemap {
 
             my $output = $arg_ref->{ output }
                 ? $arg_ref->{ output }
-                : $self->_generate_filename( $self->get_typemap_prefix(), $service->get_name() );
+                : $self->_generate_filename( $self->get_name_resolver()->create_typemap_name($service) );
             print "Creating typemap class $output\n";
             $self->_process('Typemap.tt',
             {
@@ -176,8 +185,7 @@ sub generate_typemap {
 }
 
 sub _generate_filename :PRIVATE {
-    my ($self, @parts) = @_;
-    my $name = join '::', @parts;
+    my ($self, $name) = @_;
     $name =~s{ \. }{::}xmsg;
     $name =~s{ \- }{_}xmsg;
     $name =~s{ :: }{/}xmsg;
@@ -188,7 +196,7 @@ sub visit_XSD_Attribute {
     my ($self, $attribute) = @_;
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
-        : $self->_generate_filename( $self->get_attribute_prefix(), $attribute->get_name() );
+        : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($attribute) );
     $self->_process('attribute.tt', { attribute => $attribute } , $output);
 }
 
@@ -196,7 +204,7 @@ sub visit_XSD_Element {
     my ($self, $element) = @_;
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
-        : $self->_generate_filename( $self->get_element_prefix(), $element->get_name() );
+        : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($element) );
     $self->_process('element.tt', { element => $element } , $output);
 }
 
@@ -204,7 +212,7 @@ sub visit_XSD_SimpleType {
     my ($self, $type) = @_;
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
-        : $self->_generate_filename( $self->get_type_prefix(), $type->get_name() );
+        : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($type) );
     $self->_process('simpleType.tt', { simpleType => $type } , $output);
 }
 
@@ -212,7 +220,7 @@ sub visit_XSD_ComplexType {
     my ($self, $type) = @_;
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
-        : $self->_generate_filename( $self->get_type_prefix(), $type->get_name() );
+        : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($type) );
     $self->_process('complexType.tt', { complexType => $type } , $output);
 }
 

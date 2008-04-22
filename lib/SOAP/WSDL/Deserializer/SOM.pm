@@ -2,7 +2,7 @@ package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
 
-our $VERSION = '2.00_24';
+use version; our $VERSION = qv('2.00.01');
 our @ISA;
 
 eval {
@@ -37,7 +37,7 @@ SOAP::WSDL::Deserializer::SOM - Deserializer SOAP messages into SOM objects
  use SOAP::WSDL::Deserializer::SOM;
  use SOAP::WSDL::Factory::Deserializer;
  SOAP::WSDL::Factory::Deserializer->register( '1.1', __PACKAGE__ );
- 
+
 =head1 DESCRIPTION
 
 Deserializer for creating SOAP::Lite's SOM object as result of a SOAP call.
@@ -68,11 +68,11 @@ from the L<SOAP::Lite|SOAP::Lite> package.
 
 =head1 USAGE
 
-SOAP::WSDL::Deserializer will not auroregister itself - to use it for a particular
+SOAP::WSDL::Deserializer will not autoregister itself - to use it for a particular
 SOAP version just use the following lines:
 
  my $soap_version = '1.1'; # or '1.2', further versions may appear.
- 
+
  use SOAP::WSDL::Deserializer::SOM;
  use SOAP::WSDL::Factory::Deserializer;
  SOAP::WSDL::Factory::Deserializer->register( $soap_version, __PACKAGE__ );
@@ -114,9 +114,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 391 $
+ $Rev: 616 $
  $LastChangedBy: kutterma $
- $Id: SOM.pm 391 2007-11-17 21:56:13Z kutterma $
+ $Id: SOM.pm 616 2008-04-22 21:51:49Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/SOM.pm $
 
 =cut
