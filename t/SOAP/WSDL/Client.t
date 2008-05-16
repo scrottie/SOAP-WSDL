@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More tests => 8; #qw(no_plan);
-
 use_ok qw(SOAP::WSDL::Client);
 
 ok my $client = SOAP::WSDL::Client->new();
@@ -29,7 +28,6 @@ is $serialize->{ body }->{ foo }, 'bar';
 # Old calling style compatibility test - foo => bar is body...
 $serialize = $client->call('testMethod', foo => 'bar');
 is $serialize->{ body }->{ foo }, 'bar';
-
 
 sub serialize {
     my $self = shift;

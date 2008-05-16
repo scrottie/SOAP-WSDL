@@ -241,7 +241,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 391 $
  $LastChangedBy: kutterma $
  $Id: Parser.pod 391 2007-11-17 21:56:13Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/Parser.pod $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/Parser.pod $
 
 =cut
 

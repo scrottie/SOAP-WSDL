@@ -1,0 +1,133 @@
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Manual::Cookbook - SOAP::WSDL recipes
+
+=head2 Accessing HTTPS webservices
+
+You need Crypt::SSLeay installed to access HTTPS webservices.
+
+=head2 Accessing protected web services
+
+Passing a username and password, or a client certificate and key, to the
+transport layer is highly dependent on the transport backend. The descriptions
+below are for HTTP(S) transport usingLWP::UserAgent
+
+=head3 Accessing HTTP(S) webservices with basic/digest authentication
+
+When using SOAP::WSDL::Transport::HTTP (SOAP::Lite not installed), add a
+method called "get_basic_credentials" to SOAP::WSDL::Transport::HTTP:
+
+ *SOAP::WSDL::Transport::HTTP::get_basic_credentials = sub {
+    return ($user, $password);
+ };
+
+When using SOAP::Transport::HTTP (SOAP::Lite is installed), do the same to
+this backend:
+
+ *SOAP::Transport::HTTP::Client::get_basic_credentials = sub {
+     return ($user, $password);
+ };
+
+=head3 Accessing HTTP(S) webservices protected by NTLM authentication
+
+Besides passing user credentials as when accessing a web service protected
+by basic or digest authentication, you also need to enforce connection
+keep_alive on the transport backens.
+
+To do so, pass a I<proxy> argument to the new() method of the generated
+class. This unfortunately means that you have to set the endpoint URL, too:
+
+ my $interface = MyInterfaces::SERVICE_NAME::PORT_NAME->new({
+     proxy => [ $url, keep_alive => 1 ]
+ });
+
+You may, of course, decide to just hack the generated class. Be advised that
+subclassing might be a more appropriate solution - re-generating overwrites
+changes in interface classes.
+
+=head3 Accessing HTTPS webservices protected by certificate authentication
+
+You need Crypt::SSLeay installed to access HTTPS webservices.
+
+See L<Crypt::SSLeay> on how to configure client certificate authentication.
+
+=head1 XML OUTPUT
+
+=head2 Outputting namespaces as prefixes
+
+Q: I need to interface with a SOAP server which doesn't accept the following
+format:
+
+ <SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+     <SOAP-ENV:Body>
+         <getElement xmlns="http://services.company.com/">
+             <elementId>12345</elementId>
+         </getElement>
+     </SOAP-ENV:Body>
+ </SOAP-ENV:Envelope>
+
+Instead, it requires this:
+
+ <SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:ns2="http://services.company.com/"
+     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+     <SOAP-ENV:Body>
+         <ns2:getElement>
+             <ns2:elementId>12345</ns2:elementId>
+         </ns2:getElement>
+     </SOAP-ENV:Body>
+ </SOAP-ENV:Envelope>
+
+How do I do this using SOAP::WSDL?
+
+A: The following steps are neccessary to achieve this result:
+
+First, you would need to write a new serializer, which is quite easy, as it
+just creates the envelope and calls ->serialize_qualified() on $header and
+$body to fill them in. The new serializer has to declare all namespace
+prefixes used, the rest is just the same as the original XSD serializer.
+
+Second, you'd need to overwrite the start_tag method in
+L<SOAP::WSDL::XSD::Typelib::Element|SOAP::WSDL::XSD::Typelib::Element> to use
+the appropriate prefixes for the body elements.
+
+In contrast to the original method, it would probably look up the appropriate
+prefix from some data set in the serializer class, so this could be the
+appropriate place to load SOAP::WSDL::XSD::Typelib::Element and override the
+method.
+
+Something like this should do (without the handling of specialties like empty
+or nil elements):
+
+ %PREFIX_OF = { 'http://services.company.com/' => 'ns2' };
+
+ *SOAP::WSDL::XSD::Typelib::Element::start_tag = sub {
+     # use prefix instead of xmlns attribute and copy the rest from
+     # SOAP::WSDL::XSD::Typelib::Element::start_tag
+     my $prefix = $PREFIX_OF{ $_[0]->get_xmlns() };
+     my $name = $_[1]->{ name } || $self->__get_name();
+     return "<$prefix:$name>";
+ }
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2008 Martin Kutter.
+
+This library is free software. You may distribute/modify it under
+the same terms as perl itself
+
+=head1 AUTHOR
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 REPOSITORY INFORMATION
+
+ $Rev: 583 $
+ $LastChangedBy: kutterma $
+ $Id: $
+ $HeadURL: $
+
+=cut

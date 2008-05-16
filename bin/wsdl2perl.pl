@@ -11,10 +11,12 @@ use Term::ReadKey;
 my %opt = (
   url => '',
   prefix => undef,
+  attribute_prefix => 'MyAttributes',
   type_prefix => 'MyTypes',
   element_prefix => 'MyElements',
   typemap_prefix => 'MyTypemaps',
   interface_prefix => 'MyInterfaces',
+  server_prefix => 'MyServer',
   base_path => 'lib/',
   proxy => undef,
   generator => 'XSD',
@@ -51,10 +53,12 @@ my %opt = (
 GetOptions(\%opt,
   qw(
     prefix|p=s
+    attribute_prefix|a=s
     type_prefix|t=s
     element_prefix|e=s
     typemap_prefix|m=s
     interface_prefix|i=s
+    server_prefix|sp=s
     base_path|b=s
     typemap_include|mi=s
     help|h
@@ -63,7 +67,7 @@ GetOptions(\%opt,
     user=s
     password=s
     generator=s
-    server
+    server|s
     namespaces|n
   )
 );
@@ -107,12 +111,22 @@ if (%typemap) {
     }
 };
 
-$generator->set_type_prefix( $opt{ type_prefix }) if $generator->can('set_type_prefix');
-$generator->set_typemap_prefix( $opt{ typemap_prefix }) if $generator->can('set_typemap_prefix');
-$generator->set_element_prefix($opt{ element_prefix }) if $generator->can('set_element_prefix');
-$generator->set_interface_prefix($opt{ interface_prefix }) if $generator->can('set_interface_prefix');
-$generator->set_OUTPUT_PATH($opt{ base_path }) if $generator->can('set_OUTPUT_PATH');
-$generator->set_definitions($definitions) if $generator->can('set_definitions');
+$generator->set_attribute_prefix( $opt{ attribute_prefix })
+    if $generator->can('set_attribute_prefix');
+$generator->set_type_prefix( $opt{ type_prefix })
+    if $generator->can('set_type_prefix');
+$generator->set_typemap_prefix( $opt{ typemap_prefix })
+    if $generator->can('set_typemap_prefix');
+$generator->set_element_prefix($opt{ element_prefix })
+    if $generator->can('set_element_prefix');
+$generator->set_interface_prefix($opt{ interface_prefix })
+    if $generator->can('set_interface_prefix');
+$generator->set_server_prefix($opt{ server_prefix })
+    if $generator->can('set_server_prefix');
+$generator->set_OUTPUT_PATH($opt{ base_path })
+    if $generator->can('set_OUTPUT_PATH');
+$generator->set_definitions($definitions)
+    if $generator->can('set_definitions');
 # $generator->set_wsdl($xml) if $generator->can('set_wsdl');
 
 # start with typelib, as errors will most likely occur here...
@@ -137,6 +151,8 @@ wsdl2perl.pl - create perl bindings for SOAP webservices.
  NAME            SHORT  DESCRITPION
  ----------------------------------------------------------------------------
  prefix            p   Prefix for both type and element classes.
+ attribute_prefix  a   Prefix for XML attribute classes.
+                       Default: MyAttributes
  type_prefix       t   Prefix for type classes.
                        Default: MyTypes
  element_prefix    e   Prefix for element classes.
@@ -145,6 +161,8 @@ wsdl2perl.pl - create perl bindings for SOAP webservices.
                        Default: MyTypemaps
  interface_prefix  i   Prefix for interface classes.
                        Default: MyInterfaces
+ server_prefix     sp  Prefix for server classes.
+                       Default: MyServer
  base_path         b   Path to create classes in.
                        Default: .
  typemap_include   mi  File to include in typemap. Must eval() to a valid

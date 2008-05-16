@@ -1,4 +1,4 @@
-use Test::More tests => 14;
+use Test::More tests => 15;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -98,5 +98,12 @@ SKIP: {
         qr{\s MyServer::My::SOAP::testService::testPort->new\(}xms,
         'Pod SYNOPSIS section');
 }
+
+my $obj = MyTypes::testComplexTypeAll->new({
+    Test_1 => 'Test1',
+    Test_2 => 'Test2',
+});
+like $obj->serialize(), qr{<Test-1>Test1</Test-1>}xm, 'serialize altered name with original name';
+
 
 rmtree "$path/testlib";

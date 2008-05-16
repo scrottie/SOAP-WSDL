@@ -90,7 +90,6 @@ SKIP: {
         'Pod NAME section');
 }
 
-#rmtree "$path/testlib";
 require FooMap::Service1;
 my $message_parser = SOAP::WSDL::Expat::MessageParser->new({
     class_resolver => 'FooMap::Service1',
@@ -115,3 +114,5 @@ sub xml {
         </sayHello>
     </SOAP-ENV:Body></SOAP-ENV:Envelope>};
 }
+
+rmtree "$path/testlib";

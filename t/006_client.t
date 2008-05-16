@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use diagnostics;
-use Test::More tests => 17; # qw/no_plan/; # TODO: change to tests => N;
+use Test::More tests => 18; # qw/no_plan/; # TODO: change to tests => N;
 use lib '../lib';
 use File::Spec;
 use File::Basename qw(dirname);
@@ -25,6 +25,8 @@ $soap = SOAP::WSDL->new(
     wsdl => 'file:///' . $url .'/acceptance/wsdl/006_sax_client.wsdl',
     outputxml => 1, # required, if not set ::SOM serializer will be loaded
 )->wsdlinit();
+
+ok $soap->on_action('FOO');
 
 $soap->servicename('MessageGateway');
 

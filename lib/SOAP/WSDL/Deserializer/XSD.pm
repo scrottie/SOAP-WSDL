@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 my %class_resolver_of :ATTR(:name<class_resolver> :default<()>);
 
@@ -25,7 +25,7 @@ sub deserialize {
 
     $parser_of{ ${ $self } } = SOAP::WSDL::Expat::MessageParser->new()
         if not $parser_of{ ${ $self } };
-    $parser_of{ ${ $self } }->class_resolver( $class_resolver_of{ ident $self } );
+    $parser_of{ ${ $self } }->class_resolver( $class_resolver_of{ ${ $self } } );
     eval { $parser_of{ ${ $self } }->parse_string( $content ) };
     if ($@) {
         return $self->generate_fault({
@@ -99,9 +99,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 616 $
+ $Rev: 672 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 616 2008-04-22 21:51:49Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
+ $Id: XSD.pm 672 2008-05-16 09:37:59Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
 
 =cut

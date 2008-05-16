@@ -11,10 +11,11 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
+my %prefix_of           :ATTR(:name<prefix>         :default<()>);
 my %outputxml_of        :ATTR(:name<outputxml>      :default<()>);
 my %transport_of        :ATTR(:name<transport>      :default<()>);
 my %endpoint_of         :ATTR(:name<endpoint>       :default<()>);
@@ -61,7 +62,7 @@ sub set_proxy {
 }
 
 sub set_soap_version {
-    my $ident = ident shift;
+    my $ident = ${ $_[0] };
 
     # remember old value to return it later - Class::Std does so, too
     my $soap_version = $soap_version_of{ $ident };
@@ -71,14 +72,14 @@ sub set_soap_version {
     delete $serializer_of{ $ident };
     delete $deserializer_of{ $ident };
 
-    $soap_version_of{ $ident } = shift;
+    $soap_version_of{ $ident } = $_[1];
 
     return $soap_version;
 }
 
 # Mimic SOAP::Lite's behaviour for getter/setter routines
 SUBFACTORY: {
-    for (qw(class_resolver no_dispatch outputxml proxy)) {
+    for (qw(class_resolver no_dispatch outputxml proxy prefix)) {
         my $setter = "set_$_";
         my $getter = "get_$_";
         no strict qw(refs);     ## no critic ProhibitNoStrict
@@ -94,7 +95,7 @@ SUBFACTORY: {
 
 sub call {
     my ($self, $method, @data_from) = @_;
-    my $ident = ident $self;
+    my $ident = ${ $self };
 
     # the only valid idiom for calling a method with both a header and a body
     # is
@@ -124,6 +125,7 @@ sub call {
         method => $operation,
         body => $data,
         header => $header,
+        options => {prefix => $prefix_of{ $ident }},
     });
 
     return $envelope if $self->no_dispatch();
@@ -268,6 +270,39 @@ Default:
 
  text/xml; charset: utf8
 
+=head3 set_prefix
+
+ $soap->set_prefix('ns2');
+
+If set, alters the serialization of the request XML such that the supplied value is used as a namespace prefix for SOAP method calls. By way of example, the default XML serialization returns something like this:
+
+    <?xml version="1.0"?>
+    <SOAP-ENV:Envelope
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+      <SOAP-ENV:Body>
+        <getElementId xmlns="http://services.exmaple.org/">
+          <elementId>12345</elementId>
+        </getElementId>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>
+
+If the sample set_prefix() call above is used prior to calling your SOAP method, the XML serialization returns this instead:
+
+    <?xml version="1.0"?>
+    <SOAP-ENV:Envelope
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:ns2="http://services.example.org/">
+      <SOAP-ENV:Body>
+        <ns2:getElementId>
+          <elementId>12345</elementId>
+        </ns2:getElementId>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>
+
+This is useful in cases where, for instance, one is communicating with a JAX L<https://jax-ws.dev.java.net/> webservice, which tends to understand the latter but not the former. Note that this implementation is currently limited to a single additional namespace; if you require multiple custom namespaces, you should probably look into creating your own serializer.
+
 =head2 Features different from SOAP::Lite
 
 SOAP::WSDL does not aim to be a complete replacement for SOAP::Lite - the
@@ -321,7 +356,7 @@ to true. SOAP::WSDL::Client returns the complete XML response.
 
 =head3 Auto-Dispatching
 
-SOAP::WSDL::Client does B<does not> support auto-dispatching.
+SOAP::WSDL::Client B<does not> support auto-dispatching.
 
 This is on purpose: You may easily create interface classes by using
 SOAP::WSDL::Client and implementing something like
@@ -360,10 +395,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 616 $
+ $Rev: 672 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 616 2008-04-22 21:51:49Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
+ $Id: Client.pm 672 2008-05-16 09:37:59Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut
 

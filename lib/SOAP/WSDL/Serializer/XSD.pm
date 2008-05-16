@@ -5,7 +5,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 use SOAP::WSDL::Factory::Serializer;
 
@@ -36,6 +36,10 @@ sub serialize {
     {
         $xml .= "xmlns:$prefix=\"$uri\" ";
     }
+    #
+    # add namespace for user-supplied prefix if needed
+    $xml .= "xmlns:$opt->{prefix}=\"" . $args_of_ref->{ body }->get_xmlns() . "\" "
+        if $opt->{prefix};
 
     # TODO insert encoding
     $xml.='>';
@@ -59,6 +63,7 @@ sub serialize_header {
 
 sub serialize_body {
     my ($self, $name, $data, $opt) = @_;
+    $data->__set_name("$opt->{prefix}:$name") if $opt->{prefix};
 
     # Body is NOT optional. Serialize to empty body
     # if we have no data.
@@ -68,7 +73,9 @@ sub serialize_body {
             ? ref $data eq 'ARRAY'
                 ? join q{}, map { blessed $_ ? $_->serialize_qualified() : () } @{ $data }
                 : blessed $data
-                    ? $data->serialize_qualified()
+                    ? $opt->{prefix}
+                        ? $data->serialize()
+                        : $data->serialize_qualified()
                     : ()
             : (),
         "</$opt->{ namespace }->{ $SOAP_NS }\:Body>",
@@ -122,10 +129,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 616 $
+ $Rev: 672 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 616 2008-04-22 21:51:49Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
+ $Id: XSD.pm 672 2008-05-16 09:37:59Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
 
 =cut
 

@@ -15,6 +15,8 @@ sub START {
     $_[0]->set_proxy('[% port.first_address.get_location %]') if not $_[2]->{proxy};
     $_[0]->set_class_resolver('[% XSD.create_typemap_name(service) %]')
         if not $_[2]->{class_resolver};
+
+    $_[0]->set_prefix($_[2]->{use_prefix}) if exists $_[2]->{use_prefix};
 }
 
 [%      binding = definitions.find_binding( port.expand( port.get_binding ) );

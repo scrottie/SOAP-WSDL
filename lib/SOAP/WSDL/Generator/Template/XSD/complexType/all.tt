@@ -7,26 +7,39 @@ Class::Std::initialize();
 [%
 atomic_types = {};
 
-FOREACH element = complexType.get_element %]
-my %[% XSD.perl_name(element.get_name) %]_of :ATTR(:get<[% XSD.perl_name(element.get_name) %]>);
+FOREACH element = complexType.get_element;
+    name = XSD.perl_var_name(XSD.element_name(element)); %]
+my %[% XSD.perl_name(name) %]_of :ATTR(:get<[% XSD.perl_name(name) %]>);
 [%- END %]
 
 __PACKAGE__->_factory(
-    [ qw([% FOREACH element = complexType.get_element %]
-        [% element.get_name -%]
+    [ qw([% FOREACH element = complexType.get_element;
+
+    # ugly copied code - macro or plugin method?
+    name = XSD.perl_var_name(XSD.element_name(element)); -%]
+        [% name %]
 [% END %]
     ) ],
     {
-[% FOREACH element = complexType.get_element -%]
-        '[% element.get_name %]' => \%[% XSD.perl_name(element.get_name) %]_of,
+[% FOREACH element = complexType.get_element;
+    # ugly copied code - macro or plugin method?
+    name = XSD.perl_var_name(XSD.element_name(element)); -%]
+        '[% name %]' => \%[% XSD.perl_name(name) %]_of,
 [% END -%]
     },
     {
 [% FOREACH element = complexType.get_element;
+    IF (ref = element.get_ref);
+        element = definitions.first_types.find_element(element.expand( element.get_ref ));
+    END;
     IF (type = element.get_type);
-        element_type = definitions.first_types.find_type(complexType.expand( type )); -%]
-        '[% element.get_name %]' => '[% XSD.create_xsd_name(element_type) %]',
-[%    ELSE;
+        element_type = definitions.first_types.find_type(complexType.expand( type ));
+        IF (! element_type);
+            type_name = complexType.expand( type );
+            THROW NOT_FOUND, "${ type_name.0 } ${ type_name.1 } not found";
+        END; -%]
+        '[% XSD.perl_var_name(XSD.element_name(element)) %]' => '[% XSD.create_xsd_name(element_type) %]',
+[%  ELSE;
         IF (element.first_simpleType);
             atomic_types.${ element.get_name } = element.first_simpleType;
         ELSIF (element.first_complexType);
@@ -34,9 +47,14 @@ __PACKAGE__->_factory(
         ELSE;
             THROW NOT_IMPLEMENTED , "Neither simple nor complex atomic type for element ${ element.get_name } - don't know what to do with it";
         END; %]
-    '[% element.get_name %]' => '[% XSD.create_subpackage_name({ value => element }) %]',
+        '[% XSD.perl_var_name(XSD.element_name(element)) %]' => '[% XSD.create_subpackage_name({ value => element }) %]',
 [%  END;
 END -%]
+    },
+    {
+[% FOREACH element = complexType.get_element; %]
+        '[% XSD.perl_var_name(XSD.element_name(element)); %]' => '[% element.get_name %]',
+[%- END %]
     }
 );
 

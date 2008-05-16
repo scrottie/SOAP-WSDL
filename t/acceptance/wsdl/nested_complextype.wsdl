@@ -18,8 +18,8 @@
                         <s:element minOccurs="0" maxOccurs="1" name="givenName">
                             <s:complexType>
                                 <s:sequence>
-                                    <s:element type="string" name="givenName"></s:element>
-                                    <s:element type="string" name="middleInitial"></s:element>
+                                    <s:element type="s:string" name="givenName"></s:element>
+                                    <s:element type="s:string" name="middleInitial"></s:element>
                                 </s:sequence>
                                 <s:attribute name="testAttr" type="s:string" use="optional"></s:attribute>
                             </s:complexType>

@@ -6,7 +6,7 @@ use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw/SOAP::WSDL::Base/;
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 # id provided by Base
 # name provided by Base
@@ -34,6 +34,8 @@ my %itemType_of     :ATTR(:name<itemType>   :default<()>);
 my %abstract_of     :ATTR(:name<abstract>   :default<()>);
 my %mixed_of        :ATTR(:name<mixed>      :default<()>);      # default is false
 
+my %derivation_of   :ATTR(:name<derivation> :default<()>);
+
 # is set to simpleContent/complexContent
 my %content_model_of    :ATTR(:name<contentModel>   :default<NONE>);
 
@@ -59,6 +61,7 @@ sub set_restriction {
     my $self = shift;
     my $element = shift;
     $variety_of{ ident $self } = 'restriction';
+    $derivation_of{ ident $self } = 'restriction';
     $base_of{ ident $self } = $element->{ Value };
 }
 
@@ -66,6 +69,7 @@ sub set_extension {
     my $self = shift;
     my $element = shift;
     $variety_of{ ident $self } = 'extension';
+    $derivation_of{ ident $self } = 'extension';
     $base_of{ ident $self } = $element->{ Value };
 }
 
@@ -107,6 +111,19 @@ sub serialize {
     if ( ($variety eq "sequence") or ($variety eq "all") ) {
         $opt->{ indent } .= "\t";
         for my $element (@{ $self->get_element() }) {
+            # resolve element ref
+            #
+            # Basic algorithm is like this:
+            # If on serialization, we meet a element whose get_ref method
+            # returns a true value, lookup the element from the <types>
+            # definitions instead, and serialize this element.
+            #
+            if (my $ref = $element->get_ref()) {
+                $element = $opt->{ typelib }->find_element(
+                    $element->expand($ref)
+                );
+            }
+
             # might be list - listify
             $value = [ $value ] if not ref $value eq 'ARRAY';
 

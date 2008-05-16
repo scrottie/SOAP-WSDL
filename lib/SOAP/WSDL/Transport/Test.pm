@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use SOAP::WSDL::Factory::Transport;
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );
@@ -33,7 +33,7 @@ sub send_receive {
     $filename =~s{ (:?'|")\z }{}xms;
     $filename =~s{ \A [^:]+ : (:? /{2})? }{}xms;
 
-    $filename = join '/', $base_dir_of{ ident $self }, "$filename.xml";
+    $filename = join '/', $base_dir_of{ ${ $self } }, "$filename.xml";
 
     if (not -r $filename) {
         warn "cannot access $filename";

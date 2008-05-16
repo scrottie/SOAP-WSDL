@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00.01
+Release notes for SOAP::WSDL 2.00.02
 -------
 
 I'm proud to present a new release of SOAP::WSDL.
@@ -35,6 +35,30 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Deserializer
 
 The following changes have been made:
+
+2.00.02 - May 16 2008
+
+The following features were added (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+    * [ 1941134 ] Server for mod_perl2. Thanks to Noah Robin for contributing.
+    (I actually forgot to include it in 2.00.01)
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+    * [ 1943667 ] Error parsing complexType/extension
+    * [ 1960650 ] multi-level inheritance of complexTypes fails
+    * [ 1960319 ] ComplexType as_hash_ref returns objects on maximum depth
+    * [ 1943673 ] Relative schemaLocation="" URLs not resolved in <import>
+    * [ 1953598 ] Cannot set server and attribute prefixes with wsdl2perl
+    * [ 1941080 ] 017_generator.t (test 2) fails with Template-Toolkit 2.15
+    * [ 1949209 ] spelling/grammar in Mod_Perl2.pm
+    * [ 1950670 ] on_action removed in SOAP::WSDL >= 2.00
+    * #35346 element ref="" not handled properly
+
+The following uncategorized improvements have been made:
 
 2.00.01
 

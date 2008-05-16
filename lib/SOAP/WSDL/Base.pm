@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use Carp qw(croak carp confess);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 my %id_of               :ATTR(:name<id> :default<()>);
 my %lang_of             :ATTR(:name<lang> :default<()>);
@@ -24,7 +24,7 @@ sub namespaces {
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
-    $xmlns_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
+    #$xmlns_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
     $xmlns_of{ $ident }->{ 'xml' } = 'http://www.w3.org/XML/1998/namespace';
     $namespaces_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
     $namespaces_of{ $ident }->{ 'xml' } = 'http://www.w3.org/XML/1998/namespace';
@@ -34,7 +34,7 @@ sub START {
 sub DEMOLISH {
   my $self = shift;
   # delete upward references
-  delete $parent_of{ ident $self };
+  delete $parent_of{ ${ $self } };
   return;
 }
 
@@ -129,20 +129,23 @@ sub expand {
     my ($self, $qname) = @_;
     my $ns_of = $self->namespaces();
     if (not $qname=~m{:}xm) {
+        if (defined $ns_of->{ '#default' }) {
+            return $self->get_targetNamespace(), $qname;
+            # return $ns_of->{ '#default' }, $qname;
+        }
+        if (my $parent = $self->get_parent()) {
+            return $parent->expand($qname);
+        }
         die "un-prefixed element name <$qname> found, but no default namespace set\n"
-            if not defined $ns_of->{ '#default' };
-        return $ns_of->{ '#default' }, $qname;
     }
 
     my ($prefix, $localname) = split /:/x, $qname;
 
-
     return ($ns_of->{ $prefix }, $localname) if ($ns_of->{ $prefix });
-
     if (my $parent = $self->get_parent()) {
         return $parent->expand($qname);
     }
-    confess "unbound prefix $prefix found for $prefix:$localname. Bound prefixes are"
+    croak "unbound prefix $prefix found for $prefix:$localname. Bound prefixes are "
         . join(', ', keys %{ $ns_of });
 }
 sub _expand;

@@ -33,9 +33,9 @@ $soap->outputxml(1);
 ok ($xml = $soap->call('test',  
 			testAll => {
 				Test2 => 'Test2',
-				TestRef => 'TestRef'
+				TestElement => 'TestRef'
 			}
 ), 'Serialized complexType' );
 
-like $xml, qr{<SOAP-ENV:Body><testAll><TestRef>TestRef</TestRef><Test2>Test2</Test2></testAll></SOAP-ENV:Body>}
+like $xml, qr{<SOAP-ENV:Body><testAll><TestElement>TestRef</TestElement><Test2>Test2</Test2></testAll></SOAP-ENV:Body>}
     , 'element ref="" serialization';

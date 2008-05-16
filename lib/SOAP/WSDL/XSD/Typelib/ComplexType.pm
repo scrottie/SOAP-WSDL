@@ -10,11 +10,13 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.1.0');
 
-my %ELEMENTS_FROM;
-my %ATTRIBUTES_OF;
-my %CLASSES_OF;
+my %ELEMENTS_FROM;      # order of elements in a class
+my %ATTRIBUTES_OF;      # references to value hashes
+my %CLASSES_OF;         # class names of elements in a class
+my %NAMES_OF;           # XML names of elements in a class
+
 
 # XML Attribute handling
 my %xml_attr_of :ATTR();
@@ -30,11 +32,6 @@ our $___xml_attribute_of_ref = \%xml_attr_of;
 # properly, and slower (~10%) if not.
 # Hmmm. Trade 1% for 10?
 
-#sub STORABLE_freeze_pre {}
-#sub STORABLE_freeze_post {}
-#sub STORABLE_thaw_pre {}
-#sub STORABLE_thaw_post {}
-
 my %STORABLE_METHODS = (
     STORABLE_freeze_pre => undef,
     STORABLE_freeze_post => undef,
@@ -48,15 +45,22 @@ sub AUTOMETHOD {
     return if exists $STORABLE_METHODS{$_};
 
     my ($self, $ident, @args_from) = @_;
-
     my $class = ref $self || $self or die "Cannot call AUTOMETHOD as function";
+
+    # Test whether we're called from ->can()
+    my @caller = caller(1);
+
+    # return if not called by AUTOLOAD - caller must be something like can()
+    # Unfortunately we cannot test for "UNIVERSAL::can", as it gets overwritten
+    # by both Class::Std and Class::Std::Fast, and we don't know the loading
+    # order (Class::Std::Fast should be loaded before for maximum speedup)
+    return if $caller[3] ne 'Class::Std::AUTOLOAD';
+
     confess "Can't locate object method \"$_\" via package \"$class\". \n"
         . "Valid methods are: "
         . join(', ', map { ("get_$_" , "set_$_") } keys %{ $ATTRIBUTES_OF{ $class } })
         . "\n"
 }
-
-
 
 sub attr {
     my $self = shift;
@@ -65,8 +69,6 @@ sub attr {
 
     # disable strictness - in perl 5.10 %{ "$foo\::_bar" } triggers a
     # symbolic reference error with strictness enabled
-    no strict qw(refs);
-    # die "$class has no attributes" if not defined %{ "$class\::_ATTR::"};
     if (@_) {
         # setter
         return $xml_attr_of{ $$self } = $class->new(@_);
@@ -80,10 +82,13 @@ sub serialize_attr {
     return $xml_attr_of{ ${ $_[0] } }->serialize();
 }
 
+# TODO: are complextypes are always true ?
+sub as_bool :BOOLIFY { 1 }
+
 sub as_hash_ref {
     my $self = shift;
     my $attributes_ref = $ATTRIBUTES_OF{ ref $self };
-    my $ident = ident $self;
+    my $ident = ${ $self };
 
     my $hash_of_ref = {};
     foreach my $attribute (keys %{ $attributes_ref }) {
@@ -92,13 +97,13 @@ sub as_hash_ref {
 
         $hash_of_ref->{ $attribute } = blessed $value
             ? $value->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
-                ? $value
+                ? $value->get_value()
                 : $value->as_hash_ref()
             : ref $value eq 'ARRAY'
                 ? [
                     map {
                         $_->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
-                            ? $_
+                            ? $_->get_value()
                             : $_->as_hash_ref()
                     } @{ $value }
                 ]
@@ -112,9 +117,10 @@ sub as_hash_ref {
 # call as __PACKAGE__->_factory
 sub _factory {
     my $class = shift;
-    $ELEMENTS_FROM{ $class } = shift;
-    $ATTRIBUTES_OF{ $class } = shift;
-    $CLASSES_OF{ $class } = shift;
+    $ELEMENTS_FROM{ $class }    = shift;
+    $ATTRIBUTES_OF{ $class }    = shift;
+    $CLASSES_OF{ $class }       = shift;
+    $NAMES_OF{ $class }         = shift;
 
     no strict qw(refs);
     no warnings qw(redefine);
@@ -280,7 +286,9 @@ sub _factory {
             # do we have some content
             if (defined $element) {
                 $element = [ $element ] if not ref $element eq 'ARRAY';
-                my $name = $_;
+                # from 2.00.02 on $NAMES_OF is filled - use || $_; for
+                # backward compatibility
+                my $name = $NAMES_OF{$class}->{$_} || $_;
                 my $target_namespace = $_[0]->get_xmlns();
                 map {
                     # serialize element elements with their own serializer
@@ -500,10 +508,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 616 $
+ $Rev: 670 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 616 2008-04-22 21:51:49Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
+ $Id: ComplexType.pm 670 2008-05-14 07:39:14Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut
 

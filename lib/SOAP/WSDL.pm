@@ -14,7 +14,7 @@ use Class::Std::Fast;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-use version; our $VERSION= qv('2.00.01');
+use version; our $VERSION= qv('2.00.02');
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -239,6 +239,10 @@ sub _wsdl_init_methods :PRIVATE {
 
     return $method_info_of{ $ident };
 }
+
+# on_action is a no-op and just here for compatibility reasons.
+# It returns the first parameter to allow method chaining.
+sub on_action { return shift };
 
 sub call {
     my ($self, $method, @data_from) = @_;
@@ -555,6 +559,12 @@ SOAP message to your favorite XML editor and run the source format command.
 Outputting readable XML requires lots of programming for little use: The
 resulting XMl is still quite unreadable.
 
+=head2 on_action
+
+Setting on_action is not required any more, the appropriate value is
+automatically taken from the WSDL. on_action is a no-op, and is just here
+for compatibility issues.
+
 =head1 Differences to SOAP::Lite
 
 =head2 readable
@@ -796,9 +806,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 616 $
+ $Rev: 672 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 616 2008-04-22 21:51:49Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
+ $Id: WSDL.pm 672 2008-05-16 09:37:59Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

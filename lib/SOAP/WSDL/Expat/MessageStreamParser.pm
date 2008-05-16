@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 use SOAP::WSDL::Expat::MessageParser;
 use base qw(SOAP::WSDL::Expat::MessageParser);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 sub parse_start {
     my $self = shift;
@@ -69,9 +69,9 @@ the same terms as perl itself
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 616 $
+ $Rev: 672 $
  $LastChangedBy: kutterma $
- $Id: MessageStreamParser.pm 616 2008-04-22 21:51:49Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
+ $Id: MessageStreamParser.pm 672 2008-05-16 09:37:59Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
 
 =cut

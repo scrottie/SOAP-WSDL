@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<definitions name="urn:Test" 
+<definitions
 	targetNamespace="urn:Test"
 	xmlns:tns="urn:Test"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
 >
 	<types>
 		<xsd:schema targetNamespace="urn:Test">
@@ -17,16 +18,16 @@
 			<xsd:restriction base="xsd:int">
 				<xsd:minExclusive value="0"/>
 				<xsd:maxExclusive value="10"/>
-			</xsd:restriction> 
+			</xsd:restriction>
 		</xsd:simpleType>
 
 		</xsd:schema>
 	</types>
 	<message name="testRequest">
-		<part name="testAll" type="tns:testSimpleType1"/>	
+		<part name="testAll" type="tns:testSimpleType1"/>
 	</message>
 	<message name="testResponse">
-		<part name="testAll" type="tns:testSimpleType1"/>		
+		<part name="testAll" type="tns:testSimpleType1"/>
 	</message>
 	<portType name="testPort">
 		<operation name="test">
@@ -34,13 +35,14 @@
 				Test-Methode
 			</documentation>
 			<input message="tns:testRequest"/>
-			<output message="tnstestResponse"/>
+			<output message="tns:testResponse"/>
 		</operation>
 	</portType>
 
 	<binding type="tns:testPort" name="testBinding">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
             <operation name="test">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
 		<soap:operation soapAction="test"/>
 			<input>
 				<soap:body use="literal"/>

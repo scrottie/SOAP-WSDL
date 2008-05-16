@@ -34,4 +34,7 @@ This attribute is of type L<[% XSD.create_xsd_name(type) %]|[% XSD.create_xsd_na
 [% END %]
 
 [%- END -%]
+
+=back
+
 [% END %]

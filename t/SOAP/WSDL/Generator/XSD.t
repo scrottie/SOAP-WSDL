@@ -1,4 +1,4 @@
-use Test::More tests => 51;
+use Test::More tests => 61;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -15,6 +15,9 @@ my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 my $definitions = $parser->parse_file(
      "$path/../../../acceptance/wsdl/generator_test.wsdl"
 );
+
+#my $type = $definitions->first_types()->find_type('urn:Test', 'elementRefComplexType');
+#die $type->get_element()->[0]->_DUMP;
 
 my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     definitions => $definitions,
@@ -127,6 +130,12 @@ is $complexExtension->get_Test1(), 'test1';
 is $complexExtension->get_Test2(), 'test2';
 is $complexExtension->get_Test3(), 'test3';
 
+ok eval { require MyTypes::testComplexNestedExtension };
+my $nestedExtension = MyTypes::testComplexNestedExtension->new();
+ok $nestedExtension->can('get_Test1');
+ok $nestedExtension->can('get_Test2');
+ok $nestedExtension->can('get_Test3');
+ok $nestedExtension->can('get_Test4');
 
 ok eval { require MyTypes::testComplexTypeElementAtomicSimpleType; };
 my $ct_east = MyTypes::testComplexTypeElementAtomicSimpleType->new({
@@ -192,5 +201,12 @@ SKIP: {
         qr{Test \s Attribute \s good \s for \s nothing}x,
         'Attribute POD');
 }
+
+ok $typemap = MyTypemaps::testService->get_typemap();
+
+ok $typemap->{'testElementNestedExtension/Test1'};
+ok $typemap->{'testElementNestedExtension/Test2'};
+ok $typemap->{'testElementNestedExtension/Test3'};
+ok $typemap->{'testElementNestedExtension/Test4'};
 
 rmtree "$path/testlib";

@@ -2,7 +2,7 @@ package SOAP::WSDL::TypeLookup;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 my %TYPE_FROM = (
     # wsdl:
@@ -231,9 +231,7 @@ my %TYPE_FROM = (
 $TYPE_FROM{ 'http://www.w3.org/2000/10/XMLSchema' } = $TYPE_FROM{ 'http://www.w3.org/2001/XMLSchema' };
 
 sub lookup {
-    my $self = shift;
-    my $namespace = shift  || 'http://schemas.xmlsoap.org/wsdl/';
-    my $name = shift;
+    my ($self, $namespace, $name) = @_;
     return $TYPE_FROM{ $namespace }->{ $name };
 }
 

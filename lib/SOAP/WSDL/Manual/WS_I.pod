@@ -1255,7 +1255,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 562 $
  $LastChangedBy: kutterma $
  $Id: WS_I.pod 562 2008-02-22 20:32:17Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/WS_I.pod $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Manual/WS_I.pod $
 
 =cut
 

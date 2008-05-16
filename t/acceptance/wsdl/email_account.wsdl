@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
-<definitions name="email_account" 
+<definitions name="email_account"
 	targetNamespace="email_account"
 	xmlns:tns="email_account"
-	xmlns:wsd="http://www.w3c.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3c.org/2001/XMLSchema"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap"
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
 >
 	<types>
 		<xsd:schema targetNamespace="email_account">
 		<xsd:complexType name="imapAccount">
 			<xsd:annotation>
 				<xsd:documentation>
-					Ein (evtl. unvollständiger) Account-Datensatz. 
-					Alle Felder des Datensatzes können, müssen aber nicht 
+					Ein (evtl. unvollständiger) Account-Datensatz.
+					Alle Felder des Datensatzes können, müssen aber nicht
 					gefüllt sein.
 				</xsd:documentation>
 			</xsd:annotation>
@@ -37,55 +38,55 @@
 				<xsd:element name="account" type="tns:imapAccount"/>
 			</xsd:any>
 		</xsd:complexType>
-		</xsd:schema>		
+		</xsd:schema>
 	</types>
 	<message name="getRequest">
 		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="getResponse">
-		<part name="account" type="tns:imapAccount"/>		
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="createRequest">
-		<part name="account" type="tns:imapAccount"/>	
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="createResponse">
-		<part name="account" type="tns:imapAccount"/>		
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="modifyRequest">
-		<part name="account" type="tns:imapAccount"/>	
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="modifyResponse">
-		<part name="account" type="tns:imapAccount"/>		
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="searchRequest">
-		<part name="account" type="tns:imapAccount"/>	
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="searchResponse">
-		<part name="accountList" type="tns:imapAccountList"/>		
+		<part name="accountList" type="tns:imapAccountList"/>
 	</message>
 	<message name="deleteRequest">
-		<part name="account" type="tns:imapAccount"/>	
+		<part name="account" type="tns:imapAccount"/>
 	</message>
 	<message name="deleteResponse">
-		<part name="accountList" type="tns:imapAccountList"/>		
+		<part name="accountList" type="tns:imapAccountList"/>
 	</message>
 	<portType name="email_account">
 		<operation name="get">
 			<documentation>
-				Methode zum Anzeigen eines Account-Datensatzes. 
-				Erwartet als Input einen (potentiell unvollständigen) 
-				Account-Datensatz und liefert den (vollständigen) 
+				Methode zum Anzeigen eines Account-Datensatzes.
+				Erwartet als Input einen (potentiell unvollständigen)
+				Account-Datensatz und liefert den (vollständigen)
 				Datensatz zurück.
 			</documentation>
-			
+
 			<input message="getRequest"/>
 			<output message="getResponse"/>
 		</operation>
 		<operation name="create">
 			<documentation>
-				Methode zum Anlegen eines Account-Datensatzes. 
-				Erwartet als Input einen (potentiell unvollständigen) 
-				Account-Datensatz und liefert den (vollständigen) 
+				Methode zum Anlegen eines Account-Datensatzes.
+				Erwartet als Input einen (potentiell unvollständigen)
+				Account-Datensatz und liefert den (vollständigen)
 				Datensatz zurück.
 			</documentation>
 			<input message="createRequest"/>
@@ -93,29 +94,29 @@
 		</operation>
 		<operation name="modify">
 			<documentation>
-				Methode zum Ändern eines Account-Datensatzes. 
-				Erwartet als Input einen (potentiell unvollständigen) 
-				Account-Datensatz und liefert den (vollständigen) 
+				Methode zum Ändern eines Account-Datensatzes.
+				Erwartet als Input einen (potentiell unvollständigen)
+				Account-Datensatz und liefert den (vollständigen)
 				Datensatz zurück.
 			</documentation>
 			<input message="modifyRequest"/>
 			<output message="modifyResponse"/>
-		</operation>		
+		</operation>
 		<operation name="delete">
 			<documentation>
-				Methode zum Löschen eines Account-Datensatzes. 
-				Erwartet als Input einen (potentiell unvollständigen) 
-				Account-Datensatz und liefert den (vollständigen) 
+				Methode zum Löschen eines Account-Datensatzes.
+				Erwartet als Input einen (potentiell unvollständigen)
+				Account-Datensatz und liefert den (vollständigen)
 				Datensatz zurück.
 			</documentation>
 			<input message="deleteRequest"/>
 			<output message="deleteResponse"/>
-		</operation>		
+		</operation>
 		<operation name="search">
 			<documentation>
-				Methode zum Suchen eines oder mehrerer Account-Datensätze. 
-				Erwartet als Input einen (potentiell unvollständigen) 
-				Account-Datensatz und liefert eine Liste an (vollständigen) 
+				Methode zum Suchen eines oder mehrerer Account-Datensätze.
+				Erwartet als Input einen (potentiell unvollständigen)
+				Account-Datensatz und liefert eine Liste an (vollständigen)
 				passenden Datensätzen zurück. Die Liste kann leer sein.
 			</documentation>
 			<input message="searchRequest"/>

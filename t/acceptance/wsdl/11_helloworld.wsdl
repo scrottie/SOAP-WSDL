@@ -41,12 +41,14 @@
 			</s:complexType>
 
 			<s:complexType name="testExtended">
+                <s:complexContent>
 				<s:extension base="s0:test2">
 					<s:sequence>
 						<s:element minOccurs="0" maxOccurs="1"
 							name="extend" type="s:string" />
 					</s:sequence>
 				</s:extension>
+                </s:complexContent>
 			</s:complexType>
 		</s:schema>
 	</types>

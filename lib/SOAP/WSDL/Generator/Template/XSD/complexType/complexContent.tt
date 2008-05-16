@@ -1,5 +1,7 @@
 [% IF (complexType.get_variety == 'restriction');
     INCLUDE complexType/restriction.tt(complexType = complexType);
+ELSIF (complexType.get_variety == 'extension');
+    INCLUDE complexType/extension.tt(complexType = complexType);
 ELSIF (complexType.get_variety == 'sequence');
     INCLUDE complexType/extension.tt(complexType = complexType);
 ELSIF (complexType.get_variety == 'all');

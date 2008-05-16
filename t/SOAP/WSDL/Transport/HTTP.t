@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 use strict;
 use utf8;
 
@@ -15,6 +15,10 @@ my $result = $transport->send_receive(envelope => 'Test', action => 'foo');
 
 ok ! $transport->is_success();
 
-$result = $transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ', 
+$result = $transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ',
     action => 'foo');
+ok ! $transport->is_success();
+
+$result = $transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ',
+    action => 'foo', content_type => 'application/xml');
 ok ! $transport->is_success();

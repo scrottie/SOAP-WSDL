@@ -1,38 +1,44 @@
-﻿package SOAP::WSDL::Expat::WSDLParser;
+package SOAP::WSDL::Expat::WSDLParser;
 use strict;
 use warnings;
 use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 sub _import_children {
     my ($self, $name, $imported, $importer, $import_namespace) = @_;
-    return if not $imported;
 
     my $targetNamespace = $importer->get_targetNamespace();
     my $push_method = "push_$name";
     my $get_method = "get_$name";
+    my $default_namespace = $imported->get_xmlns()->{ '#default' };
+
     no strict qw(refs);
     my $value_ref = $imported->$get_method();
     if ($value_ref) {
-        #print $self->get_uri(), "\n";
-        #use Data::Dumper;
-        #print Data::Dumper::Dumper $value_ref;
+
         $value_ref = [ $value_ref ] if (not ref $value_ref eq 'ARRAY');
-        # set xmlns - can be different from parent
+
         for (@{ $value_ref }) {
+            # fixup namespace - new parent may be from different namespace
+            if (defined ($default_namespace)) {
+                my $xmlns = $_->get_xmlns();
+                # it's a hash ref, so we can just update values
+                if (! defined $xmlns->{ '#default'}) {
+                    $xmlns->{ '#default' } = $default_namespace;
+                }
+            }
             # fixup targetNamespace, but don't override
             $_->set_targetNamespace( $import_namespace )
                 if ( ($import_namespace ne $targetNamespace) && !  $_->get_targetNamespace);
             # update parent...
             $_->set_parent( $importer );
+
+            # push elements into importing WSDL
             $importer->$push_method($_);
         }
-        # push elements into importing WSDL
-        #$importer->$push_method(@{ $value_ref })
-        #    if @{ $value_ref };
     }
 }
 
@@ -45,6 +51,10 @@ sub _import_namespace_definitions {
     # import namespace definitions, too
     my $importer_ns_of = $importer->get_xmlns();
     my %xmlns_of = %{ $imported->get_xmlns() };
+
+    # it's a hash ref, we can just add to.
+    # TODO: check whether prefix is already taken.
+    # TODO: check wheter URI is the better key.
     while (my ($prefix, $url) = each %xmlns_of) {
         $importer_ns_of->{ $prefix } = $url;
     }
@@ -56,6 +66,16 @@ sub xml_schema_import {
     my $parser = $self->clone();
     my %attr_of = @_;
     my $import_namespace = $attr_of{ namespace };
+
+    if (not $attr_of{schemaLocation}) {
+        warn "cannot import document for namespace >$import_namespace< without location";
+        return;
+    }
+
+    if (not $self->get_uri) {
+        die "cannot import document from namespace >$import_namespace< without base uri. Use >parse_uri< or >set_uri< to set one."
+    }
+
     my $uri = URI->new_abs($attr_of{schemaLocation}, $self->get_uri() );
     my $imported = $parser->parse_uri($uri);
 
@@ -78,6 +98,16 @@ sub wsdl_import {
     my $parser = $self->clone();
     my %attr_of = @_;
     my $import_namespace = $attr_of{ namespace };
+
+    if (not $attr_of{location}) {
+        warn "cannot import document for namespace >$import_namespace< without location";
+        return;
+    }
+
+    if (not $self->get_uri) {
+        die "cannot import document from namespace >$import_namespace< without base uri. Use >parse_uri< or >set_uri< to set one."
+    }
+
     my $uri = URI->new_abs($attr_of{location}, $self->get_uri() );
 
     my $imported = $parser->parse_uri($uri);
@@ -125,7 +155,7 @@ sub _initialize {
                 croak $@ if ($@);
 
                 my $obj = $action->{ class }->new({ parent => $current,
-                    xmlns => { '#default' => $parser->namespace($localname) }
+                    # xmlns => { '#default' => $parser->namespace($localname) }
                     })
                   ->init( _fixup_attrs( $parser, %attrs ) );
 
@@ -221,7 +251,8 @@ sub _initialize {
 sub _fixup_attrs {
     my ($parser, %attrs_of) = @_;
 
-    my @attrs_from = map { $_ =
+    my @attrs_from = map {
+        $_ =
         {
             Name => $_,
             Value => $attrs_of{ $_ },
@@ -232,10 +263,10 @@ sub _fixup_attrs {
     # add xmlns: attrs. expat eats them.
     push @attrs_from, map {
         # ignore xmlns=FOO namespaces - must be XML schema
-        # Other nodes should be ignored somewhere else
-        ($_ eq '#default')
-        ? ()
-        :
+#        # Other nodes should be ignored somewhere else
+#        ($_ eq '#default')
+#        ? ()
+#        :
         {
             Name => "xmlns:$_",
             Value => $parser->expand_ns_prefix( $_ ),
@@ -279,11 +310,11 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: WSDLParser.pm 616 2008-04-22 21:51:49Z kutterma $
+ $Id: WSDLParser.pm 672 2008-05-16 09:37:59Z kutterma $
 
- $LastChangedDate: 2008-04-22 23:51:49 +0200 (Di, 22 Apr 2008) $
- $LastChangedRevision: 616 $
+ $LastChangedDate: 2008-05-16 11:37:59 +0200 (Fr, 16 Mai 2008) $
+ $LastChangedRevision: 672 $
  $LastChangedBy: kutterma $
 
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
 

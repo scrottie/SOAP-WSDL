@@ -8,6 +8,7 @@
 	targetNamespace="urn:HelloWorld"
 	xmlns="http://schemas.xmlsoap.org/wsdl/">
     <import namespace="urn:HelloWorld" location="WSDLParser-imported.wsdl"/>
+    <import namespace="urn:HelloWorld" location="WSDLParser-imported.wsdl"/>
 
     <service name="Service1">
         <port name="Service1Soap" binding="s0:Service1Soap">

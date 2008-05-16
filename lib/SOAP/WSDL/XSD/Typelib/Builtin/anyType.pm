@@ -3,53 +3,46 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-our $VERSION = q{2.00_29};
+use version; our $VERSION = qv('2.00.02');
 
 sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' };
 
-# use $_[1] for performance
-#sub start_tag {
-#    return q{} if not $#_;          # return if no second argument ($opt)
-#    if ($_[1]->{ name }) {
-#        return qq{ $_[1]->{name}="} if $_[1]->{ attr };
-#        return "<$_[1]->{name}/>" if $_[1]->{ empty };
-#        return "<$_[1]->{name}>";
-#    }
-#    return q{};
-#}
+# start_tag creates a XML start tag either for a XML element or a attribute.
+# The method is highly optimized for performance:
+# - operates on @_
+# - uses no private variables
+# - uses no blocks
 
 sub start_tag {
-    return q{} if not $#_;          # return if no second argument ($opt)
-    if ($_[1]->{ name }) {
-        return qq{ $_[1]->{name}="} if $_[1]->{ attr };
-        my $ending = ($_[1]->{ empty }) ? '/>' : '>';
-        my @attr_from = ();
-        if ($_[1]->{ nil }) {
-            push @attr_from, q{ xsi:nil="true"};
-            $ending = '/>';
-        }
-#        if (delete $_[1]->{qualified}) {
-#            push @attr_from, q{ xmlns="} . $_[0]->get_xmlns() . q{"};
-#        }
-        push @attr_from, $_[0]->serialize_attr();
-
-        # do we need to check for name ? Element ref="" should have it's own
-        # start_tag. If we don't need to check, we can speed things up
-        return join q{}, "<$_[1]->{ name }" , @attr_from , $ending;
-    }
-    return q{};
+    # return empty string if no second argument ($opt) or no name
+    return q{} if (! $#_);
+    return q{} if (! exists $_[1]->{ name });
+    # return attribute start if it's an attribute
+    return qq{ $_[1]->{name}="} if $_[1]->{ attr };
+    # return with xsi:nil="true" if it is nil
+    return join q{} , "<$_[1]->{ name }" , $_[0]->serialize_attr() , q{ xsi:nil="true"/>}
+        if ($_[1]->{ nil });
+    # return "empty" start tag if it's empty
+    return join q{}, "<$_[1]->{ name }" , $_[0]->serialize_attr() , '/>'
+        if ($_[1]->{ empty });
+    # return XML element start tag
+    return join q{}, "<$_[1]->{ name }" , $_[0]->serialize_attr() , '>';
 }
 
-# use $_[1] for performance
+# start_tag creates a XML end tag either for a XML element or a attribute.
+# The method is highly optimized for performance:
+# - operates on @_
+# - uses no private variables
+# - uses no blocks
 sub end_tag {
-    return $_[1] && defined $_[1]->{ name }
-        ? $_[1]->{ attr }
-            ? q{"}
-            : "</$_[1]->{name}>"
-        : q{};
+    # return empty string if no second argument ($opt) or no name
+    return q{} if (! $#_);
+    return q{} if (! exists $_[1]->{ name });
+    return q{"} if $_[1]->{ attr };
+    return "</$_[1]->{name}>";
 };
 
-sub serialize_attr {};
+sub serialize_attr { () };
 
 # sub serialize { q{} };
 

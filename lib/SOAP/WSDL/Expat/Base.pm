@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 
 # TODO: convert to Class::Std::Fast based class - hash based classes suck.
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 sub new {
     my ($class, $arg_ref) = @_;
@@ -51,7 +51,7 @@ sub parse_uri {
     my $uri = shift;
 
     if ($self->is_parsed($uri)){
-        warn "$uri already imported. Ignoring it\n";
+        warn "$uri already imported; ignoring it.\n";
         return;
     }
     $self->set_parsed($uri);

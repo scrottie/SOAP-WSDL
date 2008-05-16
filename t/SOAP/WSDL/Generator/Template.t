@@ -39,31 +39,3 @@ $generator->generate_interface({
 
 ok eval $output;
 print $@ if $@;
-
-
-# print $output;
-__END__
-
-my $tt = Template->new(
-    DEBUG => 1,
-    EVAL_PERL => 1,
-    RECURSION => 1,
-    INCLUDE_PATH => "$path/../../../../lib/SOAP/WSDL/Template",
-);
-
-foreach my $service (@{ $definitions->get_service }) {
-    my $output;
-    $tt->process( 'Interface.tt', {
-        definitions => $definitions,
-        service => $service,
-        interface_prefix => 'MyInterface',
-        type_prefix => 'MyTypes',
-        TYPE_PREFIX => 'MyTypes',
-        element_prefix => 'MyElement',
-    }, \$output);
-    die $tt->error if $tt->error();
-
-    ok eval $output, 'eval output';
-
-    print $output;
-};

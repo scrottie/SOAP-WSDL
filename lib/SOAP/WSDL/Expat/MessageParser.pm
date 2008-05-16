@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp qw(croak confess);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
@@ -238,8 +238,14 @@ sub _initialize {
 
             # set appropriate attribute in last element
             # multiple values must be implemented in base class
+            # TODO check if hash access is faster
             # $_method = "add_$_localname";
             $_method = "add_$_[1]";
+            #
+            # fixup XML names for perl names
+            #
+            $_method =~s{\.}{__}xg;
+            $_method =~s{\-}{_}xg;
             $list->[-1]->$_method( $current );
 
             $current = pop @$list;          # step up in object hierarchy
@@ -313,11 +319,11 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: $
+ $Id: MessageParser.pm 672 2008-05-16 09:37:59Z kutterma $
 
- $LastChangedDate: 2008-04-22 23:51:49 +0200 (Di, 22 Apr 2008) $
- $LastChangedRevision: 616 $
+ $LastChangedDate: 2008-05-16 11:37:59 +0200 (Fr, 16 Mai 2008) $
+ $LastChangedRevision: 672 $
  $LastChangedBy: kutterma $
 
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $
 

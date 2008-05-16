@@ -8,7 +8,7 @@
 #
 cd t/
 cover -delete
-find . -type f -name '*.t' | xargs -n 1 /usr/bin/perl -MDevel::Cover=-silent,1,-summary,0 -I../lib
+find . -type f -name '*.t' | xargs -n 1 /usr/bin/perl -MDevel::Cover=-silent,1,-summary,0 -I../lib > /dev/null
 
 # Devel::CoverX::Covered
 covered runs

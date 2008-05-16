@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
-<definitions name="urn:Test" targetNamespace="urn:Test" xmlns:tns="urn:Test"
+<definitions targetNamespace="urn:Test" xmlns:tns="urn:Test"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
   <types>
     <xsd:schema targetNamespace="urn:Test">
       <xsd:complexType name="testComplexTypeAll">
@@ -42,8 +43,8 @@
   </portType>
 
   <binding type="tns:testPort" name="testBinding">
-    <operation name="test">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="test">
       <soap:operation soapAction="test"/>
         <input>
           <soap:body use="literal" />

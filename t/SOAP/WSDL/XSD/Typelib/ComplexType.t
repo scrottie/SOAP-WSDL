@@ -82,7 +82,7 @@ __PACKAGE__->__set_name( 'MyElementSimpleContent' );
 sub __get_attr_class { 'MyElement::_ATTR' };
 
 package main;
-use Test::More tests => 111;
+use Test::More tests => 115;
 use Storable;
 
 my $have_warn = eval { require Test::Warn; import Test::Warn; 1; };
@@ -131,6 +131,7 @@ is $obj->get_test, 'Test2', 'element content';
 
 $hash_of_ref = $obj->as_hash_ref();
 is $hash_of_ref->{ test }, 'Test2';
+ok ! ref $hash_of_ref->{ test };
 
 $obj = MyType->new({
     test => [
@@ -151,6 +152,7 @@ is $obj->get_test()->[1], 'Test2', 'element content (list content [1])';
 
 $hash_of_ref = $obj->as_hash_ref();
 is $hash_of_ref->{ test }->[0], 'Test';
+ok ! ref $hash_of_ref->{ test }->[0];
 is $hash_of_ref->{ test }->[1], 'Test2';
 
 my $nested = MyType2->new({
@@ -277,12 +279,12 @@ for my $count (1..5) {
     for my $index (0..$count-1) {
         is $obj->get_test->[$index], "TestString$index";
     }
-    is $obj->serialize(), $serialized[$count -1];
+    is $obj->serialize(), $serialized[$count -1], "serialized $serialized[$count -1]";
 
 }
 
 my $clone = Storable::thaw( Storable::freeze( $obj ));
-is $clone->get_test()->[0], 'TestString0';
+is $clone->get_test()->[0], 'TestString0', 'clone via freeze/thaw';
 
 ## failure tests
 
@@ -297,14 +299,14 @@ eval {
         ],
     });
 };
-like $@, qr{cannot \s use \s CODE}xms;
+like $@, qr{cannot \s use \s CODE}xms, 'error passing a code reference as list value to new()';
 
 eval {
     $obj = MyType->new({
-    test => \&CORE::die,
+        test => \&CORE::die,
     });
 };
-like $@, qr{cannot \s use \s CODE}xms;
+like $@, qr{cannot \s use \s CODE}xms, 'error passing a code reference to new()';
 
 # TODO ignore XMLNS (for now)
 $obj = MyType->new({ xmlns => 'fubar'});
@@ -323,13 +325,17 @@ like $@, qr{unknown \s field \s foobar \s in \s MyType }xms;
 
 
 eval { $obj->set_FOO(42) };
-like $@, qr{Can't \s locate \s object \s method}x;
+like $@, qr{Can't \s locate \s object \s method}x, 'error on calling unknown object method';
 
 eval { MyType->set_FOO(42) };
-like $@, qr{Can't \s locate \s object \s method}x;
+like $@, qr{Can't \s locate \s object \s method}x,  'error on calling unknown class method';
+
+ok ! MyType->can('set_FOO'), 'MyType->can("setFOO")';
+
+ok ! UNIVERSAL::can('MyType', 'set_FOO'), 'UNIVERSAL::can("MyTypes", "set_FOO")';
 
 eval { MyType->new({ FOO => 42 }) };
-like $@, qr{unknown \s field \s}xm;
+like $@, qr{unknown \s field \s}xm, 'error passing unknown field to constructor';
 
 eval { SOAP::WSDL::XSD::Typelib::ComplexType::AUTOMETHOD() };
 like $@, qr{Cannot \s call}xm;

@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
-<definitions name="urn:Test" targetNamespace="urn:Test" xmlns:tns="urn:Test"
+<definitions targetNamespace="urn:Test" xmlns:tns="urn:Test"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
   <types>
     <xsd:schema targetNamespace="urn:Test">
       <xsd:element name="TestElement" type="xsd:string" />
-      <xsd:element name="TestRef" ref="tns:TestElement" />
       <xsd:complexType name="testComplexTypeRef">
         <xsd:annotation>
           <xsd:documentation>ComplexType Test</xsd:documentation>
         </xsd:annotation>
         <xsd:all>
-          <xsd:element name="TestRef" ref="tns:TestElement" />
+          <xsd:element ref="tns:TestElement" />
           <xsd:element name="Test2" type="xsd:string" minOccurs="1" />
         </xsd:all>
       </xsd:complexType>

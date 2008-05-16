@@ -19,8 +19,8 @@
 	  <xsd:element name="AuthMessage">
 	  	<xsd:complexType>
 	  		<xsd:sequence>
-	  			<xsd:element name="Username" xsd:type="xsd:string"/>
-	  			<xsd:element name="Password" xsd:type="xsd:string"/>
+	  			<xsd:element name="Username" type="xsd:string"/>
+	  			<xsd:element name="Password" type="xsd:string"/>
 	  		</xsd:sequence>
 	  	</xsd:complexType>
 	  </xsd:element>
@@ -283,7 +283,7 @@
     <wsdl:operation name="EnqueueMessage">
       <soap:operation soapAction="http://www.example.org/MessageGateway2/EnqueueMessage" />
       <wsdl:input>
-        <soap:body use="literal" namespace="http://www.example.org/" parts="tns:parameters"/>
+        <soap:body use="literal" namespace="http://www.example.org/" parts="parameters"/>
         <soap:header use="literal" namespace="http://www.example.org/"
         	message="tns:EnqueueMessageRequest" part="auth"/>
       </wsdl:input>
@@ -315,9 +315,10 @@
       <wsdl:documentation>HTTP(S) port for the message gateway</wsdl:documentation>
       <soap:address location="https://test.example.org/MessageGateway/" />
     </wsdl:port>
-
-    <wsdl:port name="HTTP" binding="tns:MGWBinding">
-      <http:address location="http://www.webservicex.net/globalweather.asmx" />
+    <wsdl:port name="HTTPSPort2" binding="tns:MGWBinding">
+      <wsdl:documentation>HTTP(S) port for the message gateway</wsdl:documentation>
+      <soap:address location="https://test.example.org/MessageGateway/" />
     </wsdl:port>
+
   </wsdl:service>
 </wsdl:definitions>

@@ -40,8 +40,16 @@ methods:
 =over
 
 [% FOREACH element = complexType.get_element -%]
-=item * [% element.get_name %]
+=item * [% XSD.perl_var_name(XSD.element_name(element)) %]
+[% IF (XSD.perl_var_name(XSD.element_name(element)) == element.get_name); %]
+[% ELSE %]
+Note: The name of this property has been altered, because it didn't match
+perl's notion of variable/subroutine names. The altered name is used in
+perl code only, XML output uses the original name:
 
+ [% element.get_name %]
+
+[% END %]
 [%     IF element.get_annotation.get_documentation; %]
 [% element.get_annotation.get_documentation %]
 [%     END -%]

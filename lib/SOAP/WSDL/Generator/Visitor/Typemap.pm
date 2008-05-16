@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Generator::Visitor);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 my %path_of             :ATTR(:name<path>           :default<[]>);
 my %typemap_of          :ATTR(:name<typemap>        :default<()>);
@@ -32,11 +32,14 @@ sub add_element_path {
     # Well almost: Class names are not constructed in a namespace-sensitive
     # manner, yet - there should be some facility to allow binding a (perl)
     # prefix to a namespace...
-    push @{ $path_of{ ident $self } }, $element->get_name();
 
-    #    push @{ $path_of{ ident $self } },
-    #        "{". $element->get_targetNamespace . "}"
-    #        . $element->get_name();
+    if (my $ref = $element->get_ref() ) {
+        $element = $self->get_definitions()->first_types()->find_element(
+            $element->expand($ref) );
+    }
+    my $name = $element->get_name();
+
+    push @{ $path_of{ ident $self } }, $name;
 }
 
 sub process_referenced_type {
@@ -61,14 +64,6 @@ sub process_referenced_type {
     return $self;
 }
 
-sub process_atomic_type {
-    my ( $self, $type, $callback ) = @_;
-    return if not $type;
-
-    $callback->( $self, $type );
-    return $self;
-}
-
 sub visit_XSD_Element {
     my ( $self, $ident, $element ) = ( $_[0], ident $_[0], $_[1] );
 
@@ -84,9 +79,11 @@ sub visit_XSD_Element {
     # They all just return if no argument is given,
     # and return $self on success.
     SWITCH: {
+        my $name = $element->get_name();
+
         if ($element->get_type) {
-            $self->process_referenced_type( $element->expand( $element->get_type() ) )
-                && last;
+            $self->process_referenced_type( $element->expand( $element->get_type() ) );
+            last SWITCH;
         }
 
         # atomic simpleType typemap rule:
@@ -106,11 +103,23 @@ sub visit_XSD_Element {
         my $typeclass = $self->get_resolver()->create_subpackage_name($element);
         $self->set_typemap_entry($typeclass);
 
-        $self->process_atomic_type( $element->first_complexType()
-            , sub { $_[1]->_accept($_[0]) } )
-            && last SWITCH;
+        if (my $complexType = $element->first_complexType()) {
+            $complexType->_accept($self);
+            last SWITCH;
+        }
 
-        # TODO: add element ref handling
+        # element ref handling
+        if (my $ref = $element->get_ref()) {
+            $element = $self->get_definitions()->first_types()->find_element(
+                $element->expand($ref) );
+            # we added a path too much - we should add the path of this
+            # element instead.
+            pop @{ $path_of{$ident} };
+            $element->_accept($self);
+            # and we must not pop it off now - thus, just return
+            return;
+        }
+        die "Neither type nor ref in element >". $element->get_name ."<. Don't know what to do."
     };
 
     # Safety measure. If someone defines a top-level element with
@@ -128,6 +137,7 @@ sub visit_XSD_Element {
 sub visit_XSD_ComplexType {
     my ($self, $ident, $type) = ($_[0], ident $_[0], $_[1] );
     my $variety = $type->get_variety();
+    my $derivation = $type->get_derivation();
     my $content_model = $type->get_contentModel;
     return if not $variety; # empty complexType
     return if ($content_model eq 'simpleContent');
@@ -138,10 +148,16 @@ sub visit_XSD_ComplexType {
         for (@{ $type->get_element() || [] }) {
             $_->_accept( $self );
         }
-        return;
     }
+    # Only continue for derived types
+    # Saves a uninitialized warning.
+    return if not $derivation;
 
-    if (grep { $_ eq $variety } qw(restriction extension) ) {
+    if ($derivation eq 'restriction' ) {
+        # TODO check and probably correct - this includes
+        # all base type's elements in a restriction derivation.
+        # Probably wrong.
+        #
         # resolve base / get atomic type and run on elements
         if (my $type_name = $type->get_base()) {
             my $subtype = $self->get_definitions()
@@ -150,14 +166,19 @@ sub visit_XSD_ComplexType {
             for (@{ $subtype->get_element() || [] }) {
                 $_->_accept( $self );
             }
-            # that's all for restriction
-            return if ($variety eq 'restriction');
         }
     }
-
-    warn "unsupported content model $variety found in "
-        . "complex type " . $type->get_name()
-        . " - typemap may be incomplete";
+    elsif ($derivation eq 'extension' ) {
+        # resolve base / get atomic type and run on elements
+        while (my $type_name = $type->get_base()) {
+            $type = $self->get_definitions()
+                ->first_types()->find_type( $type->expand($type_name) );
+            # visit child elements
+            for (@{ $type->get_element() || [] }) {
+                $_->_accept( $self );
+            }
+        }
+    }
 }
 
 1;

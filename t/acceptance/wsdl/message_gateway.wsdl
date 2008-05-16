@@ -19,8 +19,8 @@
 	  <xsd:element name="AuthMessage">
 	  	<xsd:complexType>
 	  		<xsd:sequence>
-	  			<xsd:element name="Username" xsd:type="xsd:string"/>
-	  			<xsd:element name="Password" xsd:type="xsd:string"/>
+	  			<xsd:element name="Username" type="xsd:string"/>
+	  			<xsd:element name="Password" type="xsd:string"/>
 	  		</xsd:sequence>
 	  	</xsd:complexType>
 	  </xsd:element>
@@ -37,7 +37,7 @@
             <xsd:annotation>
 
               <xsd:documentation>
-                The recipient in URI notaitions. Valid URI schemas are: mailto:, sms:,
+                The recipient in URI notations. Valid URI schemas are: mailto:, sms:,
                 phone:. Not all URI schemas need to be implemented at the current
                 implementation stage.
               </xsd:documentation>
@@ -72,7 +72,7 @@
               <xsd:documentation>
 
                 URI to send a delivery report to. May be of one of the following schemes:
-                mailto:, http:, https:. Reports to mailto: URIs are sent as plaintext,
+                mailto:, http:, https:. Reports to mailto: URIs are sent as plain text,
                 reports to http(s) URIs are sent as SOAP requests following the
                 MessageGatewayClient service definition.
               </xsd:documentation>
@@ -314,10 +314,6 @@
     <wsdl:port name="HTTPSPort" binding="tns:MGWBinding">
       <wsdl:documentation>HTTP(S) port for the message gateway</wsdl:documentation>
       <soap:address location="https://test.example.org/MessageGateway/" />
-    </wsdl:port>
-
-    <wsdl:port name="HTTP" binding="tns:MGWBinding">
-      <http:address location="http://www.webservicex.net/globalweather.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

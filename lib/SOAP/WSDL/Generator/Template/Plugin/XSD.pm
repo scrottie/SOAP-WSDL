@@ -4,19 +4,22 @@ use warnings;
 use Carp qw(confess);
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 my %namespace_prefix_map_of :ATTR(:name<namespace_prefix_map>   :default<{}>);
 my %namespace_map_of        :ATTR(:name<namespace_map>          :default<{}>);
 my %prefix_of               :ATTR(:name<prefix>                 :default<()>);
 my %prefix_resolver_of      :ATTR(:name<prefix_resolver>        :default<()>);
+my %definitions_of          :ATTR(:name<definitions>            :default<()>);
+
 
 # create a singleton
-sub load {               # called as MyPlugin->load($context)
+sub load {              # called as MyPlugin->load($context)
     my ($class, $context, @arg_from) = @_;
     my $stash = $context->stash();
     my $self = bless \do { my $o = Class::Std::Fast::ID() }, $class;
     $self->set_prefix_resolver( $stash->{ context }->{ prefix_resolver });
+    $self->set_definitions( $stash->{ definitions });
     return $self;       # returns 'MyPlugin'
 }
 
@@ -27,6 +30,7 @@ sub new {
 
     my $self = bless \do { my $o = Class::Std::Fast::ID() }, $class;
     $self->set_prefix_resolver( $arg_ref->{ prefix_resolver });
+    $self->set_definitions( $arg_ref->{ definitions });
     return $self;       # returns 'MyPlugin'
 }
 
@@ -47,7 +51,9 @@ sub _get_prefix {
 }
 
 sub create_xsd_name {
-    my ($self,$node) = @_;
+    my ($self, $node) = @_;
+    confess "no node $node" if not defined($node)
+        or $node eq "";
     my $name = $self->_resolve_prefix($node) #. '::'
         . $node->get_name();
     return $self->perl_name( $name );
@@ -84,7 +90,7 @@ sub create_interface_name {
 
 sub _resolve_prefix {
     my ($self, $node) = @_;
-    confess "no node" if not $node;
+
     if ($node->isa('SOAP::WSDL::XSD::Builtin')) {
         return $self->_get_prefix('type', $node)
     }
@@ -109,6 +115,14 @@ sub perl_name {
     return $name;
 }
 
+sub perl_var_name {
+    my $self = shift;
+    my $name = shift;
+    $name =~s{\-}{_}xmsg;
+    $name =~s{\.}{__}xmsg;
+    return $name;
+}
+
 sub create_subpackage_name {
     my $self        = shift;
     my $arg_ref     = shift;
@@ -127,6 +141,7 @@ sub create_subpackage_name {
         }
     }
     # create name for top node
+    die "FOO" if not defined $top_node;
     my $top_node_name = $self->create_xsd_name($top_node);
     my $package_name = join('::_', $top_node_name , (@name_from) ? join('::', @name_from) : () );
     return $package_name;
@@ -134,6 +149,22 @@ sub create_subpackage_name {
 
 sub create_xmlattr_name {
     return join '::', shift->create_subpackage_name(shift), 'XmlAttr';
+}
+
+sub element_name {
+    my $self = shift;
+    my $element = shift;
+
+    my $name = $element->get_name();
+    if (! $name) {
+        while (my $ref = $element->get_ref()) {
+            $element = $self->get_definitions()->first_types()
+                ->find_element($element->expand( $ref ) );
+            $name = $element->get_name();
+            last if ($name);
+        }
+    }
+    return $name;
 }
 
 1;

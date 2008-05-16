@@ -4,7 +4,7 @@ use warnings;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Element);
 
-use version; our $VERSION = qv('2.00.01');
+use version; our $VERSION = qv('2.00.02');
 
 sub start_tag {
     # my ($self, $opt, $value) = @_;
