@@ -58,11 +58,13 @@ FOREACH element = element_from;
 END;
 
 # set derived element list
-complexType.set_element( element_list );
+# wrap in IF; END; to prevent it getting printed
+IF (complexType.set_element( element_list )); END;
 
 INCLUDE complexType/variety.tt(complexType = complexType);
 
 # restore original element list
-complexType.set_element( element_from );
+# wrap in IF; END; to prevent it getting printed
+IF ( complexType.set_element( element_from ) ); END;
 
 %]

@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00.02
+version: 2.00.03
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -41,220 +41,220 @@ build_requires:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Binding:
     file: lib/SOAP/WSDL/Binding.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Client:
     file: lib/SOAP/WSDL/Client.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Client::Base:
     file: lib/SOAP/WSDL/Client/Base.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Definitions:
     file: lib/SOAP/WSDL/Definitions.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Deserializer::Hash:
     file: lib/SOAP/WSDL/Deserializer/Hash.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Deserializer::SOM:
     file: lib/SOAP/WSDL/Deserializer/SOM.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Deserializer::XSD:
     file: lib/SOAP/WSDL/Deserializer/XSD.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Expat::Base:
     file: lib/SOAP/WSDL/Expat/Base.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Expat::Message2Hash:
     file: lib/SOAP/WSDL/Expat/Message2Hash.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Expat::MessageParser:
     file: lib/SOAP/WSDL/Expat/MessageParser.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Expat::MessageStreamParser:
     file: lib/SOAP/WSDL/Expat/MessageStreamParser.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Expat::WSDLParser:
     file: lib/SOAP/WSDL/Expat/WSDLParser.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Factory::Deserializer:
     file: lib/SOAP/WSDL/Factory/Deserializer.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Factory::Generator:
     file: lib/SOAP/WSDL/Factory/Generator.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Factory::Serializer:
     file: lib/SOAP/WSDL/Factory/Serializer.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Factory::Transport:
     file: lib/SOAP/WSDL/Factory/Transport.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Iterator::WSDL11:
     file: lib/SOAP/WSDL/Generator/Iterator/WSDL11.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::PrefixResolver:
     file: lib/SOAP/WSDL/Generator/PrefixResolver.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Template:
     file: lib/SOAP/WSDL/Generator/Template.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Template::Plugin::XSD:
     file: lib/SOAP/WSDL/Generator/Template/Plugin/XSD.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Template::XSD:
     file: lib/SOAP/WSDL/Generator/Template/XSD.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Visitor:
     file: lib/SOAP/WSDL/Generator/Visitor.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Visitor::Typelib:
     file: lib/SOAP/WSDL/Generator/Visitor/Typelib.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Generator::Visitor::Typemap:
     file: lib/SOAP/WSDL/Generator/Visitor/Typemap.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Message:
     file: lib/SOAP/WSDL/Message.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::OpMessage:
     file: lib/SOAP/WSDL/OpMessage.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Operation:
     file: lib/SOAP/WSDL/Operation.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Part:
     file: lib/SOAP/WSDL/Part.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Port:
     file: lib/SOAP/WSDL/Port.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::PortType:
     file: lib/SOAP/WSDL/PortType.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::SOAP::Address:
     file: lib/SOAP/WSDL/SOAP/Address.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::SOAP::Body:
     file: lib/SOAP/WSDL/SOAP/Body.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::SOAP::Header:
     file: lib/SOAP/WSDL/SOAP/Header.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::SOAP::HeaderFault:
     file: lib/SOAP/WSDL/SOAP/HeaderFault.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::SOAP::Operation:
     file: lib/SOAP/WSDL/SOAP/Operation.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::SOAP::Typelib::Fault11:
     file: lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Serializer::XSD:
     file: lib/SOAP/WSDL/Serializer/XSD.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Server:
     file: lib/SOAP/WSDL/Server.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Server::CGI:
     file: lib/SOAP/WSDL/Server/CGI.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Server::Mod_Perl2:
     file: lib/SOAP/WSDL/Server/Mod_Perl2.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Service:
     file: lib/SOAP/WSDL/Service.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Transport::HTTP:
     file: lib/SOAP/WSDL/Transport/HTTP.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Transport::Loopback:
     file: lib/SOAP/WSDL/Transport/Loopback.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Transport::Test:
     file: lib/SOAP/WSDL/Transport/Test.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::TypeLookup:
     file: lib/SOAP/WSDL/TypeLookup.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::Types:
     file: lib/SOAP/WSDL/Types.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Annotation:
     file: lib/SOAP/WSDL/XSD/Annotation.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Attribute:
     file: lib/SOAP/WSDL/XSD/Attribute.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::AttributeGroup:
     file: lib/SOAP/WSDL/XSD/AttributeGroup.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Builtin:
     file: lib/SOAP/WSDL/XSD/Builtin.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::ComplexType:
     file: lib/SOAP/WSDL/XSD/ComplexType.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Element:
     file: lib/SOAP/WSDL/XSD/Element.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Enumeration:
     file: lib/SOAP/WSDL/XSD/Enumeration.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::FractionDigits:
     file: lib/SOAP/WSDL/XSD/FractionDigits.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Group:
     file: lib/SOAP/WSDL/XSD/Group.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Length:
     file: lib/SOAP/WSDL/XSD/Length.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::MaxExclusive:
     file: lib/SOAP/WSDL/XSD/MaxExclusive.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::MaxInclusive:
     file: lib/SOAP/WSDL/XSD/MaxInclusive.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::MaxLength:
     file: lib/SOAP/WSDL/XSD/MaxLength.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::MinExclusive:
     file: lib/SOAP/WSDL/XSD/MinExclusive.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::MinInclusive:
     file: lib/SOAP/WSDL/XSD/MinInclusive.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::MinLength:
     file: lib/SOAP/WSDL/XSD/MinLength.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Pattern:
     file: lib/SOAP/WSDL/XSD/Pattern.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Schema:
     file: lib/SOAP/WSDL/XSD/Schema.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Schema::Builtin:
     file: lib/SOAP/WSDL/XSD/Schema/Builtin.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::SimpleType:
     file: lib/SOAP/WSDL/XSD/SimpleType.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::TotalDigits:
     file: lib/SOAP/WSDL/XSD/TotalDigits.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::Attribute:
     file: lib/SOAP/WSDL/XSD/Typelib/Attribute.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::AttributeSet:
     file: lib/SOAP/WSDL/XSD/Typelib/AttributeSet.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::Builtin:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::Builtin::ENTITY:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/ENTITY.pm
   SOAP::WSDL::XSD::Typelib::Builtin::ID:
@@ -279,14 +279,14 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anySimpleType.pm
   SOAP::WSDL::XSD::Typelib::Builtin::anyType:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anyType.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::Builtin::anyURI:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/anyURI.pm
   SOAP::WSDL::XSD::Typelib::Builtin::base64Binary:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/base64Binary.pm
   SOAP::WSDL::XSD::Typelib::Builtin::boolean:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/boolean.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::Builtin::byte:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/byte.pm
   SOAP::WSDL::XSD::Typelib::Builtin::date:
@@ -339,7 +339,7 @@ provides:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/string.pm
   SOAP::WSDL::XSD::Typelib::Builtin::time:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/time.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::Builtin::token:
     file: lib/SOAP/WSDL/XSD/Typelib/Builtin/token.pm
   SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte:
@@ -355,16 +355,16 @@ provides:
     version: 2.1.0
   SOAP::WSDL::XSD::Typelib::Element:
     file: lib/SOAP/WSDL/XSD/Typelib/Element.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::SimpleType:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::Typelib::SimpleType::restriction:
     file: lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm
-    version: 2.00.02
+    version: 2.00.03
   SOAP::WSDL::XSD::WhiteSpace:
     file: lib/SOAP/WSDL/XSD/WhiteSpace.pm
-    version: 2.00.02
+    version: 2.00.03
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

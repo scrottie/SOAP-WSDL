@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00.02
+Release notes for SOAP::WSDL 2.00.03
 -------
 
 I'm proud to present a new release of SOAP::WSDL.
@@ -35,6 +35,14 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Deserializer
 
 The following changes have been made:
+
+2.00.03 - May 18 2008
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+    * [ 1966575 ] 2.00.02 produced bad code with complexType extensions
 
 2.00.02 - May 16 2008
 

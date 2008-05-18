@@ -511,7 +511,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 670 $
  $LastChangedBy: kutterma $
  $Id: ComplexType.pm 670 2008-05-14 07:39:14Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
+ $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut
 

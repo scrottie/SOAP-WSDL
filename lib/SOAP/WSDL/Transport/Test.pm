@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use SOAP::WSDL::Factory::Transport;
 
-use version; our $VERSION = qv('2.00.02');
+use version; our $VERSION = qv('2.00.03');
 
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );
 SOAP::WSDL::Factory::Transport->register( https => __PACKAGE__ );

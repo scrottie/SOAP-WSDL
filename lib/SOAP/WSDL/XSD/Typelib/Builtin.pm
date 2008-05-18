@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable;
 
-use version; our $VERSION = qv('2.00.02');
+use version; our $VERSION = qv('2.00.03');
 
 use SOAP::WSDL::XSD::Typelib::Builtin::anyType;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;

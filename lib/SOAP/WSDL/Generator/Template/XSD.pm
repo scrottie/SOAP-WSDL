@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use File::Basename;
 use File::Spec;
 
-use version; our $VERSION = qv('2.00.02');
+use version; our $VERSION = qv('2.00.03');
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Visitor::Typelib;
