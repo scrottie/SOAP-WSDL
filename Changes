@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00.03
+Release notes for SOAP::WSDL 2.00.04
 -------
 
 I'm proud to present a new release of SOAP::WSDL.
@@ -35,6 +35,27 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Deserializer
 
 The following changes have been made:
+
+2.00.04
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+    * [ 1972059 ] Can't set timeout via SOAP::WSDL
+    * [ 1961409 ] Error with unqualified references in imported schema
+    * #35873: SOAP::WSDL -- Can't locate object method "set_Action" via package "SOAP::WSDL::OpMessage"
+    * [ 1969427 ] Mod_Perl.t broken when mod_perl is unavailable
+    * #35610 Test fails when Test::Without::Module is installed
+
+The following uncategorized improvements have been made:
+
+    * Changed the environment variable for author tests to "RELEASE_TESTING",
+    as defined by the Oslo QA Hackathon 2008
+    (see http://perl-qa.hexten.net/wiki/index.php/Oslo_QA_Hackathon_2008_:Achievements)
+    * Enhanced documentation
+    * Fixed a wrong error message
+    * Cleaned up test suite (removed duplicate tests)
 
 2.00.03 - May 18 2008
 

@@ -266,8 +266,8 @@ Thanks!
 
 =head1 LICENSE AND COPYRIGHT
 
-This library is free software. You may distribute/modify it under
-the same terms as perl itself.
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
 
 =head1 AUTHOR
 

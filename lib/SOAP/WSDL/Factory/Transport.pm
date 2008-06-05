@@ -39,7 +39,7 @@ sub get_transport {
 
     if (defined $registered_transport_of{ $scheme }) {
         no strict qw(refs);
-        defined %{ "$registered_transport_of{ $scheme }::" } or
+        $registered_transport_of{ $scheme }->can('new') or
             eval "require $registered_transport_of{ $scheme }"
                 or die "Cannot load transport class $registered_transport_of{ $scheme } : $@";
 
@@ -60,11 +60,11 @@ sub get_transport {
             no strict qw(refs);
             # behaves interestingly different under different versions of perl
             # maybe true even if it's not available
-            defined %{ "$SOAP_LITE_TRANSPORT_OF{ $scheme }::" }
+            my $protocol_class = $SOAP_LITE_TRANSPORT_OF{ $scheme } . '::Client';
+            $protocol_class->can('new')
                 or eval "require $SOAP_LITE_TRANSPORT_OF{ $scheme }"
                     or last SOAP_Lite;
 
-            my $protocol_class = $SOAP_LITE_TRANSPORT_OF{ $scheme } . '::Client';
             # may fail if it's not available
             my $transport = eval { $protocol_class->new( %attrs ) }
                 or last SOAP_Lite;
@@ -74,7 +74,7 @@ sub get_transport {
 
     if (exists $SOAP_WSDL_TRANSPORT_OF{ $scheme }) {
         no strict qw(refs);
-        defined %{ "$SOAP_WSDL_TRANSPORT_OF{ $scheme }::"}
+        $SOAP_WSDL_TRANSPORT_OF{ $scheme }->can('new')
             or eval "require $SOAP_WSDL_TRANSPORT_OF{ $scheme }"
                 or die "Cannot load transport class $SOAP_WSDL_TRANSPORT_OF{ $scheme } : $@";
         return $SOAP_WSDL_TRANSPORT_OF{ $scheme }->new( %attrs );
@@ -243,9 +243,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 679 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Transport.pm 679 2008-05-18 21:18:03Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
 
 =cut

@@ -5,6 +5,7 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:foobar="http://foo.bar"
     xmlns="http://schemas.xmlsoap.org/wsdl/"
 xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/">
     <types>
@@ -272,6 +273,14 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         </xsd:complexType>
 
         <xsd:element name="testRef" type="elementRefComplexType"/>
+        <xsd:element name="testAtomicRef">
+            <xsd:complexType>
+                <xsd:all>
+                    <xsd:element ref="in"/>
+                    <xsd:element ref="tns:out"/>
+                </xsd:all>
+            </xsd:complexType>
+        </xsd:element>
         <xsd:element name="testComplexTypeRestriction" type="testComplexTypeRestriction"/>
         <xsd:element name="testComplexTypeSimpleRestriction" type="testComplexTypeSimpleRestriction"/>
         <xsd:element name="in" type="xsd:string"></xsd:element>
@@ -314,6 +323,10 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
         <part name="test" element="tns:testRef"/>
     </message>
 
+    <message name="testAtomicRef">
+        <part name="test" element="tns:testAtomicRef"/>
+    </message>
+
     <message name="testRestriction">
         <wsdl:part name="test" element="tns:testComplexTypeRestriction"></wsdl:part>
     </message>
@@ -332,44 +345,42 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
 
     <portType name="testPort">
         <operation name="test">
-            <documentation>
-                Test-Methode
-            </documentation>
+            <documentation>test method</documentation>
             <input message="tns:testRequest"/>
             <output message="tns:testResponse"/>
         </operation>
         <operation name="testHeader">
-            <documentation>
-                Test-Methode
-            </documentation>
+            <documentation>Header test method</documentation>
             <input message="tns:testHeaderRequest"/>
             <output message="tns:testHeaderResponse"/>
         </operation>
         <operation name="testChoice">
-            <documentation>
-                Test-Methode
-            </documentation>
+            <documentation>choice/restriction test method</documentation>
             <input message="tns:testChoice"/>
             <output message="tns:testRestriction"/>
         </operation>
         <operation name="testMultiPartWarning">
-            <documentation>
-                Test-Methode
-            </documentation>
+            <documentation>multipart warning test method</documentation>
             <input message="tns:testMultiPartWarning"/>
             <output message="tns:testMultiPartWarning"/>
         </operation>
 
         <operation name="testEmptyComplex">
-                <input message="tns:testEmptyComplex"/>
-                <output message="tns:testAtomicSimple"/>
+            <documentation>empty complex type test method</documentation>
+            <input message="tns:testEmptyComplex"/>
+            <output message="tns:testAtomicSimple"/>
+        </operation>
+
+        <operation name="testRestriction">
+            <documentation>restriction complex type test method</documentation>
+            <input message="tns:testEmptyComplex"/>
+            <output message="tns:testSimpleRestriction"/>
         </operation>
 
         <operation name="testRef">
                 <input message="tns:testRef"/>
-                <output message="tns:testSimpleRestriction"/>
+                <output message="tns:testAtomicRef"/>
         </operation>
-
     </portType>
 
     <binding type="tns:testPort" name="testBinding">
@@ -414,8 +425,17 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
                 <soap:body use="literal" />
             </output>
         </operation>
+        <operation name="testRestriction">
+            <soap:operation soapAction="testRestriction" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
         <operation name="testRef">
-            <soap:operation soapAction="testEmptyComplex" />
+            <soap:operation soapAction="testRef" />
             <input>
                 <soap:body use="literal" />
             </input>
@@ -424,7 +444,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </output>
         </operation>
 
-        <wsdl:operation name="testEmptyComplex">
+        <wsdl:operation name="testEmptyComplex" foobar:Action="testEmptyComplex">
             <soap:operation soapAction="urn:Test/testEmptyComplex" />
             <wsdl:input>
                 <soap:body use="literal" />

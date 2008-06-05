@@ -5,11 +5,12 @@ use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use Carp qw(croak carp confess);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.04');
 
 my %id_of               :ATTR(:name<id> :default<()>);
 my %lang_of             :ATTR(:name<lang> :default<()>);
 my %name_of             :ATTR(:name<name> :default<()>);
+my %namespace_of        :ATTR(:name<namespace> :default<()>);
 my %documentation_of    :ATTR(:name<documentation> :default<()>);
 my %annotation_of       :ATTR(:name<annotation> :default<()>);
 my %targetNamespace_of  :ATTR(:name<targetNamespace> :default<()>);
@@ -24,7 +25,6 @@ sub namespaces {
 
 sub START {
     my ($self, $ident, $arg_ref) = @_;
-    #$xmlns_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
     $xmlns_of{ $ident }->{ 'xml' } = 'http://www.w3.org/XML/1998/namespace';
     $namespaces_of{ $ident }->{ '#default' } = $self->get_xmlns()->{ '#default' };
     $namespaces_of{ $ident }->{ 'xml' } = 'http://www.w3.org/XML/1998/namespace';
@@ -38,10 +38,11 @@ sub DEMOLISH {
   return;
 }
 
-sub STORABLE_freeze_pre :CUMULATIVE {};
-sub STORABLE_freeze_post :CUMULATIVE {};
-sub STORABLE_thaw_pre :CUMULATIVE {};
-sub STORABLE_thaw_post :CUMULATIVE { return $_[0] };
+#
+#sub STORABLE_freeze_pre :CUMULATIVE {};
+#sub STORABLE_freeze_post :CUMULATIVE {};
+#sub STORABLE_thaw_pre :CUMULATIVE {};
+#sub STORABLE_thaw_post :CUMULATIVE { return $_[0] };
 
 sub _accept {
     my $self = shift;
@@ -109,12 +110,21 @@ sub AUTOMETHOD {
 
 sub init {
     my ($self, @args) = @_;
-    foreach my $value (@args)
-    {
+    foreach my $value (@args) {
         croak @args if (not defined ($value->{ Name }));
+
         if ($value->{ Name } =~m{^xmlns\:}xms) {
             # add namespaces
             $xmlns_of{ ident $self }->{ $value->{ LocalName } } = $value->{ Value };
+            next;
+        }
+
+        # check for namespae-qualified attributes.
+        # neither XML Schema, nor WSDL1.1, nor the SOAP binding allow
+        # namespace-qualified attribute names
+        my ($ns, $localname) = split /\|/, $value->{ Name };
+        if ($ns) {
+            warn "found unrecognised attribute \{$ns}$localname (ignored)";
             next;
         }
 
@@ -128,12 +138,15 @@ sub init {
 sub expand {
     my ($self, $qname) = @_;
     my $ns_of = $self->namespaces();
+    my $parent;
     if (not $qname=~m{:}xm) {
         if (defined $ns_of->{ '#default' }) {
-            return $self->get_targetNamespace(), $qname;
-            # return $ns_of->{ '#default' }, $qname;
+            # TODO check. Returning the targetNamespace for the default ns
+            # is probably wrong
+            #return $self->get_targetNamespace(), $qname;
+            return $ns_of->{ '#default' }, $qname;
         }
-        if (my $parent = $self->get_parent()) {
+        if ($parent = $self->get_parent()) {
             return $parent->expand($qname);
         }
         die "un-prefixed element name <$qname> found, but no default namespace set\n"
@@ -142,7 +155,7 @@ sub expand {
     my ($prefix, $localname) = split /:/x, $qname;
 
     return ($ns_of->{ $prefix }, $localname) if ($ns_of->{ $prefix });
-    if (my $parent = $self->get_parent()) {
+    if ($parent = $self->get_parent()) {
         return $parent->expand($qname);
     }
     croak "unbound prefix $prefix found for $prefix:$localname. Bound prefixes are "

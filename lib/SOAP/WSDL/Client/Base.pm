@@ -65,6 +65,13 @@ SOAP::WSDL::Client::Base - Factory class for WSDL-based SOAP access
 Factory class for creating interface classes. Should probably be renamed to
 SOAP::WSDL::Factory::Interface...
 
+=head1 METHODS
+
+=head2 call
+
+Abstraction layer method between the generated interfaces and
+L<SOAP::WSDL::Client|SOAP::WSDL::Client>.
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2004-2007 Martin Kutter.
@@ -78,9 +85,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 689 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Base.pm 689 2008-05-23 22:11:46Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

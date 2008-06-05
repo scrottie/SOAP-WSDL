@@ -30,14 +30,17 @@ __PACKAGE__->_factory(
     {
 [% FOREACH element = complexType.get_element;
     IF (ref = element.get_ref);
-        element = definitions.first_types.find_element(element.expand( element.get_ref ));
-    END;
-    IF (type = element.get_type);
+        ref_element = definitions.first_types.find_element(element.expand( ref ));
+        -%]
+        '[% XSD.perl_var_name(XSD.element_name(ref_element)) %]' => '[% XSD.create_xsd_name(ref_element) %]',
+
+[%    ELSIF (type = element.get_type);
         element_type = definitions.first_types.find_type(complexType.expand( type ));
         IF (! element_type);
             type_name = complexType.expand( type );
             THROW NOT_FOUND, "${ type_name.0 } ${ type_name.1 } not found";
-        END; -%]
+        END;
+-%]
         '[% XSD.perl_var_name(XSD.element_name(element)) %]' => '[% XSD.create_xsd_name(element_type) %]',
 [%  ELSE;
         IF (element.first_simpleType);

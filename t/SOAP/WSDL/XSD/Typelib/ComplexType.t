@@ -337,8 +337,12 @@ ok ! UNIVERSAL::can('MyType', 'set_FOO'), 'UNIVERSAL::can("MyTypes", "set_FOO")'
 eval { MyType->new({ FOO => 42 }) };
 like $@, qr{unknown \s field \s}xm, 'error passing unknown field to constructor';
 
-eval { SOAP::WSDL::XSD::Typelib::ComplexType::AUTOMETHOD() };
-like $@, qr{Cannot \s call}xm;
+eval {
+    # catch warning - 
+    local $SIG{__WARN__} = sub {};
+    SOAP::WSDL::XSD::Typelib::ComplexType::AUTOMETHOD()
+};
+like $@, qr{Cannot \s call}xm, 'error calling AUTOMETHOD as function';
 
 eval { SOAP::WSDL::XSD::Typelib::ComplexType->_factory([], { test => {} }, {}) };
 like $@, qr{ No \s class \s given \s for \s }xms;

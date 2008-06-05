@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOFTPKG NAME="SOAP-WSDL-2.00.01" VERSION="2,00,01,0">
+  <TITLE>SOAP-WSDL-2.00.01</TITLE>
+  <ABSTRACT>SOAP with WSDL support</ABSTRACT>
+  <AUTHOR>Martin Kutter &lt;martin.kutter@fen-net.de&gt;</AUTHOR>
+  <IMPLEMENTATION>
+    <DEPENDENCY NAME="Data-Dumper" VERSION="0,0,0,0" />
+    <DEPENDENCY NAME="Scalar-List-Utils" VERSION="0,0,0,0" />
+    <DEPENDENCY NAME="Class-Std-Fast" VERSION="0,0,5,0" />
+    <DEPENDENCY NAME="Template-Toolkit" VERSION="0,0,0,0" />
+    <DEPENDENCY NAME="TimeDate" VERSION="0,0,0,0" />
+    <OS NAME="linux" />
+    <ARCHITECTURE NAME="i486-linux-gnu-thread-multi-5.8" />
+    <CODEBASE HREF="SOAP-WSDL-2.00.01.zip" />
+  </IMPLEMENTATION>
+</SOFTPKG>

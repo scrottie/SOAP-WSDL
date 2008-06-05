@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 13;
 use File::Spec;
 use File::Basename qw(dirname);
 use_ok qw(SOAP::WSDL);
@@ -30,7 +30,7 @@ like $@, qr{ unable \s to \s extract \s schema \s from \s WSDL }x, 'empty defini
 $soap = SOAP::WSDL->new();
 $soap->wsdl( "file://$path/WSDL_NO_MESSAGE.wsdl");
 eval { $soap->wsdlinit() };
-eval { $soap->call('NewOperation', 'value'); };
+# eval { $soap->call('NewOperation', 'value'); };
 like $@, qr{ Message \s \{http://www.example.org/WSDL_1/\}NewOperationRequest \s not \s found }x, 'empty definition';
 
 $soap = SOAP::WSDL->new();
@@ -40,6 +40,9 @@ $soap->no_dispatch(1);
 
 like $soap->call('NewOperation', NewOperation => { in => 'test' }), qr{ <in>test</in> }x;
 like $soap->call('NewOperation', { NewOperation => { in => 'test' } }), qr{ <in>test</in> }x;
+
+$soap->set_proxy('http://foo.de', timeout => 256);
+is $soap->get_client->get_transport()->timeout(), 256, 'timeout';
 
 $soap = SOAP::WSDL->new( wsdl => "file://$path/WSDL_1.wsdl",
     servicename => 'NewService',
@@ -52,22 +55,20 @@ like $soap->call('NewOperation', NewOperation => { in => 'test' }), qr{ <in>test
 like $soap->call('NewOperation', { NewOperation => { in => 'test' } }), qr{ <in>test</in> }x;
 
 
-$soap = SOAP::WSDL->new( wsdl => "file://$path/WSDL_NO_BINDING.wsdl",
-    servicename => 'NewService',
-    portname => 'NewPort',
-    no_dispatch => 1,
-);
 eval {
-    $soap->call('NewOperation', { NewOperation => { in => 'test' } });
+    $soap = SOAP::WSDL->new( wsdl => "file://$path/WSDL_NO_BINDING.wsdl",
+        servicename => 'NewService',
+        portname => 'NewPort',
+        no_dispatch => 1,
+    );
 };
 like $@, qr{ no \s binding }x, 'No binding error';
 
-$soap = SOAP::WSDL->new( wsdl => "file://$path/WSDL_NO_PORTTYPE.wsdl",
-    servicename => 'NewService',
-    portname => 'NewPort',
-    no_dispatch => 1,
-);
 eval {
-    $soap->call('NewOperation', { NewOperation => { in => 'test' } });
+    $soap = SOAP::WSDL->new( wsdl => "file://$path/WSDL_NO_PORTTYPE.wsdl",
+        servicename => 'NewService',
+        portname => 'NewPort',
+        no_dispatch => 1,
+    );
 };
 like $@, qr{ cannot \s find \s portType  }x, 'No porttype error';

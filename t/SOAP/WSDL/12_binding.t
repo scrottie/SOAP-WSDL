@@ -22,7 +22,7 @@ my $proxy = 'http://127.0.0.1/testPort';
 ok( $soap = SOAP::WSDL->new(
 	wsdl => 'file://' . $url . '/../../acceptance/wsdl/02_port.wsdl'
 ) );
-
-ok $soap->wsdlinit( url => $proxy );
 ok $soap->servicename('testService');
 ok $soap->portname('testPort');
+
+ok $soap->wsdlinit( url => $proxy );

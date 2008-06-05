@@ -1,10 +1,12 @@
 <s:schema elementFormDefault="qualified" targetNamespace="urn:HelloWorld"
-    xmlns:s="http://www.w3.org/2001/XMLSchema">
+    xmlns:s="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2001/XMLSchema">
     <s:element name="sayHello">
         <s:complexType>
             <s:sequence>
+                <!-- Test for referencing a type in import's default namespace -->
                 <s:element minOccurs="0" maxOccurs="1" name="name"
-                    type="s:string" />
+                    type="string" />
                 <s:element minOccurs="0" maxOccurs="1" name="givenName"
                     type="s:string" nillable="1" />
             </s:sequence>

@@ -1,4 +1,4 @@
-use Test::More tests => 61;
+use Test::More tests => 68;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -12,12 +12,34 @@ use SOAP::WSDL::Expat::WSDLParser;
 
 my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
-my $definitions = $parser->parse_file(
-     "$path/../../../acceptance/wsdl/generator_test.wsdl"
-);
+#
+# the next test is a bit odd: on parsing the WSDL, we test whether the
+# parser can cope with unknown (anyAttribute) attributes.
+# The default is to issue a warning.
+#
+# But if Test::Warn isn't there, we have to skip the test, but parse the
+# file, too, so in this case we skip a zero-length block, set no warnings
+# and parse the WSDL...
+#
 
-#my $type = $definitions->first_types()->find_type('urn:Test', 'elementRefComplexType');
-#die $type->get_element()->[0]->_DUMP;
+my $definitions;
+if (eval "require Test::Warn; 1") {
+    Test::Warn::warning_is( sub {
+        $definitions = $parser->parse_file(
+            "$path/../../../acceptance/wsdl/generator_test.wsdl"
+        );
+    }, 'found unrecognised attribute {http://foo.bar}Action (ignored)'
+    , 'warning on unrecognized attribute');
+}
+else {
+    SKIP: {
+        skip "cannot test warnings without Test::Warn", 1
+    }
+    no warnings;
+    $definitions = $parser->parse_file(
+        "$path/../../../acceptance/wsdl/generator_test.wsdl"
+    );
+}
 
 my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     definitions => $definitions,
@@ -95,7 +117,6 @@ for (1..2) {
     is $header->get_Test1(), 'Header1', 'Header content';
     is $header->get_Test2(), 'Header2', 'Header content';
 }
-
 
 # complexType choice test
 ok $message = $interface->testChoice( { Test1 => 'Test1' }  ), 'call soap method (no_dispatch)';
@@ -190,6 +211,18 @@ is $obj->serialize({ name => 'baz'}), q{<baz testAttr="bar">foo</baz>};
 
 use_ok qw(MyAttributes::TestAttribute);
 ok $obj = MyAttributes::TestAttribute->new({ value => 'foo' });
+
+use_ok qw(MyElements::testRef);
+ok $obj = MyElements::testRef->new({ testElementString => 'foo'});
+is q{<testRef xmlns="urn:Test"><testElementString>foo</testElementString></testRef>}
+    , $obj->serialize_qualified()
+    , 'serialize element ref';
+
+use_ok qw(MyElements::testAtomicRef);
+ok $obj = MyElements::testAtomicRef->new({ in => 'foo'});
+is q{<testAtomicRef xmlns="urn:Test"><in>foo</in></testAtomicRef>}
+    , $obj->serialize_qualified()
+    , 'serialize element with atomic complexType / all with element ref';
 
 
 SKIP: {

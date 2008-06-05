@@ -4,7 +4,7 @@ use base qw(
     [%
     base_type = definitions.get_types.0.find_type(simpleType.expand(base));
     IF ! base_type;
-        THROW NOT_FOUND "No base type in " _ simpleType.get_parent.get_name;
+        THROW NOT_FOUND "base type $base not found." _ simpleType.get_parent.get_name;
     END;
     XSD.create_xsd_name(base_type) %]);
 [% ELSIF (type = simpleType.first_simpleType() );

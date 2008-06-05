@@ -25,17 +25,39 @@ my %DIR_CONFIG_OF = (
 
 );
 
+
+# Ouch, testing mod_perl without mod_perl is pain in the arse.
+#
+# This is what we have to mock
+#
+#use Apache2::RequestIO  (); # $r->read()
+#use Apache2::RequestRec (); # $r->headers_in
+#use Apache2::RequestUtil(); # $r->dir_config()
+#use APR::Table          (); # $r->headers_in->get()
+#use Apache2::Log        (); # $r->log
+#use Apache2::Const -compile => qw(
+#                                    OK
+#                                    SERVER_ERROR
+#                                    HTTP_LENGTH_REQUIRED
+#                                );
+
 my $mock = Test::MockObject->new();
-$mock->fake_module('APR::Table');
-$mock->fake_module('Apache2::Log' =>
-    new     => sub { return bless {}, 'Apache2::Log' },
-    error   => sub { shift; push @ERROR_FROM, @_ },
-    warn    => sub { shift; push @ERROR_FROM, @_ },
+$mock->fake_module('Apache2::Const' =>
+    OK => sub { 1 },
+    SERVER_ERROR => sub { 500 },
+    HTTP_LENGTH_REQUIRED => sub { 411 },
+    import => sub {},
 );
 $mock->fake_module('Apache2::Headers' =>
     new => sub { my $class = shift; return bless { @_ }, $class },
     get => sub { return $_[0]->{ $_[1] } },
 );
+$mock->fake_module('Apache2::Log' =>
+    new     => sub { return bless {}, 'Apache2::Log' },
+    error   => sub { shift; push @ERROR_FROM, @_ },
+    warn    => sub { shift; push @ERROR_FROM, @_ },
+);
+$mock->fake_module('Apache2::RequestIO');
 $mock->fake_module('Apache2::RequestRec' =>
     new => sub { return bless {}, 'Apache2::RequestRec' },
     log => sub { return Apache2::Log->new() },
@@ -51,7 +73,8 @@ $mock->fake_module('Apache2::RequestRec' =>
     content_type    => sub {},
     'print'         => sub { shift; $RESPONSE .= join(q{}, @_) },
 );
-
+$mock->fake_module('Apache2::RequestUtil');
+$mock->fake_module('APR::Table');
 
 use_ok qw(SOAP::WSDL::Server::Mod_Perl2);
 

@@ -72,7 +72,7 @@ Returns the service matching the namespace/localname pair passed as arguments.
 Accessors/Mutators for accessing / setting the E<gt>bindingE<lt> child
 element(s).
 
-=head2 find_service
+=head2 find_binding
 
 Returns the binding matching the namespace/localname pair passed as arguments.
 
@@ -94,7 +94,7 @@ Returns the portType matching the namespace/localname pair passed as arguments.
 Accessors/Mutators for accessing / setting the E<gt>messageE<lt> child
 element(s).
 
-=head2 find_service
+=head2 find_message
 
 Returns the message matching the namespace/localname pair passed as arguments.
 
@@ -118,9 +118,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 689 $
  $LastChangedBy: kutterma $
- $Id: Definitions.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Definitions.pm 689 2008-05-23 22:11:46Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut

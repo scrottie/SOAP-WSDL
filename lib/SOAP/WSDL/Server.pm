@@ -6,7 +6,7 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Deserializer;
 use SOAP::WSDL::Factory::Serializer;
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.04');
 
 my %dispatch_to_of      :ATTR(:name<dispatch_to> :default<()>);
 my %action_map_ref_of   :ATTR(:name<action_map_ref> :default<{}>);
@@ -198,6 +198,38 @@ SOAP::Server's deserializer create one for you:
 
 You may use any other object as exception, provided it has a
 serialize() method which returns the object's XML representation.
+
+=head2 Subclassing
+
+To write a transport-specific SOAP Server, you should subclass
+SOAP::WSDL::Server.
+
+See the C<SOAP::WSDL::Server::*> modules for examples.
+
+A SOAP Server must call the following method to actually handle the request:
+
+=head3 handle
+
+Handles the SOAP request.
+
+Returns the response message as XML.
+
+Expects a C<HTTP::Request> object as only parameter.
+
+You may use any other object as parameter, as long as it implements the
+following methods:
+
+=over
+
+=item * header
+
+Called as header('SOAPAction'). Must return the corresponding HTTP header.
+
+=item * content
+
+Returns the request message
+
+=back
 
 =head1 LICENSE AND COPYRIGHT
 

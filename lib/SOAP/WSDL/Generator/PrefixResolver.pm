@@ -128,7 +128,7 @@ You cannot suffix your types by some rule yet...
 
 Copyright 2008 Martin Kutter.
 
-This library is free software. You may distribute/modify it under
+This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself
 
 =head1 AUTHOR

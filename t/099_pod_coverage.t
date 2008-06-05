@@ -1,8 +1,8 @@
 use Test::More;
 
 
-if ( not $ENV{TEST_AUTHOR} ) {
-    my $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
+if ( not $ENV{RELEASE_TESTING} ) {
+    my $msg = 'Author test.  Set $ENV{RELEASE_TESTING} to a true value to run.';
     plan( skip_all => $msg );
 }
 
@@ -34,16 +34,30 @@ else {                  # we are outside t/
     |SOAP::WSDL::Part
     |SOAP::WSDL::Operation
     |SOAP::WSDL::SOAP::[^:]+
+    |SOAP::WSDL::XSD::Annotation
     |SOAP::WSDL::XSD::Attribute
+    |SOAP::WSDL::XSD::AttributeGroup
     |SOAP::WSDL::XSD::SimpleType
     |SOAP::WSDL::XSD::Element
     |SOAP::WSDL::XSD::ComplexType
     |SOAP::WSDL::XSD::Builtin
     |SOAP::WSDL::XSD::Schema
     |SOAP::WSDL::XSD::Group
+    |SOAP::WSDL::XSD::MaxLength
+    |SOAP::WSDL::XSD::MinLength
+    |SOAP::WSDL::XSD::MaxInclusive
+    |SOAP::WSDL::XSD::MinInclusive
+    |SOAP::WSDL::XSD::MinExclusive
+    |SOAP::WSDL::XSD::MaxExclusive
+    |SOAP::WSDL::XSD::Enumeration
+    |SOAP::WSDL::XSD::Length
+    |SOAP::WSDL::XSD::FractionDigits
+    |SOAP::WSDL::XSD::Pattern
+    |SOAP::WSDL::XSD::SimpleType
+    |SOAP::WSDL::XSD::TotalDigits
+    |SOAP::WSDL::XSD::Whitespace
     |SOAP::WSDL::XSD::Typelib::Attribute
     |SOAP::WSDL::XSD::Typelib::AttributeSet
-
     ) \z }xms; } all_modules( @dirs );
 
 plan tests => scalar @files;

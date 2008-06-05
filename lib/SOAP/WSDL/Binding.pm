@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use List::Util qw(first);
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.04');
 
 my %operation_of    :ATTR(:name<operation> :default<()>);
 my %type_of         :ATTR(:name<type> :default<()>);

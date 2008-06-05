@@ -1,7 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 22;
+use Test::More tests => 23;
+use Storable;
+
 use lib '../lib';
 
 eval {
@@ -19,6 +21,8 @@ $parser->parse_string( xml() );
 
 my $wsdl;
 ok( $wsdl = $parser->get_data() , "get object tree");
+
+ok Storable::thaw(Storable::freeze($wsdl));
 
 my $types = $wsdl->first_types();
 
@@ -123,7 +127,7 @@ SKIP: {
 }
 ok($xml = $wsdl->find_message('urn:myNamespace', 'testRequest')
         ->get_part()->[0]->serialize(
-        undef, 
+        undef,
         { test => { length => {  size => -13, unit => 'BLA' } , int => 3 } },
     $serializer_options ),
     "serialize part"

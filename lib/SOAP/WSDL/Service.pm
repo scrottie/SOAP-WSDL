@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.04');
 
 my %port_of    :ATTR(:name<port>   :default<[]>);
 

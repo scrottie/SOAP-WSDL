@@ -139,9 +139,20 @@ a parse error appears
 
 =back
 
+=head1 METHODS
+
+=head2 deserialize
+
+Deserializes the message.
+
+=head2 generate_fault
+
+Generates a L<SOAP::WSDL::SOAP::Typelib::Fault11|SOAP::WSDL::SOAP::Typelib::Fault11>
+object and returns it.
+
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2004-2007 Martin Kutter.
+Copyright 2004-2008 Martin Kutter.
 
 This file is part of SOAP-WSDL. You may distribute/modify it under
 the same terms as perl itself.
@@ -152,9 +163,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 689 $
  $LastChangedBy: kutterma $
- $Id: Hash.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Hash.pm 689 2008-05-23 22:11:46Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/Hash.pm $
 
 =cut

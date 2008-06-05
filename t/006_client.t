@@ -32,7 +32,7 @@ $soap->servicename('MessageGateway');
 
 ok( $soap->no_dispatch( 1 ) , "Set no_dispatch" );
 ok $soap->get_client();
-ok ! $soap->get_client()->get_proxy();
+ok $soap->get_client()->get_proxy();
 
 SKIP: {
     skip_without_test_xml();
@@ -74,7 +74,7 @@ ok $soap->get_client()->get_serializer();
 
 # set_soap_version invalidates serializer and deserializer
 ok $soap->get_client()->set_soap_version('1.1');
-ok ! $soap->get_client()->get_serializer();
+ok ! $soap->get_client()->get_serializer(), 'serializer not loaded yet';
 
 $soap->call( 'EnqueueMessage' , EnqueueMessage => {
             'MMessage' => {
@@ -93,7 +93,8 @@ SKIP: {
     eval "require SOAP::Lite"
         or skip 'cannot test SOAP::Deserializer::SOM without SOAP::Lite', 4;
     require SOAP::WSDL::Transport::Loopback;
-    $soap->outputxml(0);
+	$soap->proxy('http://example.org');
+	$soap->outputxml(0);
     $soap->no_dispatch(0);
     ok my $result = $soap->call( 'EnqueueMessage' , EnqueueMessage => {
             'MMessage' => {

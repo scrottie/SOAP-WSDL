@@ -8,8 +8,8 @@ use File::Find;
 use IO::File;
 
 
-if ( not $ENV{TEST_AUTHOR} ) {
-    my $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
+if ( not $ENV{RELEASE_TESTING} ) {
+    my $msg = 'Author test.  Set $ENV{RELEASE_TESTING} to a true value to run.';
     plan( skip_all => $msg );
 }
 
@@ -46,7 +46,7 @@ sub check_file {
 
     while (my $line = $fh->getline() ) {
         # check for trailing whitespace
-        # allow single whitespace on line to allow 
+        # allow single whitespace on line to allow
         # pod source blocks with empty lines
         #
         $line_nr++;
@@ -67,7 +67,7 @@ sub check_file {
             print "# tab found in $file line $line_nr cols ${ \join(', ', @tab_pos_from) }\n";
             $error_count += scalar(@tab_pos_from);
         }
-        
+
         if ($line=~m{\r}) {
             print "# CR (\\r) found in $file line $line_nr. Convert to LF only.\n";
             $error_count++;

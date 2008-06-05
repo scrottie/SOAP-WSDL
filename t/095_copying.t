@@ -2,8 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 use File::Find;
-if ( not $ENV{TEST_AUTHOR} ) {
-    my $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
+if ( not $ENV{RELEASE_TESTING} ) {
+    my $msg = 'Author test.  Set $ENV{RELEASE_TESTING} to a true value to run.';
     plan( skip_all => $msg );
 }
 
@@ -52,7 +52,7 @@ sub filelist {
     return if $File::Find::name =~m{SOAP/WSDL/XSD/Typelib/Attribute\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/Typelib/AttributeSet\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/Group\.pm$}xms;
-	
+
     return if $File::Find::name =~m{SOAP/WSDL/XSD/TotalDigits\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/Annotation\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/AttributeGroup\.pm$}xms;
@@ -65,7 +65,8 @@ sub filelist {
     return if $File::Find::name =~m{SOAP/WSDL/XSD/MinLength\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/MinInclusive\.pm$}xms;
     return if $File::Find::name =~m{SOAP/WSDL/XSD/MinExclusive\.pm$}xms;
-    return if $File::Find::name =~m{SOAP/WSDL/XSD/Whitespace\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/Pattern\.pm$}xms;
+    return if $File::Find::name =~m{SOAP/WSDL/XSD/WhiteSpace\.pm$}xms;
 
     push @filelist, $File::Find::name;
 }

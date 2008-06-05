@@ -10,7 +10,7 @@ use Carp;
 use Scalar::Util qw(blessed);
 use SOAP::WSDL::Client;
 use SOAP::WSDL::Expat::WSDLParser;
-use Class::Std::Fast;
+use Class::Std::Fast constructor => 'none';
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
@@ -18,7 +18,6 @@ use version; our $VERSION= qv('2.00.03');
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
-my %proxy_of            :ATTR(:name<proxy>);
 my %autotype_of         :ATTR(:name<autotype>);
 my %outputxml_of        :ATTR(:name<outputxml> :default<0>);
 my %outputtree_of       :ATTR(:name<outputtree>);
@@ -42,7 +41,6 @@ my %LOOKUP = (
   no_dispatch           => \%no_dispatch_of,
   class_resolver        => \%class_resolver_of,
   wsdl                  => \%wsdl_of,
-  proxy                 => \%proxy_of,
   autotype              => \%autotype_of,
   outputxml             => \%outputxml_of,
   outputtree            => \%outputtree_of,
@@ -94,10 +92,28 @@ for my $method (keys %LOOKUP ) {
         }
 
         my $ident = ident $self;
-        $self->wsdlinit() if ($wsdl_of{ $ident });
         $client_of{ $ident } = SOAP::WSDL::Client->new();
+        $self->wsdlinit() if ($wsdl_of{ $ident });
         return $self;
     }
+}
+
+sub set_proxy {
+    my $self = shift;
+    return $self->get_client()->set_proxy(@_);
+}
+
+sub get_proxy {
+    my $self = shift;
+    return $self->get_client()->get_proxy();
+}
+
+sub proxy {
+    my $self = shift;
+    if (@_) {
+        return $self->set_proxy(@_);
+    }
+    return $self->get_proxy();
 }
 
 sub wsdlinit {
@@ -132,6 +148,15 @@ sub wsdlinit {
 
     $servicename_of{ $ident } = $opt{servicename} if $opt{servicename};
     $portname_of{ $ident } = $opt{portname} if $opt{portname};
+
+    $self->_wsdl_init_methods();
+
+    # pass-through keep_alive if we need it...
+    $self->get_client()->set_proxy(
+        $port_of{ $ident }->first_address()->get_location(),
+        $keep_alive_of{ $ident } ? (keep_alive => 1) : (),
+    );
+
     return $self;
 } ## end sub wsdlinit
 
@@ -151,6 +176,7 @@ sub _wsdl_get_port :PRIVATE  {
         ? $service_of{ $ident }->get_port( $ns, $portname_of{ $ident } )
         : $port_of{ $ident } = $service_of{ $ident }->get_port()->[ 0 ];
 }
+
 sub _wsdl_get_binding :PRIVATE {
     my $self = shift;
     my $ident = ident $self;
@@ -160,6 +186,7 @@ sub _wsdl_get_binding :PRIVATE {
         or croak "no binding found for ", $port->get_binding();
     return $binding_of{ $ident };
 }
+
 sub _wsdl_get_portType :PRIVATE {
     my $self    = shift;
     my $ident   = ident $self;
@@ -169,6 +196,7 @@ sub _wsdl_get_portType :PRIVATE {
         or croak "cannot find portType for " . $binding->get_type();
     return $porttype_of{ $ident };
 }
+
 sub _wsdl_init_methods :PRIVATE {
     my $self = shift;
     my $ident = ident $self;
@@ -258,12 +286,6 @@ sub call {
     $self->_wsdl_init_methods() if not ($method_info_of{ $ident });
 
     my $client = $client_of{ $ident };
-
-    # pass-through keep_alive if we need it...
-    $client->set_proxy( $proxy_of{ $ident }
-        || $port_of{ $ident }->first_address()->get_location(),
-        $keep_alive_of{ $ident } ? (keep_alive => 1) : (),
-    );
 
     $client->set_no_dispatch( $no_dispatch_of{ $ident } );
     $client->set_outputxml( $outputxml_of{ $ident } ? 1 : 0 );
@@ -772,8 +794,6 @@ Peter Orvos, Mark Overmeer, Jon Robens, Isidro Vila Verde and Glenn Wood
 (in alphabetical order) spotted bugs and/or suggested improvements in
 the 1.2x releases.
 
-Noah Robin contirbuted lots of documentation fixes, and the mod_perl server.
-
 JT Justman and Noah Robin provided early feedback and bug reports for
 the 2.xx pre-releases.
 
@@ -786,12 +806,16 @@ Matt S. Trout encouraged me "to get a non-dev-release out."
 
 CPAN Testers provided most valuable (automated) feedback. Thanks a lot.
 
-Numerous people sent me their real-world WSDL files for testing. Thank you.
+Numerous people sent me their real-world WSDL files and error reports for
+testing. Thank you.
+
+Noah Robin contributed lots of documentation fixes, and the mod_perl server,
+and eventually joined SOAP::WSDL's developement. Thanks.
+
+Mark Overmeer wrote XML::Compile::SOAP - competition is good for business.
 
 Paul Kulchenko and Byrne Reese wrote and maintained SOAP::Lite and
 thus provided a base (and counterpart) for SOAP::WSDL.
-
-Mark Overmeer wrote XML::Compile::SOAP - competition is good for business.
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -806,9 +830,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 694 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: WSDL.pm 694 2008-05-25 21:06:56Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

@@ -140,7 +140,7 @@ sub _initialize {
     # TODO skip non-XML Schema namespace tags
     $parser->setHandlers(
         Start => sub {
-            my ($parser, $localname, %attrs) = @_;
+            my ($parser, $localname, @attrs) = @_;
             $characters = q{};
 
             my $action = SOAP::WSDL::TypeLookup->lookup(
@@ -154,10 +154,11 @@ sub _initialize {
                 eval "require $action->{ class }";
                 croak $@ if ($@);
 
-                my $obj = $action->{ class }->new({ parent => $current,
-                    # xmlns => { '#default' => $parser->namespace($localname) }
+                my $obj = $action->{ class }->new({
+                        parent => $current,
+                        namespace => $parser->namespace($localname),
                     })
-                  ->init( _fixup_attrs( $parser, %attrs ) );
+                  ->init( _fixup_attrs( $parser, @attrs ) );
 
                 if ($current) {
                     # inherit namespace, but don't override
@@ -180,7 +181,7 @@ sub _initialize {
                 $current = $obj;
             }
             elsif ($action->{ type } eq 'PARENT') {
-                $current->init( _fixup_attrs($parser, %attrs) );
+                $current->init( _fixup_attrs($parser, @attrs) );
             }
             elsif ($action->{ type } eq 'METHOD') {
                 my $method = $action->{ method };
@@ -196,12 +197,12 @@ sub _initialize {
                     ? ref $action->{ value }
                         ? @{ $action->{ value } }
                         : ($action->{ value })
-                    : _fixup_attrs($parser, %attrs)
+                    : _fixup_attrs($parser, @attrs)
                 );
             }
             elsif ($action->{type} eq 'HANDLER') {
                 my $method = $self->can($action->{method});
-                $method->($self, $current, %attrs);
+                $method->($self, $current, @attrs);
             }
             else {
                 # TODO replace by hash lookup of known namespaces.
@@ -249,30 +250,41 @@ sub _initialize {
 
 # make attrs SAX style
 sub _fixup_attrs {
-    my ($parser, %attrs_of) = @_;
+    my ($parser, @attrs) = @_;
 
-    my @attrs_from = map {
-        $_ =
-        {
-            Name => $_,
-            Value => $attrs_of{ $_ },
-            LocalName => $_
-        }
-    } keys %attrs_of;
+    my @attr_key_from = ();
+    my @attr_value_from = ();
+
+    while (@attrs) {
+        push @attr_key_from, shift @attrs;
+        push @attr_value_from, shift @attrs;
+    }
+
+    my @attrs_from;
 
     # add xmlns: attrs. expat eats them.
+    #
+    # add namespaces before attributes: Attributes may be namespace-qualified
+    #
     push @attrs_from, map {
-        # ignore xmlns=FOO namespaces - must be XML schema
-#        # Other nodes should be ignored somewhere else
-#        ($_ eq '#default')
-#        ? ()
-#        :
         {
             Name => "xmlns:$_",
             Value => $parser->expand_ns_prefix( $_ ),
             LocalName => $_
         }
     } $parser->new_ns_prefixes();
+
+    push @attrs_from, map {
+        $_ =
+        {
+            Name => defined $parser->namespace($_)
+                ? $parser->namespace($_) . '|' . $_
+                : '|' . $_,
+            Value => shift @attr_value_from, # $attrs_of{ $_ },
+            LocalName => $_
+        }
+    } @attr_key_from;
+
     return @attrs_from;
 }
 
@@ -310,10 +322,10 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: WSDLParser.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: WSDLParser.pm 688 2008-05-23 21:01:54Z kutterma $
 
- $LastChangedDate: 2008-05-18 22:17:56 +0200 (So, 18 Mai 2008) $
- $LastChangedRevision: 677 $
+ $LastChangedDate: 2008-05-23 23:01:54 +0200 (Fr, 23 Mai 2008) $
+ $LastChangedRevision: 688 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
