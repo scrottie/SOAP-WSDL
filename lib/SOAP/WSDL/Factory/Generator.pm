@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Generator;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 my %GENERATOR = (
     'XSD' => 'SOAP::WSDL::Generator::Template::XSD',

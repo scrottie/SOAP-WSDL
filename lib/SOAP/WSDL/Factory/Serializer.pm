@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Serializer;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 my %SERIALIZER = (
     '1.1' => 'SOAP::WSDL::Serializer::XSD',
@@ -138,9 +138,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: Serializer.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Serializer.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Serializer.pm $
 
 =cut

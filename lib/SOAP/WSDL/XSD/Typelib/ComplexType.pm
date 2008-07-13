@@ -10,7 +10,7 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-use version; our $VERSION = qv('2.1.0');
+use version; our $VERSION = qv('2.00.05');
 
 my %ELEMENTS_FROM;      # order of elements in a class
 my %ATTRIBUTES_OF;      # references to value hashes
@@ -508,9 +508,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 670 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 670 2008-05-14 07:39:14Z kutterma $
+ $Id: ComplexType.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

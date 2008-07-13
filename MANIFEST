@@ -13,6 +13,8 @@ benchmark/XSD/strftime.pl
 bin/wsdl2perl.pl
 Build.PL
 Changes
+covered_by.pl
+covering.pl
 example/cgi-bin/helloworld.pl
 example/cgi-bin/person.pl
 example/fortune.pl
@@ -20,6 +22,9 @@ example/genericbarcode.pl
 example/hello.pl
 example/hello_compile.pl
 example/hello_lite.pl
+example/leaktest/hello_wsdl.pl
+example/leaktest/leak.pl
+example/leaktest/parse.pl
 example/lib/MyElements/CountCookies.pm
 example/lib/MyElements/CountCookiesResponse.pm
 example/lib/MyElements/GenerateBarCode.pm
@@ -270,8 +275,6 @@ MANIFEST			This list of files
 META.yml
 MIGRATING
 README
-SOAP-WSDL-2.00.01.ppd
-SOAP-WSDL-2.00.01.zip
 t/002_parse_wsdl.t
 t/003_wsdl_based_serializer.t
 t/006_client.t
@@ -281,6 +284,7 @@ t/011_simpleType.t
 t/012_element.t
 t/013_complexType.t
 t/016_client_object.t
+t/094_cpan_meta.t
 t/095_copying.t
 t/096_characters.t
 t/097_kwalitee.t
@@ -332,9 +336,6 @@ t/acceptance/wsdl/WSDLParser/imported.xsd
 t/acceptance/wsdl/WSDLParser/xsd_import_no_location.wsdl
 t/acceptance/wsdl/WSDLParser_import_loop.wsdl
 t/contributed.wsdl
-t/covered-by.txt
-t/covered.txt
-t/covered/covered-0.01.db
 t/lib/Mod_Perl2Test.pm
 t/lib/MyComplexType.pm
 t/lib/MyElement.pm
@@ -364,6 +365,7 @@ t/SOAP/WSDL/05_simpleType-union.t
 t/SOAP/WSDL/06_keep_alive.t
 t/SOAP/WSDL/11_helloworld.NET.t
 t/SOAP/WSDL/12_binding.t
+t/SOAP/WSDL/Base.t
 t/SOAP/WSDL/Client.t
 t/SOAP/WSDL/Client/Base.t
 t/SOAP/WSDL/Definitions.t
@@ -461,4 +463,5 @@ t/SOAP/WSDL_NO_MESSAGE.wsdl
 t/SOAP/WSDL_NO_PORTTYPE.wsdl
 t/test.wsdl
 TEST_COVERAGE
+test_html.pl
 TODO

@@ -1,8 +1,10 @@
 use strict;
 use warnings;
-use Test::More tests => 14; #qw(no_plan);
+use Test::More tests => 16; #qw(no_plan);
 use File::Spec;
 use File::Basename;
+
+my $HAVE_TEST_WARN =eval { require Test::Warn; };
 
 my $path = File::Spec->rel2abs( dirname __FILE__ );
 $path =~s{\\}{/}xg;     # stupid windows workaround: $path works with /, but not
@@ -16,25 +18,25 @@ my $definitions = $parser->parse_file(
      "$path/../../../acceptance/wsdl/WSDLParser.wsdl"
 );
 
-use Data::Dumper;
 my $schema = $definitions->first_types()->get_schema()->[1];
 my $attr = $schema->get_element()->[0]->first_complexType->first_attribute();
 ok $attr->get_name('testAttribute'),    'attribute name';
 ok $attr->get_type('xs:string'),        'attribute type';
 
-
-#use SOAP::WSDL::Generator::Template::XSD;
-#my $generator = SOAP::WSDL::Generator::Template::XSD->new({
-#    definitions => $definitions,
-#    type_prefix => 'Foo',
-#    element_prefix => 'Foo',
-#    typemap_prefix => 'Foo',
-#    OUTPUT_PATH => "$path/testlib",
-#});
-
-$definitions = $parser->parse_uri(
-     "file://$path/../../../acceptance/wsdl/WSDLParser-import.wsdl"
-);
+if ($HAVE_TEST_WARN) {
+    Test::Warn::warning_like( sub {
+        $definitions = $parser->parse_uri(
+             "file://$path/../../../acceptance/wsdl/WSDLParser-import.wsdl"
+        );
+    }, qr{already \s imported}x, 'duplicate import warning')
+}
+else {
+    SKIP: { skip 'Cannot test warnings without Test::Warn', 1; };
+    local $SIG{__WARN__} = sub {};
+    $definitions = $parser->parse_uri(
+        "file://$path/../../../acceptance/wsdl/WSDLParser-import.wsdl"
+    );
+}
 
 ok my $service = $definitions->first_service();
 is $service->get_name(), 'Service1', 'wsdl:import service name';
@@ -77,9 +79,20 @@ like $@, qr{\A cannot \s import \s document \s from \s namespace \s
 $SIG{ALRM} = sub { die 'looped'};
 alarm 1;
 
-$definitions = $parser->parse_file(
-     "$path/../../../acceptance/wsdl/WSDLParser_import_loop.wsdl"
-);
+if ($HAVE_TEST_WARN) {
+    Test::Warn::warning_like( sub {
+        $definitions = $parser->parse_uri(
+            "file://$path/../../../acceptance/wsdl/WSDLParser_import_loop.wsdl"
+        );
+    }, qr{already \s imported}x, 'duplicate import warning');
+}
+else {
+    SKIP: { skip 'Cannot test warnings without Test::Warn', 1; };
+    local $SIG{__WARN__} = sub {};
+    $definitions = $parser->parse_uri(
+        "file://$path/../../../acceptance/wsdl/WSDLParser_import_loop.wsdl"
+    );
+}
 
 alarm 0;
 pass 'import loop';

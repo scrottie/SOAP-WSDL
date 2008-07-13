@@ -1,9 +1,8 @@
-#!/usr/bin/perl
 package SOAP::WSDL::XSD::Typelib::Element;
+use strict; use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
-use strict;
 
-use version; our $VERSION = qv('2.00.04');
+use version; our $VERSION = qv('2.00.05');
 
 my %NAME;
 my %NILLABLE;
@@ -25,15 +24,17 @@ BLOCK: {
         _maxOccurs => \%MAX_OCCURS,
     );
 
+    # create getters / setters for all elements' class data
     no strict qw(refs);
     while (my ($name, $value) = each %method_lookup ) {
         *{ "__set$name" } = sub {
-            # TODO the "or die" is bullshit - at least the error message is wrong...
-            my $class = ref $_[0] || $_[0] or die "Cannot call __set$name without parameter";
+            @_ or die "Cannot call __set$name without parameter";
+            my $class = ref $_[0] || $_[0];
             $value->{ $class } = $_[1];
         };
         *{ "__get$name" } = sub {
-            my $class = ref $_[0] || $_[0] or die "Cannot call __get$name as function";
+            @_ or die "Cannot call __set$name as function";
+            my $class = ref $_[0] || $_[0];
             return $value->{ $class };
         };
     }
@@ -176,9 +177,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 701 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: Element.pm 701 2008-06-05 19:19:16Z kutterma $
+ $Id: Element.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/Element.pm $
 
 =cut

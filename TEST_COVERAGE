@@ -6,12 +6,18 @@
 # Note that this shell script requires Devel::CoverX::Covered - if you
 # don't have it, comment out the line noted below
 #
-cd t/
-cover -delete
-find . -type f -name '*.t' | xargs -n 1 /usr/bin/perl -MDevel::Cover=-silent,1,-summary,0 -I../lib > /dev/null
+
+perl -It/lib -MTAP::Harness -MFile::Find::Rule -e '
+    local $ENV{TEST_VERBOSE} = 1;
+    TAP::Harness->new({
+         merge => 1,
+         lib => [ q{t/lib}, q{lib} ],
+         switches => [ q{-MDevel::Cover=-ignore,.,-select,^lib/.+,-coverage,statement,-coverage,subroutine,-coverage,condition,-coverage,branch} ],
+    })->runtests( sort { $a cmp $b } File::Find::Rule->file()->name( q{*.t} )->in( q{t/} ) );
+'
 
 # Devel::CoverX::Covered
 covered runs
 
-cover -ignore_re \.t$ -ignore_re ^lib -coverage="statement" -coverage=condition -coverage=subroutine -coverage="branch"
+cover -coverage="statement" -coverage=condition -coverage=subroutine -coverage="branch"
 

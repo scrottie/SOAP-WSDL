@@ -32,6 +32,15 @@ this backend:
 
 =head3 Accessing HTTP(S) webservices protected by NTLM authentication
 
+You need the L<NTLM|NTLM> distribution installed to access webservices protected
+by NTLM authentication. More specifically, you need the Authen::NTLM module
+from this distribution. Note that this is different from the Authen::NTML
+distribution by Yee Man Chan also available from CPAN.
+
+Your user credentials usually need to include the windows domain like this:
+
+ testdomain\testuser
+
 Besides passing user credentials as when accessing a web service protected
 by basic or digest authentication, you also need to enforce connection
 keep_alive on the transport backens.

@@ -42,3 +42,12 @@ If you don't have Module::Build installed, you may also use
 
 Note that Module::Build is the recommended installer - make will not run
 all tests provided with SOAP-WSDL.
+
+SOLARIS INSTALLATION NOTES
+--------------------------
+According to a CPAN RT report http://rt.cpan.org/Ticket/Display.html?id=36865
+it may be necessary to check (and possibly update) the expat libraries
+required by XML::Parser.
+
+SOAP::WSDL's metadata includes XML::Parser, but it seems that the expat
+libraries XML::Parser depends on may slip through missing or outdated.

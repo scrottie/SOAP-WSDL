@@ -17,15 +17,12 @@ sub set_value {
             [\+\-] \d{2} \: \d{2} $
         }xms
     );
-    no warnings qw(uninitialized);
     # strptime sets empty values to undef - and strftime doesn't like that...
     my @time_from = map { ! defined $_ ? 0 : $_ } strptime($_[1]);
 
-    undef $time_from[$#time_from];
+    undef $time_from[-1];
 
-    my $time_str = do { # no warnings;
-        strftime( '%Y-%m-%dT%H:%M:%S%z', @time_from );
-    };
+    my $time_str = strftime( '%Y-%m-%dT%H:%M:%S%z', @time_from );
 
     # insert : in timezone info
     substr $time_str, -2, 0, ':';

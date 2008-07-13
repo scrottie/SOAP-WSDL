@@ -12,7 +12,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Server);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 # mostly copied from SOAP::Lite. Unfortunately we can't use SOAP::Lite's CGI
 # server directly - we would have to swap out it's base class...

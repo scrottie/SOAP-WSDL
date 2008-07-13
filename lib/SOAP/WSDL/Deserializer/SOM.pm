@@ -2,7 +2,7 @@ package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 our @ISA;
 
 eval {
@@ -12,6 +12,18 @@ eval {
 or die "Cannot load SOAP::Lite.
 Cannot deserialize to SOM object without SOAP::Lite.
 Please install SOAP::Lite.";
+
+sub deserialize {
+    my $self = shift;
+    my $result = eval { $self->SUPER::deserialize(@_) };
+    if ($@) {
+        return SOAP::Fault->new(
+            faultactor => 'soap:Server',
+            faultstring => $@,
+        );
+    }
+    return $result;
+}
 
 sub generate_fault {
     my ($self, $args_from_ref) = @_;
@@ -66,6 +78,17 @@ This may be XML including mixed content, attachements and other XML data not
 SOAP::WSDL::Deserializer::SOM is a subclass of L<SOAP::Deserializer|SOAP::Deserializer>
 from the L<SOAP::Lite|SOAP::Lite> package.
 
+=head1 METHODS
+
+=head2 deserialize
+
+Deserializes a XML sting into a SOAP::SOM object. Returns a SOAP::Fault object
+on deserialization errors.
+
+=head2 generate_fault
+
+Dies with a SOAP::Fault object.
+
 =head1 USAGE
 
 SOAP::WSDL::Deserializer will not autoregister itself - to use it for a particular
@@ -85,8 +108,8 @@ SOAP version just use the following lines:
 
 =item * No on_fault handler
 
-You cannot specify what to do when an error occurs - SOAP::WSDL will die
-with a SOAP::Fault object on transport errors.
+You cannot specify what to do when an error occurs - SOAP::WSDL will return
+a SOAP::Fault object on transport errors.
 
 =back
 
@@ -98,6 +121,9 @@ with a SOAP::Fault object on transport errors.
 
 SOAP::WSDL::Deserializer::SOM will die with a SOAP::Fault object on calls
 to generate_fault.
+
+This also means that a SOAP::Fault may be thrown as exception when using
+
 
 =back
 
@@ -114,9 +140,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: SOM.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: SOM.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/SOM.pm $
 
 =cut

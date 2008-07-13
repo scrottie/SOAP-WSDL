@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- This file is used by t/SOAP/WSDL/Generator/XSD.t -->
 <definitions name="Test"
     targetNamespace="urn:Test"
     xmlns:tns="urn:Test"
@@ -30,7 +31,9 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </xsd:annotation>
             <xsd:list>
                 <xsd:simpleType>
-                    <xsd:restriction base="xsd:int"></xsd:restriction>
+                    <xsd:restriction base="xsd:int">
+                        <xsd:maxLength value="2" fixed="1"/>
+                    </xsd:restriction>
                 </xsd:simpleType>
             </xsd:list>
         </xsd:simpleType>

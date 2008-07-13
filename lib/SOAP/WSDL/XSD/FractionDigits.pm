@@ -4,8 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.04');
-
+use version; our $VERSION = qv('2.00.05');
 #<pattern value="">
 
 # id provided by Base

@@ -14,7 +14,7 @@ use Class::Std::Fast constructor => 'none';
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-use version; our $VERSION= qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
@@ -270,7 +270,7 @@ sub _wsdl_init_methods :PRIVATE {
 
 # on_action is a no-op and just here for compatibility reasons.
 # It returns the first parameter to allow method chaining.
-sub on_action { return shift };
+sub on_action { return shift }
 
 sub call {
     my ($self, $method, @data_from) = @_;
@@ -299,7 +299,7 @@ sub call {
       && ( ! $no_dispatch_of{ $ident } ) ) {
         require SOAP::WSDL::Deserializer::SOM;
         $client->set_deserializer( SOAP::WSDL::Deserializer::SOM->new() );
-    };
+    }
 
     my $method_info = $method_info_of{ $ident }->{ $method };
 
@@ -830,9 +830,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 694 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: WSDL.pm 694 2008-05-25 21:06:56Z kutterma $
+ $Id: WSDL.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
 
 =cut

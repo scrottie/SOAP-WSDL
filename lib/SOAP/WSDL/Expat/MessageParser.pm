@@ -1,19 +1,20 @@
 #!/usr/bin/perl
 package SOAP::WSDL::Expat::MessageParser;
-use strict;
-use warnings;
-use Carp qw(croak confess);
-
-use version; our $VERSION = qv('2.00.03');
+use strict; use warnings;
 
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 
 use base qw(SOAP::WSDL::Expat::Base);
 
-require Class::Std::Fast;
+BEGIN { require Class::Std::Fast };
+
+use version; our $VERSION = qv('2.00.05');
+
+# GLOBALS
 my $OBJECT_CACHE_REF = Class::Std::Fast::OBJECT_CACHE_REF();
 
+# keep track of classes loaded
 my %LOADED_OF = ();
 
 sub new {
@@ -46,7 +47,10 @@ sub class_resolver {
 sub load_classes {
     my $self = shift;
 
-    for (values %{ $self->{ class_resolver }->get_typemap }) {
+    return if $LOADED_OF{ $self->{ class_resolver } };
+
+    # requires sorting to make sub-packages load after their parent
+    for (sort values %{ $self->{ class_resolver }->get_typemap }) {
         no strict qw(refs);
         my $class = $_;
 
@@ -54,9 +58,10 @@ sub load_classes {
         next if $class eq '__SKIP__';
         next if defined *{ "$class\::" }; # check if namespace exists
 
+        # Require takes a bareword or a file name - we have to take
+        # the filname road here...
         $class =~s{ :: }{/}xmsg;
-        $class .= '.pm';
-        require $class;
+        require "$class.pm";    ## no critic (RequireBarewordIncludes)
     }
     $LOADED_OF{ $self->{ class_resolver } } = 1;
 }
@@ -106,16 +111,12 @@ sub _initialize {
         : ();
 
     # use "globals" for speed
-    my ($_prefix, $_method,
-        $_class, $_leaf) = ();
+    my ($_prefix, $_method, $_class, $_leaf) = ();
 
     my $char_handler = sub {
-            return if (!$_leaf);    # we only want characters in leaf nodes
-
-            $characters .= $_[1];
-#                if $_[1] =~m{ [^\s] }xms;
-
-            return;
+        return if (!$_leaf);    # we only want characters in leaf nodes
+        $characters .= $_[1];   # add to characters
+        return;                 # return void
     };
 
     no strict qw(refs);
@@ -194,6 +195,9 @@ sub _initialize {
                 }
             }
             $depth++;
+
+            # TODO: Skip content of anyType / any stuff
+
             return;
         },
 
@@ -319,10 +323,10 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: MessageParser.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: MessageParser.pm 728 2008-07-13 19:28:50Z kutterma $
 
- $LastChangedDate: 2008-05-18 22:17:56 +0200 (So, 18 Mai 2008) $
- $LastChangedRevision: 677 $
+ $LastChangedDate: 2008-07-13 21:28:50 +0200 (So, 13 Jul 2008) $
+ $LastChangedRevision: 728 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

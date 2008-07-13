@@ -9,6 +9,12 @@
 >
     <types>
         <xsd:schema targetNamespace="urn:Test">
+            <xsd:element name="anyType" type="xsd:anyType" />
+            <xsd:complexType name="anyType">
+                <xsd:sequence>
+                    <xsd:element name="anyType" type="xsd:anyType"/>
+                </xsd:sequence>
+            </xsd:complexType>
         </xsd:schema>
     </types>
     <portType name="testPort">

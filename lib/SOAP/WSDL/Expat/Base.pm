@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 
 # TODO: convert to Class::Std::Fast based class - hash based classes suck.
 
-use version; our $VERSION = qv('2.00.04');
+use version; our $VERSION = qv('2.00.05');
 
 sub new {
     my ($class, $arg_ref) = @_;
@@ -35,17 +35,23 @@ sub get_uri { return $_[0]->{ uri }; }
 sub set_user_agent { $_[0]->{ user_agent } = $_[1]; }
 sub get_user_agent { return $_[0]->{ user_agent }; }
 
+# Mark a URI as "already parsed"
 sub set_parsed {
     my ($self, $uri) = @_;
     $self->{ parsed }->{ $uri } = 1;
     return;
 }
 
+
+# returns true if a specific URI has already been parsed
 sub is_parsed {
     my ($self, $uri) = @_;
     return exists $self->{ parsed }->{ $uri };
 }
 
+
+# parse a URI. This is the preferred parsing method for WSDL files, as it's
+# the only one allowing automatic import resolution
 sub parse_uri {
     my $self = shift;
     my $uri = shift;
@@ -74,6 +80,7 @@ sub parse {
         $_[0]->{ parser }->release();
     };
     $_[0]->{ parser }->xpcroak( $@ ) if $@;
+    delete $_[0]->{ parser };
     return $_[0]->{ data };
 }
 
@@ -83,6 +90,7 @@ sub parsefile {
         $_[0]->{ parser }->release();
     };
     $_[0]->{ parser }->xpcroak( $@ ) if $@;
+    delete $_[0]->{ parser };
     return $_[0]->{ data };
 }
 

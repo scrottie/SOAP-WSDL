@@ -11,7 +11,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
@@ -20,7 +20,7 @@ my %outputxml_of        :ATTR(:name<outputxml>      :default<()>);
 my %transport_of        :ATTR(:name<transport>      :default<()>);
 my %endpoint_of         :ATTR(:name<endpoint>       :default<()>);
 
-my %soap_version_of     :ATTR(:get<soap_version>    :init_attr<soap_version> :default<'1.1'>);
+my %soap_version_of     :ATTR(:get<soap_version>    :init_attr<soap_version> :default<1.1>);
 
 my %on_action_of        :ATTR(:name<on_action>      :default<()>);
 my %content_type_of     :ATTR(:name<content_type>   :default<text/xml; charset=utf8>);  #/#trick editors
@@ -395,9 +395,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Client.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

@@ -5,7 +5,17 @@ use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
+
+#
+# Import child elements of a WSDL / XML Schema tree into the current tree
+#
+# Set the targetNamespace of the imported nodes to $import_namespace
+#
+# SYNOPSIS
+#
+# $self->_import_children($name, $imported, $imported, $import_namespace)
+#
 
 sub _import_children {
     my ($self, $name, $imported, $importer, $import_namespace) = @_;
@@ -140,6 +150,8 @@ sub _initialize {
     # TODO skip non-XML Schema namespace tags
     $parser->setHandlers(
         Start => sub {
+            # handle attrs as list - expat uses dual-vars for looking
+            # up namespace information, and hash keys don't allow dual vars...
             my ($parser, $localname, @attrs) = @_;
             $characters = q{};
 
@@ -174,9 +186,7 @@ sub _initialize {
                     # remember element for stepping back
                     push @{ $list }, $current;
                 }
-                else {
-                    $self->{ data } = $obj;
-                }
+
                 # set new element (step down)
                 $current = $obj;
             }
@@ -228,6 +238,11 @@ sub _initialize {
                 $localname
             ) || {};
 
+            if (! defined $list->[-1]) {
+                $self->{ data } = $current;
+                return;
+            }
+
             return if not ($action->{ type });
             if ( $action->{ type } eq 'CLASS' ) {
                $current = pop @{ $list };
@@ -275,7 +290,6 @@ sub _fixup_attrs {
     } $parser->new_ns_prefixes();
 
     push @attrs_from, map {
-        $_ =
         {
             Name => defined $parser->namespace($_)
                 ? $parser->namespace($_) . '|' . $_
@@ -322,10 +336,10 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: WSDLParser.pm 688 2008-05-23 21:01:54Z kutterma $
+ $Id: WSDLParser.pm 728 2008-07-13 19:28:50Z kutterma $
 
- $LastChangedDate: 2008-05-23 23:01:54 +0200 (Fr, 23 Mai 2008) $
- $LastChangedRevision: 688 $
+ $LastChangedDate: 2008-07-13 21:28:50 +0200 (So, 13 Jul 2008) $
+ $LastChangedRevision: 728 $
  $LastChangedBy: kutterma $
 
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $

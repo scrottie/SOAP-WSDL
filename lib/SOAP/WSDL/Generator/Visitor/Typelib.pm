@@ -5,7 +5,7 @@ use base qw(SOAP::WSDL::Generator::Visitor
     SOAP::WSDL::Generator::Template
 );
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 1;
 

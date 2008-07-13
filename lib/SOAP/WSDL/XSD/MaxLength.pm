@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 #<maxLength value="">
 
@@ -14,5 +14,6 @@ use version; our $VERSION = qv('2.00.03');
 
 # may be defined as atomic simpleType
 my %value_of        :ATTR(:name<value> :default<()>);
+my %fixed_of        :ATTR(:name<fixed> :default<()>);
 
 1;

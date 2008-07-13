@@ -2,7 +2,7 @@ package SOAP::WSDL::Generator::Iterator::WSDL11;
 use strict; use warnings;
 use Class::Std::Fast;
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 my %definitions_of  :ATTR(:name<definitions>    :default<[]>);
 my %nodes_of        :ATTR(:name<nodes>          :default<[]>);
@@ -74,7 +74,8 @@ my %METHOD_OF = (
                 ? do {
                     die "unsupported global type <"
                         . $node->get_type . "> found in part ". $node->get_name();
-                    $types->find_type( $node->expand($node->get_type) )
+                    ## use this once we can auto-generate an element for RPC bindings
+                    # $types->find_type( $node->expand($node->get_type) )
                 }
                 : (),
             $node->get_element()

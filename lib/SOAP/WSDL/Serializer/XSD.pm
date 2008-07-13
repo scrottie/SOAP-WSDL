@@ -5,7 +5,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 use SOAP::WSDL::Factory::Serializer;
 
@@ -129,9 +129,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: XSD.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
 
 =cut

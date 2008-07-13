@@ -1,11 +1,11 @@
 package SOAP::WSDL::Generator::Template;
-use strict;
+use strict; use warnings;
 use Template;
 use Class::Std::Fast::Storable;
 use Carp;
 use SOAP::WSDL::Generator::PrefixResolver;
 
-use version; our $VERSION = qv('2.00.04');
+use version; our $VERSION = qv('2.00.05');
 
 my %tt_of               :ATTR(:get<tt>);
 my %definitions_of      :ATTR(:name<definitions>        :default<()>);
@@ -39,7 +39,8 @@ sub _process :PROTECTED {
         INCLUDE_PATH => $INCLUDE_PATH_of{ $ident },
         OUTPUT_PATH => $OUTPUT_PATH_of{ $ident },
         PLUGIN_BASE => 'SOAP::WSDL::Generator::Template::Plugin',
-    );
+    )
+        or die Template->error();
 
     $tt->process( $template,
     {

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use SOAP::WSDL::XSD::Typelib::Element;
@@ -37,7 +37,7 @@ __PACKAGE__->_factory(
 sub get_xmlns { return 'http://schemas.xmlsoap.org/soap/envelope/' };
 
 __PACKAGE__->__set_name('Fault');
-__PACKAGE__->__set_nillable();
+__PACKAGE__->__set_nillable(0);
 __PACKAGE__->__set_minOccurs();
 __PACKAGE__->__set_maxOccurs();
 __PACKAGE__->__set_ref('');
@@ -101,9 +101,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 677 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: Fault11.pm 677 2008-05-18 20:17:56Z kutterma $
+ $Id: Fault11.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
 
 =cut

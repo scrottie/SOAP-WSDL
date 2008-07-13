@@ -6,7 +6,7 @@ use Date::Format;
 use Class::Std::Fast::Storable constructor => 'none', cache => 1;
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 
-use version; our $VERSION=qv('2.00.04');
+use version; our $VERSION = qv('2.00.05');
 
 sub set_value {
     # use set_value from base class if we have a XML-Time format
@@ -37,7 +37,6 @@ sub set_value {
         my $time_str = strftime( '%H:%M:%S%z', @time_from );
         substr $time_str, -2, 0, ':';
         $_[0]->SUPER::set_value($time_str);
-
     }
 }
 

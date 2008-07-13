@@ -1,26 +1,22 @@
 package SOAP::WSDL::Definitions;
-use utf8;
 use strict;
 use warnings;
-use Carp;
-use File::Basename;
-use File::Path;
 use List::Util qw(first);
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 my %types_of        :ATTR(:name<types>      :default<[]>);
 my %message_of      :ATTR(:name<message>    :default<[]>);
 my %portType_of     :ATTR(:name<portType>   :default<[]>);
 my %binding_of      :ATTR(:name<binding>    :default<[]>);
 my %service_of      :ATTR(:name<service>    :default<[]>);
-my %namespace_of    :ATTR(:name<namespace> :default<()>);
+my %namespace_of    :ATTR(:name<namespace>  :default<()>);
 
 # must be attr for Class::Std::Fast::Storable
-my %attributes_of :ATTR();
-%attributes_of = (
+#my %attributes_of :ATTR();
+my %attributes_of = (
     binding     => \%binding_of,
     message     => \%message_of,
     portType    => \%portType_of,
@@ -43,6 +39,7 @@ BLOCK: {
       };
   }
 }
+
 
 1;
 
@@ -118,9 +115,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 689 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: Definitions.pm 689 2008-05-23 22:11:46Z kutterma $
+ $Id: Definitions.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Definitions.pm $
 
 =cut

@@ -4,7 +4,7 @@ use warnings;
 use base 'SOAP::WSDL::Client';
 use Scalar::Util qw(blessed);
 
-use version; our $VERSION = qv('2.00.03');
+use version; our $VERSION = qv('2.00.05');
 
 sub call {
     my ($self, $method, $body, $header) = @_;
@@ -22,7 +22,7 @@ sub call {
         # parameters given
         my @part_from = ();
         foreach my $class (@{ $method->{ body }->{ parts } }) {
-            eval "require $class" || die $@;
+            eval "require $class" || die $@;    ## no critic (ProhibitStringyEval)
             push @part_from, $class->new(shift(@body_from) || {});
         }
 
@@ -33,10 +33,10 @@ sub call {
     # if we have a header
     if (%{ $method->{ header } }) {
 
-        # trat non object special - as above, but only for one
+        # treat non object special - as above, but only for one
         if (not blessed $header) {
             my $class = $method->{ header }->{ parts }->[0];
-            eval "require $class" || die $@;
+            eval "require $class" || die $@;    ## no critic (ProhibitStringyEval)
             $header = $class->new($header);
         }
     }
@@ -85,9 +85,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 689 $
+ $Rev: 728 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 689 2008-05-23 22:11:46Z kutterma $
+ $Id: Base.pm 728 2008-07-13 19:28:50Z kutterma $
  $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

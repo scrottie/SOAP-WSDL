@@ -1,4 +1,4 @@
-use Test::More tests => 2;
+use Test::More tests => 3;
 use File::Basename qw(dirname);
 use File::Spec;
 
@@ -19,9 +19,12 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
 });
 
 {
-	# currently, there is no completely unsupported XML schema 
-	# idiom (at least none which is detected properly)
-	# TODO update WSDL and add some (there sure are)
+    # currently, there is no completely unsupported XML schema
+    # idiom (at least none which is detected properly)
+    # TODO update WSDL and add some (there sure are)
+    my $code = "";
+    $generator->set_output(\$code);
     eval { $generator->generate_typelib() };
+    eval $code;
 }
-# ok $@, $@;
+ok ! $@;

@@ -90,10 +90,8 @@ can just say
 
 Of course this will only work if MyTypes::NewType has a superset of the old
 object class' elements.
-.
 
-Future versions will restrict the data returned to the child element's data -
-you should not expect XML attributes to be returned through hash refs.
+Note that XML attribute data is not included in the hash ref output yet.
 
 =head1 HOW IT WORKS
 
@@ -405,7 +403,7 @@ supported (yet).
 
 =item * import
 
-The import includion element requires the schemaLocation attribute for
+The import inclusion element requires the schemaLocation attribute for
 resolving the XML schema to import. Support for the import element is
 implemented in L<SOAP::WSDL::Expat::WSDLParser|SOAP::WSDL::Expat::WSDLParser>,
 so alternative parsers may or may not support the import element.

@@ -8,7 +8,7 @@ eval { require SOAP::Lite; 1; } or do {
 print "# Using SOAP::Lite $SOAP::Lite::VERSION\n";
 
 use lib '../../../lib';
-plan tests => 10;
+plan tests => 13;
 use_ok qw(SOAP::WSDL::Deserializer::SOM);
 
 ok my $deserializer = SOAP::WSDL::Deserializer::SOM->new();
@@ -30,8 +30,19 @@ eval { $deserializer->generate_fault({
     message => 'Teststring'
 });
 };
-ok $@->isa('SOAP::Fault');
 
-is $@->faultcode(), 'Test';
-is $@->faultactor(), 'soap:Server';
-is $@->faultstring(), 'Teststring';
+my $fault = $@;
+
+isa_ok $fault, 'SOAP::Fault';
+
+is $fault->faultcode(),     'Test';
+is $fault->faultactor(),    'soap:Server';
+is $fault->faultstring(),   'Teststring';
+
+$fault = $deserializer->deserialize('');
+
+isa_ok $fault, 'SOAP::Fault';
+
+is $fault->faultactor(),    'soap:Server';
+like $fault->faultstring(), qr{no \s element \s found}x;
+

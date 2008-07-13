@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00.04
+Release notes for SOAP::WSDL 2.00.05
 -------
 
 I'm proud to present a new release of SOAP::WSDL.
@@ -35,6 +35,26 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Deserializer
 
 The following changes have been made:
+
+2.00.05
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+    * [ 2014482 ] Big-O memory hole when parsing WSDL
+    SOAP::WSDL still leaks memory when using SOAP::Lite's transport backend
+    This is to be fixed in 0.710.08 in SOAP::Lite
+    * #36865 wsdl2perl.pl fails on Expat error
+    Resolved by dropping a note for Solaris in README
+    * [ 2005693 ] <maxLength fixed ="true"> causes error
+    The >fixed< attribute is now recognized (but has no effect yet)
+
+The following uncategorized improvements have been made:
+
+    * added missing Class::Std::Storable::Fast import flags to
+    SOAP::WSDL::XSD::Typelib::Builtin::IDREFS
+    * some code cleanup
 
 2.00.04
 
@@ -77,6 +97,7 @@ The following bugs have been fixed (the numbers in square brackets are the
 tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
 The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
 
+    * [ 1963613 ] ComplexTypes die on ->can('FOOBAR');
     * [ 1943667 ] Error parsing complexType/extension
     * [ 1960650 ] multi-level inheritance of complexTypes fails
     * [ 1960319 ] ComplexType as_hash_ref returns objects on maximum depth
