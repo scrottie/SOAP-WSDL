@@ -1,27 +1,26 @@
+
 package MyElements::string;
 use strict;
 use warnings;
 
 { # BLOCK to scope variables
 
-sub get_xmlns { 'http://www.webserviceX.NET' }
+sub get_xmlns { 'http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx' }
 
 __PACKAGE__->__set_name('string');
-__PACKAGE__->__set_nillable(true);
+__PACKAGE__->__set_nillable(1);
 __PACKAGE__->__set_minOccurs();
 __PACKAGE__->__set_maxOccurs();
 __PACKAGE__->__set_ref();
 use base qw(
     SOAP::WSDL::XSD::Typelib::Element
     SOAP::WSDL::XSD::Typelib::Builtin::string
-
 );
 
+}
 
-} # end of BLOCK
 1;
 
-# __END__
 
 =pod
 
@@ -32,7 +31,13 @@ MyElements::string
 =head1 DESCRIPTION
 
 Perl data type class for the XML Schema defined element
-string from the namespace http://www.webserviceX.NET.
+string from the namespace http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx.
+
+
+
+
+
+
 
 =head1 METHODS
 

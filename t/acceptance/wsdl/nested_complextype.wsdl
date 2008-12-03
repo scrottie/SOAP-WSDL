@@ -6,6 +6,7 @@
     xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
     xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
     targetNamespace="urn:HelloWorld"
+    xmlns:tns="urn:HelloWorld"
     xmlns="http://schemas.xmlsoap.org/wsdl/">
     <types>
         <s:schema elementFormDefault="qualified"
@@ -37,6 +38,53 @@
                     </s:sequence>
                 </s:complexType>
             </s:element>
+
+
+        <s:complexType name="testAbstract" abstract="true">
+            <s:sequence>
+                <s:element name="abstract" type="s:string"/>
+            </s:sequence>
+        </s:complexType>
+
+        <s:complexType name="testAbstractChild" abstract="true">
+            <s:complexContent>
+                <s:extension base="tns:testAbstract">
+                    <s:sequence>
+                        <s:element name="abstractChild" type="s:string"/>
+                    </s:sequence>
+                </s:extension>
+            </s:complexContent>
+        </s:complexType>
+
+        <s:complexType name="testAbstractGrandChild">
+            <s:complexContent>
+                <s:extension base="tns:testAbstractChild">
+                    <s:sequence>
+                        <s:element name="abstractGrandChild" type="s:string"/>
+                    </s:sequence>
+                </s:extension>
+            </s:complexContent>
+        </s:complexType>
+
+      <s:complexType name="GrandParent" abstract="true">
+      </s:complexType>
+
+      <s:complexType name="Parent" abstract="true">
+        <s:complexContent>
+            <s:extension base="tns:GrandParent"/>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Child">
+        <s:complexContent>
+          <s:extension base="tns:Parent">
+            <s:sequence>
+                 <s:element name="foo" type="s:string"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+
+
         </s:schema>
     </types>
 

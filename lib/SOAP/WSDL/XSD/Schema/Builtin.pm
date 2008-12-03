@@ -103,7 +103,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 728 $
  $LastChangedBy: kutterma $
  $Id: Builtin.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Schema/Builtin.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Schema/Builtin.pm $
 
 =cut
 

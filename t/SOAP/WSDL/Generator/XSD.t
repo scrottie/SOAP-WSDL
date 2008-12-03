@@ -1,4 +1,4 @@
-use Test::More tests => 68;
+use Test::More tests => 71;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -51,6 +51,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
 
 my $code = "";
 $generator->set_output(\$code);
+
 $generator->generate_typelib();
 {
     eval $code;
@@ -227,12 +228,24 @@ is q{<testAtomicRef xmlns="urn:Test"><in>foo</in></testAtomicRef>}
 
 SKIP: {
     eval { require Test::Pod::Content; }
-        or skip 'Cannot test pod content without Test::Pod::Content', 1;
+        or skip 'Cannot test pod content without Test::Pod::Content', 2;
     Test::Pod::Content::pod_section_like(
         'MyTypes::testComplexTypeSequenceWithAttribute',
         'attr',
         qr{Test \s Attribute \s good \s for \s nothing}x,
         'Attribute POD');
+
+    Test::Pod::Content::pod_section_like(
+        'MyInterfaces::testService::testPort',
+        'testChoice',
+        qr{Returns \s a \s MyElements::testComplexTypeRestriction \s object\.}x,
+        'Interface POD contains response class name');
+}
+
+use_ok qw(MyTypes::finalComplexType);
+{
+    no warnings qw(once);
+    ok *MyTypes::finalComplexType::get_Name, 'complexType inheritance flattened out';
 }
 
 ok $typemap = MyTypemaps::testService->get_typemap();

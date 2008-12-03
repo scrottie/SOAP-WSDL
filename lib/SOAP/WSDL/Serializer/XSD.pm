@@ -50,7 +50,7 @@ sub serialize {
 }
 
 sub serialize_header {
-    my ($self, $name, $data, $opt) = @_;
+    my ($self, $method, $data, $opt) = @_;
 
     # header is optional. Leave out if there's no header data
     return q{} if not $data;
@@ -62,8 +62,11 @@ sub serialize_header {
 }
 
 sub serialize_body {
-    my ($self, $name, $data, $opt) = @_;
-    $data->__set_name("$opt->{prefix}:$name") if $opt->{prefix};
+    my ($self, $method, $data, $opt) = @_;
+
+    # TODO This one wipes out the old class' XML name globally
+    # Fix in some more appropriate place...
+    $data->__set_name("$opt->{prefix}:" . $data->__get_name() ) if $opt->{prefix};
 
     # Body is NOT optional. Serialize to empty body
     # if we have no data.
@@ -129,10 +132,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 735 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
+ $Id: XSD.pm 735 2008-08-14 07:36:54Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Serializer/XSD.pm $
 
 =cut
 

@@ -47,7 +47,6 @@ sub as_bool :BOOLIFY {
     return $value_of { ${ $_[0] } };
 }
 
-my $ID_GENERATOR_REF = Class::Std::Fast::ID_GENERATOR_REF();
 my $OBJECT_CACHE_REF = Class::Std::Fast::OBJECT_CACHE_REF();
 
 sub new {

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Carp qw(confess);
 use Class::Std::Fast::Storable constructor => 'none';
-
+use Scalar::Util qw(blessed);
 use version; our $VERSION = qv('2.00.05');
 
 my %namespace_prefix_map_of :ATTR(:name<namespace_prefix_map>   :default<{}>);
@@ -154,6 +154,8 @@ sub create_xmlattr_name {
 sub element_name {
     my $self = shift;
     my $element = shift;
+
+    confess "no element object" unless blessed $element;
 
     my $name = $element->get_name();
     if (! $name) {

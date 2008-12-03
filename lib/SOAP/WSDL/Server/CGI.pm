@@ -2,6 +2,8 @@ package SOAP::WSDL::Server::CGI;
 use strict;
 use warnings;
 
+use Encode;
+
 use HTTP::Request;
 use HTTP::Response;
 use HTTP::Status;
@@ -12,7 +14,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Server);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.06');
 
 # mostly copied from SOAP::Lite. Unfortunately we can't use SOAP::Lite's CGI
 # server directly - we would have to swap out it's base class...
@@ -80,7 +82,7 @@ sub handle {
     else {
         $response = HTTP::Response->new(200);
         $response->header('Content-type' => 'text/xml; charset="utf-8"');
-        $response->content( $response_message );
+        $response->content( encode('utf8', $response_message ) );
         {
             use bytes;
             $response->header('Content-length', length $response_message);

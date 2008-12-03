@@ -72,6 +72,6 @@ the same terms as perl itself
  $Rev: 728 $
  $LastChangedBy: kutterma $
  $Id: MessageStreamParser.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageStreamParser.pm $
 
 =cut

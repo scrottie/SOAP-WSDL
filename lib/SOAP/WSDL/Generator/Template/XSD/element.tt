@@ -76,6 +76,38 @@ Perl data type class for the XML Schema defined element
 
 [% INCLUDE POD/annotation.tt(node = element) %]
 
+[% IF (complexType = element.first_complexType);
+    IF (complexType.get_element); %]
+
+[% head1 %] PROPERTIES
+
+The following properties may be accessed using get_PROPERTY / set_PROPERTY
+methods:
+
+=over
+
+[%      FOREACH child_element = complexType.get_element -%]
+=item * [% XSD.perl_var_name(XSD.element_name(child_element)) %]
+
+ $element->set_[% XSD.perl_var_name(XSD.element_name(child_element)) %]($data);
+ $element->get_[% XSD.perl_var_name(XSD.element_name(child_element)) %]();
+
+[%          IF (XSD.perl_var_name(XSD.element_name(child_element)) == child_element.get_name); %]
+[%          ELSE %]
+Note: The name of this property has been altered, because it didn't match
+perl's notion of variable/subroutine names. The altered name is used in
+perl code only, XML output uses the original name:
+
+ [% child_element.get_name %]
+
+[%          END %]
+
+=back
+[%      END;
+    END;
+END; -%]
+
+
 [% head1 %] METHODS
 
 [% head2 %] new

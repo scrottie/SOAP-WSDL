@@ -7,7 +7,7 @@
 # don't have it, comment out the line noted below
 #
 
-perl -It/lib -MTAP::Harness -MFile::Find::Rule -e '
+perl -Ilib -It/lib -MTAP::Harness -MFile::Find::Rule -e '
     local $ENV{TEST_VERBOSE} = 1;
     TAP::Harness->new({
          merge => 1,
@@ -17,7 +17,7 @@ perl -It/lib -MTAP::Harness -MFile::Find::Rule -e '
 '
 
 # Devel::CoverX::Covered
-covered runs
+# covered runs
 
 cover -coverage="statement" -coverage=condition -coverage=subroutine -coverage="branch"
 

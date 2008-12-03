@@ -22,7 +22,7 @@ use_ok(qw/SOAP::WSDL/);
 
 my $soap;
 $soap = SOAP::WSDL->new(
-    wsdl => 'file:///' . $url .'/acceptance/wsdl/006_sax_client.wsdl',
+    wsdl => 'file://' . $url .'/acceptance/wsdl/006_sax_client.wsdl',
     outputxml => 1, # required, if not set ::SOM serializer will be loaded
 )->wsdlinit();
 

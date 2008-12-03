@@ -13,8 +13,6 @@ benchmark/XSD/strftime.pl
 bin/wsdl2perl.pl
 Build.PL
 Changes
-covered_by.pl
-covering.pl
 example/cgi-bin/helloworld.pl
 example/cgi-bin/person.pl
 example/fortune.pl
@@ -22,9 +20,6 @@ example/genericbarcode.pl
 example/hello.pl
 example/hello_compile.pl
 example/hello_lite.pl
-example/leaktest/hello_wsdl.pl
-example/leaktest/leak.pl
-example/leaktest/parse.pl
 example/lib/MyElements/CountCookies.pm
 example/lib/MyElements/CountCookiesResponse.pm
 example/lib/MyElements/GenerateBarCode.pm

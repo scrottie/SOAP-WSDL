@@ -7,6 +7,10 @@ ELSIF (complexType.get_variety == 'sequence');
 ELSIF (complexType.get_variety == 'all');
     INCLUDE complexType/extension.tt(complexType = complexType);
 ELSE;
-    THROW UNKNOWN, "unknown variety ${ complexType.get_variety }";
+    IF (complexType.get_variety);
+        THROW UNKNOWN, "unknown variety ${ complexType.get_variety }";
+    ELSE -%]
+# empty variety
+[%  END;
 END;
 %]

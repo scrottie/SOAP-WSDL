@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00.05
+Release notes for SOAP::WSDL 2.00.06
 -------
 
 I'm proud to present a new release of SOAP::WSDL.
@@ -27,7 +27,7 @@ Features:
     * SOAP::Lite like look and feel
           o Where possible, SOAP::WSDL mimics SOAP::Lite's API to allow easy migration
     * XML schema based class library for creating data objects
-    * High-performance XML parser
+    * High-performance SOAP Message parser
     * Plugin support. SOAP::WSDL can be extended through plugins in various aspects.
       The following plugins are supported:
           o Transport plugins via SOAP::WSDL::Factory::Transport
@@ -36,7 +36,34 @@ Features:
 
 The following changes have been made:
 
-2.00.05
+2.00.06 - Dec 03 2008
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+    * #40658 wsdl2perl - prefix option
+    The prefix option is now changed to behave more practical
+    * #40802 wsdl2perl problems with special url
+    The "fixed" attribute caused an error.
+    * #40650 Deserialization on inherited types
+    The inherited complexType variety (sequence/all/choice...) did not get
+    propagated to derived complexTypes. Thus, derived complexTypes which did
+    not add elements lost all inherited elements.
+    * #40108 Test failure on Cygwin
+    Fixes a test failure on Cygwin due to a malformed file:// URL
+    * #40021 charset: utf-8
+    Removed duplicate charset in HTTP requests issued by
+    SOAP::WSDL::Transport::HTTP. Replaced the utf8 by utf-8 in HTTP requests
+    * #39715 Error with complexType extension base without child elements
+    A rather subtle error caused by a wrong init value (undef) for the list
+    of child elements in a complexType sequence.
+    * [ 2005693 ] <maxLength fixed ="true"> causes error
+    * [ 2023797 ] type extensions not handled correctly
+    ComplexType objects now test their elements with ->isa, not with ref
+    * [ 2021755 ] Generating nested complexType extensions throws errors
+
+2.00.05 - Jul 13 2008
 
 The following bugs have been fixed (the numbers in square brackets are the
 tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):

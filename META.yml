@@ -1,6 +1,6 @@
 ---
 name: SOAP-WSDL
-version: 2.00.05
+version: 2.00.06
 author:
   - 'Martin Kutter <martin.kutter@fen-net.de>'
 abstract: SOAP with WSDL support
@@ -41,7 +41,7 @@ build_requires:
 provides:
   SOAP::WSDL:
     file: lib/SOAP/WSDL.pm
-    version: 2.00.05
+    version: 2.00.06
   SOAP::WSDL::Base:
     file: lib/SOAP/WSDL/Base.pm
     version: 2.00.05
@@ -161,7 +161,7 @@ provides:
     version: 2.00.05
   SOAP::WSDL::Server::CGI:
     file: lib/SOAP/WSDL/Server/CGI.pm
-    version: 2.00.05
+    version: 2.00.06
   SOAP::WSDL::Server::Mod_Perl2:
     file: lib/SOAP/WSDL/Server/Mod_Perl2.pm
     version: 2.00.05
@@ -197,7 +197,7 @@ provides:
     version: 2.00.05
   SOAP::WSDL::XSD::ComplexType:
     file: lib/SOAP/WSDL/XSD/ComplexType.pm
-    version: 2.00.05
+    version: 2.00.06
   SOAP::WSDL::XSD::Element:
     file: lib/SOAP/WSDL/XSD/Element.pm
     version: 2.00.05
@@ -365,7 +365,7 @@ provides:
   SOAP::WSDL::XSD::WhiteSpace:
     file: lib/SOAP/WSDL/XSD/WhiteSpace.pm
     version: 2.00.05
-generated_by: Module::Build version 0.2808
+generated_by: Module::Build version 0.3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

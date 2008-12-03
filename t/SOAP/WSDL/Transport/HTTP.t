@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 8;
 use strict;
 use utf8;
 
@@ -15,10 +15,24 @@ my $result = $transport->send_receive(envelope => 'Test', action => 'foo');
 
 ok ! $transport->is_success();
 
-$result = $transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ',
+$result = $transport->send_receive(encoding => 'utf-8', envelope => 'ÄÖÜ',
     action => 'foo');
 ok ! $transport->is_success();
 
-$result = $transport->send_receive(encoding => 'utf8', envelope => 'ÄÖÜ',
+$result = $transport->send_receive(encoding => 'utf-8', envelope => 'ÄÖÜ',
     action => 'foo', content_type => 'application/xml');
 ok ! $transport->is_success();
+
+{
+    no warnings qw(redefine);
+    my $request_sub =\&LWP::UserAgent::request;
+    *LWP::UserAgent::request = sub {
+        my $self = shift;
+        my $request = shift;
+        is $request->header('Content-Type'), 'text/xml; charset=utf-8';
+        return HTTP::Response->new();
+    };
+
+    $transport->send_receive(envelope => 'Test', action => 'foo');
+    *LWP::UserAgent::request = $request_sub;
+}

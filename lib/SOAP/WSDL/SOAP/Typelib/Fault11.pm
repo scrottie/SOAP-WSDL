@@ -104,7 +104,7 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
  $Rev: 728 $
  $LastChangedBy: kutterma $
  $Id: Fault11.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
 
 =cut
 

@@ -327,8 +327,12 @@ like $@, qr{unknown \s field \s foobar \s in \s MyType }xms;
 eval { $obj->set_FOO(42) };
 like $@, qr{Can't \s locate \s object \s method}x, 'error on calling unknown object method';
 
-eval { MyType->set_FOO(42) };
-like $@, qr{Can't \s locate \s object \s method}x,  'error on calling unknown class method';
+TODO: {
+    local $TODO = "Identify calls to class methods";
+
+    eval { MyType->set_FOO(42) };
+    like $@, qr{Can't \s locate \s class \s method}x,  'error on calling unknown class method';
+}
 
 ok ! MyType->can('set_FOO'), 'MyType->can("setFOO")';
 
@@ -338,7 +342,7 @@ eval { MyType->new({ FOO => 42 }) };
 like $@, qr{unknown \s field \s}xm, 'error passing unknown field to constructor';
 
 eval {
-    # catch warning - 
+    # catch warning -
     local $SIG{__WARN__} = sub {};
     SOAP::WSDL::XSD::Typelib::ComplexType::AUTOMETHOD()
 };

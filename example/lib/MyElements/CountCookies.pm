@@ -1,3 +1,4 @@
+
 package MyElements::CountCookies;
 use strict;
 use warnings;
@@ -17,13 +18,30 @@ use base qw(
     SOAP::WSDL::XSD::Typelib::ComplexType
 );
 
+our $XML_ATTRIBUTE_CLASS;
+undef $XML_ATTRIBUTE_CLASS;
+
+sub __get_attr_class {
+    return $XML_ATTRIBUTE_CLASS;
+}
+
+
+
+# There's no variety - empty complexType
+use Class::Std::Fast::Storable constructor => 'none';
+use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
+
+__PACKAGE__->_factory();
+
 
 
 
 } # end of BLOCK
+
+
+
 1;
 
-# __END__
 
 =pod
 
@@ -35,6 +53,21 @@ MyElements::CountCookies
 
 Perl data type class for the XML Schema defined element
 CountCookies from the namespace http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx.
+
+
+
+
+
+
+
+=head1 PROPERTIES
+
+The following properties may be accessed using get_PROPERTY / set_PROPERTY
+methods:
+
+=over
+
+
 
 =head1 METHODS
 

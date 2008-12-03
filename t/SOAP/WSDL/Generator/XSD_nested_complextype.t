@@ -1,4 +1,4 @@
-use Test::More tests => 14;
+use Test::More tests => 17;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -114,5 +114,11 @@ sub xml {
         </sayHello>
     </SOAP-ENV:Body></SOAP-ENV:Envelope>};
 }
+
+require FooType::testAbstractGrandChild;
+
+ok(FooType::testAbstractGrandChild->can('get_abstractGrandChild'), 'attribute');
+ok(FooType::testAbstractGrandChild->can('get_abstractChild'), 'parent attribute');
+ok(FooType::testAbstractGrandChild->can('get_abstract'), 'grandparent attribute');
 
 rmtree "$path/testlib";

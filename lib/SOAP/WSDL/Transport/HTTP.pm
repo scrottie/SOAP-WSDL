@@ -23,9 +23,10 @@ sub send_receive {
 
     $encoding = defined($encoding)
         ? lc($encoding)
-        : 'utf8';
+        : 'utf-8';
 
-    $content_type = 'text/xml' if not defined($content_type);
+    $content_type = "text/xml; charset=$encoding"
+        if not defined($content_type);
     # what's this all about?
     # unfortunately combination of LWP and Perl 5.6.1 and later has bug
     # in sending multibyte characters. LWP uses length() to calculate
@@ -48,7 +49,7 @@ sub send_receive {
 
     my $request = HTTP::Request->new( 'POST',
         $endpoint,
-        [   'Content-Type', "$content_type; charset=$encoding",
+        [   'Content-Type', "$content_type",
             'Content-Length', $bytelength,
             'SOAPAction', $soap_action,
         ],
@@ -90,10 +91,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 744 $
  $LastChangedBy: kutterma $
- $Id: HTTP.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
+ $Id: HTTP.pm 744 2008-10-15 16:58:45Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
 
 =cut
 

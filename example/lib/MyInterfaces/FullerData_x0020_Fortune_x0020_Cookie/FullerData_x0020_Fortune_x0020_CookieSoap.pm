@@ -13,6 +13,8 @@ sub START {
     $_[0]->set_proxy('http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx') if not $_[2]->{proxy};
     $_[0]->set_class_resolver('MyTypemaps::FullerData_x0020_Fortune_x0020_Cookie')
         if not $_[2]->{class_resolver};
+
+    $_[0]->set_prefix($_[2]->{use_prefix}) if exists $_[2]->{use_prefix};
 }
 
 sub readNodeCount {
@@ -24,10 +26,11 @@ sub readNodeCount {
         style => 'document',
         body => {
             
-           'use' => 'literal',
-            namespace => '',
-            encodingStyle => '',
-            parts => [qw( MyElements::readNodeCount )],
+
+           'use'            => 'literal',
+            namespace       => 'http://schemas.xmlsoap.org/wsdl/soap/',
+            encodingStyle   => '',
+            parts           =>  [qw( MyElements::readNodeCount )],
         },
         header => {
             
@@ -37,6 +40,7 @@ sub readNodeCount {
         }
     }, $body, $header);
 }
+
 
 sub GetFortuneCookie {
     my ($self, $body, $header) = @_;
@@ -47,10 +51,11 @@ sub GetFortuneCookie {
         style => 'document',
         body => {
             
-           'use' => 'literal',
-            namespace => '',
-            encodingStyle => '',
-            parts => [qw( MyElements::GetFortuneCookie )],
+
+           'use'            => 'literal',
+            namespace       => 'http://schemas.xmlsoap.org/wsdl/soap/',
+            encodingStyle   => '',
+            parts           =>  [qw( MyElements::GetFortuneCookie )],
         },
         header => {
             
@@ -60,6 +65,7 @@ sub GetFortuneCookie {
         }
     }, $body, $header);
 }
+
 
 sub CountCookies {
     my ($self, $body, $header) = @_;
@@ -70,10 +76,11 @@ sub CountCookies {
         style => 'document',
         body => {
             
-           'use' => 'literal',
-            namespace => '',
-            encodingStyle => '',
-            parts => [qw( MyElements::CountCookies )],
+
+           'use'            => 'literal',
+            namespace       => 'http://schemas.xmlsoap.org/wsdl/soap/',
+            encodingStyle   => '',
+            parts           =>  [qw( MyElements::CountCookies )],
         },
         header => {
             
@@ -84,6 +91,7 @@ sub CountCookies {
     }, $body, $header);
 }
 
+
 sub GetSpecificCookie {
     my ($self, $body, $header) = @_;
     die "GetSpecificCookie must be called as object method (\$self is <$self>)" if not blessed($self);
@@ -93,10 +101,11 @@ sub GetSpecificCookie {
         style => 'document',
         body => {
             
-           'use' => 'literal',
-            namespace => '',
-            encodingStyle => '',
-            parts => [qw( MyElements::GetSpecificCookie )],
+
+           'use'            => 'literal',
+            namespace       => 'http://schemas.xmlsoap.org/wsdl/soap/',
+            encodingStyle   => '',
+            parts           =>  [qw( MyElements::GetSpecificCookie )],
         },
         header => {
             
@@ -106,6 +115,7 @@ sub GetSpecificCookie {
         }
     }, $body, $header);
 }
+
 
 
 
@@ -119,21 +129,20 @@ __END__
 
 =head1 NAME
 
-
 MyInterfaces::FullerData_x0020_Fortune_x0020_Cookie::FullerData_x0020_Fortune_x0020_CookieSoap - SOAP Interface for the FullerData_x0020_Fortune_x0020_Cookie Web Service
 
 =head1 SYNOPSIS
 
  use MyInterfaces::FullerData_x0020_Fortune_x0020_Cookie::FullerData_x0020_Fortune_x0020_CookieSoap;
  my $interface = MyInterfaces::FullerData_x0020_Fortune_x0020_Cookie::FullerData_x0020_Fortune_x0020_CookieSoap->new();
- 
+
  my $response;
  $response = $interface->readNodeCount();
  $response = $interface->GetFortuneCookie();
  $response = $interface->CountCookies();
  $response = $interface->GetSpecificCookie();
 
- 
+
 
 =head1 DESCRIPTION
 
@@ -168,42 +177,58 @@ of the corresponding class can be passed instead of the marked hash ref.
 You may pass any combination of objects, hash and list refs to these
 methods, as long as you meet the structure.
 
+List items (i.e. multiple occurences) are not displayed in the synopsis.
+You may generally pass a list ref of hash refs (or objects) instead of a hash
+ref - this may result in invalid XML if used improperly, though. Note that
+SOAP::WSDL always expects list references at maximum depth position.
+
+XML attributes are not displayed in this synopsis and cannot be set using
+hash refs. See the respective class' documentation for additional information.
+
 
 
 =head3 readNodeCount
 
 Display the number of nodes specified in fortune XML document
 
- $interface->readNodeCount(,,
+Returns a L<MyElements::readNodeCountResponse|MyElements::readNodeCountResponse> object.
+
+ $response = $interface->readNodeCount(,,
  );
- 
+
 =head3 GetFortuneCookie
 
 Get a random fortune cookie from the XML document
 
- $interface->GetFortuneCookie(,,
+Returns a L<MyElements::GetFortuneCookieResponse|MyElements::GetFortuneCookieResponse> object.
+
+ $response = $interface->GetFortuneCookie(,,
  );
- 
+
 =head3 CountCookies
 
 Count the actual number of nodes in the XML document of fortunes
 
- $interface->CountCookies(,,
+Returns a L<MyElements::CountCookiesResponse|MyElements::CountCookiesResponse> object.
+
+ $response = $interface->CountCookies(,,
  );
- 
+
 =head3 GetSpecificCookie
 
 Get a specific cookie by the XML node number
 
- $interface->GetSpecificCookie(  {
+Returns a L<MyElements::GetSpecificCookieResponse|MyElements::GetSpecificCookieResponse> object.
+
+ $response = $interface->GetSpecificCookie( {
     index =>  $some_value, # int
   },,
  );
- 
+
 
 
 =head1 AUTHOR
 
-Generated by SOAP::WSDL on Sun Dec 16 19:58:30 2007
+Generated by SOAP::WSDL on Wed Dec  3 22:05:20 2008
 
-=pod
+=cut

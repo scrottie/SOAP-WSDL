@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.06');
 
 # id provided by Base
 # name provided by Base
@@ -25,12 +25,13 @@ my %maxInclusive        :ATTR(:name<maxInclusive>   :default<[]>);
 
 
 my %attribute_of    :ATTR(:name<attribute>  :default<()>);
-my %element_of      :ATTR(:name<element>    :default<()>);
+my %element_of      :ATTR(:name<element>    :default<[]>);
 my %group_of        :ATTR(:name<group>      :default<()>);
 my %variety_of      :ATTR(:name<variety>    :default<()>);
 my %base_of         :ATTR(:name<base>       :default<()>);
 my %itemType_of     :ATTR(:name<itemType>   :default<()>);
 my %abstract_of     :ATTR(:name<abstract>   :default<()>);
+my %final_of        :ATTR(:name<final>      :default<()>);
 my %mixed_of        :ATTR(:name<mixed>      :default<()>);      # default is false
 
 my %derivation_of   :ATTR(:name<derivation> :default<()>);

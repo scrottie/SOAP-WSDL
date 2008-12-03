@@ -193,6 +193,44 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             </xsd:simpleContent>
         </xsd:complexType>
 
+      <xsd:element name="testReferencesExtension">
+        <xsd:complexType>
+          <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="data" type="tns:testReferencedExtension" />
+              <xsd:element minOccurs="1" maxOccurs="1" name="flags" type="xsd:int" />
+          </xsd:sequence>
+          </xsd:complexType>
+          </xsd:element>
+          <xsd:complexType name="testReferencedExtension">
+              <xsd:complexContent mixed="false">
+                  <xsd:extension base="tns:testExtensionBase">
+                      <xsd:sequence>
+                          <xsd:element minOccurs="0" maxOccurs="1"
+                              name="test1" type="xsd:int" />
+                          <xsd:element minOccurs="0" maxOccurs="1"
+                              name="test2" type="xsd:string" />
+                          <xsd:element minOccurs="0" maxOccurs="1" name="test3"
+                              type="xsd:string" />
+                          <xsd:element minOccurs="0" maxOccurs="1"
+                              name="test4" type="xsd:string" />
+                          <xsd:element minOccurs="0" maxOccurs="1"
+                              name="test5" type="xsd:boolean" />
+                          <xsd:element minOccurs="0" maxOccurs="1" name="test6"
+                              type="xsd:string" />
+                          <xsd:element minOccurs="0" maxOccurs="1" name="test7"
+                              type="xsd:int" />
+                      </xsd:sequence>
+                  </xsd:extension>
+              </xsd:complexContent>
+          </xsd:complexType>
+          <xsd:complexType name="testExtensionBase" abstract="true">
+              <xsd:sequence>
+                  <xsd:element minOccurs="0" maxOccurs="1" name="test"
+                      type="xsd:string" />
+              </xsd:sequence>
+          </xsd:complexType>
+
+
         <xsd:element name="testElementNestedExtension" type="tns:testComplexNestedExtension" />
         <xsd:element name="testElementString" type="xsd:string" />
         <xsd:element name="testElementInt" type="xsd:int" />
@@ -271,6 +309,27 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <xsd:complexType>
             </xsd:complexType>
         </xsd:element>
+
+        <xsd:complexType name="abstractComplexType" abstract="true">
+        </xsd:complexType>
+
+        <xsd:complexType name="intermediateComplexType">
+            <xsd:complexContent>
+            <xsd:extension base="abstractComplexType">
+                <xsd:sequence>
+                    <xsd:element name="Name" type="xsd:string"/>
+                    <xsd:element name="GivenName" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+
+        <xsd:complexType name="finalComplexType">
+            <xsd:complexContent>
+                <xsd:extension base="intermediateComplexType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
 
         <xsd:complexType name="completelyEmptyComplexType">
         </xsd:complexType>

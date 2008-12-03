@@ -1,3 +1,4 @@
+
 package MyElements::GetSpecificCookie;
 use strict;
 use warnings;
@@ -16,6 +17,14 @@ use base qw(
     SOAP::WSDL::XSD::Typelib::Element
     SOAP::WSDL::XSD::Typelib::ComplexType
 );
+
+our $XML_ATTRIBUTE_CLASS;
+undef $XML_ATTRIBUTE_CLASS;
+
+sub __get_attr_class {
+    return $XML_ATTRIBUTE_CLASS;
+}
+
 use Class::Std::Fast::Storable constructor => 'none';
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
 
@@ -26,14 +35,18 @@ Class::Std::initialize();
 my %index_of :ATTR(:get<index>);
 
 __PACKAGE__->_factory(
-    [ qw(
-        index
+    [ qw(        index
+
     ) ],
     {
-        index => \%index_of,
+        'index' => \%index_of,
     },
     {
-        index => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
+        'index' => 'SOAP::WSDL::XSD::Typelib::Builtin::int',
+    },
+    {
+
+        'index' => 'index',
     }
 );
 
@@ -44,11 +57,12 @@ __PACKAGE__->_factory(
 
 
 
-
 } # end of BLOCK
+
+
+
 1;
 
-# __END__
 
 =pod
 
@@ -60,6 +74,30 @@ MyElements::GetSpecificCookie
 
 Perl data type class for the XML Schema defined element
 GetSpecificCookie from the namespace http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx.
+
+
+
+
+
+
+
+=head1 PROPERTIES
+
+The following properties may be accessed using get_PROPERTY / set_PROPERTY
+methods:
+
+=over
+
+=item * index
+
+ $element->set_index($data);
+ $element->get_index();
+
+
+
+
+=back
+
 
 =head1 METHODS
 

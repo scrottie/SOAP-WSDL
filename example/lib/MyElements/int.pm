@@ -1,3 +1,4 @@
+
 package MyElements::int;
 use strict;
 use warnings;
@@ -14,14 +15,12 @@ __PACKAGE__->__set_ref();
 use base qw(
     SOAP::WSDL::XSD::Typelib::Element
     SOAP::WSDL::XSD::Typelib::Builtin::int
-
 );
 
+}
 
-} # end of BLOCK
 1;
 
-# __END__
 
 =pod
 
@@ -33,6 +32,12 @@ MyElements::int
 
 Perl data type class for the XML Schema defined element
 int from the namespace http://www.fullerdata.com/FortuneCookie/FortuneCookie.asmx.
+
+
+
+
+
+
 
 =head1 METHODS
 

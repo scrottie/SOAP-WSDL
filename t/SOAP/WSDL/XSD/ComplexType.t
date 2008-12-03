@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 3; #qw(no_plan);
+use Test::More tests => 5; #qw(no_plan);
 
 use_ok qw(SOAP::WSDL::XSD::ComplexType);
 
@@ -11,7 +11,8 @@ eval { $obj->serialize('foo') };
 like $@, qr{sorry, \s we \s just}xsm;
 
 $obj->set_targetNamespace('bar');
-
+ok $obj->set_abstract(1);
+ok $obj->set_final(1);
 eval {
     $obj->serialize(
         'foo', 'bar', { autotype => 1 , namespace => {} }

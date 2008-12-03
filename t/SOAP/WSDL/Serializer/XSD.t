@@ -17,13 +17,18 @@ like $serializer->serialize({ body => {} }), qr{<SOAP-ENV:Body></SOAP-ENV:Body>}
 like $serializer->serialize({ body => [] }), qr{<SOAP-ENV:Body></SOAP-ENV:Body>}, 'empty body';
 like $serializer->serialize({ header => {}, body => [] }),
     qr{<SOAP-ENV:Header></SOAP-ENV:Header><SOAP-ENV:Body></SOAP-ENV:Body>}, 'empty header and body';
-like $serializer->serialize({ header => {}, body => [] , options => {
+
+like $serializer->serialize({
+    header => {},
+    body => [] ,
+    options => {
     namespace => {
-        'http://schemas.xmlsoap.org/soap/envelope/' => 'SOAP',
-        'http://www.w3.org/2001/XMLSchema-instance' => 'xsi',
-    }
-} }),
-    qr{<SOAP:Header></SOAP:Header><SOAP:Body></SOAP:Body>}, 'empty header and body';
+                'http://schemas.xmlsoap.org/soap/envelope/' => 'SOAP',
+                'http://www.w3.org/2001/XMLSchema-instance' => 'xsi',
+        }
+    }})
+    , qr{xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"}
+    , 'namespace';
 
 like $serializer->serialize({ header => {}, body => [ undef ] }),
     qr{<SOAP-ENV:Header></SOAP-ENV:Header><SOAP-ENV:Body></SOAP-ENV:Body>}, 'empty header and body';

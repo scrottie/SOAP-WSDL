@@ -10,13 +10,13 @@ use Term::ReadKey;
 
 my %opt = (
   url => '',
-  prefix => undef,
-  attribute_prefix => 'MyAttributes',
-  type_prefix => 'MyTypes',
-  element_prefix => 'MyElements',
-  typemap_prefix => 'MyTypemaps',
-  interface_prefix => 'MyInterfaces',
-  server_prefix => 'MyServer',
+  prefix            => 'My',
+  attribute_prefix  => undef,
+  type_prefix       => undef,
+  element_prefix    => undef,
+  typemap_prefix    => undef,
+  interface_prefix  => undef,
+  server_prefix     => undef,
   base_path => 'lib/',
   proxy => undef,
   generator => 'XSD',
@@ -91,6 +91,20 @@ my $parser = SOAP::WSDL::Expat::WSDLParser->new({
     user_agent => $lwp,
 });
 
+# resolve the default prefix options
+map {
+    my $opt_key = $_;
+    if ( $opt_key =~ / (\w+) _prefix $/xms # relevant option
+            && !$opt{ $opt_key }           # that hasn't already been explicitly set
+        )
+    {
+        my $prefix_type = $1;
+        $opt{ $opt_key } = $opt{prefix} .                           # My
+                           ucfirst( $prefix_type ) .                # Typemap
+                           ( $prefix_type eq 'server' ? '' : 's' ); # s
+    }
+} keys %opt;
+
 my $definitions = $parser->parse_uri( $url );
 
 my %typemap = ();
@@ -150,7 +164,9 @@ wsdl2perl.pl - create perl bindings for SOAP webservices.
 
  NAME            SHORT  DESCRITPION
  ----------------------------------------------------------------------------
- prefix            p   Prefix for both type and element classes.
+ prefix            p   Prefix for all generated classes. If you set "-p=Foo",
+                       you will get "FooAttributes", "FooTypes", 
+					   "FooElements" and so on.
  attribute_prefix  a   Prefix for XML attribute classes.
                        Default: MyAttributes
  type_prefix       t   Prefix for type classes.

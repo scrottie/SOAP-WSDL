@@ -1,3 +1,4 @@
+
 package MyTypemaps::FullerData_x0020_Fortune_x0020_Cookie;
 use strict;
 use warnings;
@@ -38,11 +39,13 @@ sub get_typemap {
 
 __END__
 
+__END__
+
 =pod
 
 =head1 NAME
 
-MyTypemaps::FullerData_x0020_Fortune_x0020_Cookie; - typemap for ::FullerData_x0020_Fortune_x0020_Cookie;
+MyTypemaps::FullerData_x0020_Fortune_x0020_Cookie - typemap for FullerData_x0020_Fortune_x0020_Cookie
 
 =head1 DESCRIPTION
 

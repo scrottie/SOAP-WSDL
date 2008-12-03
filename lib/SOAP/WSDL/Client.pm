@@ -23,7 +23,7 @@ my %endpoint_of         :ATTR(:name<endpoint>       :default<()>);
 my %soap_version_of     :ATTR(:get<soap_version>    :init_attr<soap_version> :default<1.1>);
 
 my %on_action_of        :ATTR(:name<on_action>      :default<()>);
-my %content_type_of     :ATTR(:name<content_type>   :default<text/xml; charset=utf8>);  #/#trick editors
+my %content_type_of     :ATTR(:name<content_type>   :default<text/xml; charset=utf-8>);  #/#trick editors
 my %serializer_of       :ATTR(:name<serializer>     :default<()>);
 my %deserializer_of     :ATTR(:name<deserializer>   :default<()>);
 
@@ -395,10 +395,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 744 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
+ $Id: Client.pm 744 2008-10-15 16:58:45Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut
 

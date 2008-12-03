@@ -200,8 +200,9 @@ sub _factory {
                          ]
                     : $is_ref eq 'HASH'
                         ?  $type->new( $_[1] )
-                        # neither ARRAY nor HASH - probably an object...
-                        :  ($is_ref eq $type)               # of required type ? ->isa would be a better test...
+                        # neither ARRAY nor HASH - probably an object... -
+                        # do we need to test for it being blessed?
+                        :  blessed $_[1] && $_[1]->isa($type)              # of required type ?
                             ? $_[1]                         # use it
                             : die croak "cannot use $is_ref reference as value for $name - $type required"
 
@@ -508,10 +509,10 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 731 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 728 2008-07-13 19:28:50Z kutterma $
- $HeadURL: http://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
+ $Id: ComplexType.pm 731 2008-07-22 21:33:07Z kutterma $
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut
 

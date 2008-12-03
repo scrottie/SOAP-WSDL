@@ -205,6 +205,7 @@ sub visit_XSD_Element {
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
         : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($element) );
+    warn "Creating element class $output \n";
     $self->_process('element.tt', { element => $element } , $output);
 }
 
@@ -213,6 +214,7 @@ sub visit_XSD_SimpleType {
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
         : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($type) );
+    warn "Creating simpleType class $output \n";
     $self->_process('simpleType.tt', { simpleType => $type } , $output);
 }
 
@@ -221,6 +223,7 @@ sub visit_XSD_ComplexType {
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
         : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($type) );
+    warn "Creating complexType class $output \n";
     $self->_process('complexType.tt', { complexType => $type } , $output);
 }
 
