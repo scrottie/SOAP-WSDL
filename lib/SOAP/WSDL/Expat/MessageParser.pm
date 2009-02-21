@@ -9,7 +9,7 @@ use base qw(SOAP::WSDL::Expat::Base);
 
 BEGIN { require Class::Std::Fast };
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 # GLOBALS
 my $OBJECT_CACHE_REF = Class::Std::Fast::OBJECT_CACHE_REF();
@@ -108,7 +108,10 @@ sub _initialize {
                     return;
             }
         )
-        : ();
+        : (
+            0 => sub { $depth++ },
+            1 => sub { $depth++ },
+        );
 
     # use "globals" for speed
     my ($_prefix, $_method, $_class, $_leaf) = ();
@@ -137,11 +140,14 @@ sub _initialize {
             return if $skip;               # skip inside __SKIP__
 
             # resolve class of this element
-            $_class = $self->{ class_resolver }->get_class( $path )
-                or die "Cannot resolve class for "
-                    . join('/', @{ $path }) . " via " . $self->{ class_resolver };
+            $_class = $self->{ class_resolver }->get_class( $path );
 
-            if ($_class eq '__SKIP__') {
+            if (! defined($_class) and $self->{ strict }) {
+                die "Cannot resolve class for "
+                    . join('/', @{ $path }) . " via " . $self->{ class_resolver };
+            }
+
+            if (! defined($_class) or ($_class eq '__SKIP__') ) {
                 $skip = join('/', @{ $path });
                 $_[0]->setHandlers( Char => undef );
                 return;
@@ -233,6 +239,9 @@ sub _initialize {
             # empty characters
             $characters = q{};
 
+            # stop believing we're a leaf node
+            $_leaf = 0;
+
             # return if there's only one elment - can't set it in parent ;-)
             # but set as root element if we don't have one already.
             if (not defined $list->[-1]) {
@@ -253,8 +262,6 @@ sub _initialize {
             $list->[-1]->$_method( $current );
 
             $current = pop @$list;          # step up in object hierarchy
-
-            $_leaf = 0;                     # stop believing we're a leaf node
 
             return;
         }
@@ -323,10 +330,10 @@ the same terms as perl itself
 
 =head1 Repository information
 
- $Id: MessageParser.pm 728 2008-07-13 19:28:50Z kutterma $
+ $Id: MessageParser.pm 795 2009-02-21 00:04:29Z kutterma $
 
- $LastChangedDate: 2008-07-13 21:28:50 +0200 (So, 13 Jul 2008) $
- $LastChangedRevision: 728 $
+ $LastChangedDate: 2009-02-21 01:04:29 +0100 (Sa, 21 Feb 2009) $
+ $LastChangedRevision: 795 $
  $LastChangedBy: kutterma $
 
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/MessageParser.pm $

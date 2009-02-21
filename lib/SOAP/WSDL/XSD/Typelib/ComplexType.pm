@@ -10,8 +10,12 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
+# remove in 2.1
+our $AS_HASH_REF_WITHOUT_ATTRIBUTES = 0;
+
+my %ELEMENT_FORM_QUALIFIED_OF;  # denotes whether elements are qualified
 my %ELEMENTS_FROM;      # order of elements in a class
 my %ATTRIBUTES_OF;      # references to value hashes
 my %CLASSES_OF;         # class names of elements in a class
@@ -63,18 +67,20 @@ sub AUTOMETHOD {
 }
 
 sub attr {
-    my $self = shift;
-    my $class = $self->__get_attr_class()
+    # We're working on @_ for speed.
+    # Normally, the first line would look like this:
+    # my $self = shift;
+
+    my $class = $_[0]->__get_attr_class()
         or return;
 
-    # disable strictness - in perl 5.10 %{ "$foo\::_bar" } triggers a
-    # symbolic reference error with strictness enabled
-    if (@_) {
-        # setter
-        return $xml_attr_of{ $$self } = $class->new(@_);
+    # pass arguments to attributes constructor (if any);
+    # lets attr($foo) work as setter
+    if ($_[1]) {
+        return $xml_attr_of{ ${$_[0]} } = $class->new($_[1]);
     }
-    return $xml_attr_of{ $$self } if exists $xml_attr_of{ $$self };
-    return $xml_attr_of{ $$self } = $class->new();
+    return $xml_attr_of{ ${$_[0]} } if exists $xml_attr_of{ ${$_[0]} };
+    return $xml_attr_of{ ${$_[0]} } = $class->new();
 }
 
 sub serialize_attr {
@@ -86,29 +92,46 @@ sub serialize_attr {
 sub as_bool :BOOLIFY { 1 }
 
 sub as_hash_ref {
-    my $self = shift;
-    my $attributes_ref = $ATTRIBUTES_OF{ ref $self };
-    my $ident = ${ $self };
+    # we're working on $_[0] for speed (as always...)
+    #
+    # Normally the first line would read:
+    # my ($self, $ignore_attributes) = @_;
+    #
+    my $attributes_ref = $ATTRIBUTES_OF{ ref $_[0] };
 
     my $hash_of_ref = {};
-    foreach my $attribute (keys %{ $attributes_ref }) {
-        next if not defined $attributes_ref->{ $attribute }->{ $ident };
-        my $value = $attributes_ref->{ $attribute }->{ $ident };
+    if ($_[0]->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')) {
+        $hash_of_ref->{ value } = $_[0]->get_value();
+    }
+    else {
+        foreach my $attribute (keys %{ $attributes_ref }) {
+            next if not defined $attributes_ref->{ $attribute }->{ ${ $_[0] } };
+            my $value = $attributes_ref->{ $attribute }->{ ${ $_[0] } };
 
-        $hash_of_ref->{ $attribute } = blessed $value
-            ? $value->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
-                ? $value->get_value()
-                : $value->as_hash_ref()
-            : ref $value eq 'ARRAY'
-                ? [
-                    map {
-                        $_->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
-                            ? $_->get_value()
-                            : $_->as_hash_ref()
-                    } @{ $value }
-                ]
-                : die "Neither blessed obj nor list ref";
-    };
+            $hash_of_ref->{ $attribute } = blessed $value
+                ? $value->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
+                    ? $value->get_value()
+                    : $value->as_hash_ref($_[1])
+                : ref $value eq 'ARRAY'
+                    ? [
+                        map {
+                            $_->isa('SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType')
+                                ? $_->get_value()
+                                : $_->as_hash_ref($_[1])
+                        } @{ $value }
+                    ]
+                    : die "Neither blessed obj nor list ref";
+        };
+    }
+
+    # $AS_HASH_REF_WITHOUT_ATTRIBUTES is deprecated by NOW and will be removed
+    # in 2.1
+    return $hash_of_ref if $_[1] or $AS_HASH_REF_WITHOUT_ATTRIBUTES;
+
+
+    if (exists $xml_attr_of{ ${ $_[0] } }) {
+        $hash_of_ref->{ xmlattr } = $xml_attr_of{ ${ $_[0] } }->as_hash_ref();
+    }
 
     return $hash_of_ref;
 }
@@ -237,12 +260,29 @@ sub _factory {
     # TODO Could be moved as normal method into base class, e.g. here.
     # Hmm. let's see...
     *{ "$class\::new" } = sub {
-        my $self = bless \(my $o = Class::Std::Fast::ID()), $_[0];
         # We're working on @_ for speed.
         # Normally, the first line would look like this:
-        # my ($self, $ident, $args_of) = @_;
+        # my ($class, $args_of) = @_;
         #
         # The hanging side comment show you what would be there, then.
+
+        # Read as:
+        # my $self = bless \(my $o = Class::Std::Fast::ID()), $class;
+        my $self = bless \(my $o = Class::Std::Fast::ID()), $_[0];
+
+        # Set attributes if passed via { xmlattr => \%attributes }
+        #
+        # This works just because
+        #    a) xmlattr cannot be used as valid XML identifier (it starts
+        #       with "xml" which is banned by the XML schema standard)
+        #    b) $o->attr($attribute_ref) passes $attribute_ref to the
+        #       attribute object's constructor
+        #    c) we are in the object's constructor here (which means that)
+        #       no attributes object can have been legally constructed
+        #       before.
+        if (exists $_[1]->{xmlattr}) {                      # $args_of->{xmlattr}
+            $self->attr(delete $_[1]->{xmlattr});
+        }
 
         # iterate over keys of arguments
         # and call set appropriate field in clase
@@ -287,13 +327,14 @@ sub _factory {
             # do we have some content
             if (defined $element) {
                 $element = [ $element ] if not ref $element eq 'ARRAY';
-                # from 2.00.02 on $NAMES_OF is filled - use || $_; for
+                # from 2.00.07 on $NAMES_OF is filled - use || $_; for
                 # backward compatibility
                 my $name = $NAMES_OF{$class}->{$_} || $_;
                 my $target_namespace = $_[0]->get_xmlns();
                 map {
                     # serialize element elements with their own serializer
                     # but name them like they're named here.
+                    # TODO: check. element ref="" has a name???
                     if ( $_->isa( 'SOAP::WSDL::XSD::Typelib::Element' ) ) {
                             # serialize elements of different namespaces
                             # with namespace declaration
@@ -306,9 +347,31 @@ sub _factory {
                     else {
                         # TODO: check whether we have to handle
                         # types from different namespaces special, too
-                        join q{}, $_->start_tag({ name => $name , %{ $option_ref } })
-                            , $_->serialize($option_ref)
-                            , $_->end_tag({ name => $name , %{ $option_ref } });
+                        if (!defined $ELEMENT_FORM_QUALIFIED_OF{ $class }
+                            or $ELEMENT_FORM_QUALIFIED_OF{ $class }
+                        ) {
+                            join q{}, $_->start_tag({ name => $name , %{ $option_ref } })
+                                , $_->serialize($option_ref)
+                                , $_->end_tag({ name => $name , %{ $option_ref } });
+                        }
+                        else {
+                            # remove xmlns option if there is one
+                            my $set_xmlns = delete $option_ref->{xmlns}
+                                if (exists $option_ref->{xmlns});
+                            # serialize start tag with xmlns="" if out parent
+                            # did not do that
+                            join q{}, $_->start_tag({
+                                    name => $name,
+                                    %{ $option_ref },
+                                    (! defined $set_xmlns)
+                                        ? (xmlns => "")
+                                        : ()
+                                })
+                                # add xmlns = "" to child serialize options
+                                # to avoid putting xmlns="" everywhere
+                                , $_->serialize({ %{$option_ref}, xmlns => "" })
+                                , $_->end_tag({ name => $name , %{ $option_ref } });
+                        }
                     }
                 } @{ $element }
             }
@@ -325,7 +388,12 @@ sub _factory {
     };
 }
 
-# just a fallback
+sub _set_element_form_qualified {
+    $ELEMENT_FORM_QUALIFIED_OF{ $_[0] } = $_[1];
+}
+
+# Just as fallback: return no attribute set class as default.
+# Subclasses may override
 sub __get_attr_class {};
 
 # hidden complex serializer
@@ -415,6 +483,11 @@ Data passed to new must comply to the object's structure or new() will
 complain. Objects passed must be of the expected type, or new() will
 complain, too.
 
+The special key B<xmlattr> may be used to pass XML attributes. This key is
+chosen, because "xmlattr" cannot legally be used as XML name (it starts with
+"xml"). Passing a hash ref structure as value to "xmlattr" has the same
+effect as passing the same structure to a call to C<$obj->attr()>
+
 Examples:
 
  my $obj = MyClass->new({ MyName => $value });
@@ -434,6 +507,16 @@ Examples:
      MySecondName => $object,
      MyThirdName => [ $object1, $object2 ],
  });
+
+my $obj = MyClass->new({
+     xmlattr => { name => 'foo' },
+     MyName => {
+         DeepName => $value,
+     },
+     MySecondName => $value,
+ });
+
+In case your building on Class::Std, please note the following limitations:
 
 The new() method from Class::Std will be overridden, so you should not rely
 on it's behaviour.
@@ -466,9 +549,50 @@ To delete a property, say:
 
  $obj->set_FOO();
 
+=head2 attr
+
+Returns / sets the attribute object associated with the object. XML Attributes
+are modeled as attribute objects - their classes are usually private (i.e.
+part of the associated class' file, not in a separate file named after the
+attribute class).
+
+Note that attribute support is still experimental.
+
+=head2 as_bool
+
+Returns the boolean value of the complexType (always true).
+
 =head2 as_hash_ref
 
 Returns a hash ref representation of the complexType object
+
+Attributes are included under the special key "xmlattr" (if any).
+
+The inclusion of attributes can be suppressed by calling
+
+ $obj->as_has_ref(1);
+
+or even globally by setting
+
+ $SOAP::WSDL::XSD::Typelib::ComplexType::AS_HASH_REF_WITHOUT_ATTRIBUTES = 1;
+
+Note that using the $AS_HASH_REF_WITHOUT_ATTRIBUTES global variable is
+strongly discouraged. Use of this variable is deprecated and will be removed
+as of version 2.1
+
+as_hash_ref can be used for deep cloning. The following statement creates
+a deep clone of a SOAP::WSDL::ComplexType-based object
+
+ my $clone = ref($obj)->new($obj->as_hash_ref());
+
+=head2 serialize_attr
+
+Serialize a complexType's attributes
+
+=head2 serialize
+
+Serialize a ComplexType object to XML. Exported via symbol table into derived
+classes.
 
 =head1 Bugs and limitations
 
@@ -509,9 +633,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 731 $
+ $Rev: 795 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 731 2008-07-22 21:33:07Z kutterma $
+ $Id: ComplexType.pm 795 2009-02-21 00:04:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

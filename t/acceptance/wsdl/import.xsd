@@ -1,6 +1,7 @@
 <s:schema elementFormDefault="qualified" targetNamespace="urn:HelloWorld"
     xmlns:s="http://www.w3.org/2001/XMLSchema"
-    xmlns="http://www.w3.org/2001/XMLSchema">
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:foo="urn:Bar2">
     <s:element name="sayHello">
         <s:complexType>
             <s:sequence>

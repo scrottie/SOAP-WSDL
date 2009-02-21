@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use lib '../../../../lib';
 use lib '../../../../t/lib';
 use lib 't/lib';
@@ -27,6 +27,8 @@ my $parser = SOAP::WSDL::Expat::MessageParser->new({
 });
 
 test_nil($parser);
+
+test_simple_element($parser);
 
 $parser->parse( $xml );
 
@@ -72,6 +74,7 @@ BEGIN {
             'MyElementAttrs' => 'MyElementAttrs',
             'MyElementAttrs/test' => 'MyTestElement',
             'MyElementAttrs/test2' => 'MyTestElement2',
+            'MySimpleElement' => 'MySimpleElement',
         );
 
         sub new { return bless {}, 'FakeResolver' };
@@ -97,4 +100,15 @@ sub test_nil {
 
     my $result = $parser->parse($xml_nil_attr);
     is $result->get_test2->serialize({ name => 'test2'}), '<test2 xsi:nil="true"/>';
+}
+
+
+sub test_simple_element {
+    my $parser = shift;
+
+    my $body = $parser->parse(
+        q{<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
+        <SOAP-ENV:Body><MySimpleElement xmlns="urn:Test">3</MySimpleElement></SOAP-ENV:Body></SOAP-ENV:Envelope>});
+    is $body->get_value(), 3;
 }

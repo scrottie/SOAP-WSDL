@@ -22,7 +22,8 @@ use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
     __PACKAGE__->_factory(
         [ 'test' ],
         { test => \%test_of, },
-        { test => 'SOAP::WSDL::XSD::Typelib::Builtin::string', }
+        { test => 'SOAP::WSDL::XSD::Typelib::Builtin::string', },
+
     );
 }
 
@@ -50,7 +51,8 @@ use base qw(SOAP::WSDL::XSD::Typelib::AttributeSet);
         {
             test => 'SOAP::WSDL::XSD::Typelib::Builtin::string',
             test2 => 'MyAttribute',
-        }
+        },
+        { test => 'test' }
     );
 }
 
@@ -82,7 +84,7 @@ __PACKAGE__->__set_name( 'MyElementSimpleContent' );
 sub __get_attr_class { 'MyElement::_ATTR' };
 
 package main;
-use Test::More tests => 115;
+use Test::More tests => 127;
 use Storable;
 
 my $have_warn = eval { require Test::Warn; import Test::Warn; 1; };
@@ -236,6 +238,22 @@ is $obj->serialize(),
     q{<MyElement test="TestAttribute" test2="test"/>},
     'Serialization with attributes';
 
+#
+# cloning attributes...
+#
+ok exists $obj->as_hash_ref()->{ xmlattr }, 'as_hash_ref attributes';
+is $obj->as_hash_ref()->{ xmlattr }->{ test }, 'TestAttribute', 'as_hash_ref attribute value';
+is $obj->as_hash_ref()->{ xmlattr }->{ test2 }, 'test', 'as_hash_ref attribute value';
+
+my $clone = ref($obj)->new($obj->as_hash_ref());
+isnt $$clone, $$obj, 'clone is new object';
+isnt ${ $clone->attr() }, ${ $obj->attr() }, 'cloned attrs are a new object';
+
+is $clone->attr()->get_test(), 'TestAttribute';
+#
+# end cloning attributes
+#
+
 $obj = MyType->new();
 
 isa_ok $obj, 'MyType';
@@ -283,8 +301,10 @@ for my $count (1..5) {
 
 }
 
-my $clone = Storable::thaw( Storable::freeze( $obj ));
-is $clone->get_test()->[0], 'TestString0', 'clone via freeze/thaw';
+{
+    my $clone = Storable::thaw( Storable::freeze( $obj ));
+    is $clone->get_test()->[0], 'TestString0', 'clone via freeze/thaw';
+}
 
 ## failure tests
 
@@ -359,3 +379,17 @@ like $@, qr{ Can't \s locate \s HopeItDoesntExistOnYourSystem.pm }xms;
 $obj = MyElementSimpleContent->new({ value => 'foo' });
 $obj->attr({ test => 'foo', test2 => 'bar' });
 is $obj->serialize_qualified(), '<MyElementSimpleContent xmlns="http://www.w3.org/2001/XMLSchema" test="foo" test2="bar">foo</MyElementSimpleContent>';
+
+$clone = ref($obj)->new($obj->as_hash_ref());
+isnt $$clone, $$obj, 'clone is new object';
+isnt ${ $clone->attr() }, ${ $obj->attr() }, 'cloned attrs are a new object';
+
+is $clone->get_value(), 'foo';
+
+ok ! exists $obj->as_hash_ref(1)->{ xmlattr };
+
+{
+    local $SOAP::WSDL::XSD::Typelib::ComplexType::AS_HASH_REF_WITHOUT_ATTRIBUTES = 1;
+    ok ! exists $obj->as_hash_ref()->{ xmlattr };
+    ok ! exists $obj->as_hash_ref(1)->{ xmlattr };
+}

@@ -4,7 +4,7 @@ use warnings;
 use base 'SOAP::WSDL::Client';
 use Scalar::Util qw(blessed);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 sub call {
     my ($self, $method, $body, $header) = @_;
@@ -85,9 +85,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 795 $
  $LastChangedBy: kutterma $
- $Id: Base.pm 728 2008-07-13 19:28:50Z kutterma $
+ $Id: Base.pm 795 2009-02-21 00:04:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client/Base.pm $
 
 =cut

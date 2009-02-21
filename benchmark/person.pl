@@ -8,6 +8,7 @@ use strict;
 
 use Benchmark qw(cmpthese);
 
+use XML::Compile::SOAP11;
 use XML::Compile::Transport::SOAPHTTP();
 use XML::Compile::Util;
 use XML::Compile::WSDL11;
@@ -16,7 +17,7 @@ use XML::Simple;
 use SOAP::Lite;
 use MyInterfaces::TestService::TestPort;
 
-use SOAP::WSDL::Deserializer::XSD_XS;
+#use SOAP::WSDL::Deserializer::XSD_XS;
 use SOAP::WSDL::Factory::Deserializer;
 
 #
@@ -112,8 +113,8 @@ $lite_xml->outputxml(1);
 $lite_xml->ListPerson();
 
 # # register for SOAP 1.1
-SOAP::WSDL::Factory::Deserializer->register('1.1' => 'SOAP::WSDL::Deserializer::XSD_XS' );
-my $wsdl_xs = MyInterfaces::TestService::TestPort->new();
+#SOAP::WSDL::Factory::Deserializer->register('1.1' => 'SOAP::WSDL::Deserializer::XSD_XS' );
+#my $wsdl_xs = MyInterfaces::TestService::TestPort->new();
 
 my $count = 70;
 my @data = ();
@@ -138,7 +139,7 @@ $n++;
 cmpthese $count, {
 	'SOAP::Lite'	=> sub { my $som = $lite->call('ListPerson') },
     'SOAP::WSDL' => sub { my $result = $soap->ListPerson({}) },
-    'SOAP::WSDL_XS' => sub { my $result = $wsdl_xs->ListPerson({}) },
+#    'SOAP::WSDL_XS' => sub { my $result = $wsdl_xs->ListPerson({}) },
     'XML::Compile' => sub { my $result = $call->() },
 	'XML::Simple'   => sub { my $result = XMLin( $lite_xml->call('ListPerson')) },
 };
@@ -148,27 +149,27 @@ $n++;
 cmpthese $count, {
     'SOAP::Lite'    => sub { push @data, $lite->call('ListPerson') },
     'SOAP::WSDL'    => sub { push @data, $soap->ListPerson({}) },
-    'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({}) },
+#    'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({}) },
     'XML::Compile'  => sub { push @data, $call->() },
 	'XML::Simple'   => sub { push @data, XMLin( $lite_xml->call('ListPerson')) },
 };
 
 @data = ();
-print "\nBenchmark $n: Play it again, Sam\n";
+print "\nBenchmark $n: Play it, please play it again, Sam\n";
 $n++;
 cmpthese $count, {
 
     'SOAP::WSDL'    => sub { push @data, $soap->ListPerson({}) },
-    'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({}) },
-    'XML::Compile'  => sub { push @data, $call->() },
-    'SOAP::Lite'    => sub { push @data, $lite->call('ListPerson') },
+#    'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({}) },
+#    'XML::Compile'  => sub { push @data, $call->() },
+#    'SOAP::Lite'    => sub { push @data, $lite->call('ListPerson') },
 };
 
 print "\nBenchmark $n: ca. 1kB request - result destroyed immediately\n";
 $n++;
 cmpthese $count, {
     'SOAP::WSDL'    => sub { my $result = $soap->ListPerson({ in => $person }) },
-    'SOAP::WSDL_XS' => sub { my $result = $wsdl_xs->ListPerson({ in => $person }) },
+#    'SOAP::WSDL_XS' => sub { my $result = $wsdl_xs->ListPerson({ in => $person }) },
     'XML::Compile'  => sub { my $result = $call->({ in => $person }) },
 };
 
@@ -176,7 +177,7 @@ print "\nBenchmark $n: ca. 1kB request - push result on list\n";
 $n++;
 cmpthese $count, {
     'SOAP::WSDL'    => sub { push @data, $soap->ListPerson({ in => $person }) },
-    'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({ in => $person }) },
+#    'SOAP::WSDL_XS' => sub { push @data, $wsdl_xs->ListPerson({ in => $person }) },
     'XML::Compile'  => sub { push @data, $call->({ in => $person }) },
 };
 

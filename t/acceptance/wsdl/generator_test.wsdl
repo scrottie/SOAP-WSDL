@@ -10,7 +10,8 @@
     xmlns="http://schemas.xmlsoap.org/wsdl/"
 xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/">
     <types>
-        <xsd:schema targetNamespace="urn:Test" xmlns="urn:Test">
+        <xsd:schema targetNamespace="urn:Test" xmlns="urn:Test"
+        elementFormDefault="qualified">
         <xsd:attribute name="TestAttribute" type="xsd:string"></xsd:attribute>
 
         <xsd:simpleType name="testSimpleTypeList">
@@ -32,7 +33,7 @@ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xm
             <xsd:list>
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:int">
-                        <xsd:maxLength value="2" fixed="1"/>
+                        <xsd:totalDigits value="2" fixed="1"/>
                     </xsd:restriction>
                 </xsd:simpleType>
             </xsd:list>

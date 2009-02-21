@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 16; #qw(no_plan);
+use Test::More tests => 17; #qw(no_plan);
 use File::Spec;
 use File::Basename;
 
@@ -38,6 +38,10 @@ else {
     );
 }
 
+$parser =  SOAP::WSDL::Expat::WSDLParser->new();
+        $definitions = $parser->parse_uri(
+             "file://$path/../../../acceptance/wsdl/WSDLParser-import.wsdl"
+        );
 ok my $service = $definitions->first_service();
 is $service->get_name(), 'Service1', 'wsdl:import service name';
 is $definitions->first_binding()->get_name(), 'Service1Soap', 'wsdl:import binding name';
@@ -46,6 +50,8 @@ ok my $schema_from_ref = $definitions->first_types()->get_schema();
 is @{ $schema_from_ref }, 2, 'got builtin and imported schema';
 ok @{ $schema_from_ref->[1]->get_element } > 0;
 is $schema_from_ref->[1]->get_element->[0]->get_name(), 'sayHello';
+
+is $schema_from_ref->[1]->get_xmlns()->{ foo }, 'urn:Bar1', 'namespace prefix not overridden by import';
 
 {
     my $warn_parser = SOAP::WSDL::Expat::WSDLParser->new();

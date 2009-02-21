@@ -32,6 +32,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     element_prefix => 'BarElem',
     typemap_prefix => 'Bar',
     OUTPUT_PATH => "$path/testlib",
+    silent => 1,
 });
 
 

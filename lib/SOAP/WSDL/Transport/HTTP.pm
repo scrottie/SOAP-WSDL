@@ -2,7 +2,7 @@ package SOAP::WSDL::Transport::HTTP;
 use strict; use warnings;
 use base qw(LWP::UserAgent);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 # create methods normally inherited from SOAP::Client
 SUBFACTORY: {
@@ -14,6 +14,10 @@ SUBFACTORY: {
             return $self->{ $method } = shift;
         };
     }
+}
+
+sub _agent {
+    return qq[SOAP::WSDL $VERSION];
 }
 
 sub send_receive {
@@ -91,9 +95,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 744 $
+ $Rev: 795 $
  $LastChangedBy: kutterma $
- $Id: HTTP.pm 744 2008-10-15 16:58:45Z kutterma $
+ $Id: HTTP.pm 795 2009-02-21 00:04:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Transport/HTTP.pm $
 
 =cut

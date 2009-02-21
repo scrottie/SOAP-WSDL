@@ -30,12 +30,27 @@ ok( $soap = SOAP::WSDL->new(
 # which requires SOAP::Lite
 $soap->outputxml(1);
 
-ok ($xml = $soap->call('test',  
+ok ($xml = $soap->call('test',
 			testAll => {
 				Test2 => 'Test2',
 				TestElement => 'TestRef'
 			}
 ), 'Serialized complexType' );
 
-like $xml, qr{<SOAP-ENV:Body><testAll><TestElement>TestRef</TestElement><Test2>Test2</Test2></testAll></SOAP-ENV:Body>}
-    , 'element ref="" serialization';
+my $HAVE_TEST_XML = eval {
+    require Test::XML;
+    import Test::XML;
+    1;
+};
+
+SKIP: {
+    skip "Can't test XML without Test::XML", 1 if not $HAVE_TEST_XML;
+    is_xml( q{<SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
+    <SOAP-ENV:Body >
+        <testAll><TestElement>TestRef</TestElement>
+            <Test2>Test2</Test2>
+        </testAll>
+    </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>}, $xml);
+    };

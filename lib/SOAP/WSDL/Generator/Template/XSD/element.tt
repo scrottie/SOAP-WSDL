@@ -102,9 +102,9 @@ perl code only, XML output uses the original name:
 
 [%          END %]
 
+[%      END; %]
 =back
-[%      END;
-    END;
+[%    END;
 END; -%]
 
 

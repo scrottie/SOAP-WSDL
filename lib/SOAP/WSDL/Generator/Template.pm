@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use Carp;
 use SOAP::WSDL::Generator::PrefixResolver;
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 my %tt_of               :ATTR(:get<tt>);
 my %definitions_of      :ATTR(:name<definitions>        :default<()>);
@@ -70,3 +70,39 @@ sub _process :PROTECTED {
 }
 
 1;
+
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Generator::Template - Template-based code generator
+
+=head1 DESCRIPTION
+
+SOAP::WSDL's template based code generator
+
+Base class for writing template based generators
+
+=head1 AUTHOR
+
+Replace the whitespace by @ for E-Mail Address.
+
+ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2008, 2009 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
+
+=head1 Repository information
+
+ $Id: WSDLParser.pm 770 2009-01-24 22:55:54Z kutterma $
+
+ $LastChangedDate: 2009-01-24 23:55:54 +0100 (Sa, 24 Jan 2009) $
+ $LastChangedRevision: 770 $
+ $LastChangedBy: kutterma $
+
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
+

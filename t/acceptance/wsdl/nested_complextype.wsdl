@@ -10,7 +10,7 @@
     xmlns="http://schemas.xmlsoap.org/wsdl/">
     <types>
         <s:schema elementFormDefault="qualified"
-            targetNamespace="urn:HelloWorld">
+            targetNamespace="urn:HelloWorld" xmlns="urn:HelloWorld">
             <s:element name="sayHello">
                 <s:complexType>
                     <s:sequence>

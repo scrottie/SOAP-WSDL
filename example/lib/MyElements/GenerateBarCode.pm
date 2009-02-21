@@ -43,12 +43,6 @@ __PACKAGE__->_factory(
 
 } # end BLOCK
 
-
-
-
-
-
-
 } # end of BLOCK
 1;
 

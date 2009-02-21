@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #use strict;
 use warnings;
-use SOAP::Lite +trace;
+use SOAP::Lite; # +trace;
 
 # I have to lookup the URL from the WSDL
 my $soap = SOAP::Lite->new(

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' };
 
@@ -20,13 +20,28 @@ sub start_tag {
     # return attribute start if it's an attribute
     return qq{ $_[1]->{name}="} if $_[1]->{ attr };
     # return with xsi:nil="true" if it is nil
-    return join q{} , "<$_[1]->{ name }" , $_[0]->serialize_attr() , q{ xsi:nil="true"/>}
-        if ($_[1]->{ nil });
+    return join
+        q{} ,
+        "<$_[1]->{ name }" ,
+        (defined $_[1]->{ xmlns }) ? qq{ xmlns="$_[1]->{ xmlns }"} : (),
+        $_[0]->serialize_attr($_[1]) ,
+        q{ xsi:nil="true"/>}
+            if ($_[1]->{ nil });
     # return "empty" start tag if it's empty
-    return join q{}, "<$_[1]->{ name }" , $_[0]->serialize_attr() , '/>'
+    return join
+        q{},
+        "<$_[1]->{ name }",
+        (defined $_[1]->{ xmlns }) ? qq{ xmlns="$_[1]->{ xmlns }"} : (),
+        $_[0]->serialize_attr($_[1]) ,
+        '/>'
         if ($_[1]->{ empty });
     # return XML element start tag
-    return join q{}, "<$_[1]->{ name }" , $_[0]->serialize_attr() , '>';
+    return join
+        q{},
+        "<$_[1]->{ name }",
+        (defined $_[1]->{ xmlns }) ? qq{ xmlns="$_[1]->{ xmlns }"} : (),
+        , $_[0]->serialize_attr($_[1])
+        , '>';
 }
 
 # start_tag creates a XML end tag either for a XML element or a attribute.
@@ -42,7 +57,7 @@ sub end_tag {
     return "</$_[1]->{name}>";
 };
 
-sub serialize_attr { () };
+sub serialize_attr {};
 
 # sub serialize { q{} };
 

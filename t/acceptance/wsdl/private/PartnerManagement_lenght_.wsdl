@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by EMBRACE (EMBRACE) -->
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:zjsapi="http://jsapi.jochen-schweizer.de/PartnerManagement/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns:n0="http://www.sap.com/webas/630/soap/features/runtime/tracing/" xmlns:n1="http://www.sap.com/webas/640/soap/features/messageId/" name="PartnerManagement" targetNamespace="http://jsapi.jochen-schweizer.de/PartnerManagement/">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.sap.com/webas/630/soap/features/runtime/tracing/">
+			<xsd:element name="Trace">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="TraceLevel" type="xsd:string" minOccurs="0"/>
+						<xsd:element name="TraceContext" type="n0:TraceContext" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+
+			<xsd:complexType name="TraceContext">
+				<xsd:sequence>
+					<xsd:element name="TRC_PATTERN" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="TRC_KEY" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="TRC_SSID" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="TRC_USER" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="TRC_TS" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="TRC_COUNTER" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="TRC_EXTERN" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xsd:schema targetNamespace="http://jsapi.jochen-schweizer.de/PartnerManagement/">
+			<xsd:element name="CreatePartnerResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="out" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CreatePartnerRequest" type="zjsapi:TPartnerData"/>
+			<xsd:complexType name="TPartnerData">
+				<xsd:sequence>
+					<xsd:element name="mSyncID" type="xsd:int"/>
+					<xsd:element name="mName" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mFirstName" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="40"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mLastName" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="40"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mCity">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mZipCode">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mPostBox" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mAddress" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mPhone" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="40"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mFax" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mEMail" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="64"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mCountry" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="30"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mLanguage" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mWebsite" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="mStatus" type="xsd:int" minOccurs="0"/>
+					<xsd:element name="mActive" type="xsd:int" minOccurs="0"/>
+					<xsd:element name="mConfidentiality" type="xsd:int" minOccurs="0"/>
+					<xsd:element name="mSubscription" type="xsd:int" minOccurs="0"/>
+					<xsd:element name="mAGBUrl" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="300"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="messageId" type="xsd:string" minOccurs="0"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="CreatePartnerRequest">
+		<wsdl:part name="parameters" element="zjsapi:CreatePartnerRequest"/>
+	</wsdl:message>
+	<wsdl:message name="CreatePartnerResponse">
+		<wsdl:part name="parameters" element="zjsapi:CreatePartnerResponse"/>
+	</wsdl:message>
+	<wsdl:message name="SAPTraceHeader">
+		<wsdl:part name="parameter" element="n0:Trace"/>
+	</wsdl:message>
+	<wsdl:message name="SAPMessageIdHeader">
+		<wsdl:part name="parameter" element="zjsapi:messageId"/>
+	</wsdl:message>
+	<wsdl:portType name="PartnerManagement">
+		<wsdl:operation name="CreatePartner">
+			<wsdl:input message="zjsapi:CreatePartnerRequest"/>
+			<wsdl:output message="zjsapi:CreatePartnerResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="PartnerManagementSOAP" type="zjsapi:PartnerManagement">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="CreatePartner">
+			<soap:operation soapAction="http://jsapi.jochen-schweizer.de/PartnerManagement/CreatePartner"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+				<soap:header message="zjsapi:SAPTraceHeader" part="parameter" use="literal" namespace="http://www.sap.com/webas/630/soap/features/runtime/tracing/"/>
+				<soap:header message="zjsapi:SAPMessageIdHeader" part="parameter" use="literal" namespace="http://www.sap.com/webas/640/soap/features/messageId/"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PartnerManagement">
+		<wsdl:port name="PartnerManagementSOAP" binding="zjsapi:PartnerManagementSOAP">
+			<soap:address location="http://jsapi.jochen-schweizer.de/cgi-bin/server.pl"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

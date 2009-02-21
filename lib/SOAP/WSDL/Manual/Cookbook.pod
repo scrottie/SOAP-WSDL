@@ -12,7 +12,7 @@ You need Crypt::SSLeay installed to access HTTPS webservices.
 
 Passing a username and password, or a client certificate and key, to the
 transport layer is highly dependent on the transport backend. The descriptions
-below are for HTTP(S) transport usingLWP::UserAgent
+below are for HTTP(S) transport using LWP::UserAgent
 
 =head3 Accessing HTTP(S) webservices with basic/digest authentication
 
@@ -121,12 +121,82 @@ or nil elements):
      return "<$prefix:$name>";
  }
 
+=head1 Skipping unknown XML elements - "lax" XML processing
+
+SOAP::WSDL's default serializer
+L<SOAP::WSDL::Deserializer::XSD|SOAP::WSDL::Deserializer::XSD> is a "strict"
+XML processor in the sense that it throws an exception on encountering unknown
+XML elements.
+
+L<SOAP::WSDL::Deserializer::XSD|SOAP::WSDL::Deserializer::XSD> allows
+switching off the stric XML processing by passing the C<strict =E<gt> 0>
+option.
+
+=head2 Disabling strict XML processing in a Client
+
+Pass the following as C<deserializer_args>:
+
+ { strict => 0 }
+
+Example: The generated SOAP client is assumed to be "MyInterface::Test".
+
+ use MyInterface::Test;
+
+ my $soap = MyInterface::Test->new({
+     deserializer_args => { strict => 0 }
+ });
+
+ my $result = $soap->SomeMethod();
+
+=head2 Disabling strict XML processing in a CGI based server
+
+You have to set the deserializer in the transport class explicitely to
+a L<SOAP::WSDL::Deserializer|SOAP::WSDL::Deserializer> object with the
+C<strict> option set to 0.
+
+Example: The generated SOAP server is assumed to be "MyServer::Test".
+
+ use strict;
+ use MyServer::Test;
+ use SOAP::WSDL::Deserializer::XSD;
+
+ my $soap = MyServer::Test->new({
+     transport_class => 'SOAP::WSDL::Server::CGI',
+     dispatch_to => 'main',
+ });
+ $soap->get_transport()->set_deserializer(
+    SOAP::WSDL::Deserializer::XSD->new({ strict => 0 })
+ );
+
+ $soap->handle();
+
+=head2 Disabling strict XML processing in a mod_perl based server
+
+Sorry, this is not implemented yet - you'll have to write your own handler
+class based on L<SOAP::WSDL::Server::Mod_Perl2|SOAP::WSDL::Server::Mod_Perl2>.
+
+=head1 Changing the encoding of a SOAP request
+
+SOAP::WSDL uses utf-8 per default: utf-8
+is the de-facto standard for webservice ommunication.
+
+However, you can change the encoding the transport layer announces by calling
+C<set_encoding($encoding)> on a client object.
+
+You probably have to write your own serializer class too, because the default
+serializer has the utf-8 encoding hardcoded in the envelope.
+
+Just look into SOAP::WSDL::Serializer on how to do that.
+
+Don't forget to register your serializer at the serializer factory
+SOAP::WSDL::Factory::Serializer.
+
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2008 Martin Kutter.
+Copyright 2008, 2009 Martin Kutter.
 
-This library is free software. You may distribute/modify it under
-the same terms as perl itself
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself.
 
 =head1 AUTHOR
 

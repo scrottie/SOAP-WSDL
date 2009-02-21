@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 use SOAP::WSDL::XSD::Typelib::ComplexType;
 use SOAP::WSDL::XSD::Typelib::Element;
@@ -101,9 +101,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 795 $
  $LastChangedBy: kutterma $
- $Id: Fault11.pm 728 2008-07-13 19:28:50Z kutterma $
+ $Id: Fault11.pm 795 2009-02-21 00:04:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/SOAP/Typelib/Fault11.pm $
 
 =cut

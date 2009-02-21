@@ -16,6 +16,7 @@ my $definitions = $parser->parse_file(
 
 my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     definitions => $definitions,
+    silent => 1,
 });
 
 {

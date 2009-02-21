@@ -45,6 +45,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     typemap_prefix => 'Foo',
     OUTPUT_PATH => "$path/testlib",
     prefix_resolver_class => 'TestResolver',
+    silent => 1,
 });
 
 my $code = "";

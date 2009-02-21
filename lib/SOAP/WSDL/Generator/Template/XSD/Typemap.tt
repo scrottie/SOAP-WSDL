@@ -7,7 +7,6 @@ our [% USE Dumper(varname = 'typemap_'); Dumper.dump( typemap ) %];
 
 sub get_class {
   my $name = join '/', @{ $_[1] };
-  exists $typemap_1->{ $name } or die "Cannot resolve $name via " . __PACKAGE__;
   return $typemap_1->{ $name };
 }
 

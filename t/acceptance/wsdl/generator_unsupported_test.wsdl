@@ -8,7 +8,7 @@
     xmlns="http://schemas.xmlsoap.org/wsdl/"
 >
     <types>
-        <xsd:schema targetNamespace="urn:Test">
+        <xsd:schema targetNamespace="urn:Test" elementFormDefault="qualified" xmlns="urn:Test">
             <xsd:element name="anyType" type="xsd:anyType" />
             <xsd:complexType name="anyType">
                 <xsd:sequence>
@@ -17,13 +17,16 @@
             </xsd:complexType>
         </xsd:schema>
     </types>
+    <message name="testRequest">
+    	<part name="input" type="tns:anyType"/>
+    </message>
     <portType name="testPort">
         <operation name="test">
             <documentation>
                 Test-Method
             </documentation>
             <input message="tns:testRequest"/>
-            <output message="tns:testResponse"/>
+            <output message="tns:testRequest"/>
         </operation>
     </portType>
 

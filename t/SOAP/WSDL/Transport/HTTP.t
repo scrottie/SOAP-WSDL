@@ -30,9 +30,9 @@ ok ! $transport->is_success();
         my $self = shift;
         my $request = shift;
         is $request->header('Content-Type'), 'text/xml; charset=utf-8';
-        return HTTP::Response->new();
+        return HTTP::Response->new( 200 );
     };
 
-    $transport->send_receive(envelope => 'Test', action => 'foo');
+    $result = $transport->send_receive(envelope => 'Test', action => 'foo');
     *LWP::UserAgent::request = $request_sub;
 }

@@ -1,5 +1,6 @@
 package Foo;
 sub serialize {
+    $_[2] = q{} if not defined $_[2];
     return "serialized $_[1] $_[2]" . join ' ', @{$_[3]->{ attributes } || [] } if $_[3];
 }
 package main;

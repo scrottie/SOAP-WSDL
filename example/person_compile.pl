@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
+use XML::Compile::SOAP11;
 use XML::Compile::WSDL11;
 use XML::Compile::Transport::SOAPHTTP;
 

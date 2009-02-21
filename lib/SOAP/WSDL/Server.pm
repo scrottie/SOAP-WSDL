@@ -6,7 +6,7 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Deserializer;
 use SOAP::WSDL::Factory::Serializer;
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 my %dispatch_to_of      :ATTR(:name<dispatch_to> :default<()>);
 my %action_map_ref_of   :ATTR(:name<action_map_ref> :default<{}>);
@@ -42,7 +42,7 @@ sub handle {
     };
     if ($@) {
         die $deserializer_of{ $ident }->generate_fault({
-                code => 'soap:Server',
+                code => 'SOAP-ENV:Server',
                 role => 'urn:localhost',
                 message => "Error deserializing message: $@. \n"
             });
@@ -65,7 +65,7 @@ sub handle {
 
     if (!$dispatch_to_of{ $ident }) {
         die $deserializer_of{ $ident }->generate_fault({
-                code => 'soap:Server',
+                code => 'SOAP-ENV:Server',
                 role => 'urn:localhost',
                 message => "No handler registered",
             });
@@ -73,7 +73,7 @@ sub handle {
 
     if (! defined $request->header('SOAPAction') ) {
         die $deserializer_of{ $ident }->generate_fault({
-                code => 'soap:Server',
+                code => 'SOAP-ENV:Server',
                 role => 'urn:localhost',
                 message => "Not found: No SOAPAction given",
             });
@@ -81,7 +81,7 @@ sub handle {
 
     if (! defined $method_name) {
         die $deserializer_of{ $ident }->generate_fault({
-                code => 'soap:Server',
+                code => 'SOAP-ENV:Server',
                 role => 'urn:localhost',
                 message => "Not found: No method found for the SOAPAction '$soap_action'",
             });
@@ -92,7 +92,7 @@ sub handle {
 
     if (!$method_ref) {
         die $deserializer_of{ $ident }->generate_fault({
-                code => 'soap:Server',
+                code => 'SOAP-ENV:Server',
                 role => 'urn:localhost',
                 message => "Not implemented: The handler does not implement the method $method_name",
             });
@@ -190,7 +190,7 @@ SOAP::Server's deserializer create one for you:
  my $soap = MyServer::SomeService->new();
 
  die $soap->get_deserializer()->generate_fault({
-    code => 'soap:Server',
+    code => 'SOAP-ENV:Server',
     role => 'urn:localhost',
     message => "The error message to pas back",
     detail => "Some details on the error",

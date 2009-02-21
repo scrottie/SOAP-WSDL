@@ -86,6 +86,7 @@ my $lwp = LWP::UserAgent->new(
         : ()
     );
 $lwp->env_proxy();  # get proxy from environment. Works for both http & https.
+$lwp->agent(qq[SOAP::WSDL $SOAP::WSDL::Expat::WSDLParser::VERSION]);
 
 my $parser = SOAP::WSDL::Expat::WSDLParser->new({
     user_agent => $lwp,
@@ -165,7 +166,7 @@ wsdl2perl.pl - create perl bindings for SOAP webservices.
  NAME            SHORT  DESCRITPION
  ----------------------------------------------------------------------------
  prefix            p   Prefix for all generated classes. If you set "-p=Foo",
-                       you will get "FooAttributes", "FooTypes", 
+                       you will get "FooAttributes", "FooTypes",
 					   "FooElements" and so on.
  attribute_prefix  a   Prefix for XML attribute classes.
                        Default: MyAttributes

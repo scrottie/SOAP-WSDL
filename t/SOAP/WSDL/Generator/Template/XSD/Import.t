@@ -4,7 +4,12 @@ use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
 use diagnostics;
+
 my $path = File::Spec->rel2abs( dirname __FILE__ );
+my ($volume, $dir) = File::Spec->splitpath($path, 1);
+my @dir_from = File::Spec->splitdir($dir);
+unshift @dir_from, $volume if $volume;
+my $url = join '/', @dir_from;
 
 my $HAVE_TEST_WARN =eval { require Test::Warn; };
 
@@ -20,7 +25,7 @@ my $definitions;
 if ($HAVE_TEST_WARN) {
     Test::Warn::warning_like(sub {
         $definitions = $parser->parse_uri(
-                "file://$path/../../../../../acceptance/wsdl/WSDLParser-import.wsdl"
+                "file://$url/../../../../../acceptance/wsdl/WSDLParser-import.wsdl"
             );
         }
         , qr{already \s imported}x
@@ -30,7 +35,7 @@ else {
     local $SIG{__WARN__} = sub {};
     SKIP: { skip 'Cannot test warning without Test::Warn', 1; }
     $definitions = $parser->parse_uri(
-        "file://$path/../../../../../acceptance/wsdl/WSDLParser-import.wsdl"
+        "file://$url/../../../../../acceptance/wsdl/WSDLParser-import.wsdl"
     );
 }
 my $generator = SOAP::WSDL::Generator::Template::XSD->new({
@@ -39,6 +44,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     element_prefix => 'Foo',
     typemap_prefix => 'Foo',
     OUTPUT_PATH => "$path/testlib",
+    silent => 1,
 });
 
 my $code = "";

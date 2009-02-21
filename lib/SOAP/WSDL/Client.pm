@@ -11,7 +11,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
@@ -24,8 +24,10 @@ my %soap_version_of     :ATTR(:get<soap_version>    :init_attr<soap_version> :de
 
 my %on_action_of        :ATTR(:name<on_action>      :default<()>);
 my %content_type_of     :ATTR(:name<content_type>   :default<text/xml; charset=utf-8>);  #/#trick editors
+my %encoding_of         :ATTR(:name<encoding>       :default<utf-8>);
 my %serializer_of       :ATTR(:name<serializer>     :default<()>);
 my %deserializer_of     :ATTR(:name<deserializer>   :default<()>);
+my %deserializer_args_of   :ATTR(:name<deserializer_args>   :default<{}>);
 
 sub BUILD {
     my ($self, $ident, $attrs_of_ref) = @_;
@@ -147,6 +149,7 @@ sub call {
     my $response = $transport->send_receive(
        endpoint => $self->get_endpoint(),
        content_type => $content_type_of{ $ident },
+       encoding => $encoding_of{ $ident },
        envelope => $envelope,
        action => $soap_action,
        # on_receive_chunk => sub {}     # optional, may be used for parsing large responses as they arrive.
@@ -155,8 +158,10 @@ sub call {
     return $response if ($outputxml_of{ $ident } );
 
     # get deserializer
+    use Data::Dumper;
     $deserializer_of{ $ident } ||= SOAP::WSDL::Factory::Deserializer->get_deserializer({
         soap_version => $soap_version_of{ $ident },
+        %{ $deserializer_args_of{ $ident } },
     });
 
     # set class resolver if serializer supports it
@@ -395,9 +400,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 744 $
+ $Rev: 795 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 744 2008-10-15 16:58:45Z kutterma $
+ $Id: Client.pm 795 2009-02-21 00:04:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

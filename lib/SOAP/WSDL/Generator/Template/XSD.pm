@@ -5,15 +5,15 @@ use Class::Std::Fast::Storable;
 use File::Basename;
 use File::Spec;
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
-use SOAP::WSDL::Generator::Visitor::Typelib;
 use SOAP::WSDL::Generator::Template::Plugin::XSD;
 use base qw(SOAP::WSDL::Generator::Template);
 
 my %output_of                   :ATTR(:name<output>         :default<()>);
 my %typemap_of                  :ATTR(:name<typemap>        :default<({})>);
+my %silent_of                   :ATTR(:name<silent>         :default<0>);
 
 sub BUILD {
     my ($self, $ident, $arg_ref) = @_;
@@ -113,7 +113,8 @@ sub _generate_interface {
                         $service,
                         $port,
                 ));
-            print "Creating interface class $output\n";
+            print "Creating interface class $output\n"
+                if not $silent_of{ident $self};
 
             $self->_process($template_name,
             {
@@ -173,7 +174,8 @@ sub generate_typemap {
             my $output = $arg_ref->{ output }
                 ? $arg_ref->{ output }
                 : $self->_generate_filename( $self->get_name_resolver()->create_typemap_name($service) );
-            print "Creating typemap class $output\n";
+            print "Creating typemap class $output\n"
+                if not $silent_of{ident $self};
             $self->_process('Typemap.tt',
             {
                 service => $service,
@@ -205,7 +207,8 @@ sub visit_XSD_Element {
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
         : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($element) );
-    warn "Creating element class $output \n";
+    warn "Creating element class $output \n"
+        if not $silent_of{ ident $self};
     $self->_process('element.tt', { element => $element } , $output);
 }
 
@@ -214,7 +217,8 @@ sub visit_XSD_SimpleType {
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
         : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($type) );
-    warn "Creating simpleType class $output \n";
+    warn "Creating simpleType class $output \n"
+        if not $silent_of{ ident $self};
     $self->_process('simpleType.tt', { simpleType => $type } , $output);
 }
 
@@ -223,8 +227,111 @@ sub visit_XSD_ComplexType {
     my $output = defined $output_of{ ident $self }
         ? $output_of{ ident $self }
         : $self->_generate_filename( $self->get_name_resolver()->create_xsd_name($type) );
-    warn "Creating complexType class $output \n";
+    warn "Creating complexType class $output \n"
+        if not $silent_of{ ident $self};
     $self->_process('complexType.tt', { complexType => $type } , $output);
 }
 
 1;
+
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Generator::Template::XSD - XSD code generator
+
+=head1 DESCRIPTION
+
+SOAP::WSDL's XSD code generator
+
+=head1 SYNOPSIS
+
+See L<wsdl2perl.pl|wsdl2perl.pl> for an example on how to use this class.
+
+=head1 METHODS
+
+=head2 new
+
+Constructor.
+
+Options (Options can also be set via set_OPTION methods):
+
+=over
+
+=item * silent
+
+Suppress warnings about what's being generated
+
+=back
+
+=head2 generate
+
+Shortcut for calling L<generate_typelib> and L<generate_client>
+
+=head2 generate_client
+
+Generates a client interface
+
+=head2 generate_server
+
+Generates a server class
+
+=head2 generate_typelib
+
+Generates type and element classes
+
+=head2 generate_typemap
+
+Generate a typemap class required by SOAP::WSDL's MessageParser
+
+=head2 generate_interface
+
+(Deprecated) alias for generate_client
+
+=head2 get_name_resolver
+
+Returns a name resolver template plugin
+
+=head2 visit_XSD_Attribute
+
+Visitor method for SOAP::WSDL::XSD::Attribute. Should be factored out into
+visitor class.
+
+=head2 visit_XSD_ComplexType
+
+Visitor method for SOAP::WSDL::XSD::ComplexType. Should be factored out into
+visitor class.
+
+=head2 visit_XSD_Element
+
+Visitor method for SOAP::WSDL::XSD::Element. Should be factored out into
+visitor class.
+
+=head2 visit_XSD_SimpleType
+
+Visitor method for SOAP::WSDL::XSD::SimpleType. Should be factored out into
+visitor class.
+
+=head1 AUTHOR
+
+Replace the whitespace by @ for E-Mail Address.
+
+ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2008, 2009 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
+
+=head1 Repository information
+
+ $Id: WSDLParser.pm 770 2009-01-24 22:55:54Z kutterma $
+
+ $LastChangedDate: 2009-01-24 23:55:54 +0100 (Sa, 24 Jan 2009) $
+ $LastChangedRevision: 770 $
+ $LastChangedBy: kutterma $
+
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
+

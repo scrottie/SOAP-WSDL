@@ -6,18 +6,20 @@
 # Note that this shell script requires Devel::CoverX::Covered - if you
 # don't have it, comment out the line noted below
 #
-
-perl -Ilib -It/lib -MTAP::Harness -MFile::Find::Rule -e '
+perl Build.PL && perl Build && \
+perl -MTAP::Harness -MFile::Find::Rule -e '
     local $ENV{TEST_VERBOSE} = 1;
     TAP::Harness->new({
          merge => 1,
-         lib => [ q{t/lib}, q{lib} ],
-         switches => [ q{-MDevel::Cover=-ignore,.,-select,^lib/.+,-coverage,statement,-coverage,subroutine,-coverage,condition,-coverage,branch} ],
+         lib => [ q{t/lib}, q{blib/lib} ],
+         switches => [ q{-MDevel::Cover=-ignore,.,-select,^blib/lib/.+,-coverage,statement,-coverage,subroutine,-coverage,condition,-coverage,branch} ],
     })->runtests( sort { $a cmp $b } File::Find::Rule->file()->name( q{*.t} )->in( q{t/} ) );
 '
 
 # Devel::CoverX::Covered
 # covered runs
 
-cover -coverage="statement" -coverage=condition -coverage=subroutine -coverage="branch"
+cover
+
+# cover -coverage="statement" -coverage=condition -coverage=subroutine -coverage="branch"
 

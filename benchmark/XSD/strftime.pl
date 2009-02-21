@@ -1,8 +1,19 @@
-use Benchmark qw(cmpthese);
+use Benchmark qw(cmpthese timethis timethese);
 use POSIX ();
 use Date::Format ();
 
 my @time_from = localtime;
+
+#use lib '../../lib';
+
+use SOAP::WSDL::XSD::Typelib::Builtin::dateTime;
+
+my $date = SOAP::WSDL::XSD::Typelib::Builtin::dateTime->new();
+timethese 10000, {
+ 'sprintf' =>   sub { $date->set_value('Dec 24 2004 CET'); }
+};
+
+__END__
 
 print "Comparing POSIX::strftime and Date::Format::strftime '%Y-%m-%dT%H:%M:%S%z'\n\n";
 print 'POSIX: ', POSIX::strftime('%Y-%m-%dT%H:%M:%S%z', @time_from), "\n";

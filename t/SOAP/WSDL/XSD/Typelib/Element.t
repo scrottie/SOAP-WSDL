@@ -10,7 +10,7 @@ __PACKAGE__->__set_name('MyElement');
 __PACKAGE__->__set_nillable(1);
 
 package main;
-use Test::More tests => 13;
+use Test::More tests => 18;
 
 my $obj;
 
@@ -34,13 +34,27 @@ is $obj->__get_nillable(), 1;
 $obj->__set_nillable(0);
 is $obj->__get_nillable(), 0;
 
+
 eval { SOAP::WSDL::XSD::Typelib::Element::__get_nillable() };
 like $@, qr{Cannot \s call}xms;
 eval { SOAP::WSDL::XSD::Typelib::Element::__set_nillable() };
 like $@, qr{Cannot \s call}xms;
 
+# useless test for increasing coverage...
+# Stores a value under the key "0" of the element class' private nillable
+# hash.
+#
+# Don't you ever abuse the element's this method for such bad stuff !
+is SOAP::WSDL::XSD::Typelib::Element::__set_nillable(0,0), 0;
+is SOAP::WSDL::XSD::Typelib::Element::__get_nillable(0), 0;
+
+is $obj->start_tag({ name => 'foo'}), '<foo>';
 is $obj->start_tag({empty => 1}), '<MyElement/>';
 is $obj->start_tag({nil => 1}), '', 'empty string with nil option and NILLABLE false';
+
+is $obj->end_tag(), '</MyElement>';
+is $obj->end_tag({ name => 'foo'}), '</foo>';
+
 $obj->set_value('Test');
 
 

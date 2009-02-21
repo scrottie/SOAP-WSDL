@@ -23,6 +23,7 @@ my $generator = SOAP::WSDL::Generator::Template::XSD->new({
     element_prefix => 'Foo',
     typemap_prefix => 'Foo',
     OUTPUT_PATH => "$path/testlib",
+    silent => 1,
 });
 
 my $code = "";

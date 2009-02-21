@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 # child elements
 my %attributeGroup_of   :ATTR(:name<attributeGroup>  :default<[]>);
@@ -14,9 +14,9 @@ my %group_of            :ATTR(:name<group>           :default<[]>);
 my %type_of             :ATTR(:name<type>            :default<[]>);
 
 # attributes
-my %attributeFormDefault_of :ATTR(:name<attributeFormDefault> :default<()>);
+my %attributeFormDefault_of :ATTR(:name<attributeFormDefault> :default<unqualified>);
 my %blockDefault_of         :ATTR(:name<blockDefault>         :default<()>);
-my %elementFormDefault_of   :ATTR(:name<elementFormDefault>   :default<()>);
+my %elementFormDefault_of   :ATTR(:name<elementFormDefault>   :default<unqualified>);
 my %finalDefault_of         :ATTR(:name<finalDefault>         :default<()>);
 my %version_of              :ATTR(:name<version>              :default<()>);
 
@@ -58,6 +58,8 @@ sub find_element {
     my ($self, @args) = @_;
     my @found_at = grep {
         $_->get_targetNamespace() eq $args[0] &&
+#		warn $_->get_name() . " default NS:" . $_->get_xmlns()->{'#default'} . "\n";
+#		$_->get_xmlns()->{'#default'} eq $args[0] &&
         $_->get_name() eq $args[1]
     }
     @{ $element_of{ ident $self } };
@@ -68,6 +70,7 @@ sub find_type {
     my ($self, @args) = @_;
     my @found_at = grep {
         $_->get_targetNamespace() eq $args[0] &&
+#        $_->get_xmlns()->{'#default'} eq $args[0] &&
         $_->get_name() eq $args[1]
     }
     @{ $type_of{ ident $self } };

@@ -45,7 +45,7 @@ SKIP: {
     )
     , q{<SOAP-ENV:Envelope
         xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
-    <SOAP-ENV:Body ><EnqueueMessage xmlns="http://www.example.org/MessageGateway2/"><MMessage>
+    <SOAP-ENV:Body ><EnqueueMessage xmlns="http://www.example.org/Test/"><MMessage xmlns="">
                 <MRecipientURI>mailto:test@example.com</MRecipientURI>
                 <MMessageContent>TestContent for Message</MMessageContent>
     </MMessage></EnqueueMessage></SOAP-ENV:Body></SOAP-ENV:Envelope>}

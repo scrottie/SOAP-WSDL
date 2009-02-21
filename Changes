@@ -1,4 +1,4 @@
-Release notes for SOAP::WSDL 2.00.06
+Release notes for SOAP::WSDL 2.00.07
 -------
 
 I'm proud to present a new release of SOAP::WSDL.
@@ -20,6 +20,7 @@ Features:
     * Efficient documentation
           o SOAP::WSDL::Manual guides you at getting your work done, not at
           the module's internals
+    * Examples in Perl and Java
     * Thorough test suite
           o SOAP::WSDL is heavily regression tested, with a test coverage of
           over 95% (excluding documentation - you wouldn't want to read
@@ -35,6 +36,73 @@ Features:
           o Deserializer plugins via SOAP::WSDL::Factory::Deserializer
 
 The following changes have been made:
+
+2.00.07 - Feb 21 2009
+
+The following features were added (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660924):
+
+   * [ 2621474 ] Add Non-Perl examples / test client / Servers
+   The distribution now includes a Java / Apache CXF example.
+
+   * [ 2585274 ] Create a HTTP::Server::Simple based SOAP Server
+   SOAP::WSDL now ships with a server class to use with HTTP::Server::Simple
+   for testing purposes. See SOAP::WSDL::Server::Simple for details.
+
+   * [ 1911232 ] Allow skipping unknown XML elements
+   See SOAP::WSDL::Manual::Cookbook on how to use this feature
+
+   * [ 2505421 ] include XML attributes in as_hash_ref
+   ComplexTypes now include XML attributes in as_hash_ref's result under the
+   special key "xmlattr".
+   As a side effect, as_hash ref now works for ComplexType objects with a
+   simpleContent content model, too (though the results may be misleading:
+   Their value is included under the hash key "value", the only other
+   possible hash key is "xmlattr").
+
+   * [ 1960062 ] Use POSIX::strftime for date conversion
+   Not really a feature, but a little speedup. The Feature request is
+   obsoleted by resorting to good old sprintf for date formatting.
+   Speeds up set_value in date and dateTime Objects by around 30% for non-
+   XML-formatted strings.
+   As a side effect, dateTime now does not allow setting 0 as date.
+
+The following bugs have been fixed (the numbers in square brackets are the
+tracker IDs from https://sourceforge.net/tracker/?group_id=111978&atid=660921):
+The numbers with # are CPAN RT IDs (http://rt.cpan.org/).
+
+   * [ 2621471 ] SOAP::WSDL::Server sends fault with invalid namespace prefix
+   Faults now use the correct prefix.
+
+   * [ 2560208 ] elementFormDefault always "qualified"
+   SOAP::WSDL now respects the elementFormDefault attribute in embedded
+   XML Schemas.
+
+   * #42049: [PATCH] SOAP::WSDL uses default User-Agent
+   SOAP::WSDL now announces itself as "SOAP::WSDL $VERSION" instead of
+   "libwww/perl $VERSION" in HTTP requests. Note however, that this only
+   applies for wsdl2perl, SOAP::WSDL and SOAP::WSDL::Transport::HTTP.
+   SOAP::Transport HTTP (from the SOAP-Lite distribution) is not affected.
+
+   * [ 2533903 ] Imported schema overwrites existing XML namespace/prefix map
+   Importing a schema which defined the same XML namespace prefix as the
+   importing schema, but with a different URI resulted in having the URI
+   of the associated with the prefix from the imported schema set in the
+   importing schema.
+
+   * #42388 [PATCH] Disabling 'die' in Typemaps
+   Duplicate of [1911232] Allow skipping unknown XML elements - see added
+   features.
+
+   * #42179 Problem deserializing SOAP messages that contain only a simpleType
+   Now the top-level element may consist of a simpleType only, too.
+
+The following uncategorized improvements have been made:
+
+   * Fixed a =back error in element POD generation
+   * Improved test suite
+   * Improved documentation
+   * Improved TEST_COVERAGE to report coverage correctly
 
 2.00.06 - Dec 03 2008
 

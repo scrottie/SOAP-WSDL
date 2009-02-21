@@ -5,7 +5,7 @@
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
   xmlns="http://schemas.xmlsoap.org/wsdl/">
   <types>
-    <xsd:schema targetNamespace="urn:Test">
+    <xsd:schema targetNamespace="urn:Test" xmlns="urn:Test">
       <xsd:element name="TestElement" type="xsd:string" />
       <xsd:complexType name="testComplexTypeRef">
         <xsd:annotation>

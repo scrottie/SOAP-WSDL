@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package TestResolver;
 sub get_typemap { {} };
-
+sub get_class {};
 package main;
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use SOAP::WSDL::Deserializer::XSD;
 
@@ -28,3 +28,12 @@ isa_ok $obj->deserialize('<Envelope xmlns="huchmampf"></Envelope>'), 'SOAP::WSDL
 is $obj->deserialize('<SOAP-ENV:Envelope
         xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Body ></SOAP-ENV:Body></SOAP-ENV:Envelope>'), undef, 'Deserialize empty envelope';
+
+is $obj->get_strict(), 1;
+$obj->set_strict(0);
+
+is $obj->deserialize('<SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
+    <SOAP-ENV:Body ><foo></foo></SOAP-ENV:Body></SOAP-ENV:Envelope>'),
+    undef,
+    'Deserialize envelope with unknown element with strict disabled';

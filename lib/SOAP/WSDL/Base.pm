@@ -5,7 +5,7 @@ use List::Util;
 use Scalar::Util;
 use Carp qw(croak carp confess);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 my %id_of               :ATTR(:name<id> :default<()>);
 my %lang_of             :ATTR(:name<lang> :default<()>);
@@ -13,7 +13,7 @@ my %name_of             :ATTR(:name<name> :default<()>);
 my %namespace_of        :ATTR(:name<namespace> :default<()>);
 my %documentation_of    :ATTR(:name<documentation> :default<()>);
 my %annotation_of       :ATTR(:name<annotation> :default<()>);
-my %targetNamespace_of  :ATTR(:name<targetNamespace> :default<()>);
+my %targetNamespace_of  :ATTR(:name<targetNamespace> :default<"">);
 my %xmlns_of            :ATTR(:name<xmlns> :default<{}>);
 my %parent_of           :ATTR(:get<parent> :default<()>);
 
@@ -166,6 +166,13 @@ sub expand {
 }
 sub _expand;
 *_expand = \&expand;
+
+sub schema {
+    my $parent = $_[0]->get_parent();
+    return if ! defined $parent;
+    return $parent if $parent->isa('SOAP::WSDL::XSD::Schema');
+    return $parent->schema();
+}
 
 1;
 

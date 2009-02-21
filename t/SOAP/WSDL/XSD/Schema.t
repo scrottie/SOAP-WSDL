@@ -9,15 +9,17 @@ my $obj = SOAP::WSDL::XSD::Schema->new({
     element => [
         SOAP::WSDL::XSD::Element->new({
             name => 'foo',
-            targetNamespace => 'bar',
+            xmlns => { '#default' => 'bar' },
         }),
         SOAP::WSDL::XSD::Element->new({
             name => 'foo',
             targetNamespace => 'baz',
+            xmlns => { '#default' => 'baz' },
         }),
         SOAP::WSDL::XSD::Element->new({
             name => 'foobar',
             targetNamespace => 'bar',
+            xmlns => { '#default' => 'bar' },
         }),
     ]
 });

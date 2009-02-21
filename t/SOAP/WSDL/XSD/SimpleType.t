@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 use_ok qw(SOAP::WSDL::XSD::SimpleType);
 
@@ -31,3 +31,5 @@ is $obj->serialize('Foo', 'Foobar'), '<Foo>Foobar</Foo>';
 # TODO die on non-serializable content...
 $obj->set_flavor('');
 is $obj->serialize('Foo', 'Foobar'), '';
+
+ok eval { $obj->set_restriction({ LocalName => 'bar'}, { LocalName => 'base', Value => 'string' }); 1; };

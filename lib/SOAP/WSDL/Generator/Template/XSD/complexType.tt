@@ -8,6 +8,10 @@ use warnings;
 # may be sub-packages...
 #-%]
 
+__PACKAGE__->_set_element_form_qualified([%-
+    IF complexType.schema.get_elementFormDefault == 'qualified'
+    -%]1[% ELSE %]0[% END %]);
+
 [% INCLUDE complexType/contentModel.tt %]
 
 1;

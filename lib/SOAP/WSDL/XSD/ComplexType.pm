@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.06');
+use version; our $VERSION = qv('2.00.07');
 
 # id provided by Base
 # name provided by Base
@@ -87,12 +87,10 @@ sub serialize {
     my $variety = $self->get_variety();
     my $xml = ($opt->{ readable }) ? $opt->{ indent } : q{};    # add indentation
 
-
     if ( $opt->{ qualify } ) {
         $opt->{ attributes } = [ ' xmlns="' . $self->get_targetNamespace .'"' ];
         delete $opt->{ qualify };
     }
-
 
     $xml .= join q{ } , "<$name" , @{ $opt->{ attributes } };
     delete $opt->{ attributes };                                # don't propagate...
@@ -108,6 +106,13 @@ sub serialize {
     }
     $xml .= '>';
     $xml .= "\n" if ( $opt->{ readable } );                 # add linebreak
+
+    if ($self->schema) {
+        if ($self->schema()->get_elementFormDefault() ne "qualified") {
+            push @{$opt->{ attributes } }, q{xmlns=""}
+                if ($self->get_targetNamespace() ne "");
+        }
+    }
     if ( ($variety eq "sequence") or ($variety eq "all") ) {
         $opt->{ indent } .= "\t";
         for my $element (@{ $self->get_element() }) {

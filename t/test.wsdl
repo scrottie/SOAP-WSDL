@@ -7,9 +7,12 @@
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 >
         <types>
-                <xsd:schema targetNamespace="urn:myNamespace">
+                <xsd:schema
+                xmlns="urn:myNamespace"
+                targetNamespace="urn:myNamespace"
+                elementFormDefault="qualified" attributeFormDefault="qualified">
           <xsd:simpleType name="testSimpleType1">
-			<xsd:restriction base="int">
+			<xsd:restriction base="xsd:int">
 				<xsd:enumeration value="1"/>
 				<xsd:enumeration value="2"/>
 				<xsd:enumeration value="3"/>
@@ -22,7 +25,7 @@
 				SimpleType Test
 				</xsd:documentation>
 			</xsd:annotation>
-			<xsd:list itemType="int">
+			<xsd:list itemType="xsd:int">
 			</xsd:list>
 		</xsd:simpleType>
 		<xsd:simpleType name="testSimpleUnion">
@@ -31,7 +34,7 @@
 				SimpleType Union test
 				</xsd:documentation>
 			</xsd:annotation>
-			<xsd:union memberTypes="int float">
+			<xsd:union memberTypes="xsd:int xsd:float">
 			</xsd:union>
 		</xsd:simpleType>
                 <xsd:complexType name="length3">
@@ -58,30 +61,30 @@
 
                 <xsd:element name="TestElement" type="xsd:int"/>
                 <xsd:element name="TestElementComplexType" type="tns:length3"/>
-                <xsd:simpleType name="testSimpleType1">
-                        <xsd:restriction base="int">
+                <xsd:simpleType name="testSimpleType2">
+                        <xsd:restriction base="xsd:int">
                                 <xsd:enumeration value="1"/>
                                 <xsd:enumeration value="2"/>
                                 <xsd:enumeration value="3"/>
                         </xsd:restriction>
                 </xsd:simpleType>
 
-                <xsd:simpleType name="testSimpleList">
+                <xsd:simpleType name="testSimpleList2">
                         <xsd:annotation>
                                 <xsd:documentation>
                                 SimpleType Test
                                 </xsd:documentation>
                         </xsd:annotation>
-                        <xsd:list itemType="int">
+                        <xsd:list itemType="xsd:int">
                         </xsd:list>
                 </xsd:simpleType>
-                <xsd:simpleType name="testSimpleUnion">
+                <xsd:simpleType name="testSimpleUnion2">
                         <xsd:annotation>
                                 <xsd:documentation>
                                 SimpleType Union test
                                 </xsd:documentation>
                         </xsd:annotation>
-                        <xsd:union memberTypes="int float">
+                        <xsd:union memberTypes="xsd:int xsd:float">
                         </xsd:union>
                 </xsd:simpleType>
                 </xsd:schema>
@@ -137,8 +140,8 @@
         </portType>
 
         <binding type="tns:testPort" name="testBinding">
-        <operation name="test">
-                <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        	<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+	        <operation name="test">
                 <soap:operation soapAction="test"/>
                 <input>
                     <soap:body use="literal"/>

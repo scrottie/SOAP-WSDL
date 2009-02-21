@@ -37,13 +37,21 @@ sub set_value {
         @time_from = map { (! defined $_) ? 0 : $_ } @time_from;
 #        use Data::Dumper;
 #        warn Dumper \@time_from, sprintf('%+03d%02d', $time_from[6] / 3600, $time_from[6] % 60 );
-        my $time_str = defined $time_zone_seconds
-          ? strftime( '%Y-%m-%d', @time_from )
-            . sprintf('%+03d%02d', int($time_from[6] / 3600), int ( ($time_from[6] % 3600) / 60 ) )
-          : do {
-              strftime( '%Y-%m-%d%z', @time_from );
-          };
-        substr $time_str, -2, 0, ':';
+        my $time_str;
+        if (defined $time_zone_seconds) {
+            $time_str = sprintf('%04d-%02d-%02d%+03d:%02d', $time_from[5]+1900, $time_from[4]+1, $time_from[3], int($time_from[6] / 3600), int($time_from[6] % 3600) / 60);
+        }
+        else {
+            $time_str = strftime( '%Y-%m-%d%z', @time_from );
+            substr $time_str, -2, 0, ':';
+        }
+
+#          ? strftime( '%Y-%m-%d', @time_from )
+#            . sprintf('%+03d%02d', int($time_from[6] / 3600), int ( ($time_from[6] % 3600) / 60 ) )
+#          : do {
+#              strftime( '%Y-%m-%d%z', @time_from );
+#          };
+#        substr $time_str, -2, 0, ':';
         $_[0]->SUPER::set_value($time_str);
     }
 }

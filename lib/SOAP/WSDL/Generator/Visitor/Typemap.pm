@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Generator::Visitor);
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
 my %path_of             :ATTR(:name<path>           :default<[]>);
 my %typemap_of          :ATTR(:name<typemap>        :default<()>);
@@ -182,3 +182,39 @@ sub visit_XSD_ComplexType {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+SOAP::WSDL::Generator::Visitor::Typemap - Visitor class for generating typemaps
+
+=head1 DESCRIPTION
+
+Visitor used by SOAP::WSDL's XSD generator for creating typemaps
+
+=head1 AUTHOR
+
+Replace the whitespace by @ for E-Mail Address.
+
+ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2008, 2009 Martin Kutter.
+
+This file is part of SOAP-WSDL. You may distribute/modify it under
+the same terms as perl itself
+
+=head1 Repository information
+
+ $Id: WSDLParser.pm 770 2009-01-24 22:55:54Z kutterma $
+
+ $LastChangedDate: 2009-01-24 23:55:54 +0100 (Sa, 24 Jan 2009) $
+ $LastChangedRevision: 770 $
+ $LastChangedBy: kutterma $
+
+ $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Expat/WSDLParser.pm $
+

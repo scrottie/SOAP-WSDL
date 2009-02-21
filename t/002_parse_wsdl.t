@@ -165,7 +165,7 @@ like $@, qr{unbound}, 'Die on attempt to resolve unbound prefix';
 
 my $complex = $types->find_type( 'urn:myNamespace', 'complex');
 
-ok $complex->find_element('urn:myNamespace', 'length'), 'Find element in complexType';
+ok $complex->find_element('', 'length'), 'Find unqualified element in complexType';
 ok ! $complex->find_element('urn:myNamespace', 'FOO'), 'Find element in complexType';
 
 eval { $complex->foo() };
@@ -191,7 +191,9 @@ sub xml
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 >
         <types>
-                <xsd:schema targetNamespace="urn:myNamespace">
+                <xsd:schema 
+                	xmlns="urn:myNamespace"
+                	targetNamespace="urn:myNamespace" elementFormDefault="unqualified" attributeFormDefault="qualified">
                 <xsd:complexType name="length3">
                          <xsd:all>
                                   <xsd:element name="size" type="xsd:nonPositiveInteger"/>

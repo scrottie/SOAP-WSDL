@@ -5,7 +5,7 @@
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns="http://schemas.xmlsoap.org/wsdl/">
     <types>
-        <xsd:schema targetNamespace="urn:Test">
+        <xsd:schema targetNamespace="urn:Test" elementFormDefault="qualified" xmlns="urn:Test">
             <xsd:simpleType name="test-SimpleTypeList">
                 <xsd:annotation>
                     <xsd:documentation>
@@ -63,10 +63,10 @@
                 <xsd:annotation>
                     <xsd:documentation>ComplexType Test</xsd:documentation>
                 </xsd:annotation>
-                <xsd:all>
+                <xsd:sequence>
                     <xsd:element name="Test-1" type="xsd:string" />
                     <xsd:element name="Test-2" type="xsd:string" minOccurs="1" />
-                </xsd:all>
+                </xsd:sequence>
             </xsd:complexType>
 
             <xsd:complexType name="testComplexTypeRestriction">
@@ -93,13 +93,13 @@
                 </xsd:annotation>
                 <xsd:complexContent>
                     <xsd:extension base="tns:testComplexTypeAll">
-                        <xsd:all>
+                        <xsd:sequence>
                             <xsd:element name="Test1" type="xsd:string" />
                             <xsd:element name="Test2" type="xsd:string"
                                 minOccurs="1" />
                             <xsd:element name="Test3" type="xsd:string"
                                 minOccurs="1" />
-                        </xsd:all>
+                        </xsd:sequence>
                     </xsd:extension>
                 </xsd:complexContent>
             </xsd:complexType>

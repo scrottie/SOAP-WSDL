@@ -8,18 +8,19 @@ use lib '/home/martin/workspace/SOAP-WSDL_XS/blib/lib';
 use lib '/home/martin/workspace/SOAP-WSDL_XS/blib/arch';
 use Data::Dumper;
 use SOAP::Lite;
+use XML::Compile::SOAP11;
 use XML::Compile::WSDL11;
 use XML::Compile::Transport::SOAPHTTP;
 use MyInterfaces::HelloWorld::HelloWorldSoap;
-use SOAP::WSDL::Deserializer::XSD_XS;
+#use SOAP::WSDL::Deserializer::XSD_XS;
 use Benchmark qw(cmpthese timethese);
 
 use SOAP::WSDL::Transport::HTTP;
 use SOAP::WSDL::Factory::Transport;
 SOAP::WSDL::Factory::Transport->register('http', 'SOAP::WSDL::Transport::HTTP');
 
-#my $proxy = 'http://localhost:81/soap-wsdl-test/helloworld.pl';
-my $proxy = 'http://localhost:81/soap-wsdl-test/helloworld';
+my $proxy = 'http://localhost:81/soap-wsdl-test/helloworld.pl';
+#my $proxy = 'http://localhost:81/soap-wsdl-test/helloworld';
 
 my $lite = SOAP::Lite->new(
     proxy => $proxy
@@ -35,7 +36,7 @@ my $soap = MyInterfaces::HelloWorld::HelloWorldSoap->new({
 my $soap_xs = MyInterfaces::HelloWorld::HelloWorldSoap->new({
 	proxy => $proxy,
 });
-$soap_xs->set_deserializer( SOAP::WSDL::Deserializer::XSD_XS->new() );
+#$soap_xs->set_deserializer( SOAP::WSDL::Deserializer::XSD_XS->new() );
 
 my @result = ();;
 
@@ -81,11 +82,11 @@ sub lite_bench {
 compile_bench();
 lite_bench();
 wsdl_bench();
-wsdl_xs_bench();
+#wsdl_xs_bench();
 
 timethese 150, {
     'SOAP::WSDL' => \&wsdl_bench,
-    'SOAP::WSDL_XS' => \&wsdl_xs_bench,
+#    'SOAP::WSDL_XS' => \&wsdl_xs_bench,
     'XML::Compile' => \&compile_bench,
     'SOAP::Lite' => \&lite_bench,
 };

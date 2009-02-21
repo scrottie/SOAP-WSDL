@@ -55,7 +55,7 @@ else {                  # we are outside t/
     |SOAP::WSDL::XSD::Pattern
     |SOAP::WSDL::XSD::SimpleType
     |SOAP::WSDL::XSD::TotalDigits
-    |SOAP::WSDL::XSD::Whitespace
+    |SOAP::WSDL::XSD::WhiteSpace
     |SOAP::WSDL::XSD::Typelib::Attribute
     |SOAP::WSDL::XSD::Typelib::AttributeSet
     ) \z }xms; } all_modules( @dirs );

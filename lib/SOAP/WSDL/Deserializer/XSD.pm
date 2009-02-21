@@ -5,25 +5,34 @@ use Class::Std::Fast::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.05');
+use version; our $VERSION = qv('2.00.07');
 
-my %class_resolver_of :ATTR(:name<class_resolver> :default<()>);
+my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
+my %strict_of           :ATTR(:get<strict> :init_arg<strict> :default<1>);
+my %parser_of           :ATTR();
 
-my %parser_of :ATTR();
+sub set_strict {
+    undef $parser_of{${$_[0]}};
+    $strict_of{${$_[0]}} = $_[1];
+}
 
 sub BUILD {
     my ($self, $ident, $args_of_ref) = @_;
 
     # ignore all options except 'class_resolver'
     for (keys %{ $args_of_ref }) {
-        delete $args_of_ref->{ $_ } if $_ ne 'class_resolver';
+        next if $_ eq 'strict';
+        next if $_ eq 'class_resolver';
+        delete $args_of_ref->{ $_ };
     }
 }
 
 sub deserialize {
     my ($self, $content) = @_;
 
-    $parser_of{ ${ $self } } = SOAP::WSDL::Expat::MessageParser->new()
+    $parser_of{ ${ $self } } = SOAP::WSDL::Expat::MessageParser->new({
+        strict => $strict_of{ ${ $self } }
+    })
         if not $parser_of{ ${ $self } };
     $parser_of{ ${ $self } }->class_resolver( $class_resolver_of{ ${ $self } } );
     eval { $parser_of{ ${ $self } }->parse_string( $content ) };
@@ -75,6 +84,20 @@ SOAP::WSDL.
 If you want to use the XSD serializer from SOAP::WSDL, set the outputtree()
 property and provide a class_resolver.
 
+=head1 OPTIONS
+
+=over
+
+=item * strict
+
+Enables/disables strict XML processing. Strict processing is enabled by
+default. To disable strict XML processing pass the following to the
+constructor or use the C<set_strict> method:
+
+ strict => 0
+
+=back
+
 =head1 METHODS
 
 =head2 deserialize
@@ -85,6 +108,10 @@ Deserializes the message.
 
 Generates a L<SOAP::WSDL::SOAP::Typelib::Fault11|SOAP::WSDL::SOAP::Typelib::Fault11>
 object and returns it.
+
+=head2 set_strict
+
+Enable/disable strict XML parsing. Default is enabled.
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -99,9 +126,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 728 $
+ $Rev: 795 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 728 2008-07-13 19:28:50Z kutterma $
+ $Id: XSD.pm 795 2009-02-21 00:04:29Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
 
 =cut

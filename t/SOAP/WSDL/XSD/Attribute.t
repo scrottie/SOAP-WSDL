@@ -8,7 +8,8 @@ use SOAP::WSDL::Expat::WSDLParser;
 my $parser = SOAP::WSDL::Expat::WSDLParser->new();
 
 my $xml = q{<s:schema elementFormDefault="qualified"
-            targetNamespace="urn:HelloWorld" xmlns:s="http://www.w3.org/2001/XMLSchema">
+            targetNamespace="urn:HelloWorld" 
+            xmlns="urn:HelloWorld" xmlns:s="http://www.w3.org/2001/XMLSchema">
             <s:element name="sayHello">
                 <s:complexType>
                     <s:sequence>
