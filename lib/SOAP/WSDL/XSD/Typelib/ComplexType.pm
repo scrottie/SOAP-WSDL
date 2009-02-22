@@ -10,7 +10,7 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 # remove in 2.1
 our $AS_HASH_REF_WITHOUT_ATTRIBUTES = 0;
@@ -327,7 +327,7 @@ sub _factory {
             # do we have some content
             if (defined $element) {
                 $element = [ $element ] if not ref $element eq 'ARRAY';
-                # from 2.00.07 on $NAMES_OF is filled - use || $_; for
+                # from 2.00.08 on $NAMES_OF is filled - use || $_; for
                 # backward compatibility
                 my $name = $NAMES_OF{$class}->{$_} || $_;
                 my $target_namespace = $_[0]->get_xmlns();
@@ -633,9 +633,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 795 $
+ $Rev: 798 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 795 2009-02-21 00:04:29Z kutterma $
+ $Id: ComplexType.pm 798 2009-02-22 18:44:13Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

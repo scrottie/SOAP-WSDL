@@ -2,7 +2,7 @@ package SOAP::WSDL::XSD::Typelib::Element;
 use strict; use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 my %NAME;
 my %NILLABLE;
@@ -177,9 +177,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 795 $
+ $Rev: 798 $
  $LastChangedBy: kutterma $
- $Id: Element.pm 795 2009-02-21 00:04:29Z kutterma $
+ $Id: Element.pm 798 2009-02-22 18:44:13Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/Element.pm $
 
 =cut

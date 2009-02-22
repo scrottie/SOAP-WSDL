@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 3;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -13,7 +13,6 @@ my $url = join '/', @dir_from;
 
 my $HAVE_TEST_WARN =eval { require Test::Warn; };
 
-use_ok qw(SOAP::WSDL::Generator::Visitor::Typelib);
 use_ok qw(SOAP::WSDL::Generator::Template::XSD);
 
 use SOAP::WSDL::Expat::WSDLParser;

@@ -1,11 +1,10 @@
-use Test::More tests => 71;
+use Test::More tests => 70;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
 use diagnostics;
 my $path = File::Spec->rel2abs( dirname __FILE__ );
 
-use_ok qw(SOAP::WSDL::Generator::Visitor::Typelib);
 use_ok qw(SOAP::WSDL::Generator::Template::XSD);
 
 use SOAP::WSDL::Expat::WSDLParser;

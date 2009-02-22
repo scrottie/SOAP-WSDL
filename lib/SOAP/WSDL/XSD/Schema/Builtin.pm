@@ -6,7 +6,7 @@ use SOAP::WSDL::XSD::Schema;
 use SOAP::WSDL::XSD::Builtin;
 use base qw(SOAP::WSDL::XSD::Schema);
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 # all builtin types - add validation (e.g. content restrictions) later...
 my %BUILTINS = (
@@ -103,9 +103,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 795 $
+ $Rev: 798 $
  $LastChangedBy: kutterma $
- $Id: Builtin.pm 795 2009-02-21 00:04:29Z kutterma $
+ $Id: Builtin.pm 798 2009-02-22 18:44:13Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Schema/Builtin.pm $
 
 =cut

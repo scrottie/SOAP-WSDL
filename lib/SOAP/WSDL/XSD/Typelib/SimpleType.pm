@@ -2,14 +2,14 @@ package SOAP::WSDL::XSD::Typelib::SimpleType;
 use strict; use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 package SOAP::WSDL::XSD::Typelib::SimpleType::restriction;
 use strict;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use base qw(SOAP::WSDL::XSD::Typelib::SimpleType);
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 1;
 __END__
@@ -132,9 +132,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 795 $
+ $Rev: 798 $
  $LastChangedBy: kutterma $
- $Id: SimpleType.pm 795 2009-02-21 00:04:29Z kutterma $
+ $Id: SimpleType.pm 798 2009-02-22 18:44:13Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/SimpleType.pm $
 
 =cut

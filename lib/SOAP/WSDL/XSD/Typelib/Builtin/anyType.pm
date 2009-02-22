@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' };
 

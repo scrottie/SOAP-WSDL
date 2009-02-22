@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 3;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -18,7 +18,6 @@ my $HAVE_TEST_XML = eval {
     1;
 };
 
-use_ok qw(SOAP::WSDL::Generator::Visitor::Typelib);
 use_ok qw(SOAP::WSDL::Generator::Template::XSD);
 
 use SOAP::WSDL::Expat::WSDLParser;

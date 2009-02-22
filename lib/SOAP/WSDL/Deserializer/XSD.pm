@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.07');
+use version; our $VERSION = qv('2.00.08');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %strict_of           :ATTR(:get<strict> :init_arg<strict> :default<1>);
@@ -126,9 +126,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 795 $
+ $Rev: 798 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 795 2009-02-21 00:04:29Z kutterma $
+ $Id: XSD.pm 798 2009-02-22 18:44:13Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
 
 =cut
