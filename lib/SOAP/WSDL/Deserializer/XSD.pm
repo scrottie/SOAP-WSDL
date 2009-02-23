@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use SOAP::WSDL::SOAP::Typelib::Fault11;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.08');
+use version; our $VERSION = qv('2.00.09');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %strict_of           :ATTR(:get<strict> :init_arg<strict> :default<1>);
@@ -38,7 +38,7 @@ sub deserialize {
     eval { $parser_of{ ${ $self } }->parse_string( $content ) };
     if ($@) {
         return $self->generate_fault({
-            code => 'soap:Server',
+            code => 'SOAP-ENV:Server',
             role => 'urn:localhost',
             message => "Error deserializing message: $@. \n"
                 . "Message was: \n$content"
@@ -50,7 +50,7 @@ sub deserialize {
 sub generate_fault {
     my ($self, $args_from_ref) = @_;
     return SOAP::WSDL::SOAP::Typelib::Fault11->new({
-            faultcode => $args_from_ref->{ code } || 'soap:Client',
+            faultcode => $args_from_ref->{ code } || 'SOAP-ENV:Client',
             faultactor => $args_from_ref->{ role } || 'urn:localhost',
             faultstring => $args_from_ref->{ message } || "Unknown error"
     });
@@ -126,9 +126,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 798 $
+ $Rev: 805 $
  $LastChangedBy: kutterma $
- $Id: XSD.pm 798 2009-02-22 18:44:13Z kutterma $
+ $Id: XSD.pm 805 2009-02-23 21:12:24Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/XSD.pm $
 
 =cut

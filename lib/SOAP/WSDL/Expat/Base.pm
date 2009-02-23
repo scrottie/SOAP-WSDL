@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 
 # TODO: convert to Class::Std::Fast based class - hash based classes suck.
 
-use version; our $VERSION = qv('2.00.08');
+use version; our $VERSION = qv('2.00.09');
 
 sub new {
     my ($class, $arg_ref) = @_;

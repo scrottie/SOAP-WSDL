@@ -43,6 +43,6 @@ $fault = $deserializer->deserialize('');
 
 isa_ok $fault, 'SOAP::Fault';
 
-is $fault->faultactor(),    'soap:Server';
+is $fault->faultactor(),    'SOAP-ENV:Server';
 like $fault->faultstring(), qr{no \s element \s found}x;
 

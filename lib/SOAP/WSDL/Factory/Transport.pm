@@ -1,7 +1,7 @@
 package SOAP::WSDL::Factory::Transport;
 use strict;
 use warnings;
-use version; our $VERSION = qv('2.00.08');
+use version; our $VERSION = qv('2.00.09');
 
 my %registered_transport_of = ();
 
@@ -243,9 +243,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 798 $
+ $Rev: 805 $
  $LastChangedBy: kutterma $
- $Id: Transport.pm 798 2009-02-22 18:44:13Z kutterma $
+ $Id: Transport.pm 805 2009-02-23 21:12:24Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Factory/Transport.pm $
 
 =cut

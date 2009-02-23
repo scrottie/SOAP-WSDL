@@ -2,7 +2,7 @@ package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.00.08');
+use version; our $VERSION = qv('2.00.09');
 our @ISA;
 
 eval {
@@ -18,7 +18,7 @@ sub deserialize {
     my $result = eval { $self->SUPER::deserialize(@_) };
     if ($@) {
         return SOAP::Fault->new(
-            faultactor => 'soap:Server',
+            faultactor => 'SOAP-ENV:Server',
             faultstring => $@,
         );
     }
@@ -140,9 +140,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 798 $
+ $Rev: 805 $
  $LastChangedBy: kutterma $
- $Id: SOM.pm 798 2009-02-22 18:44:13Z kutterma $
+ $Id: SOM.pm 805 2009-02-23 21:12:24Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/SOM.pm $
 
 =cut

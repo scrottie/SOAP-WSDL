@@ -20,7 +20,7 @@ my $fault = $obj->generate_fault();
 
 is $fault->get_faultstring(), 'Unknown error';
 is $fault->get_faultactor(), 'urn:localhost';
-is $fault->get_faultcode(), 'soap:Client';
+is $fault->get_faultcode(), 'SOAP-ENV:Client';
 
 isa_ok $obj->deserialize('rubbeldiekatz'), 'SOAP::WSDL::SOAP::Typelib::Fault11';
 isa_ok $obj->deserialize('<zumsel></zumsel>'), 'SOAP::WSDL::SOAP::Typelib::Fault11';

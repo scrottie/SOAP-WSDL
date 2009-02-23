@@ -8,7 +8,7 @@ use SOAP::WSDL::Expat::Message2Hash;
 use SOAP::WSDL::Factory::Deserializer;
 SOAP::WSDL::Factory::Deserializer->register( '1.1', __PACKAGE__ );
 
-use version; our $VERSION = qv('2.00.08');
+use version; our $VERSION = qv('2.00.09');
 
 sub BUILD {
     my ($self, $ident, $args_of_ref) = @_;
@@ -38,7 +38,7 @@ sub deserialize {
 sub generate_fault {
     my ($self, $args_from_ref) = @_;
     return SOAP::WSDL::SOAP::Typelib::Fault11->new({
-            faultcode => $args_from_ref->{ code } || 'soap:Client',
+            faultcode => $args_from_ref->{ code } || 'SOAP-ENV:Client',
             faultactor => $args_from_ref->{ role } || 'urn:localhost',
             faultstring => $args_from_ref->{ message } || "Unknown error"
     });
@@ -163,9 +163,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 798 $
+ $Rev: 805 $
  $LastChangedBy: kutterma $
- $Id: Hash.pm 798 2009-02-22 18:44:13Z kutterma $
+ $Id: Hash.pm 805 2009-02-23 21:12:24Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/Hash.pm $
 
 =cut

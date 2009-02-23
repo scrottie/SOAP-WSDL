@@ -1,11 +1,11 @@
 package SOAP::WSDL::Generator::Template::XSD;
 use strict; use warnings;
-use Template;
+use Template 2.18;
 use Class::Std::Fast::Storable;
 use File::Basename;
 use File::Spec;
 
-use version; our $VERSION = qv('2.00.08');
+use version; our $VERSION = qv('2.00.09');
 
 use SOAP::WSDL::Generator::Visitor::Typemap;
 use SOAP::WSDL::Generator::Template::Plugin::XSD;
