@@ -11,7 +11,7 @@ use SOAP::WSDL::Factory::Serializer;
 use SOAP::WSDL::Factory::Transport;
 use SOAP::WSDL::Expat::MessageParser;
 
-use version; our $VERSION = qv('2.00.09');
+use version; our $VERSION = qv('2.00.10');
 
 my %class_resolver_of   :ATTR(:name<class_resolver> :default<()>);
 my %no_dispatch_of      :ATTR(:name<no_dispatch>    :default<()>);
@@ -171,20 +171,29 @@ sub call {
     # Try deserializing response - there may be some,
     # even if transport did not succeed (got a 500 response)
     if ( $response ) {
-        my ($result_body, $result_header) = eval {
-            $deserializer_of{ $ident }->deserialize( $response );
+        # as our faults are false, returning a success marker is the only
+        # reliable way of determining whether the deserializer succeeded.
+        # Custom deserializers may return an empty list, or undef,
+        # and $@ is not guaranteed to be undefined.
+        my ($success, $result_body, $result_header) = eval {
+            (1, $deserializer_of{ $ident }->deserialize( $response ));
         };
-        if (not $@) {
+        if (defined $success) {
             return wantarray
                 ? ($result_body, $result_header)
                 : $result_body;
         }
-        return $deserializer_of{ $ident }->generate_fault({
-            code => 'soap:Server',
-            role => 'urn:localhost',
-            message => "Error deserializing message: $@. \n"
-                . "Message was: \n$response"
-        });
+        elsif (blessed $@) { #}&& $@->isa('SOAP::WSDL::SOAP::Typelib::Fault11')) {
+            return $@;
+        }
+        else {
+            return $deserializer_of{ $ident }->generate_fault({
+                code => 'soap:Server',
+                role => 'urn:localhost',
+                message => "Error deserializing message: $@. \n"
+                    . "Message was: \n$response"
+            });
+        }
     };
 
     # if we had no success (Transport layer error status code)
@@ -400,9 +409,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 805 $
+ $Rev: 851 $
  $LastChangedBy: kutterma $
- $Id: Client.pm 805 2009-02-23 21:12:24Z kutterma $
+ $Id: Client.pm 851 2009-05-15 22:45:18Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Client.pm $
 
 =cut

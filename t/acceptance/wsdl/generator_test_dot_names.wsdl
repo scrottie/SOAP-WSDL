@@ -104,7 +104,7 @@
                 </xsd:complexContent>
             </xsd:complexType>
 
-            <xsd:complexType name="testComplexTypeChoice">
+            <xsd:complexType name="test.ComplexTypeChoice">
                 <xsd:annotation>
                     <xsd:documentation>ComplexType Test</xsd:documentation>
                 </xsd:annotation>
@@ -179,14 +179,14 @@
 
             <xsd:element name="Header" type="tns:testComplexTypeSequence" />
             <xsd:element name="testHeader" type="tns:testComplexTypeSequence" />
-            <xsd:element name="testChoice" type="tns:testComplexTypeChoice" />
+            <xsd:element name="test.Choice" type="tns:test.ComplexTypeChoice" />
 
 
-            <xsd:complexType name="testComplexTypeElementAtomicSimpleType">
+            <xsd:complexType name="test.ComplexTypeElementAtomicSimpleType">
                 <xsd:sequence>
                     <xsd:element name="testString" type="xsd:string"
                         minOccurs="0" />
-                    <xsd:element name="testAtomicSimpleTypeElement"
+                    <xsd:element name="test.AtomicSimpleTypeElement"
                         minOccurs="0">
                         <xsd:simpleType>
                             <xsd:restriction base="xsd:decimal">
@@ -209,7 +209,7 @@
         </xsd:schema>
     </types>
     <message name="testChoice">
-        <part name="parameters" element="tns:testChoice" />
+        <part name="parameters" element="tns:test.Choice" />
     </message>
     <message name="testRequest">
         <part name="testAll" element="tns:testElementString" />
@@ -219,7 +219,7 @@
     </message>
     <message name="testMultiPartWarning">
         <part name="testAll" element="tns:testElementString" />
-        <part name="parameters" element="tns:testChoice" />
+        <part name="parameters" element="tns:test.Choice" />
     </message>
     <message name="testHeaderRequest">
         <part name="testBody" element="tns:testHeader" />

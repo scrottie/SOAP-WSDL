@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('2.00.09');
+use version; our $VERSION = qv('2.00.10');
 
 my %style_of :ATTR(:name<style> :default<()>);
 my %soapAction_of :ATTR(:name<soapAction> :default<()>);

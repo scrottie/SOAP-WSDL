@@ -10,7 +10,7 @@ require Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-use version; our $VERSION = qv('2.00.09');
+use version; our $VERSION = qv('2.00.10');
 
 # remove in 2.1
 our $AS_HASH_REF_WITHOUT_ATTRIBUTES = 0;
@@ -23,7 +23,10 @@ my %NAMES_OF;           # XML names of elements in a class
 
 
 # XML Attribute handling
-my %xml_attr_of :ATTR();
+my %xml_attr_of     :ATTR();
+
+# Namespace handling
+my %xmlns_of        :ATTR();
 
 # don't you ever dare to use this !
 our $___attributes_of_ref = \%ATTRIBUTES_OF;
@@ -319,6 +322,7 @@ sub _factory {
     *{ "$class\::_serialize" } = sub {
         my $ident = ${ $_[0] };
         my $option_ref = $_[1];
+        
         # return concatenated return value of serialize call of all
         # elements retrieved from get_elements expanding list refs.
         return \join q{} , map {
@@ -327,7 +331,7 @@ sub _factory {
             # do we have some content
             if (defined $element) {
                 $element = [ $element ] if not ref $element eq 'ARRAY';
-                # from 2.00.09 on $NAMES_OF is filled - use || $_; for
+                # from 2.00.10 on $NAMES_OF is filled - use || $_; for
                 # backward compatibility
                 my $name = $NAMES_OF{$class}->{$_} || $_;
                 my $target_namespace = $_[0]->get_xmlns();
@@ -345,19 +349,45 @@ sub _factory {
                     # serialize complextype elments (of other types) with their
                     # serializer, but add element tags around.
                     else {
-                        # TODO: check whether we have to handle
-                        # types from different namespaces special, too
-                        if (!defined $ELEMENT_FORM_QUALIFIED_OF{ $class }
+                        # default for undef is true
+                        if (! defined $ELEMENT_FORM_QUALIFIED_OF{ $class }
                             or $ELEMENT_FORM_QUALIFIED_OF{ $class }
                         ) {
-                            join q{}, $_->start_tag({ name => $name , %{ $option_ref } })
-                                , $_->serialize($option_ref)
-                                , $_->end_tag({ name => $name , %{ $option_ref } });
+                            # handle types from different namespaces
+                            #
+                            # serialize with last namespace put on stack
+                            # if the last namespace is a change from the
+                            # before-last
+                            #
+                            if (
+                                exists $option_ref->{ xmlns_stack } 
+                                && (scalar @{ $option_ref->{ xmlns_stack } } >= 2) 
+                                && ($option_ref->{ xmlns_stack }->[-1] ne $option_ref->{ xmlns_stack }->[-2])) {
+                                # warn "New namespace: ", $option_ref->{ xmlns_stack }->[-1]; 
+                                join q{}, $_->start_tag({ name => $name , 
+                                    xmlns => $option_ref->{ xmlns_stack }->[-1], 
+                                    %{ $option_ref } })
+                                    , $_->serialize($option_ref)
+                                    , $_->end_tag({ name => $name , %{ $option_ref } });
+                            }
+                            else {
+                                join q{}, $_->start_tag({ name => $name , %{ $option_ref } })
+                                    , $_->serialize($option_ref)
+                                    , $_->end_tag({ name => $name , %{ $option_ref } });
+                            }
                         }
                         else {
-                            # remove xmlns option if there is one
-                            my $set_xmlns = delete $option_ref->{xmlns}
-                                if (exists $option_ref->{xmlns});
+                            # in elementFormDefault="unqualified" mode,
+                            # the serialize method has to set
+                            # xmnlns="" on all elements inside a ComplexType
+                            #
+                            # Other serializers usually use prefixes 
+                            # for "unqualified" and just omit all prefixes
+                            # for inner elements 
+                            
+                            # check whether we "had" a xmlns around
+                            my $set_xmlns = delete $option_ref->{xmlns};
+                            
                             # serialize start tag with xmlns="" if out parent
                             # did not do that
                             join q{}, $_->start_tag({
@@ -400,15 +430,23 @@ sub __get_attr_class {};
 sub __serialize_complex {
     # we work on @_ for performance.
     $_[1] ||= {};                                   # $option_ref
-
+    
+    push @{ $_[1]->{ xmlns_stack } }, $_[0]->get_xmlns();
+    
     # get content first (pass by reference to avoid copying)
     my $content_ref = $_[0]->_serialize($_[1]);     # option_ref
+
+    pop @{ $_[1]->{ xmlns_stack } };
 
     # do we have a empty element ?
     return $_[0]->start_tag({ %{ $_[1] }, empty => 1 })
         if not length ${ $content_ref };
 
     return join q{}, $_[0]->start_tag($_[1]), ${ $content_ref }, $_[0]->end_tag();
+}
+
+sub get_xmlns {
+    return q{}
 }
 
 1;
@@ -633,9 +671,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 805 $
+ $Rev: 851 $
  $LastChangedBy: kutterma $
- $Id: ComplexType.pm 805 2009-02-23 21:12:24Z kutterma $
+ $Id: ComplexType.pm 851 2009-05-15 22:45:18Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/XSD/Typelib/ComplexType.pm $
 
 =cut

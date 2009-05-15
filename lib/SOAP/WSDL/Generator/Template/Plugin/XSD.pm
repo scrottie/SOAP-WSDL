@@ -4,7 +4,7 @@ use warnings;
 use Carp qw(confess);
 use Class::Std::Fast::Storable constructor => 'none';
 use Scalar::Util qw(blessed);
-use version; our $VERSION = qv('2.00.09');
+use version; our $VERSION = qv('2.00.10');
 
 my %namespace_prefix_map_of :ATTR(:name<namespace_prefix_map>   :default<{}>);
 my %namespace_map_of        :ATTR(:name<namespace_map>          :default<{}>);
@@ -129,8 +129,10 @@ sub create_subpackage_name {
     my $type        = ref $arg_ref eq 'HASH' ? $arg_ref->{ value } : $arg_ref;
 
     my @name_from = $type->get_name() || (); ;
-    my $parent = $type;
-    my $top_node = $parent;
+
+    # search for top node in tree (the one directly below the Schema)
+	my $parent = $type;
+	my $top_node = $parent;
     if (! $parent->get_parent()->isa('SOAP::WSDL::XSD::Schema') ) {
         NAMES: while ($parent = $parent->get_parent()) {
             $top_node = $parent;
@@ -141,9 +143,13 @@ sub create_subpackage_name {
         }
     }
     # create name for top node
-    die "FOO" if not defined $top_node;
+    die "No top node found" if not defined $top_node;
     my $top_node_name = $self->create_xsd_name($top_node);
     my $package_name = join('::_', $top_node_name , (@name_from) ? join('::', @name_from) : () );
+
+    # replace dots by :: in name - subpackage names may include dots, too
+    $package_name =~s{\.}{::}xg;
+
     return $package_name;
 }
 

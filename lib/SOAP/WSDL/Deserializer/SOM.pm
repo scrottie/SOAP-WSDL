@@ -2,7 +2,7 @@ package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.00.09');
+use version; our $VERSION = qv('2.00.10');
 our @ISA;
 
 eval {
@@ -140,9 +140,9 @@ Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 805 $
+ $Rev: 851 $
  $LastChangedBy: kutterma $
- $Id: SOM.pm 805 2009-02-23 21:12:24Z kutterma $
+ $Id: SOM.pm 851 2009-05-15 22:45:18Z kutterma $
  $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL/Deserializer/SOM.pm $
 
 =cut

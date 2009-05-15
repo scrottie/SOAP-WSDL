@@ -32,14 +32,27 @@ this backend:
 
 =head3 Accessing HTTP(S) webservices protected by NTLM authentication
 
+If you want to connect to a windows server using some Windows Domain Login, please
+consider using Kerberos instead of the (older) NTLM mechanism - see below.
+
+Kerberos and NTLM are (currently) mutually exclusive - when LWP::Authen::Negotiate
+is installed, it will always be queried (and will always raise an error), even
+if you don't want to use it. See http://rt.cpan.org/Public/Bug/Display.html?id=32826 
+for details. 
+
 You need the L<NTLM|NTLM> distribution installed to access webservices protected
 by NTLM authentication. More specifically, you need the Authen::NTLM module
 from this distribution. Note that this is different from the Authen::NTML
 distribution by Yee Man Chan also available from CPAN.
 
-Your user credentials usually need to include the windows domain like this:
+Your user credentials usually need to include the windows domain or the 
+windows hostname like this:
 
  testdomain\testuser
+
+or 
+
+ \\testhost\testuser
 
 Besides passing user credentials as when accessing a web service protected
 by basic or digest authentication, you also need to enforce connection
@@ -55,6 +68,57 @@ class. This unfortunately means that you have to set the endpoint URL, too:
 You may, of course, decide to just hack the generated class. Be advised that
 subclassing might be a more appropriate solution - re-generating overwrites
 changes in interface classes.
+
+=head3 Accessing HTTP(S) webservices protected by NTLMv2
+
+There are different variants of NTLM, and by default Authen::NTLM uses the v1 variant.
+
+NTLM is a connection-based handshake authentication protocol, which requires
+three or more requests on the same connection: 
+
+    Request    POST
+    Response   401 Unauthorized
+               WWW-Authenticate: NTLM
+
+    Request    Authorization: NTLM <base64-encoded type-1-message>
+    Response   401 Unauthorized
+               WWW-Authenticate: NTLM <base64-encoded type-2-message>
+
+    Request    Authorization: NTLM <base64-encoded type-3-message>
+    Response   200 Ok
+
+If you try to access a NTLMv2 protected web service and switch on LWP::Debug by
+saying
+
+ use LWP::Debug qw(+);
+
+you should see at least two lines containing something like 
+
+ Authorization NTLM TlRMTVNTUAABAAAAB7IAAAAAAAAAAAAAAwADACAAAABmb28=
+ ...
+ Authorization NTLM TlRMTVNTUAABAAAAB7IAAAAAAAAAAAAAAw ... much longer ... ADACAAAABmb28=
+
+If you're talking to a Server using NTLMv2 exclusively, you will only the first line 
+in the debug output, and then an error.
+
+To explicitely enable NTLMv2, do the following in your client:
+
+ use Authen::NTLM;
+ ntlmv2(1);
+
+This globally enables the use of NTLMv2. Note that this is a global setting: All
+clients running in the same perl interpreter will be affected. This can
+cause unexpected issues when running under mod_perl.
+
+=head3 Accessing webservices protected by HTTP Kerberos Authentication
+
+Use the L<LWP::Authen::Negotiate|LWP::Authen::Negotiate> plugin from CPAN. You 
+need to set up GSSAPI to perform the Kerberos authentication, though. How to do 
+this is implementation specific (MIT or Heimdahl). See your Kerberos/GSSAPI 
+documentation for details.
+
+(Newer) Windows Web Services usually allow to use both the Negotiate (Kerberos) 
+and NTLM authentication scheme. 
 
 =head3 Accessing HTTPS webservices protected by certificate authentication
 

@@ -1,4 +1,4 @@
-use Test::More tests => 14;
+use Test::More tests => 15;
 use File::Basename qw(dirname);
 use File::Spec;
 use File::Path;
@@ -63,6 +63,8 @@ use_ok qw(MyInterfaces::My::SOAP::testService::testPort);
 use_ok qw(MyServer::My::SOAP::testService::testPort);
 use_ok qw(MyTypes::testComplexTypeRestriction);
 use_ok qw(MyTypes::testComplexTypeAll);
+# type with dot in name including atomic type
+use_ok qw(MyTypes::test::ComplexTypeElementAtomicSimpleType);
 SKIP: {
     eval { require Test::Pod::Content; }
         or skip 'Cannot test pod content without Test::Pod::Content', 6;

@@ -73,16 +73,18 @@ __PACKAGE__->_factory(
 );
 
 package MyElementSimpleContent;
-use base qw(
-    SOAP::WSDL::XSD::Typelib::Element
-    SOAP::WSDL::XSD::Typelib::ComplexType
-    SOAP::WSDL::XSD::Typelib::Builtin::string
-);
+{
+    use base qw(
+        SOAP::WSDL::XSD::Typelib::Element
+        SOAP::WSDL::XSD::Typelib::ComplexType
+        SOAP::WSDL::XSD::Typelib::Builtin::string
+    );
 
-__PACKAGE__->__set_name( 'MyElementSimpleContent' );
+    __PACKAGE__->__set_name( 'MyElementSimpleContent' );
 
-sub __get_attr_class { 'MyElement::_ATTR' };
-
+    sub __get_attr_class { 'MyElement::_ATTR' };
+	sub get_xmlns { 'http://www.w3.org/2001/XMLSchema' }
+}
 package main;
 use Test::More tests => 127;
 use Storable;
