@@ -174,7 +174,7 @@ sub _wsdl_get_port :PRIVATE  {
     my $wsdl = $definitions_of{ $ident };
     my $ns   = $wsdl->get_targetNamespace();
     return $port_of{ $ident } = $portname_of{ $ident }
-        ? $service_of{ $ident }->get_port( $ns, $portname_of{ $ident } )
+        ? $service_of{ $ident }->get_port( $ns, $portname_of{ $ident } )->[ 0 ]
         : ( $port_of{ $ident } = $service_of{ $ident }->get_port()->[ 0 ] );
 }
 
