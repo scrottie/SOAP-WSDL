@@ -106,7 +106,7 @@ sub serialize {
         @possible_namespace_names = sort { $a eq '#default' ? 1 : $b eq '#default' ? -1 : $a cmp $b } @possible_namespace_names;
 
         if( grep( $_ ne '#default', @possible_namespace_names ) > 1 or ! @possible_namespace_names ) {
-            die "no or too many possible names for our namespace of ``$ns'': ``@possible_namespace_names''; there should be just one and maybe a '#default' entry";
+            die "No prefix found for namespace $ns, or too many possible names: ``@possible_namespace_names''; there should be just one and maybe a '#default' entry";
         }
         my $prefix = $possible_namespace_names[0];
 
