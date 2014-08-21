@@ -5,6 +5,9 @@ use File::Spec;
 use File::Path;
 use diagnostics;
 
+use lib "t/SOAP/WSDL/Generator/Template/XSD/testlib";
+use MyTypes::TMessage;
+
 my $path = File::Spec->rel2abs( dirname __FILE__ );
 my ($volume, $dir) = File::Spec->splitpath($path, 1);
 my @dir_from = File::Spec->splitdir($dir);
