@@ -155,8 +155,7 @@ sub _factory {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or croak "No class given for $name";
 
-        # require all types here
-        $type->isa('UNIVERSAL')
+        $type->can('serialize')
             or eval "require $type"
                 or croak $@;
 
