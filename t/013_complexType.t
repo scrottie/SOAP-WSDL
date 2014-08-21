@@ -5,8 +5,6 @@ use lib 'lib/';
 use lib '../lib/';
 use lib 't/lib';
 
-use MyElement;
-
 use_ok qw(SOAP::WSDL::XSD::Typelib::ComplexType);
 use_ok qw( MyComplexType );
 # simple type derived from builtin via restriction
