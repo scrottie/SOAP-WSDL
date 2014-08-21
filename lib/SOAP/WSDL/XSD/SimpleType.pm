@@ -100,10 +100,18 @@ sub _serialize_single {
     $xml .= '<' . join ' ', $name, @{ $opt->{ attributes } };
     if ( $opt->{ autotype }) {
         # reverse namespace by prefix hash
-        my %prefix_of = reverse %{ $opt->{ namespace } };
         my $ns = $self->get_targetNamespace();
-        my $prefix = $prefix_of{ $ns }
-           || die 'No prefix found for namespace '. $ns;
+
+        # build a list of hash keys (eg '#default', 'tns') whose values match our namespace (eg 'urn:myNamespace')
+        (my @possible_namespace_names) = grep { $opt->{ namespace }->{$_} eq $ns } keys %{ $opt->{ namespace } };
+
+        # put any '#default' option last
+        @possible_namespace_names = sort { $a eq '#default' ? 1 : $b eq '#default' ? -1 : $a cmp $b } @possible_namespace_names;
+
+        if( grep( $_ ne '#default', @possible_namespace_names ) > 1 or ! @possible_namespace_names ) {
+            die "no or too many possible names for our namespace of ``$ns'': ``@possible_namespace_names''; there should be just one and maybe a '#default' entry";
+        }
+        my $prefix = $possible_namespace_names[0];
         $xml .= ' type="' . $prefix . ':' . $self->get_name() .'"';
     }
 
