@@ -30,7 +30,7 @@ sub serialize {
     my $soap_prefix = $opt->{ namespace }->{ $SOAP_NS };
 
     # envelope start with namespaces
-    my $xml = "<$soap_prefix\:Envelope ";
+    my $xml = qq|<?xml version="1.0" ?><$soap_prefix\:Envelope |;
 
     while (my ($uri, $prefix) = each %{ $opt->{ namespace } })
     {
