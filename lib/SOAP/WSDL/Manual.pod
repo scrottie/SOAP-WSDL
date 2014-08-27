@@ -58,8 +58,7 @@ typemaps. For every Web service, there's also a typemap created.
 
 =head2 Interface class creation
 
-To create interface classes, follow the steps above from
-L<Quick walk-through for the unpatient|Quick walk-through for the unpatient>.
+To create interface classes, follow the steps above.
 
 If this works fine for you, skip the next paragraphs. If not, read on.
 
