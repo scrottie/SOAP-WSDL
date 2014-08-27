@@ -1,3 +1,46 @@
+Release notes for SOAP::WSDL 3.00.00_1
+
+Scott Walters has assumed co-maint of this module and is ashamed to release 3.00.00_1.
+Numerous fixes have been made to get tests to pass again on newer perls.
+Please see the git log at http://github.com/scrottie/SOAP-WSDL for additional detail.
+
+o.  applied patch from ticket #86142: Missing XML declaration in request
+    https://rt.cpan.org/Public/Bug/Display.html?id=86142
+    tests still pass, so, good enough, right?
+
+o.  Huh.  Between 5.12 and 5.16 somewhere, the behavior of ClassName->isa('UNIVERSAL') changed.
+    It used to be that that would return true if and only if that namespace existed.
+    Now it always returns true for any random non-existant made up name.
+    Changed this to do ->can() on a known existing method modules with this API have (serialize)
+    instead after floundering around for a bit.  exists ${"main::"}{$type.'::'} worked a little
+    bit but made it barf for some reason I didn't investigate.
+    This is the problem apparently behind the previous "haunted house level shit" fixes and
+    reversions.  This thing does automatically load these modules on the fly.  Would be nice
+    if the unit tests had some comments in them.
+
+o.  There were two calls to get_port() right next to
+    each other, in the very same ? :, and one of them had a ->[0]
+    tacked on the end and the other one didn't.  Well guess what...
+    the one without was returning an arrayref, which caused these
+    failures in the unit tests:
+    Can't call method "get_binding" on unblessed reference at /home/scott/projects/SOAP-WSDL/blib/lib/SOAP/WSDL.pm line 186.
+
+o.  protip:  reverse %hash with '#default' => 'urn:myNamespace', 'tns' =>
+    'urn:myNamespace' results in misery.  random hash ordering made a pile of
+    tests in t/003_wsdl_based_serializer.t randomly pass and fail in unison.
+
+o.  "vectors" (totally not the same thing as a vector in other languages or on a Cray 1)
+    have been deprecated and removed.  pretend like they never existed.
+
+o.  fix two instances of the "Can't modify non-lvalue subroutine call at lib/SOAP/WSDL.pm line 167." error.
+    it looks like the author wrote
+        return $a ? $b : $c = $d
+    Intending it to mean:
+        return $a ? $b : ($c = $d);
+    ... but perl parses it as:
+        return ( $a ? $b : $c) = $d;
+    ... and perl 5.16 is more astute about lvalue errors like that.
+
 Release notes for SOAP::WSDL 2.00.10
 -------
 

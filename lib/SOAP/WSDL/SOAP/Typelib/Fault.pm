@@ -3,6 +3,6 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-use version; our $VERSION = qv('2.00.10');
+use version; our $VERSION = qv('3.00.0_1');
 
 1;

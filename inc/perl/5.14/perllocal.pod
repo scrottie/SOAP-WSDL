@@ -1,0 +1,44 @@
+=head2 Mon Aug 20 03:38:09 2012: C<Module> L<Curses|Curses>
+
+=over 4
+
+=item *
+
+C<installed into: /tmp/share/perl/5.14.2>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.28>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Aug 20 03:38:12 2012: C<Module> L<Curses::Widgets|Curses::Widgets>
+
+=over 4
+
+=item *
+
+C<installed into: /tmp/share/perl/5.14.2>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.997>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

@@ -1,3 +1,4 @@
+use lib 'inc';  # local copy of Module::Build
 use Module::Build;
 use version;
 $build = Module::Build->new(
@@ -5,7 +6,7 @@ $build = Module::Build->new(
     create_makefile_pl => 'small',
     dist_abstract      => 'SOAP with WSDL support',
     dist_name          => 'SOAP-WSDL',
-    dist_version       => '2.00.10',
+    dist_version       => '3.00.0_1',
     module_name        => 'SOAP::WSDL',
     license            => 'artistic',
     requires           => {
