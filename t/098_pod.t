@@ -2,7 +2,7 @@ use Test::More;
 eval "use Test::Pod 1.00";
 plan skip_all => "Test::Pod 1.00 required for testing POD" if $@;
 
-my @dir_from = ();
+my @dir_from = ('t');
 if (!$ENV{HARNESS_ACTIVE}) {
     # perl Build test or make test run from top-level dir.
     if ( -d '../t/' ) {
