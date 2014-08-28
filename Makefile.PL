@@ -25,6 +25,7 @@ WriteMakefile(
         'XML::Parser::Expat'      => 0,
         'perl'                    => q(5.008),
     },
+    test => { RECURSIVE_TEST_FILES => 1, },
     ABSTRACT_FROM  => 'lib/SOAP/WSDL.pm',
     AUTHOR       => 'Scott Walters <scott@slowass.net>',
 );
