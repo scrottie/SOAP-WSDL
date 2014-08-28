@@ -7,6 +7,7 @@ use SOAP::WSDL::XSD::Typelib::Builtin;
 use Scalar::Util qw(blessed);
 use Data::Dumper;
 require Class::Std::Fast::Storable;
+use Class::Load ();
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
@@ -155,9 +156,10 @@ sub _factory {
         my $type = $CLASSES_OF{ $class }->{ $name }
             or croak "No class given for $name";
 
-        $type->can('serialize')
-            or eval "require $type"
-                or croak $@;
+        # require all types here
+        Class::Load::is_class_loaded($type)
+            or eval { Class::Load::load_class $type }
+                 or croak $@;
 
         # check now, so we don't need to do it later.
         # $is_list is used in the methods created. Filling it now means
