@@ -1,4 +1,16 @@
 Release notes for SOAP::WSDL 3.00.00_1
+-------
+
+o.  fix a hash randomization bug that was causing random failures in t/SOAP/WSDL/05_simpleType-list.t
+
+o.  2624a9 for #86142, adding the XML declaration to the output, broke another part of the system, so work around that.
+    I accidentally stopped doing "recursive" tests (tests in subdirs) at some point and missed some of this fun breakage.
+
+o.  dam@cpan.org's fix for using not using ->usa('UNIVERSAL') to test if something loaded apparently works in a situation
+    where mine doesn't, that was causing tests to fail; use that version instead.
+
+Release notes for SOAP::WSDL 3.00.00_1
+-------
 
 Scott Walters has assumed co-maint of this module and is ashamed to release 3.00.00_1.
 Numerous fixes have been made to get tests to pass again on newer perls.

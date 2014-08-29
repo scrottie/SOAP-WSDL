@@ -5,7 +5,7 @@ use Carp;
 use SOAP::WSDL::TypeLookup;
 use base qw(SOAP::WSDL::Expat::Base);
 
-use version; our $VERSION = qv('3.00.0_1');
+use version; our $VERSION = qv('3.00.0_2');
 
 #
 # Import child elements of a WSDL / XML Schema tree into the current tree

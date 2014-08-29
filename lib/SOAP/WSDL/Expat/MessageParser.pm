@@ -9,7 +9,7 @@ use base qw(SOAP::WSDL::Expat::Base);
 
 BEGIN { require Class::Std::Fast };
 
-use version; our $VERSION = qv('3.00.0_1');
+use version; our $VERSION = qv('3.00.0_2');
 
 # GLOBALS
 my $OBJECT_CACHE_REF = Class::Std::Fast::OBJECT_CACHE_REF();
