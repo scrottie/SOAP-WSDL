@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable;
 
-use version; our $VERSION = qv('3.00.0_2');
+use version; our $VERSION = qv('3.001');
 
 my %definitions_of :ATTR(:name<definitions> :default<()>);
 my %type_prefix_of :ATTR(:name<type_prefix> :default<()>);

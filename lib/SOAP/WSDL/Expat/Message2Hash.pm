@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(SOAP::WSDL::Expat::Base);
 
-use version; our $VERSION = qv('3.00.0_2');
+use version; our $VERSION = qv('3.001');
 
 sub _initialize {
     my ($self, $parser) = @_;

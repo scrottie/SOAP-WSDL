@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 
 use base qw(SOAP::WSDL::Generator::Visitor);
 
-use version; our $VERSION = qv('3.00.0_2');
+use version; our $VERSION = qv('3.001');
 
 my %path_of             :ATTR(:name<path>           :default<[]>);
 my %typemap_of          :ATTR(:name<typemap>        :default<()>);

@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 use SOAP::WSDL::Expat::MessageParser;
 use base qw(SOAP::WSDL::Expat::MessageParser);
 
-use version; our $VERSION = qv('3.00.0_2');
+use version; our $VERSION = qv('3.001');
 
 sub parse_start {
     my $self = shift;

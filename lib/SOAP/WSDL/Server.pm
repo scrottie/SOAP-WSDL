@@ -6,7 +6,7 @@ use Scalar::Util qw(blessed);
 use SOAP::WSDL::Factory::Deserializer;
 use SOAP::WSDL::Factory::Serializer;
 
-use version; our $VERSION = qv('3.00.0_2');
+use version; our $VERSION = qv('3.001');
 
 my %dispatch_to_of      :ATTR(:name<dispatch_to> :default<()>);
 my %action_map_ref_of   :ATTR(:name<action_map_ref> :default<{}>);
