@@ -332,8 +332,7 @@ sub _factory {
             # do we have some content
             if (defined $element) {
                 $element = [ $element ] if not ref $element eq 'ARRAY';
-                # from 3.00.0_1 on $NAMES_OF is filled - use || $_; for
-                # backward compatibility
+                # use || $_; for backward compatibility
                 my $name = $NAMES_OF{$class}->{$_} || $_;
                 my $target_namespace = $_[0]->get_xmlns();
                 map {
