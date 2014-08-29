@@ -349,7 +349,24 @@ __END__
 
 SOAP::WSDL - SOAP with WSDL support
 
-=head1 Overview
+=head1 NOTICE
+
+This module is B<not> recommended for new application development.
+Please use L<XML::Compile::SOAP> or L<SOAP::Lite> instead if possible.
+
+This module has a large number of known bugs and is not being actively developed.
+This 3.0 release is intended to update the module to pass tests on newer Perls.
+This is a service to existing applications already dependent on this module.
+
+=head1 SYNOPSIS
+
+ my $soap = SOAP::WSDL->new(
+    wsdl => 'file://bla.wsdl',
+ );
+
+ my $result = $soap->call('MyMethod', %data);
+
+=head1 DESCRIPTION
 
 For creating Perl classes instrumenting a web service with a WSDL definition,
 read L<SOAP::WSDL::Manual>.
@@ -367,16 +384,6 @@ MIGRATING documentation.
 
 The stuff below is for users of the 1.2x SOAP::WSDL series. All others,
 please refer to L<SOAP::WSDL::Manual>
-
-=head1 SYNOPSIS
-
- my $soap = SOAP::WSDL->new(
-    wsdl => 'file://bla.wsdl',
- );
-
- my $result = $soap->call('MyMethod', %data);
-
-=head1 DESCRIPTION
 
 SOAP::WSDL provides easy access to Web Services with WSDL descriptions.
 
@@ -668,7 +675,22 @@ details.
 
 =head1 BUGS AND LIMITATIONS
 
+The bug tracker is at L<< https://rt.cpan.org/Dist/Display.html?Queue=SOAP-WSDL >>.
+
+This module is in legacy maintenance mode.
+Only show stopper bugs are being fixed, until/unless someone wishes to resume active development on it.
+Scott Walters, C<scott@slowass.net> has obtained co-mainter from the CPAN admins for the purpose of applying existing fixes people have submit to 
+the RT tracker, and to apply other fixes as needed to get the module to install and run on newer Perls.
+Non show-stopper bugs reports without fixes will be added to this list of limitations.
+Of course, fixes for these and other bugs are welcome.
+Scott does not get email from L<< rt.cpan.org >>, so please drop an email to him at C<< scott@slowass.net >> if you open a ticket there.
+
 =over
+
+=item Breaks the idiom C<< $package->can("SUPER::method") >> in your code
+
+If you redefine C<< UNIVERSAL::can() >>, and someone tries to do C<< $package->can("SUPER::method") >>, it'll look at your packages C<@ISA>, not theirs.
+This module does precicely that, by way of its dependency on C<Class::Std::Fast>.
 
 =item * $obj == undef does not work in perl 5.8.6 and perl 5.8.7
 
@@ -689,9 +711,7 @@ before - see http://aspn.activestate.com/ASPN/Mail/Message/perl5-porters/929746 
 
 =item * Apache SOAP datatypes are not supported
 
-You currently can't use SOAP::WSDL with Apache SOAP datatypes like map.
-
-If you want this changed, email me a copy of the specs, please.
+You can't use SOAP::WSDL with Apache SOAP datatypes like map.
 
 =item * Incomplete XML Schema definitions support
 
@@ -784,6 +804,12 @@ L<http://www.cpanforum.com/dist/SOAP-WSDL>
 
 =head1 ACKNOWLEDGMENTS
 
+Scott Walters wrote:
+
+This code incorporates fixes contributed by C<< NORDIC@cpan.org >>, C<< dam@cpan.org >>, C<< sven.schober@uni-ulm.de >>, myself, and others.
+
+Martin Kutter wrote:
+
 There are many people out there who fostered SOAP::WSDL's developement.
 I would like to thank them all (and apologize to all those I have forgotten).
 
@@ -827,13 +853,12 @@ the same terms as perl itself
 
 =head1 AUTHOR
 
-Martin Kutter E<lt>martin.kutter fen-net.deE<gt>
+Scott Walters E<lt>scott@slowass.net<gt> 2014
+
+Martin Kutter E<lt>martin.kutter fen-net.deE<gt> 2004-2008
 
 =head1 REPOSITORY INFORMATION
 
- $Rev: 851 $
- $LastChangedBy: kutterma $
- $Id: WSDL.pm 851 2009-05-15 22:45:18Z kutterma $
- $HeadURL: https://soap-wsdl.svn.sourceforge.net/svnroot/soap-wsdl/SOAP-WSDL/trunk/lib/SOAP/WSDL.pm $
+    https://github.com/scrottie/SOAP-WSDL
 
 =cut
