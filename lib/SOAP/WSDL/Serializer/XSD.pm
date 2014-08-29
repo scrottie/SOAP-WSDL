@@ -32,8 +32,9 @@ sub serialize {
     # envelope start with namespaces
     my $xml = qq|<?xml version="1.0" ?><$soap_prefix\:Envelope |;
 
-    while (my ($uri, $prefix) = each %{ $opt->{ namespace } })
+    for my $uri ( sort { $a cmp $b } keys %{ $opt->{ namespace } } )
     {
+        my $prefix = $opt->{ namespace }->{ $uri };
         $xml .= "xmlns:$prefix=\"$uri\" ";
     }
     #
