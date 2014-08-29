@@ -35,6 +35,7 @@ sub deserialize {
     })
         if not $parser_of{ ${ $self } };
     $parser_of{ ${ $self } }->class_resolver( $class_resolver_of{ ${ $self } } );
+    $content =~ s{^<\?xml version="1.0" *\?>}{};  # XML::Parser::Expat apparently doesn't like this.
     eval { $parser_of{ ${ $self } }->parse_string( $content ) };
     if ($@) {
         return $self->generate_fault({
