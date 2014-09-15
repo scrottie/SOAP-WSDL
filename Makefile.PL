@@ -23,6 +23,7 @@ WriteMakefile(
         'Test::More'              => 0,
         'URI'                     => 0,
         'XML::Parser::Expat'      => 0,
+        'Class::Load'             => 0.20,
         'perl'                    => q(5.008),
     },
     test => { RECURSIVE_TEST_FILES => 1, },
