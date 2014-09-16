@@ -1,3 +1,10 @@
+
+Release notes for SOAP::WSDL 3.002
+
+o. change each file from having their own version number to referring to $SOAP::WSDL::VERSION since they aren't really individually versions anyway but just copies of that numbe
+o. Declare dependency on Class::Load -- thanks ANDYK
+o. link to GitHub from META files -- thanks szabgab
+
 Release notes for SOAP::WSDL 3.00.00_1
 -------
 
