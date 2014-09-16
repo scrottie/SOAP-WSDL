@@ -2,7 +2,7 @@ package SOAP::WSDL::Factory::Deserializer;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = 3.002;
 
 my %DESERIALIZER = (
     '1.1' => 'SOAP::WSDL::Deserializer::XSD',

@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable constructor => 'basic';
 use SOAP::WSDL::Factory::Transport;
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = 3.002;
 
 # register on loading
 SOAP::WSDL::Factory::Transport->register( http => __PACKAGE__ );

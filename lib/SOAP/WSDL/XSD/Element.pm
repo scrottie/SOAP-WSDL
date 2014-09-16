@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = 3.002;
 
 # id provided by Base
 # name provided by Base

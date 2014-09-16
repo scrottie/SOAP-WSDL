@@ -5,7 +5,7 @@ use List::Util;
 use Scalar::Util;
 use Carp qw(croak carp confess);
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = 3.002;
 
 my %id_of               :ATTR(:name<id> :default<()>);
 my %lang_of             :ATTR(:name<lang> :default<()>);
