@@ -5,7 +5,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = $SOAP::WSDL::VERSION;
 
 use SOAP::WSDL::Factory::Serializer;
 

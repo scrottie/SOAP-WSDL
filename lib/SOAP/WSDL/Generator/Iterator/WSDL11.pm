@@ -2,7 +2,7 @@ package SOAP::WSDL::Generator::Iterator::WSDL11;
 use strict; use warnings;
 use Class::Std::Fast;
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = $SOAP::WSDL::VERSION;
 
 my %definitions_of  :ATTR(:name<definitions>    :default<[]>);
 my %nodes_of        :ATTR(:name<nodes>          :default<[]>);

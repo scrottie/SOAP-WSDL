@@ -16,7 +16,7 @@ use Apache2::Const -compile => qw(
                                     HTTP_LENGTH_REQUIRED
                                 );
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = $SOAP::WSDL::VERSION;
 
 my %LOADED_OF = ();
 

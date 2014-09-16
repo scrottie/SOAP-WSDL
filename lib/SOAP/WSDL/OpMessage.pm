@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-use version; our $VERSION = qv('3.001');
+our $VERSION = $SOAP::WSDL::VERSION;
 
 my %body_of         :ATTR(:name<body>           :default<[]>);
 my %header_of       :ATTR(:name<header>         :default<[]>);
