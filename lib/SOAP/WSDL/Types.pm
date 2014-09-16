@@ -5,7 +5,7 @@ use SOAP::WSDL::XSD::Schema::Builtin;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION = $SOAP::WSDL::VERSION;
+use version; our $VERSION = qv('3.001');
 
 my %schema_of :ATTR(:name<schema> :default<[]>);
 

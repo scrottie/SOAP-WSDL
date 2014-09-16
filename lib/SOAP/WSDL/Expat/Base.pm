@@ -6,7 +6,7 @@ use XML::Parser::Expat;
 
 # TODO: convert to Class::Std::Fast based class - hash based classes suck.
 
-our $VERSION = $SOAP::WSDL::VERSION;
+use version; our $VERSION = qv('3.001');
 
 sub new {
     my ($class, $arg_ref) = @_;

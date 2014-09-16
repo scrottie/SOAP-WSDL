@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base qw(SOAP::WSDL::XSD::Typelib::ComplexType);
 
-our $VERSION = $SOAP::WSDL::VERSION;
+use version; our $VERSION = qv('3.001');
 
 sub serialize {
     # we work on @_ for performance.

@@ -3,6 +3,6 @@ use strict;
 use warnings;
 use base qw(SOAP::WSDL::SOAP::Header);
 
-our $VERSION = $SOAP::WSDL::VERSION;
+use version; our $VERSION = qv('3.001');
 
 1;
