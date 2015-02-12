@@ -687,7 +687,7 @@ Scott does not get email from L<< rt.cpan.org >>, so please drop an email to him
 
 =over
 
-=item Breaks the idiom C<< $package->can("SUPER::method") >> in your code
+=item * Breaks the idiom C<< $package->can("SUPER::method") >> in your code
 
 If you redefine C<< UNIVERSAL::can() >>, and someone tries to do C<< $package->can("SUPER::method") >>, it'll look at your packages C<@ISA>, not theirs.
 This module does precicely that, by way of its dependency on C<Class::Std::Fast>.
