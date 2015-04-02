@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use Carp;
 use SOAP::WSDL::Generator::PrefixResolver;
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 my %tt_of               :ATTR(:get<tt>);
 my %definitions_of      :ATTR(:name<definitions>        :default<()>);

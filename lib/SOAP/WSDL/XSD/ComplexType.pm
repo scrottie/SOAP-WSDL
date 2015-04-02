@@ -5,7 +5,7 @@ use Class::Std::Fast::Storable;
 use Scalar::Util qw(blessed);
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 # id provided by Base
 # name provided by Base

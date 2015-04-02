@@ -2,7 +2,7 @@ package SOAP::WSDL::Deserializer::SOM;
 use strict;
 use warnings;
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 our @ISA;
 
 eval {

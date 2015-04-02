@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Class::Std::Fast::Storable constructor => 'none', cache => 1;
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType);
 

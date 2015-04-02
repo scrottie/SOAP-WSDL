@@ -2,7 +2,7 @@ package SOAP::WSDL::XSD::Typelib::Element;
 use strict; use warnings;
 use Class::Std::Fast::Storable constructor => 'none';
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 my %NAME;
 my %NILLABLE;

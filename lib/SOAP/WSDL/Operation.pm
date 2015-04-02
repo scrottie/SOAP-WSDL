@@ -4,7 +4,7 @@ use warnings;
 use Class::Std::Fast::Storable;
 use base qw(SOAP::WSDL::Base);
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 my %operation_of :ATTR(:name<operation> :default<()>);
 my %input_of :ATTR(:name<input> :default<[]>);

@@ -1,7 +1,7 @@
 package SOAP::WSDL::Factory::Transport;
 use strict;
 use warnings;
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 my %registered_transport_of = ();
 

@@ -2,14 +2,14 @@ package SOAP::WSDL::XSD::Typelib::SimpleType;
 use strict; use warnings;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 package SOAP::WSDL::XSD::Typelib::SimpleType::restriction;
 use strict;
 use SOAP::WSDL::XSD::Typelib::Builtin;
 use base qw(SOAP::WSDL::XSD::Typelib::SimpleType);
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 1;
 __END__

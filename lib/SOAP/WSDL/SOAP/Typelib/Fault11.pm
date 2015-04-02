@@ -4,7 +4,7 @@ package SOAP::WSDL::SOAP::Typelib::Fault11;
     use warnings;
     use Class::Std::Fast::Storable constructor => 'none';
 
-    our $VERSION = 3.002;
+    our $VERSION = 3.003;
 
     use Scalar::Util qw(blessed);
 

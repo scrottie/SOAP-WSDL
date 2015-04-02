@@ -6,7 +6,7 @@ use SOAP::WSDL::XSD::Schema;
 use SOAP::WSDL::XSD::Builtin;
 use base qw(SOAP::WSDL::XSD::Schema);
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 # all builtin types - add validation (e.g. content restrictions) later...
 my %BUILTINS = (

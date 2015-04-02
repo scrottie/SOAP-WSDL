@@ -14,7 +14,7 @@ use Class::Std::Fast constructor => 'none';
 use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
-# perl -p -i -e 's{use version; our \$VERSION = qv.*3\.001.*;}{our \$VERSION = 3.002;}' `ack -l 'VERSION = qv'`      # in the lib/ directory, to change version numbers
+# perl -p -i -e 's{our \$VERSION = 3\.\d*;}{our \$VERSION = 3.003;}' `ack -l 'our \\$VERSION = '`      # in the lib/ directory, to change version numbers
 our $VERSION = 3.003;
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);

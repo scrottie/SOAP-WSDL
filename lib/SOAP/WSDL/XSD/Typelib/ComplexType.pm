@@ -11,7 +11,7 @@ use Class::Load ();
 
 use base qw(SOAP::WSDL::XSD::Typelib::Builtin::anyType);
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 # remove in 2.1
 our $AS_HASH_REF_WITHOUT_ATTRIBUTES = 0;

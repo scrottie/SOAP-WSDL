@@ -16,7 +16,7 @@ use Apache2::Const -compile => qw(
                                     HTTP_LENGTH_REQUIRED
                                 );
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 my %LOADED_OF = ();
 

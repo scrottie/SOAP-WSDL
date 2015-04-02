@@ -4,7 +4,7 @@ use warnings;
 use base qw(SOAP::WSDL::Base);
 use Class::Std::Fast::Storable;
 
-our $VERSION = 3.002;
+our $VERSION = 3.003;
 
 my %location   :ATTR(:name<location> :default<()>);
 1;
