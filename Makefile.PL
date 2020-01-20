@@ -36,6 +36,7 @@ WriteMakefile(
         'File::Path' => 0,
         'File::Spec' => 0,
         'IO::File' => 0,
+        'IO::Scalar' => 0,
         'IO::Handle' => 0,
         'IPC::Open3' => 0,
         'Moose' => 0,
