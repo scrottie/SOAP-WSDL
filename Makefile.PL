@@ -24,6 +24,7 @@ WriteMakefile(
         'URI'                     => 0,
         'XML::Parser::Expat'      => 0,
         'Class::Load'             => 0.20,
+        'Class::Load'             => 0,
         'perl'                    => q(5.008),
     },
     TEST_REQUIRES => {
