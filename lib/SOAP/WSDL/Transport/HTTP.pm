@@ -29,6 +29,9 @@ sub send_receive {
         ? lc($encoding)
         : 'utf-8';
 
+    $endpoint = ""
+        if not defined($endpoint);
+
     $content_type = "text/xml; charset=$encoding"
         if not defined($content_type);
     # what's this all about?
