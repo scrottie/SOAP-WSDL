@@ -1,6 +1,8 @@
 =pod
 
-=head1 Writing Code-First Web Services with SOAP::WSDL
+=head1 NAME
+
+CodeFirst - Writing Code-First Web Services with SOAP::WSDL
 
 B<Note: This document is just a collection of thought. There's no implementation yet>.
 
