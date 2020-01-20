@@ -159,7 +159,7 @@ The prefix for 'http://www.w3.org/2001/XMLSchema-instance (used as namespace
 for the {http://www.w3.org/2001/XMLSchema-instance}nil="true" attribute
 is hardcoded as 'xsi'.
 
-You should definitly provide your XML envelope generator with the same prefix
+You should definitely provide your XML envelope generator with the same prefix
 namespace combination (Default for SOAP::WSDL::Envelope).
 
 =back

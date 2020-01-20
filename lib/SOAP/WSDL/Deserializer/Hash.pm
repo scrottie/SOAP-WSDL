@@ -98,7 +98,7 @@ Examples:
      }
  }
 
-List reference creation is triggered by the second occurance of an element.
+List reference creation is triggered by the second occurrence of an element.
 XML Array types with one element only will not be represented as list
 references.
 

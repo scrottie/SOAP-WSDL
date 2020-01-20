@@ -297,7 +297,7 @@ See L<SOAP::WSDL::Manual::Parser> for details.
 
 =head2 Skipping unwanted items
 
-Sometimes there's unneccessary information transported in SOAP messages.
+Sometimes there's unnecessary information transported in SOAP messages.
 
 To skip XML nodes (including all child nodes), just edit the type map for
 the message, set the type map entry to '__SKIP__', and comment out all

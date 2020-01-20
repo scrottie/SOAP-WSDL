@@ -129,7 +129,7 @@ See the generated server class on details.
 =head1 DESCRIPTION
 
 Lightweight SOAP server for use with HTTP::Server::Simple, mainly designed
-for testing purposes. It allows to set up a simple SOAP server without having
+for testing purposes. It allows one to set up a simple SOAP server without having
 to configure CGI or mod_perl stuff.
 
 SOAP::WSDL::Server::Simple is not recommended for production use.

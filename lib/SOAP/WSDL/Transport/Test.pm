@@ -76,7 +76,7 @@ SOAP::WSDL::Transport::Test - Test transport class for SOAP::WSDL
 SOAP::WSDL::Transport::Test is a file-based test transport backend for
 SOAP::WSDL.
 
-When SOAP::WSDL::Transport::Test is used as transport backend, the reponse is
+When SOAP::WSDL::Transport::Test is used as transport backend, the response is
 read from a XML file and the request message is discarded. This is
 particularly useful for testing SOAP::WSDL plugins.
 
