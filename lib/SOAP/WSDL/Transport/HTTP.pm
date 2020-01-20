@@ -2,7 +2,7 @@ package SOAP::WSDL::Transport::HTTP;
 use strict; use warnings;
 use base qw(LWP::UserAgent);
 
-our $VERSION = 3.003;
+our $VERSION = 3.004;
 
 # create methods normally inherited from SOAP::Client
 SUBFACTORY: {

@@ -15,7 +15,7 @@ use SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType;
 use LWP::UserAgent;
 
 # perl -p -i -e 's{our \$VERSION = 3\.\d*;}{our \$VERSION = 3.003;}' `ack -l 'our \\$VERSION = '`      # in the lib/ directory, to change version numbers
-our $VERSION = 3.003;
+our $VERSION = 3.004;
 
 my %no_dispatch_of      :ATTR(:name<no_dispatch>);
 my %wsdl_of             :ATTR(:name<wsdl>);
