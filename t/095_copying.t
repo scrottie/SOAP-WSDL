@@ -11,6 +11,9 @@ require Test::Pod::Content;
 import Test::Pod::Content;
 
 my $dir = 'blib/lib';
+plan skip_all => qq(No directory $dir)
+    unless -e $dir;
+
 if (-d '../t') {
     $dir = '../lib';
 }
