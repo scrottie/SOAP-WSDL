@@ -52,6 +52,16 @@ ExpatNB based parser for parsing huge documents.
 
 See L<SOAP::WSDL::Manual::Parser> for details.
 
+=head2 Undocumented methods
+
+=head3 init
+
+=head3 parse_done
+
+=head3 parse_more
+
+=head3 parse_start
+
 =head1 Bugs and Limitations
 
 See SOAP::WSDL::Expat::MessageParser

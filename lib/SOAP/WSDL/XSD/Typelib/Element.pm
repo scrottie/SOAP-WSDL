@@ -126,6 +126,14 @@ Now we create this XML schema definition type class:
  __PACKAGE__->__set_nillable(0);
  __PACKAGE__->__set_ref(1);
 
+=head1 DESCRIPTION
+
+=head2 Undocumented methods
+
+=head3 end_tag
+
+=head3 start_tag
+
 =head1 NOTES
 
 =over

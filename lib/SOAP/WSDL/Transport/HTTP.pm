@@ -85,6 +85,18 @@ SOAP::WSDL::Transport::HTTP - Fallback http(s) transport class
 Provides a thin transport class used by SOAP::WSDL::Transport when
 SOAP::Lite is not available.
 
+=head2 Undocumented methods
+
+=head3 code
+
+=head3 is_success
+
+=head3 message
+
+=head3 send_receive
+
+=head3 status
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 2007 Martin Kutter. All rights reserved.

@@ -1,4 +1,4 @@
-use Test::More;
+use Test::More tests => 2;
 
 if (not $ENV{RELEASE_TESTING} ) {
     my $msg = 'Author test.  Set $ENV{RELEASE_TESTING} to a true value to run.';
@@ -8,4 +8,4 @@ if (not $ENV{RELEASE_TESTING} ) {
 eval { require Test::CPAN::Meta }
     or plan skip_all => "Test::CPAN::Meta required for testing META.yml";
 
-Test::CPAN::Meta::meta_yaml_ok();
+Test::CPAN::Meta::meta_spec_ok(q(MYMETA.yml));

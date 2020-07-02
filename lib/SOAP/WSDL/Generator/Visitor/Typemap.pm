@@ -195,6 +195,18 @@ SOAP::WSDL::Generator::Visitor::Typemap - Visitor class for generating typemaps
 
 Visitor used by SOAP::WSDL's XSD generator for creating typemaps
 
+=head2 Undocumented methods
+
+=head3 add_element_path
+
+=head3 process_referenced_type
+
+=head3 set_typemap_entry
+
+=head3 visit_XSD_ComplexType
+
+=head3 visit_XSD_Element
+
 =head1 AUTHOR
 
 Replace the whitespace by @ for E-Mail Address.

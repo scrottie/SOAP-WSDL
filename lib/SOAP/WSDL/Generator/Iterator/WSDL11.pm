@@ -159,6 +159,14 @@ The iterator performs a depth-first search along the following path:
 If you wonder about this path: This is how to look up which XML Schema element
 is associated with a operation from a service/port.
 
+=head2 Undocumented methods
+
+=head3 get_next
+
+=head3 get_nextNodes
+
+=head3 init
+
 =head2 Example
 
 The nodes are returned in the order denoted in the following example:

@@ -383,6 +383,22 @@ SOAP::WSDL::Client and implementing something like
 You may even do this in a class factory - see L<wsdl2perl.pl> for creating
 such interfaces.
 
+=head2 Undocumented methods
+
+=head3 class_resolver
+
+=head3 get_proxy
+
+=head3 no_dispatch
+
+=head3 prefix
+
+=head3 proxy
+
+=head3 set_proxy
+
+=head3 set_soap_version
+
 =head1 TROUBLESHOOTING
 
 =head2 Accessing protected web services

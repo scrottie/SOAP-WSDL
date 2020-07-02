@@ -55,6 +55,18 @@ When SOAP::WSDL::Transport::Loopback is used as transport backend, the
 request is returned as response. No data ever goes over the wire.
 This is particularly useful for testing SOAP::WSDL plugins and applications.
 
+=head2 Undocumented methods
+
+=head3 code
+
+=head3 is_success
+
+=head3 message
+
+=head3 send_receive
+
+=head3 status
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 2007 Martin Kutter. All rights reserved.
