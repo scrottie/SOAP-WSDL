@@ -37,9 +37,9 @@ package SOAP::WSDL::SOAP::Typelib::Fault11;
             detail      => 'SOAP::WSDL::SOAP::Typelib::Fault11Detail',
         } );
 
-    sub get_xmlns { return 'http://schemas.xmlsoap.org/soap/envelope/' }
+    sub get_xmlns { return }
 
-    __PACKAGE__->__set_name('Fault');
+    __PACKAGE__->__set_name('SOAP-ENV:Fault');
     __PACKAGE__->__set_nillable(0);
     __PACKAGE__->__set_minOccurs();
     __PACKAGE__->__set_maxOccurs();
@@ -88,9 +88,9 @@ package SOAP::WSDL::SOAP::Typelib::Fault11Detail;
       SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType
     );
 
-    sub get_xmlns { return 'http://schemas.xmlsoap.org/soap/envelope/' }
+    sub get_xmlns { return }
 
-    __PACKAGE__->__set_name('Fault');
+    __PACKAGE__->__set_name('SOAP-ENV:Fault');
     __PACKAGE__->__set_nillable(0);
     __PACKAGE__->__set_minOccurs();
     __PACKAGE__->__set_maxOccurs();

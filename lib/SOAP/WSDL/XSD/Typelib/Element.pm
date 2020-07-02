@@ -54,7 +54,8 @@ sub start_tag {
         $ending = '/>';
     }
     if (delete $_[1]->{qualified}) {
-        push @attr_from, q{ xmlns="} . $_[0]->get_xmlns() . q{"};
+        my $_ns = $_[0]->get_xmlns();
+        push @attr_from, $_ns ? qq{ xmlns="$_ns"} : q();
     }
     push @attr_from, $_[0]->serialize_attr();
 
