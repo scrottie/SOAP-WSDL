@@ -62,15 +62,21 @@ else {                  # we are outside t/
 
 plan tests => scalar @files;
 foreach (@files) {
-    pod_coverage_ok( $_ ,
-    {
-        private => [
-           qr/^_/,
-           qr/^BUILD$/,
-           qr/^START$/,
-           qr/^STORABLE/,
-           qr/^AUTOMETHOD$/,
-           qr/^DEMOLISH$/
-           ]
-    });
-}
+SKIP: {
+        eval qq(require $_);
+        skip qq(Unable to require $_: $@) => 1
+            if $@;
+
+        pod_coverage_ok( $_,
+        {
+            private => [
+                qr/^_/,
+                qr/^BUILD$/,
+                qr/^START$/,
+                qr/^STORABLE/,
+                qr/^AUTOMETHOD$/,
+                qr/^DEMOLISH$/
+            ]
+        });
+    } ## end SKIP:
+} ## end foreach (@files)
