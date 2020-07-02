@@ -632,6 +632,10 @@ Serialize a complexType's attributes
 Serialize a ComplexType object to XML. Exported via symbol table into derived
 classes.
 
+=head2 Undocumented methods
+
+=head3 get_xmlns
+
 =head1 Bugs and limitations
 
 =over

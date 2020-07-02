@@ -315,6 +315,16 @@ child elements you want to skip.
 
 =back
 
+=head2 Undocumented methods
+
+=head3 class_resolver
+
+=head3 get_header
+
+=head3 load_classes
+
+=head3 new
+
 =head1 AUTHOR
 
 Replace the whitespace by @ for E-Mail Address.

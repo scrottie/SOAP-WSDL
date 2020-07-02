@@ -352,6 +352,12 @@ SOAP::WSDL::Expat::WSDLParser - Parse WSDL files into object trees
 
 WSDL parser used by SOAP::WSDL.
 
+=head2 Undocumented methods
+
+=head3 wsdl_import
+
+=head3 xml_schema_import
+
 =head1 AUTHOR
 
 Replace the whitespace by @ for E-Mail Address.

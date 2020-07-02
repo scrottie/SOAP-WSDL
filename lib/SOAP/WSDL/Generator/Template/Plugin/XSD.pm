@@ -196,6 +196,28 @@ perl_name takes a crude approach by just replacing . and - (dot and dash)
 with a underscore. This may or may not be sufficient, and may or may not
 provoke collisions in your XML names.
 
+=head2 Undocumented methods
+
+=head3 create_interface_name
+
+=head3 create_server_name
+
+=head3 create_subpackage_name
+
+=head3 create_typemap_name
+
+=head3 create_xmlattr_name
+
+=head3 create_xsd_name
+
+=head3 element_name
+
+=head3 load
+
+=head3 new
+
+=head3 perl_var_name
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2008 Martin Kutter.

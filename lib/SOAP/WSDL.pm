@@ -529,6 +529,22 @@ SOAP call to the SOAP service. Handy for testing/debugging.
 Returns the SOAP client implementation used (normally a SOAP::WSDL::Client
 object).
 
+=head2 Undocumented methods
+
+=head3 proxy
+
+=head3 get_proxy
+
+=head3 set_proxy
+
+=head3 keep_alive
+
+=head3 outputhash
+
+=head3 set_readable
+
+=head3 wsdl
+
 =head1 EXAMPLES
 
 See the examples/ directory.

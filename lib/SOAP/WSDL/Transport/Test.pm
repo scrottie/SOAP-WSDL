@@ -108,6 +108,18 @@ Examples:
 Sets the base directory SOAP::WSDL::Transport::Test should look for response
 files.
 
+=head2 Undocumented methods
+
+=head3 code
+
+=head3 is_success
+
+=head3 message
+
+=head3 send_receive
+
+=head3 status
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 2007 Martin Kutter. All rights reserved.

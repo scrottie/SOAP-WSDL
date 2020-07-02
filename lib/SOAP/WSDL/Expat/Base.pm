@@ -118,6 +118,36 @@ SOAP::WSDL::Expat::Base - Base class for XML::Parser::Expat based XML parsers
 Base class for XML::Parser::Expat based XML parsers. All XML::SAX::Expat based
 parsers in SOAP::WSDL inherit from this class.
 
+=head2 Undocumented methods
+
+=head3 clone
+
+=head3 get_data
+
+=head3 get_uri
+
+=head3 get_user_agent
+
+=head3 is_parsed
+
+=head3 new
+
+=head3 parse
+
+=head3 parse_file
+
+=head3 parse_string
+
+=head3 parse_uri
+
+=head3 parsefile
+
+=head3 set_parsed
+
+=head3 set_uri
+
+=head3 set_user_agent
+
 =head1 AUTHOR
 
 Replace the whitespace by @ for E-Mail Address.

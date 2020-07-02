@@ -149,6 +149,12 @@ a detail object.
 Note that passing a list of detail object is currently not supported (though
 the SOAP1.1 note allows this).
 
+=head2 Undocumented methods
+
+=head3 as_bool
+
+=head3 get_xmlns
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2007 Martin Kutter. All rights reserved.

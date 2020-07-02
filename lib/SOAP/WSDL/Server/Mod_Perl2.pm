@@ -221,6 +221,12 @@ handle() is called with the following parameters:
 
  $r - Apache::RequestRec object
 
+=head2 Undocumented methods
+
+=head3 handle
+
+=head3 handler
+
 =head1 EXAMPLES
 
 The following snippet added to httpd.conf will enable a SOAP server at
