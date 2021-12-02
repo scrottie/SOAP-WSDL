@@ -295,7 +295,7 @@ If set, alters the serialization of the request XML such that the supplied value
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
       <SOAP-ENV:Body>
-        <getElementId xmlns="http://services.exmaple.org/">
+        <getElementId xmlns="http://services.example.org/">
           <elementId>12345</elementId>
         </getElementId>
       </SOAP-ENV:Body>
